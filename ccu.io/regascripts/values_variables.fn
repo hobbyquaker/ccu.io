@@ -1,0 +1,32 @@
+!# values_variables.fn
+!#
+!# Dieses Script gibt die Werte aller Systemvariablen als JSON Objekt aus
+!#
+!# 3'2013 hobbyquaker https://github.com/hobbyquaker
+!#
+
+object oSysVar;
+string sSysVarId;
+string sValueType;
+boolean bFirst = true;
+
+Write('{');
+
+foreach (sSysVarId, dom.GetObject(ID_SYSTEM_VARIABLES).EnumUsedIDs()) {
+
+  if (bFirst) {
+  	bFirst = false;
+  } else {
+  	WriteLine(',');
+  }
+
+  oSysVar     = dom.GetObject(sSysVarId);
+  sValueType  = oSysVar.ValueType();
+
+  Write('"' # sSysVarId # '":{"Value":"');
+  WriteURL(oSysVar.Value());
+  Write('","Timestamp":"' # oSysVar.Timestamp() # '"}');
+
+}
+
+Write('}');

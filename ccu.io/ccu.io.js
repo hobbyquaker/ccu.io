@@ -1,5 +1,5 @@
 /**
- *      CCU.IO version 0.2
+ *      CCU.IO version 0.3
  *
  *      Socket.IO based HomeMatic Interface
  *
@@ -11,21 +11,58 @@
  *
  */
 
+var settings = {
+
+    ioListenPort: 2100,
+
+    ccuIp: "172.16.23.3",
+
+    regahss: {
+        pollData: true,
+        pollMeta: true,
+        pollDataInterval: 10000,
+        pollDataTrigger: "BidCos-RF.BidCoS-RF:50.PRESS_LONG",
+        pollMetaInterval: 172800000,
+        cacheMeta: false
+
+    },
+
+    binrpc: {
+        listenIp: "172.16.23.19",
+        listenPort: 2101,
+        inits: [
+            { id: "io_cuxd",    port: 8701 },
+            { id: "io_rf",      port: 2001 },
+            { id: "io_wired",   port: 2000 }
+        ]
+    }
+};
+
+
+var regadata = {
+    variables: {},
+    programs: {},
+    rooms: {},
+    functions: {},
+    devices: {},
+    strtable: {},
+    reference: {}
+};
+
 var logger = require('./logger.js');
 var binrpc = require("./binrpc.js");
+var rega = require("./rega.js");
 
-var io = require('socket.io').listen(2100);
+logger.info("ccu.io copyright (c) 2013 hobbyquaker");
+
+var io = require('socket.io').listen(settings.ioListenPort);
 //var socketlist = [];
 
 var homematic = new binrpc({
-    ccuIp: "172.16.23.3",
-    listenIp: "172.16.23.153",
-    listenPort: 2101,
-    inits: [
-        { id: "io_cuxd", port: 8701 },
-        { id: "io_rf", port: 2001 },
-        { id: "io_wired", port: 2000 }
-    ],
+    ccuIp: settings.ccuIp,
+    listenIp: settings.binrpc.listenIp,
+    listenPort: settings.binrpc.listenPort,
+    inits: settings.binrpc.inits,
     methods: {
         event: function (obj) {
             var res = [];
@@ -47,6 +84,10 @@ var homematic = new binrpc({
             return "";
         }
     }
+});
+
+var regahss = new rega({
+    ccuIp: settings.ccuIp
 });
 
 
