@@ -1,0 +1,77 @@
+!# datapoints.fn 1.0
+!#
+!# Dieses Homematic-Script gibt eine Liste aller Datenpunkte als JSON String aus
+!#
+!# 3'2013-7'2013 hobbyquaker https://github.com/hobbyquaker
+!#
+
+string sDevId;
+string sChnId;
+string sDPId;
+boolean dpFirst = true;
+
+Write('{');
+
+
+foreach (sDevId, root.Devices().EnumUsedIDs()) {
+
+    object oDevice   = dom.GetObject(sDevId);
+    boolean bDevReady = oDevice.ReadyConfig();
+    string sDevInterfaceId = oDevice.Interface();
+    string sDevInterface   = dom.GetObject(sDevInterfaceId).Name();
+
+    if (bDevReady) {
+
+
+        string sChnId;
+        string sDPId;
+
+        foreach(sChnId, oDevice.Channels()) {
+            object oChannel = dom.GetObject(sChnId);
+            if ( (! oChannel.Internal()) ) {
+
+                integer iChnDir     = oChannel.ChnDirection();
+
+
+                if (iChnDir == 2) {
+                    object oWork = oChannel.DPByHssDP('WORKING');
+                    if (oWork) {
+                        if (dpFirst) {
+                          dpFirst = false;
+                        } else {
+                          WriteLine(',');
+                        }
+                        string oWId = oWork.ID();
+                        string oWName = oWork.Name();
+                        Write('"' # oWId # '":{');
+                        Write('"Name":"' # oWork.Name() # '","Type":"WORKING","dptype":"HSSDP","oper":"5"}');
+                    }
+                }
+
+                foreach(sDPId, oChannel.DPs().EnumUsedIDs()) {
+                    object oDP = dom.GetObject(sDPId);
+                    if(oDP) {
+                        if (dpFirst) {
+                          dpFirst = false;
+                        } else {
+                          WriteLine(',');
+                        }
+
+                        string dp = oDP.Name().StrValueByIndex('.', 2);
+                        Write('"' # sDPId # '":{');
+                        Write('"Name":"'); WriteXML(oDP.Name());
+                        Write('","Type":"'); WriteXML(oDP.Name().StrValueByIndex('.', 2));
+                        Write('","TypeName":"'); WriteXML(oDP.TypeName());
+                        Write('","Operations":"'); WriteXML(oDP.Operations());
+                        Write('","ValueType":"' # oDP.ValueType());
+                        Write('","ValueUnit":"' # oDP.ValueUnit());
+                        Write('"}');
+                    }
+                }
+
+            }
+        }
+
+    }
+}
+Write('}');

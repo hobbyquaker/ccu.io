@@ -1,8 +1,8 @@
-!# variables.fn
+!# variables.fn 1.0
 !#
 !# Dieses Script gibt die Systemvariablen als JSON Objekt aus
 !#
-!# 3'2013 hobbyquaker https://github.com/hobbyquaker
+!# 3'2013-7'2013 hobbyquaker https://github.com/hobbyquaker
 !#
 
 object oSysVar;
@@ -40,7 +40,8 @@ foreach (sSysVarId, dom.GetObject(ID_SYSTEM_VARIABLES).EnumUsedIDs()) {
     WriteURL(oSysVar.ValueList());
   }
 
-  Write('"}');
+  Write('","Value":""');
+  Write('}');
   
 }
 

@@ -23,8 +23,16 @@ var settings = {
         pollDataInterval: 10000,
         pollDataTrigger: "BidCos-RF.BidCoS-RF:50.PRESS_LONG",
         pollMetaInterval: 172800000,
-        cacheMeta: false
-
+        cacheMeta: false,
+        metaScripts: [
+            "variables",
+            "programs",
+            "rooms",
+            "functions",
+            "devices",
+            "channels",
+            "datapoints"
+        ]
     },
 
     binrpc: {
@@ -39,15 +47,8 @@ var settings = {
 };
 
 
-var regadata = {
-    variables: {},
-    programs: {},
-    rooms: {},
-    functions: {},
-    devices: {},
-    strtable: {},
-    reference: {}
-};
+var regadata = {},
+    regaindex = {};
 
 var logger = require('./logger.js');
 var binrpc = require("./binrpc.js");
@@ -87,9 +88,116 @@ var homematic = new binrpc({
 });
 
 var regahss = new rega({
-    ccuIp: settings.ccuIp
+    ccuIp: settings.ccuIp,
+    methods: {
+        event: function (type, id, value, timestamp) {
+            switch (type) {
+                case "SYSVAR":
+                    io.sockets.emit("event", ["ReGaHss."+id+".Value", value]);
+                    io.sockets.emit("event", ["ReGaHss."+id+".Timestamp", timestamp]);
+
+                    break;
+                case "PROGRAM":
+                    io.sockets.emit("event", ["ReGaHss."+id+".Active", value]);
+                    io.sockets.emit("event", ["ReGaHss."+id+".Timestamp", timestamp]);
+
+                    break;
+            }
+        }
+    }
 });
 
+
+function loadVariables() {
+    regahss.runScriptFile("variables", function (data) {
+        for (var id in data) {
+            data[id].Type = "VARDP";
+            regadata[id] = data[id];
+            regaindex[data[id].Name] = {id:id,Type:"VARDP"};
+        }
+        loadPrograms();
+    });
+
+}
+
+function loadPrograms() {
+    regahss.runScriptFile("programs", function (data) {
+        for (var id in data) {
+            data[id].Type = "PROGRAM";
+            regadata[id] = data[id];
+            regaindex[data[id].Name] = {id:id,Type:"PROGRAM"};
+        }
+        loadRooms();
+    });
+}
+
+
+function loadRooms() {
+    regahss.runScriptFile("programs", function (data) {
+        for (var id in data) {
+            data[id].Type = "ROOM";
+            regadata[id] = data[id];
+            regaindex[data[id].Name] = {id:id,Type:"ROOM"};
+        }
+        loadFunctions();
+    });
+}
+
+function loadFunctions() {
+    regahss.runScriptFile("functions", function (data) {
+        for (var id in data) {
+            data[id].Type = "FUNCTION";
+            regadata[id] = data[id];
+            regaindex[data[id].Name] = {id:id,Type:"FUNCTION"};
+        }
+        loadDevices();
+    });
+}
+
+function loadDevices() {
+    regahss.runScriptFile("devices", function (data) {
+        for (var id in data) {
+            data[id].Type = "DEVICE";
+            regadata[id] = data[id];
+            regaindex[data[id].Name] = {id:id,Type:"DEVICE"};
+            regaindex[data[id].Address] = {id:id,Type:"DEVICE"};
+        }
+        loadChannels();
+    });
+}
+
+function loadChannels() {
+    regahss.runScriptFile("channels", function (data) {
+        for (var id in data) {
+            data[id].Type = "CHANNEL";
+            regadata[id] = data[id];
+            regaindex[data[id].Name] = {id:id,Type:"CHANNEL",Parent:data[id]["Parent"]};
+            regaindex[data[id].Address] = {id:id,Type:"CHANNEL",Parent:data[id]["Parent"]};
+        }
+        loadDatapoints();
+    });
+}
+
+function loadDatapoints() {
+    regahss.runScriptFile("datapoints", function (data) {
+        for (var id in data) {
+            data[id].Type = "DP";
+            regadata[id] = data[id];
+            regaindex[data[id].Name] = {id:id,Type:"DP",Parent:data[id]["Parent"]};
+            regaindex[data[id].Address] = {id:id,Type:"DP",Parent:data[id]["Parent"]};
+        }
+        console.log(regadata);
+        console.log(regaindex);
+    });
+}
+
+
+function initRega() {
+    loadVariables();
+
+}
+
+initRega();
 
 io.sockets.on('connection', function (socket) {
     //socketlist.push(socket);

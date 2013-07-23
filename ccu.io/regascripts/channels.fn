@@ -1,0 +1,80 @@
+!# channels.fn 1.0
+!#
+!# Dieses Homematic-Script gibt die Geräteliste mitsamt Kanälen
+!# und Datenpunkten als JSON Objekt aus
+!#
+!# 3'2013-7'2013 hobbyquaker https://github.com/hobbyquaker
+!#
+
+string sDevId;
+string sChnId;
+string sDPId;
+
+Write('{');
+
+boolean dFirst = true;
+boolean cFirst = true;
+
+foreach (sDevId, root.Devices().EnumUsedIDs()) {
+
+
+    object oDevice   = dom.GetObject(sDevId);
+    boolean bDevReady = oDevice.ReadyConfig();
+    string sDevInterfaceId = oDevice.Interface();
+    string sDevInterface   = dom.GetObject(sDevInterfaceId).Name();
+
+    if (bDevReady) {
+
+
+        string sChnId;
+        string sDPId;
+
+        foreach(sChnId, oDevice.Channels()) {
+            object oChannel = dom.GetObject(sChnId);
+            if ( (! oChannel.Internal()) ) {
+                if (cFirst) {
+                  cFirst = false;
+                } else {
+                  Write(',');
+                }
+
+                integer iChnDir = oChannel.ChnDirection();
+                Write('"' # sChnId # '":{"Name":"');
+                WriteURL(oChannel.Name());
+                Write('","HssType":"' # oChannel.HssType());
+                Write('","ChnDirection":"' # iChnDir # '","ChannelType":"');
+                Write(oChannel.ChannelType());
+                Write('","Address":"' # oChannel.Address());
+                Write('","ChnLabel":"' # oChannel.ChnLabel());
+                Write('","DPs":[');
+
+                boolean dpFirst = true;
+
+                if (iChnDir == 2) {
+                    object oWork = oChannel.DPByHssDP('WORKING');
+                    if (oWork) {
+                        dpFirst = false;
+                        string oWId = oWork.ID();
+                        Write(oWId);
+                    }
+                }
+
+                foreach(sDPId, oChannel.DPs().EnumUsedIDs()) {
+                    object oDP = dom.GetObject(sDPId);
+                    if(oDP) {
+                        if (dpFirst) {
+                          dpFirst = false;
+                        } else {
+                          WriteLine(',');
+                        }
+
+                        Write(sDPId);
+                    }
+                }
+                Write(']}');
+            }
+        }
+
+    }
+}
+Write('}');

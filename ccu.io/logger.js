@@ -17,7 +17,7 @@ var logger = {
         "4": "warn",
         "5": "error"
     },
-    maxLength: 224,
+    maxLength: 400,
 
     silly: function(obj) {
         this.log(0, obj);

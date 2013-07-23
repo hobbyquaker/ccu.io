@@ -1,3 +1,17 @@
+/**
+ *      HomeMatic ReGaHss Schnittstelle für Node.js
+ *
+ *      Version 0.1
+ *
+ *      Copyright (c) 2013 http://hobbyquaker.github.io
+ *
+ *      CC BY-NC 3.0
+ *
+ *      Kommerzielle Nutzung nicht gestattet!
+ *
+ */
+
+
 var logger = require('./logger.js'),
     http = require("http"),
     fs = require('fs'),
@@ -14,8 +28,11 @@ var rega = function(options) {
 
 rega.prototype = {
     options: {},
+    regaUp: function (success, error) {
+
+    },
     runScriptFile: function (script, callback) {
-        logger.verbose('rega   --> ' + dataType + '.fn');
+        logger.verbose('rega   --> ' + script + '.fn');
 
         var that = this;
         fs.readFile('./regascripts/'+script+'.fn', 'utf8', function (err, data) {
@@ -24,8 +41,17 @@ rega.prototype = {
                 return false;
             }
             that.script(data, function (stdout, xml) {
-                logger.verbose('rega   <-- response ' + JSON.stringify(stdout));
-                callback(JSON.parse(stdout));
+                var res = JSON.parse(stdout);
+                for (var obj in res) {
+                    for (var key in res[obj]) {
+                        if (key !== "Channels" && key !== "DPs") {
+                            res[obj][key] = unescape(res[obj][key]);
+                        }
+                    }
+                }
+                logger.verbose('rega   <-- response ' + JSON.stringify(res));
+
+                callback(res);
             });
 
 
@@ -69,22 +95,4 @@ rega.prototype = {
     }
 };
 
-
 module.exports = rega;
-
-/*
-var r = new rega({"ccuIp":"172.16.23.3"});
-
-
-
-r.loadCcuData("values_variables", function (data) {
-    console.log(data);
-});
-
-r.script("var s = 'muh';\nWriteLine('MUH!!!');", function (stdout, xml) {
-    console.log(stdout);
-    console.log(JSON.stringify(xml));
-});
- */
-
-
