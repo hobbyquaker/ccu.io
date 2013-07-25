@@ -23,9 +23,9 @@ foreach (sSysVarId, dom.GetObject(ID_SYSTEM_VARIABLES).EnumUsedIDs()) {
   oSysVar     = dom.GetObject(sSysVarId);
   sValueType  = oSysVar.ValueType();
 
-  Write('"' # sSysVarId # '":{"Value":"');
+  Write('"' # sSysVarId # '":["');
   WriteURL(oSysVar.Value());
-  Write('","Timestamp":"' # oSysVar.Timestamp() # '"}');
+  Write('","' # oSysVar.Timestamp() # '"]');
 
 }
 

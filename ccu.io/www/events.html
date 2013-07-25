@@ -5,9 +5,7 @@
     $(document).ready(function () {
         var output = $("#output");
         var socket = io.connect('http://pi-blue:2100');
-        socket.on('event', function(obj) {
-            output.prepend((new Date().toLocaleString()) + " event " + JSON.stringify(obj) + "\n");
-        });
+
     });
 </script>
 <body>

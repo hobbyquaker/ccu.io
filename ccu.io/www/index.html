@@ -6,7 +6,7 @@
         var output = $("#output");
         var socket = io.connect('http://pi-blue:2100');
         socket.on('event', function(obj) {
-        //    output.prepend((new Date().toLocaleString()) + " event " + JSON.stringify(obj) + "\n");
+            output.prepend((new Date().toLocaleString()) + " event " + JSON.stringify(obj) + "\n");
         });
 
         $("#dataRefresh").click(function() {
@@ -47,22 +47,27 @@
     }
 </style>
 <body>
-<h3>CCU.IO Objects</h3>
+<h3>CCU.IO</h3>
     <div class="box">
-        <h4>regaObjects</h4>
+        regaMeta, getMeta()<br>
         <input id="metaRefresh" type="button" value="refresh"/><br/>
         <textarea id="meta"></textarea>
     </div>
 
     <div class="box">
-        <h4>datapoints</h4>
+        datapoints, getData(),  Arrays: value, timestamp[,ack]<br>
         <input id="dataRefresh" type="button" value="refresh"/><br/>
         <textarea id="data"></textarea>
     </div>
 
     <div class="box">
-        <h4>regaIndex</h4>
+        regaIndex, getIndex()<br>
         <input id="indexRefresh" type="button" value="refresh"/><br/>
         <textarea id="index"></textarea>
     </div>
+    <div class="box">
+        Events<br/>
+        <textarea style="width:1220px" id="output"></textarea>
+    </div>
+
 </body>

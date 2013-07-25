@@ -23,6 +23,8 @@ var parser = new xml2js.Parser({explicitArray:false});
 var rega = function(options) {
 
     this.options = options;
+    /* TODO checkrega */
+    this.options.ready();
 
 };
 
@@ -41,17 +43,10 @@ rega.prototype = {
                 return false;
             }
             that.script(data, function (stdout, xml) {
-                var res = JSON.parse(stdout);
-                for (var obj in res) {
-                    for (var key in res[obj]) {
-                        if (key !== "Channels" && key !== "DPs") {
-                            res[obj][key] = unescape(res[obj][key]);
-                        }
-                    }
-                }
-                logger.verbose('rega   <-- response ' + JSON.stringify(res));
 
-                callback(res);
+                logger.verbose('rega   <-- response ' + JSON.stringify(stdout));
+
+                callback(stdout, xml);
             });
 
 

@@ -41,13 +41,14 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                 integer iChnDir = oChannel.ChnDirection();
                 Write('"' # sChnId # '":{"Name":"');
                 WriteURL(oChannel.Name());
+                Write('","TypeName":"' # oChannel.TypeName());
                 Write('","HssType":"' # oChannel.HssType());
-                Write('","ChnDirection":"' # iChnDir # '","ChannelType":"');
+                Write('","ChnDirection":' # iChnDir # ',"ChannelType":');
                 Write(oChannel.ChannelType());
-                Write('","Address":"' # oChannel.Address());
+                Write(',"Address":"' # oChannel.Address());
                 Write('","ChnLabel":"' # oChannel.ChnLabel());
-                Write('","Parent":"' # sDevId);
-                Write('","DPs":[');
+                Write('","Parent":' # sDevId);
+                Write(',"DPs":[');
 
                 boolean dpFirst = true;
 

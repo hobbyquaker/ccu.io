@@ -49,7 +49,10 @@ var settings = {
 
 var datapoints = {},
     regaObjects = {},
-    regaIndex = {};
+    regaIndex = {
+        Name: {},
+        Address: {}
+    };
 
 var logger = require('./logger.js');
 var binrpc = require("./binrpc.js");
@@ -88,128 +91,60 @@ var homematic = new binrpc({
     }
 });
 
+
+
+function loadRega(index) {
+    if (!index) { index = 0; }
+    var type = settings.regahss.metaScripts[index];
+    regahss.runScriptFile(type, function (data) {
+        var data = JSON.parse(data);
+        logger.verbose("generating index");
+        for (var id in data) {
+            var idInt = parseInt(id, 10);
+
+            for (var key in data[id]) {
+                if (typeof data[id][key] == "string" && key !== "Channels" && key !== "DPs") {
+                    data[id][key] = unescape(data[id][key]);
+                }
+            }
+            if (!regaIndex[data[id].TypeName]) {
+                regaIndex[data[id].TypeName] = [];
+            }
+            regaIndex[data[id].TypeName].push(idInt);
+            regaIndex.Name[data[id].Name] = [idInt, data[id].TypeName, data[id].Parent];
+            if (data[id].Address) {
+                regaIndex.Address[data[id].Address] = [idInt, data[id].TypeName, data[id].Parent];
+            }
+
+            regaObjects[id] = data[id];
+
+            datapoints[id] = [data[id].Value, data[id].Timestamp];
+
+        }
+
+        index += 1;
+        if (index < settings.regahss.metaScripts.length) {
+            loadRega(index);
+        } else {
+            settings.regaReady = true;
+
+        }
+
+    });
+
+}
+
+
+
 var regahss = new rega({
     ccuIp: settings.ccuIp,
-    methods: {
-        event: function (type, id, value, timestamp) {
-            switch (type) {
-                case "SYSVAR":
-                    io.sockets.emit("event", ["ReGaHss."+id+".Value", value]);
-                    io.sockets.emit("event", ["ReGaHss."+id+".Timestamp", timestamp]);
+    ready: function() {
 
-                    break;
-                case "PROGRAM":
-                    io.sockets.emit("event", ["ReGaHss."+id+".Active", value]);
-                    io.sockets.emit("event", ["ReGaHss."+id+".Timestamp", timestamp]);
-
-                    break;
-            }
-        }
     }
 });
 
+    loadRega();
 
-function loadVariables() {
-    regahss.runScriptFile("variables", function (data) {
-        for (var id in data) {
-            data[id].ObjType = "VARDP";
-
-            datapoints[id] = [data[id].Value, data[id].Timestamp];
-
-            regaObjects[id] = data[id];
-            regaIndex[data[id].Name] = [id,"VARDP"];
-        }
-        loadPrograms();
-    });
-
-}
-
-function loadPrograms() {
-    regahss.runScriptFile("programs", function (data) {
-        for (var id in data) {
-            data[id].ObjType = "PROGRAM";
-
-            datapoints[id] = [data[id].Value, data[id].Timestamp];
-
-
-            regaObjects[id] = data[id];
-            regaIndex[data[id].Name] = [id,"PROGRAM"];
-        }
-        loadRooms();
-    });
-}
-
-
-function loadRooms() {
-    regahss.runScriptFile("rooms", function (data) {
-        for (var id in data) {
-            data[id].ObjType = "ROOM";
-            regaObjects[id] = data[id];
-            regaIndex[data[id].Name] = [id,"ROOM"];
-        }
-        loadFunctions();
-    });
-}
-
-function loadFunctions() {
-    regahss.runScriptFile("functions", function (data) {
-        for (var id in data) {
-            data[id].ObjType = "FUNCTION";
-            regaObjects[id] = data[id];
-            regaIndex[data[id].Name] = [id,"FUNCTION"];
-        }
-        loadDevices();
-    });
-}
-
-function loadDevices() {
-    regahss.runScriptFile("devices", function (data) {
-        for (var id in data) {
-            data[id].ObjType = "DEVICE";
-            regaObjects[id] = data[id];
-            regaIndex[data[id].Name] = [id,"DEVICE"];
-            regaIndex[data[id].Address] = [id,"DEVICE"];
-        }
-        loadChannels();
-    });
-}
-
-function loadChannels() {
-    regahss.runScriptFile("channels", function (data) {
-        for (var id in data) {
-            data[id].ObjType = "CHANNEL";
-            regaObjects[id] = data[id];
-            regaIndex[data[id].Name] = [id,"CHANNEL",data[id]["Parent"]];
-            regaIndex[data[id].Address] = [id,"CHANNEL",data[id]["Parent"]];
-        }
-        loadDatapoints();
-    });
-}
-
-function loadDatapoints() {
-    regahss.runScriptFile("datapoints", function (data) {
-        for (var id in data) {
-            data[id].ObjType = "DP";
-
-            datapoints[id] = [data[id].Value, data[id].Timestamp];
-
-            regaObjects[id] = data[id];
-
-            regaIndex[data[id].Name] = [id,"DP",data[id]["Parent"]];
-            regaIndex[data[id].Address] = [id,"DP",data[id]["Parent"]];
-        }
-        console.log(regaObjects);
-        console.log(regaIndex);
-    });
-}
-
-
-function initRega() {
-    loadVariables();
-
-}
-
-initRega();
 
 io.sockets.on('connection', function (socket) {
     //socketlist.push(socket);

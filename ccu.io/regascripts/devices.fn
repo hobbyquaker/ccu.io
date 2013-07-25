@@ -29,7 +29,8 @@ Write('{');
 
         Write('"' # sDevId # '":{"Name":"');
         WriteURL(oDevice.Name());
-        Write('","Address":"' # oDevice.Address() # '","Interface":"' # sDevInterface # '","HssType":"' # oDevice.HssType());
+        Write('","TypeName":"' # oDevice.TypeName());
+        Write('","HssType":"' # oDevice.HssType() # '","Address":"' # oDevice.Address() # '","Interface":"' # sDevInterface);
         Write('","Channels":[');
 
         string sChnId;

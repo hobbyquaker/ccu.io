@@ -1,4 +1,4 @@
-!# variables.fn 1.0
+!# variables.fn 1.1
 !#
 !# Dieses Script gibt die Systemvariablen als JSON Objekt aus
 !#
@@ -25,25 +25,45 @@ foreach (sSysVarId, dom.GetObject(ID_SYSTEM_VARIABLES).EnumUsedIDs()) {
     
   Write('"' # sSysVarId # '":{"Name":"');
   WriteURL(oSysVar.Name());
-
+  Write('","TypeName":"' # oSysVar.TypeName());
   Write('","DPInfo":"');
   WriteURL(oSysVar.DPInfo());
-  Write('","Value":"');
-  WriteURL(oSysVar.Value());
-  Write('","ValueMin":"' # oSysVar.ValueMin() # '","ValueMax":"' # oSysVar.ValueMax() # '","ValueUnit":"');
+
+  Write('","Value":');
+
+  if (sValueType == 20) {
+    Write('"');
+  	WriteURL(oSysVar.Value());
+    Write('"');
+  } else {
+    Write(oSysVar.Value());
+  }
+  string sValueMin = oSysVar.ValueMin();
+
+  if (sValueMin == '') {
+      sValueMin = 'null';
+  }
+
+  string sValueMax = oSysVar.ValueMax();
+
+  if (sValueMax == '') {
+      sValueMax = 'null';
+  }
+
+  Write(',"Timestamp":"' # oSysVar.Timestamp());
+  Write('","ValueMin":' # sValueMin # ',"ValueMax":' # sValueMax # ',"ValueUnit":"');
   WriteURL(oSysVar.ValueUnit());
-  Write('","ValueType":"' # sValueType # '","ValueSubType":"' # oSysVar.ValueSubType());
+  Write('","ValueType":' # sValueType # ',"ValueSubType":' # oSysVar.ValueSubType());
   
   if (sValueType == 2) {
-    Write('","ValueList":"');
+    Write(',"ValueList":"');
     WriteURL(oSysVar.ValueName0() # ';' # oSysVar.ValueName1());
   } else {
-    Write('","ValueList":"');
+    Write(',"ValueList":"');
     WriteURL(oSysVar.ValueList());
   }
 
-  Write('","Value":""');
-  Write('}');
+  Write('"}');
   
 }
 

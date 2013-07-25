@@ -23,6 +23,7 @@ foreach (sRoomId, dom.GetObject(ID_ROOMS).EnumUsedIDs())
 	Write('"' # sRoomId # '": ');
     Write('{"Name": "');
     WriteURL(oRoom.Name())
+    Write('","TypeName":"' # oRoom.TypeName());
     Write('", "Channels": [');
 	bFirstSecond = true;
     foreach(sChannelId, oRoom.EnumUsedIDs()) {

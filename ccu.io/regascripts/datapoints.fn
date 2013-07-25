@@ -59,15 +59,17 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
 
                         string dp = oDP.Name().StrValueByIndex('.', 2);
                         Write('"' # sDPId # '":{');
-                        Write('"Name":"'); WriteXML(oDP.Name());
-                        Write('","TypeName":"'); WriteXML(oDP.TypeName());
-                        Write('","Operations":"'); WriteXML(oDP.Operations());
-                        Write('","ValueType":"' # oDP.ValueType());
-                        Write('","ValueUnit":"' # oDP.ValueUnit());
+                        Write('"Name":"');
+                        WriteURL(oDP.Name());
+                        Write('","TypeName":"' # oDP.TypeName());
+                        Write('","Operations":' # oDP.Operations());
+                        Write(',"ValueType":' # oDP.ValueType());
+                        Write(',"ValueUnit":"' # oDP.ValueUnit());
+                        Write('","Timestamp":"' # oDP.Timestamp());
                         Write('","Value":"');
                         WriteURL(oDP.Value());
-                        Write('","Parent":"' # sChnId);
-                        Write('"}');
+                        Write('","Parent":' # sChnId);
+                        Write('}');
                     }
                 }
 
