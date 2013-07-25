@@ -1,4 +1,4 @@
-!# channels.fn 1.0
+!# channels.fn 1.1 CCU.IO
 !#
 !# Dieses Homematic-Script gibt die Geräteliste mitsamt Kanälen
 !# und Datenpunkten als JSON Objekt aus

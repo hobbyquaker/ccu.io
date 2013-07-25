@@ -1,4 +1,4 @@
-!# devices.fn 1.0
+!# devices.fn 1.1 CCU.IO
 !#
 !# Dieses Homematic-Script gibt eine Liste aller Geräte als JSON String aus
 !#
