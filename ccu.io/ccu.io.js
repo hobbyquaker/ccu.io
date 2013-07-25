@@ -47,8 +47,9 @@ var settings = {
 };
 
 
-var regadata = {},
-    regaindex = {};
+var datapoints = {},
+    regaObjects = {},
+    regaIndex = {};
 
 var logger = require('./logger.js');
 var binrpc = require("./binrpc.js");
@@ -111,9 +112,12 @@ var regahss = new rega({
 function loadVariables() {
     regahss.runScriptFile("variables", function (data) {
         for (var id in data) {
-            data[id].Type = "VARDP";
-            regadata[id] = data[id];
-            regaindex[data[id].Name] = {id:id,Type:"VARDP"};
+            data[id].ObjType = "VARDP";
+
+            datapoints[id] = [data[id].Value, data[id].Timestamp];
+
+            regaObjects[id] = data[id];
+            regaIndex[data[id].Name] = [id,"VARDP"];
         }
         loadPrograms();
     });
@@ -123,9 +127,13 @@ function loadVariables() {
 function loadPrograms() {
     regahss.runScriptFile("programs", function (data) {
         for (var id in data) {
-            data[id].Type = "PROGRAM";
-            regadata[id] = data[id];
-            regaindex[data[id].Name] = {id:id,Type:"PROGRAM"};
+            data[id].ObjType = "PROGRAM";
+
+            datapoints[id] = [data[id].Value, data[id].Timestamp];
+
+
+            regaObjects[id] = data[id];
+            regaIndex[data[id].Name] = [id,"PROGRAM"];
         }
         loadRooms();
     });
@@ -133,11 +141,11 @@ function loadPrograms() {
 
 
 function loadRooms() {
-    regahss.runScriptFile("programs", function (data) {
+    regahss.runScriptFile("rooms", function (data) {
         for (var id in data) {
-            data[id].Type = "ROOM";
-            regadata[id] = data[id];
-            regaindex[data[id].Name] = {id:id,Type:"ROOM"};
+            data[id].ObjType = "ROOM";
+            regaObjects[id] = data[id];
+            regaIndex[data[id].Name] = [id,"ROOM"];
         }
         loadFunctions();
     });
@@ -146,9 +154,9 @@ function loadRooms() {
 function loadFunctions() {
     regahss.runScriptFile("functions", function (data) {
         for (var id in data) {
-            data[id].Type = "FUNCTION";
-            regadata[id] = data[id];
-            regaindex[data[id].Name] = {id:id,Type:"FUNCTION"};
+            data[id].ObjType = "FUNCTION";
+            regaObjects[id] = data[id];
+            regaIndex[data[id].Name] = [id,"FUNCTION"];
         }
         loadDevices();
     });
@@ -157,10 +165,10 @@ function loadFunctions() {
 function loadDevices() {
     regahss.runScriptFile("devices", function (data) {
         for (var id in data) {
-            data[id].Type = "DEVICE";
-            regadata[id] = data[id];
-            regaindex[data[id].Name] = {id:id,Type:"DEVICE"};
-            regaindex[data[id].Address] = {id:id,Type:"DEVICE"};
+            data[id].ObjType = "DEVICE";
+            regaObjects[id] = data[id];
+            regaIndex[data[id].Name] = [id,"DEVICE"];
+            regaIndex[data[id].Address] = [id,"DEVICE"];
         }
         loadChannels();
     });
@@ -169,10 +177,10 @@ function loadDevices() {
 function loadChannels() {
     regahss.runScriptFile("channels", function (data) {
         for (var id in data) {
-            data[id].Type = "CHANNEL";
-            regadata[id] = data[id];
-            regaindex[data[id].Name] = {id:id,Type:"CHANNEL",Parent:data[id]["Parent"]};
-            regaindex[data[id].Address] = {id:id,Type:"CHANNEL",Parent:data[id]["Parent"]};
+            data[id].ObjType = "CHANNEL";
+            regaObjects[id] = data[id];
+            regaIndex[data[id].Name] = [id,"CHANNEL",data[id]["Parent"]];
+            regaIndex[data[id].Address] = [id,"CHANNEL",data[id]["Parent"]];
         }
         loadDatapoints();
     });
@@ -181,13 +189,17 @@ function loadChannels() {
 function loadDatapoints() {
     regahss.runScriptFile("datapoints", function (data) {
         for (var id in data) {
-            data[id].Type = "DP";
-            regadata[id] = data[id];
-            regaindex[data[id].Name] = {id:id,Type:"DP",Parent:data[id]["Parent"]};
-            regaindex[data[id].Address] = {id:id,Type:"DP",Parent:data[id]["Parent"]};
+            data[id].ObjType = "DP";
+
+            datapoints[id] = [data[id].Value, data[id].Timestamp];
+
+            regaObjects[id] = data[id];
+
+            regaIndex[data[id].Name] = [id,"DP",data[id]["Parent"]];
+            regaIndex[data[id].Address] = [id,"DP",data[id]["Parent"]];
         }
-        console.log(regadata);
-        console.log(regaindex);
+        console.log(regaObjects);
+        console.log(regaIndex);
     });
 }
 
@@ -202,7 +214,48 @@ initRega();
 io.sockets.on('connection', function (socket) {
     //socketlist.push(socket);
 
+
+
     logger.info("socket.io <-- "  + " connected");
+
+
+
+
+    socket.on('getDatapoints', function(callback) {
+        logger.info("socket.io <-- getData");
+        callback(datapoints);
+    });
+
+    socket.on('getObjects', function(callback) {
+        logger.info("socket.io <-- getMeta");
+        callback(regaObjects);
+    });
+
+
+    socket.on('getIndex', function(callback) {
+        logger.info("socket.io <-- getData");
+        callback(regaIndex);
+    });
+
+    socket.on('setState', function(callback) {
+        logger.info("socket.io <-- setValue");
+        callback();
+    });
+
+    socket.on('runProgram', function(callback) {
+        logger.info("socket.io <-- runProgram");
+        callback();
+    });
+
+    socket.on('runScript', function(callback) {
+        logger.info("socket.io <-- script");
+        callback();
+    });
+
+
+
+
+
     socket.on('disconnect', function () {
         logger.info("socket.io <-- "  + " disconnected");
         //socketlist.splice(socketlist.indexOf(socket), 1);

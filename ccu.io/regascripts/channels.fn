@@ -46,6 +46,7 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                 Write(oChannel.ChannelType());
                 Write('","Address":"' # oChannel.Address());
                 Write('","ChnLabel":"' # oChannel.ChnLabel());
+                Write('","Parent":"' # sDevId);
                 Write('","DPs":[');
 
                 boolean dpFirst = true;

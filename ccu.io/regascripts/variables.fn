@@ -28,6 +28,8 @@ foreach (sSysVarId, dom.GetObject(ID_SYSTEM_VARIABLES).EnumUsedIDs()) {
 
   Write('","DPInfo":"');
   WriteURL(oSysVar.DPInfo());
+  Write('","Value":"');
+  WriteURL(oSysVar.Value());
   Write('","ValueMin":"' # oSysVar.ValueMin() # '","ValueMax":"' # oSysVar.ValueMax() # '","ValueUnit":"');
   WriteURL(oSysVar.ValueUnit());
   Write('","ValueType":"' # sValueType # '","ValueSubType":"' # oSysVar.ValueSubType());

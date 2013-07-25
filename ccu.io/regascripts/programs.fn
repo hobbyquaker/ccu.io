@@ -21,7 +21,8 @@ foreach (oPrgID, dom.GetObject(ID_PROGRAMS).EnumUsedIDs()) {
     WriteURL(oProgram.Name());
     Write('","PrgInfo":"');
     WriteURL(oProgram.PrgInfo());
-    Write('", "Active":"","Timestamp":""}');
+    Write('", "Active":"' # oProgram.Active() # '","Timestamp":""}');
+
   }
 }
 Write('}');

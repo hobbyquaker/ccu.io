@@ -1,0 +1,68 @@
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="http://pi-blue:2100/socket.io/socket.io.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var output = $("#output");
+        var socket = io.connect('http://pi-blue:2100');
+        socket.on('event', function(obj) {
+        //    output.prepend((new Date().toLocaleString()) + " event " + JSON.stringify(obj) + "\n");
+        });
+
+        $("#dataRefresh").click(function() {
+            $("#data").html("");
+            socket.emit('getDatapoints', function(obj) {
+                console.log(obj);
+                $("#data").html(JSON.stringify(obj, null, "  "));
+            });
+        });
+
+        $("#metaRefresh").click(function() {
+            $("#meta").html("");
+            socket.emit('getObjects', function(obj) {
+                console.log(obj);
+                $("#meta").html(JSON.stringify(obj, null, "  "));
+            });
+        });
+
+        $("#indexRefresh").click(function() {
+            $("#index").html("");
+            socket.emit('getIndex', function(obj) {
+                console.log(obj);
+                $("#index").html(JSON.stringify(obj, null, "  "));
+            });
+        });
+
+    });
+</script>
+<style type="text/css">
+    .box {
+        float: left;
+
+    }
+    textarea {
+        width: 400px;
+        height: 500px;
+        margin: 5px;
+    }
+</style>
+<body>
+<h3>CCU.IO Objects</h3>
+    <div class="box">
+        <h4>regaObjects</h4>
+        <input id="metaRefresh" type="button" value="refresh"/><br/>
+        <textarea id="meta"></textarea>
+    </div>
+
+    <div class="box">
+        <h4>datapoints</h4>
+        <input id="dataRefresh" type="button" value="refresh"/><br/>
+        <textarea id="data"></textarea>
+    </div>
+
+    <div class="box">
+        <h4>regaIndex</h4>
+        <input id="indexRefresh" type="button" value="refresh"/><br/>
+        <textarea id="index"></textarea>
+    </div>
+</body>
