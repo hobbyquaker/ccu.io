@@ -10,32 +10,32 @@ var logger = {
         reset: '\u001b[0m'
     },
     text: {
-        "0": "silly",
-        "1": "debug",
+        "0": "silly  ",
+        "1": "debug  ",
         "2": "verbose",
-        "3": "info",
-        "4": "warn",
-        "5": "error"
+        "3": "info   ",
+        "4": "warn   ",
+        "5": "error  "
     },
-    maxLength: 400,
+    maxLength: 120,
 
     silly: function(obj) {
-        this.log(0, obj);
+        logger.log(0, obj);
     },
     debug: function(obj) {
-        this.log(1, obj);
+        logger.log(1, obj);
     },
     verbose: function(obj) {
-        this.log(2, obj);
+        logger.log(2, obj);
     },
     info: function(obj) {
-        this.log(3, obj);
+        logger.log(3, obj);
     },
     warn: function(obj) {
-        this.log(4, obj);
+        logger.log(4, obj);
     },
     error: function(obj) {
-        this.log(5, obj);
+        logger.log(5, obj);
     },
     log: function(level, obj) {
         if (level >= this.level) {
@@ -43,7 +43,7 @@ var logger = {
             if (typeof obj !== "string") {
                 str = JSON.stringify(obj);
             } else {
-                str = obj;
+                str = obj.replace(/(\r\n|\n|\r)/gm,"");
             }
 
             if (this.colors[level]) {

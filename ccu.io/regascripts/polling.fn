@@ -1,0 +1,56 @@
+!# polling.fn 1.0 CCU.IO
+!#
+!# Dieses Script gibt die Werte aller Systemvariablen als JSON String aus
+!#
+!# 7'2013 hobbyquaker https://github.com/hobbyquaker
+!#
+
+object oSysVar;
+string sSysVarId;
+string sValueType;
+string sValue;
+var sValue;
+boolean bFirst = true;
+
+Write('{');
+
+foreach (sSysVarId, dom.GetObject(ID_SYSTEM_VARIABLES).EnumUsedIDs()) {
+
+  if (bFirst) {
+  	bFirst = false;
+  } else {
+  	WriteLine(',');
+  }
+
+  oSysVar     = dom.GetObject(sSysVarId);
+  sValueType  = oSysVar.ValueType();
+
+  Write('"' # sSysVarId # '":[');
+    if (sValueType == 20) {
+      Write('"');
+      WriteURL(oSysVar.Value());
+      Write('"');
+    } else {
+      sValue = oSysVar.Value();
+      if (sValueType == 2) {
+          if (sValue) {
+              Write("true");
+          } else {
+              Write("false");
+          }
+      } else {
+         if (sValue == "") {
+              Write("0");
+         } else {
+              Write(sValue);
+         }
+      }
+    }
+  Write(',"');
+  Write(oSysVar.Timestamp());
+  Write('"');
+  Write(',true]');
+
+}
+
+Write('}');

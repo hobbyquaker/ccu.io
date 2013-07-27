@@ -17,11 +17,7 @@ var Put = require('put'),
 var logger = require('./logger.js');
 
 var binrpc = function(options) {
-    logger.info("HomeMatic BIN-RPC");
-    logger.info("press ctrl-c to stop");
-
-    logger.verbose("Copyright (c) 2013 hobbyquaker");
-    logger.verbose("Licensed under CC BY-NC 3.0");
+    logger.info("binrpc        binrpc starting");
 
     this.options = options;
     this.inits = options.inits;
@@ -39,7 +35,7 @@ binrpc.prototype = {
     server: {},
     serverRunning: false,
     request: function (port, method, data, callback) {
-        logger.verbose("binrpc --> "+this.options.ccuIp+":"+port+" request " + method + " " + JSON.stringify(data));
+        logger.verbose("binrpc    --> "+this.options.ccuIp+":"+port+" request " + method + " " + JSON.stringify(data));
         this.sendRequest(port, this.buildRequest(method, data), callback);
     },
     buildRequest: function (method, data) {
@@ -166,12 +162,12 @@ binrpc.prototype = {
                     .word32bu("elementCount")
                     .buffer("elements", data.length)
                     .vars;
-                logger.debug("struct.length "+struct.elementCount);
+                logger.silly("struct.length "+struct.elementCount);
 
                 var elements = struct.elements;
                 var result = {};
                 for (var i = 0; i < struct.elementCount; i++) {
-                    logger.debug("struct["+i+"]");
+                    logger.silly("struct["+i+"]");
                     var key = binary.parse(elements)
                         .word32bu("keylength")
                         .buffer("key", "keylength")
@@ -196,7 +192,7 @@ binrpc.prototype = {
                     .word32bu("elementCount")
                     .buffer("elements", data.length)
                     .vars;
-                logger.debug("array.length "+arr.elementCount);
+                logger.silly("array.length "+arr.elementCount);
 
                 var elements = arr.elements;
                 var result = [];
@@ -212,7 +208,7 @@ binrpc.prototype = {
                     elements = res.rest;
                     result.push(res.content);
                 }
-                logger.debug(result);
+                logger.silly(result);
                 return {content: result, rest: elements};
                 break;
             case 0x04:
@@ -222,7 +218,7 @@ binrpc.prototype = {
                     .buffer("rest", data.length)
                     .vars;
                 flt.content = parseFloat(((Math.pow(2, flt.exponent)) * (flt.mantissa / (1 << 30))).toFixed(6));
-                logger.debug("float "+flt.content);
+                logger.silly("float "+flt.content);
                 return flt;
                 break;
             case 0x03:
@@ -232,7 +228,7 @@ binrpc.prototype = {
                     .buffer("rest", data.length)
                      .vars;
                 str.content = str.strContent.toString();
-                logger.debug("string "+str.content)
+                logger.silly("string "+str.content)
                 return str;
                 break;
             case 0x02:
@@ -241,7 +237,7 @@ binrpc.prototype = {
                     .buffer("rest", data.length)
                     .vars;
                 int.content = (int.value == 1 ? true : false);
-                logger.debug("bool " + int.content);
+                logger.silly("bool " + int.content);
                 return (int);
                 break;
 
@@ -252,16 +248,16 @@ binrpc.prototype = {
                     .buffer("rest", data.length)
                     .vars;
                 int.content = int.value;
-                logger.debug("integer " + int.content);
+                logger.silly("integer " + int.content);
                 return (int);
                 break;
             case 0x42696E00:
-                logger.debug("binrpc <-- next request");
+                logger.silly("binrpc <-- next request");
                 //this.parseRequest(data);
                 return;
                 break;
             default:
-                logger.error("unknow data type " + res.dataType + " :(");
+                logger.error("binrpc    <-- unknow data type " + res.dataType + " :(");
                 return;
 
         }
@@ -277,7 +273,7 @@ binrpc.prototype = {
             ;
 //logger.info("parseResponse data.length="+data.length+" msgSize="+vars.msgSize+ " body.length="+vars.body.length);
         if (vars.head.toString() != "Bin") {
-           logger.error("malformed header " + vars.head.toString() );
+           logger.error("binrpc    <-- malformed header " + vars.head.toString() );
             //return false;
         }
 
@@ -285,19 +281,19 @@ binrpc.prototype = {
 
         switch (vars.msgType) {
             case 0:
-                logger.error("binrpc <-- wrong msgType in response");
+                logger.error("binrpc    <-- wrong msgType in response");
                 logger.silly(this.parseData(vars.body));
                 break;
             case 1:
                 var res = this.parseData(vars.body);
-                logger.verbose("binrpc <-- "+name+" response " + JSON.stringify(res.content));
+                logger.verbose("binrpc    <-- "+name+" response " + JSON.stringify(res.content));
                 logger.silly(res.content);
                 break;
         }
 
         if (res.rest.length > 0) {
-           logger.error("rest..... ");
-           logger.verbose(res.rest);
+           logger.error("binrpc    <-- rest..... ");
+           logger.silly(res.rest);
         }
         return res.content;
 
@@ -330,7 +326,7 @@ binrpc.prototype = {
             ;
 
         if (vars.head.toString() != "Bin") {
-            logger.error("malformed request header received");
+            logger.error("binrpc    <-- malformed request header received");
             return false;
         }
 
@@ -350,25 +346,25 @@ binrpc.prototype = {
                 switch (method) {
                     case "system.multicall":
                         data = res[0];
-                        logger.verbose("binrpc <-- "+name+" request system.multicall " + data.length);
+                        logger.verbose("binrpc    <-- "+name+" request system.multicall " + data.length);
                         response = [];
                         for (var i = 0; i < data.length; i++) {
                             response[i] = "";
                             if (this.methods[data[i].methodName]) {
-                                logger.verbose("binrpc <-- "+name+" multicall["+i+"] " + data[i].methodName + " " + JSON.stringify(data[i].params));
+                                logger.verbose("binrpc    <-- "+name+" multicall["+i+"] " + data[i].methodName + " " + JSON.stringify(data[i].params));
                                 var tmp = this.methods[data[i].methodName](data[i].params);
                                 if (tmp) {
                                     response[i] = tmp;
                                 }
                             } else {
-                                logger.warn("method " + data[i].methodName + " undefined");
+                                logger.warn("binrpc    <-- method " + data[i].methodName + " undefined");
                                 logger.debug(data[i].params);
                             }
                         }
 
                         break;
                     case "system.listMethods":
-                        logger.verbose("binrpc <-- "+name+" request " + method + " " + JSON.stringify(res));
+                        logger.verbose("binrpc    <-- "+name+" request " + method + " " + JSON.stringify(res));
                         response = ["system.multicall", "system.listMethods"];
                         for (var name in this.methods) {
                             response.push(name);
@@ -376,18 +372,18 @@ binrpc.prototype = {
                         break;
                     default:
                         response = "";
-                        logger.verbose("binrpc <-- "+name+" request " + method + " " + JSON.stringify(res));
+                        logger.verbose("binrpc    <-- "+name+" request " + method + " " + JSON.stringify(res));
                         if (this.methods[method]) {
                             response = this.methods[method](res);
                         } else {
-                            logger.error("method " + req.method.toString() + " undefined");
+                            logger.warn("binrpc method " + req.method.toString() + " undefined");
                         }
                 }
 
 
                 break;
             default:
-               logger.error("wrong msgType in request");
+                logger.error("binrpc    <-- wrong msgType in request");
         }
 
         return response;
@@ -407,7 +403,7 @@ binrpc.prototype = {
 
 
         client.on('data', function(data) {
-            logger.silly("receiving chunk "+chunk+" data.length="+data.length);
+            logger.silly("binrpc    --> receiving chunk "+chunk+" data.length="+data.length);
 
             if (chunk == 0) {
                 var vars = binary.parse(data)
@@ -429,7 +425,7 @@ binrpc.prototype = {
                 var name = client.remoteAddress+":"+client.remotePort;
                 client.end();
                 var res = that.parseResponse(response, name);
-                logger.verbose('binrpc --> '+name+ " closing connection");
+                logger.verbose('binrpc    --> '+name+ " closing connection");
                 if (callback) {
                     callback(res, name);
                 }
@@ -472,10 +468,10 @@ binrpc.prototype = {
                 var length;
                 var name = c.remoteAddress + ":" + c.remotePort
 
-               logger.verbose('binrpc <-- '+name+' connected');
+               logger.verbose('binrpc    <-- '+name+' connected');
 
                 c.on('end', function() {
-                   logger.verbose('binrpc <-- '+name+' disconnected');
+                   logger.verbose('binrpc    <-- '+name+' disconnected');
                 });
 
                 c.on('data', function (data) {
@@ -506,7 +502,7 @@ binrpc.prototype = {
                         var response = that.parseRequest(receiver, name);
 
                         var buf = that.buildResponse(response);
-                        logger.verbose('binrpc --> '+name+' response ' + JSON.stringify(response));
+                        logger.verbose('binrpc    --> '+name+' response ' + JSON.stringify(response));
                         logger.silly(buf);
 
                         c.write(buf);
@@ -518,29 +514,29 @@ binrpc.prototype = {
 
             // RPC Init abmelden bevor Prozess beendet wird
             process.on('SIGINT', function () {
-                logger.verbose("received SIGINT");
+                logger.verbose("binrpc        received SIGINT");
                 for (var i = 0; i < that.inits.length; i++) {
                     var text = that.inits[i].id+" ("+that.options.ccuIp+":"+that.inits[i].port+")";
                     that.request(that.inits[i].port, "init", ["xmlrpc_bin://" + that.options.listenIp+":" + that.options.listenPort, ""]);
-                    logger.info("binrpc stopping init on "+text+"");
+                    logger.info("binrpc    --> stopping init on "+text+"");
                 }
                 setTimeout(function () {
                     that.server.close();
-                    logger.info("binrpc stopping server");
+                    logger.info("binrpc        stopping server");
                 }, 1800);
 
             });
 
             this.server.listen(this.options.listenPort, function() { //'listening' listener
-                logger.info('binrpc server listening on port '+that.options.listenPort);
+                logger.info('binrpc        server listening on port '+that.options.listenPort);
                 // RPC Init anmelden
                 for (var i = 0; i < that.inits.length; i++) {
                     var thisInit = that.inits[i];
                     that.request(that.inits[i].port, "init", ["xmlrpc_bin://"+that.options.listenIp+":"+that.options.listenPort, that.inits[i].id], function(data, name) {
                         if (data === "") {
-                            logger.info("binrpc init on "+name+" successful");
+                            logger.info("binrpc    <-- init on "+name+" successful");
                         } else {
-                            logger.error("binrpc init on "+name+" failure");
+                            logger.error("binrpc    <-- init on "+name+" failure");
                         }
                     });
                 }
@@ -550,7 +546,7 @@ binrpc.prototype = {
             for (var i = 0; i < that.inits.length; i++) {
                 var text = that.inits[i].id+" ("+that.options.ccuIp+":"+that.inits[i].port+")";
                 that.request(that.inits[i].port, "init", ["xmlrpc_bin://"+that.options.listenIp+":"+that.options.listenPort, that.inits[i].id], function(data) {
-                    logger.info("binrpc init on "+text+" successful");
+                    logger.info("binrpc    <-- init on "+text+" successful");
                 });
             }
         }

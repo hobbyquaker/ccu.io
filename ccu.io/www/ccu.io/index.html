@@ -1,15 +1,16 @@
-<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<script src="http://pi-blue:2100/socket.io/socket.io.js"></script>
+<script src="/lib/jquery-1.10.2.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script>
 
     $(document).ready(function () {
         var output = $("#output");
-        var socket = io.connect('http://pi-blue:2100');
+        var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host'));
         socket.on('event', function(obj) {
             output.prepend((new Date().toLocaleString()) + " event " + JSON.stringify(obj) + "\n");
         });
 
         $("#dataRefresh").click(function() {
+            console.log("refresh");
             $("#data").html("");
             socket.emit('getDatapoints', function(obj) {
                 console.log(obj);
@@ -55,13 +56,13 @@
     </div>
 
     <div class="box">
-        datapoints, getData(),  Arrays: value, timestamp[,ack]<br>
+        datapoints, getData(),  Arrays: value, timestamp [,ack]<br>
         <input id="dataRefresh" type="button" value="refresh"/><br/>
         <textarea id="data"></textarea>
     </div>
 
     <div class="box">
-        regaIndex, getIndex()<br>
+        regaIndex, getIndex(), Name Arrays: id, TypeName [,Parent]<br>
         <input id="indexRefresh" type="button" value="refresh"/><br/>
         <textarea id="index"></textarea>
     </div>

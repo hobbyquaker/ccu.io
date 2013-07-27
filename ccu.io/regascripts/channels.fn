@@ -1,7 +1,6 @@
-!# channels.fn 1.1 CCU.IO
+!# channels.fn 1.2 CCU.IO
 !#
-!# Dieses Homematic-Script gibt die Geräteliste mitsamt Kanälen
-!# und Datenpunkten als JSON Objekt aus
+!# Dieses Homematic-Script gibt alle Kanaele als JSON String aus
 !#
 !# 3'2013-7'2013 hobbyquaker https://github.com/hobbyquaker
 !#

@@ -34,24 +34,19 @@ rega.prototype = {
 
     },
     runScriptFile: function (script, callback) {
-        logger.verbose('rega   --> ' + script + '.fn');
+        logger.verbose('rega      --> ' + script + '.fn');
 
         var that = this;
         fs.readFile('./regascripts/'+script+'.fn', 'utf8', function (err, data) {
             if (err) {
-                logger.error(err);
+                logger.error("rega          readFile "+err);
                 return false;
             }
             that.script(data, function (stdout, xml) {
-
-                logger.verbose('rega   <-- response ' + JSON.stringify(stdout));
-
+                    logger.verbose('rega      <-- response ' + stdout);
                 callback(stdout, xml);
             });
-
-
         });
-
     },
     script: function (script, callback) {
 

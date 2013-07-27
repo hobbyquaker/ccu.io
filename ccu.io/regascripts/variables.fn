@@ -1,4 +1,4 @@
-!# variables.fn 1.1 CCU.IO
+!# variables.fn 1.2 CCU.IO
 !#
 !# Dieses Script gibt die Systemvariablen als JSON Objekt aus
 !#
@@ -8,6 +8,7 @@
 object oSysVar;
 string sSysVarId;
 string sValueType;
+string sValue;
 boolean bFirst = true;
 
 Write('{');
@@ -30,13 +31,25 @@ foreach (sSysVarId, dom.GetObject(ID_SYSTEM_VARIABLES).EnumUsedIDs()) {
   WriteURL(oSysVar.DPInfo());
 
   Write('","Value":');
-
   if (sValueType == 20) {
     Write('"');
   	WriteURL(oSysVar.Value());
     Write('"');
   } else {
-    Write(oSysVar.Value());
+    sValue = oSysVar.Value();
+    if (sValueType == 2) {
+        if (sValue) {
+            Write("true");
+        } else {
+            Write("false");
+        }
+    } else {
+       if (sValue == "") {
+            Write("0");
+       } else {
+            Write(sValue);
+       }
+    }
   }
   string sValueMin = oSysVar.ValueMin();
 

@@ -23,7 +23,7 @@ foreach (sFunctionId, dom.GetObject(ID_FUNCTIONS).EnumUsedIDs())
 	Write('"' # sFunctionId # '": ');
     Write('{"Name": "');
     WriteURL(oFunction.Name());
-    Write('","TypeName":"' # oFunction.TypeName());
+    Write('","TypeName":"' # oFunction.TypeName() # '_FUNCTIONS');
     Write('", "EnumInfo": "');
     WriteURL(oFunction.EnumInfo());
     Write('", "Channels": [');
