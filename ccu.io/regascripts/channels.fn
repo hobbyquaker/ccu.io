@@ -8,6 +8,7 @@
 string sDevId;
 string sChnId;
 string sDPId;
+string sDPName;
 
 Write('{');
 
@@ -47,7 +48,7 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                 Write(',"Address":"' # oChannel.Address());
                 Write('","ChnLabel":"' # oChannel.ChnLabel());
                 Write('","Parent":' # sDevId);
-                Write(',"DPs":[');
+                Write(',"DPs":{');
 
                 boolean dpFirst = true;
 
@@ -56,12 +57,13 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                     if (oWork) {
                         dpFirst = false;
                         string oWId = oWork.ID();
-                        Write(oWId);
+                        Write('"WORKING":'#oWId);
                     }
                 }
 
                 foreach(sDPId, oChannel.DPs().EnumUsedIDs()) {
                     object oDP = dom.GetObject(sDPId);
+                    sDPName = oDP.Name().StrValueByIndex(".", 2);
                     if(oDP) {
                         if (dpFirst) {
                           dpFirst = false;
@@ -69,10 +71,10 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                           WriteLine(',');
                         }
 
-                        Write(sDPId);
+                        Write('"'#sDPName#'":'#sDPId);
                     }
                 }
-                Write(']}');
+                Write('}}');
             }
         }
 

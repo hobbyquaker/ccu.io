@@ -376,7 +376,7 @@ binrpc.prototype = {
                         if (this.methods[method]) {
                             response = this.methods[method](res);
                         } else {
-                            logger.warn("binrpc method " + req.method.toString() + " undefined");
+                            logger.warn("binrpc    <-- method " + req.method.toString() + " undefined");
                         }
                 }
 

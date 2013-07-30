@@ -11,41 +11,7 @@
  *
  */
 
-var settings = {
 
-    ioListenPort: 8080,
-
-    ccuIp: "172.16.23.3",
-    binrpc: {
-        listenIp: "172.16.23.19",
-        listenPort: 2101,
-        inits: [
-            { id: "io_cuxd",    port: 8701 },
-            { id: "io_rf",      port: 2001 },
-            { id: "io_wired",   port: 2000 }
-        ]
-    },
-
-    regahss: {
-        pollData: true,
-        pollMeta: true,
-        pollDataInterval: 10000,
-        pollDataTrigger: "BidCos-RF.BidCoS-RF:50.PRESS_LONG",
-        pollMetaInterval: 172800000,
-        cacheMeta: false,
-        metaScripts: [
-            "variables",
-            "programs",
-            "rooms",
-            "functions",
-            "devices",
-            "channels",
-            "datapoints"
-        ]
-    },
-
-    version: "0.5"
-};
 
 
 var datapoints = {},
@@ -55,8 +21,7 @@ var datapoints = {},
         Address: {}
     };
 
-
-
+var settings = require('./settings.js');
 var logger =    require('./logger.js');
 
 logger.info("ccu.io        version "+settings.version);
@@ -81,7 +46,7 @@ var regahss = new rega({
 
 loadRegaData();
 
-function sendEvent(id, arr) {
+function sendEvent(arr) {
     logger.verbose("socket.io --> broadcast event "+JSON.stringify(arr))
     io.sockets.emit("event", arr);
 }
@@ -99,20 +64,20 @@ function setDatapoint(id, val, ts, ack) {
     if (!oldval) {
         // Neu
         logger.warn("rega      <-- unknown variable "+id);
-        sendEvent(id, [val,ts,ack]);
+        sendEvent([id,val,ts,ack]);
     } else if (val !== oldval[0]) {
         // Änderung
         logger.debug("chg "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
-        sendEvent(id, [val,ts,ack]);
+        sendEvent([id,val,ts,ack]);
     } else {
         if (ack && !oldval[2]) {
             // Bestätigung
             logger.debug("ack "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
-            sendEvent(id, [val,ts,ack]);
+            sendEvent([id,val,ts,ack]);
         } else if (ts !== oldval[1]) {
             // Aktualisierung
             logger.debug("ts "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
-            sendEvent(id, [val,ts,ack]);
+            sendEvent([id,val,ts,ack]);
         } else {
             // Keine Änderung
             logger.debug("eq "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
@@ -120,6 +85,7 @@ function setDatapoint(id, val, ts, ack) {
 
     }
 }
+
 
 function pollRega() {
     regahss.runScriptFile("polling", function (data) {
@@ -129,7 +95,6 @@ function pollRega() {
         }
         setTimeout(pollRega, settings.regahss.pollDataInterval);
     });
-
 }
 
 function loadRegaData(index) {
@@ -141,7 +106,7 @@ function loadRegaData(index) {
         for (var id in data) {
             var idInt = parseInt(id, 10);
 
-            // HomeMatic Scropt "WriteURL" dekodieren
+            // HomeMatic Script "WriteURL" dekodieren
             for (var key in data[id]) {
                 // Nur Strings und auf keinen Fall Kanal- oder Datenpunkt-Arrays
                 if (typeof data[id][key] == "string" && key !== "Channels" && key !== "DPs") {
@@ -163,12 +128,15 @@ function loadRegaData(index) {
                 regaIndex.Address[data[id].Address] = [idInt, TypeName, data[id].Parent];
             }
 
-            // Werte setzen
-            datapoints[id] = [data[id].Value, data[id].Timestamp, true];
+            // ggf. Werte setzen
+            if (type == "variables" || type == "datapoints") {
+                datapoints[id] = [data[id].Value, data[id].Timestamp, true];
+                // Werte aus data Objekt entfernen
+                delete data[id].Value;
+                delete data[id].Timestamp
+            }
 
-            // Werte entfernen, Meta-Daten setzen
-            delete data[id].Value;
-            delete data[id].Timestamp
+            // Meta-Daten setzen
             regaObjects[id] = data[id];
 
         }
@@ -199,6 +167,8 @@ function initRpc() {
         inits: settings.binrpc.inits,
         methods: {
             event: function (obj) {
+                //Todo Implement Rega Polling Trigger via Virtual Key
+
                 var res = [];
                 var bidcos;
                 switch (obj[0]) {
@@ -234,7 +204,7 @@ function initRpc() {
                     datapoints[regaObj[0]] = [obj[3], timestamp, true];
                 }
 
-                /* TODO REMOVE */
+                /* TODO remove old event (DashUI 0.8.x compatibility) */
                 io.sockets.emit("event", res);
 
                 return "";
@@ -265,28 +235,71 @@ function initSocketIO() {
         });
 
         socket.on('getObjects', function(callback) {
-            logger.info("socket.io <-- getMeta");
+            logger.info("socket.io <-- getObjects");
             callback(regaObjects);
         });
 
 
         socket.on('getIndex', function(callback) {
-            logger.info("socket.io <-- getData");
+            logger.info("socket.io <-- getIndex");
             callback(regaIndex);
         });
 
-        socket.on('setState', function(callback) {
-            logger.info("socket.io <-- setValue");
-            callback();
+        socket.on('setState', function(arr, callback) {
+            // Todo Delay!
+            logger.info("socket.io <-- event");
+            var id =    arr[0],
+                val =   arr[1],
+                ts =    arr[2],
+                ack =   arr[3];
+            if (!ts) {
+                var timestamp = new Date();
+                var ts = timestamp.getFullYear() + '-' +
+                    ("0" + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
+                    ("0" + (timestamp.getDate() + 1).toString(10)).slice(-2) + ' ' +
+                    ("0" + (timestamp.getHours()).toString(10)).slice(-2) + ':' +
+                    ("0" + (timestamp.getMinutes()).toString(10)).slice(-2) + ':' +
+                    ("0" + (timestamp.getSeconds()).toString(10)).slice(-2);
+            }
+
+            setDatapoint(id, val, ts, ack);
+            // If ReGa id (0-65534) and not acknowledged -> Set Datapoint on the CCU
+            if (id < 65535 && val !== datapoints[id][0] && !ack) {
+                // TODO implement set State via BINRPC if TypeName=HSSDP
+                // // Bidcos or Rega?
+                //if (regaIndex.HSSDP.indexOf(id) != -1) {
+                    // BINRPC
+                    //var name = regaObjects[id].Name;
+                    //var parts = name.split(".");
+                    //var iface = parts[0],
+                    //    channel = parts[1],
+                    //    dp = parts[2];
+                //} else {
+                    // ReGa
+                    if (typeof val == "string") {
+                        val = "\""+val+"\"";
+                    }
+                    rega.script("Write(dom.GetObject("+id+").State("+val+"));", function (data) {
+                         logger("rega      <-- "+data);
+                         callback();
+                    });
+
+                //}
+
+            }
+
+
         });
 
-        socket.on('runProgram', function(callback) {
+        socket.on('runProgram', function(id, callback) {
             logger.info("socket.io <-- runProgram");
+            // Todo Implement runProgram
             callback();
         });
 
-        socket.on('runScript', function(callback) {
+        socket.on('runScript', function(script, callback) {
             logger.info("socket.io <-- script");
+            // Todo Implement runScript
             callback();
         });
 
@@ -305,6 +318,7 @@ function initSocketIO() {
 }
 
 process.on('SIGINT', function () {
+    // Todo close Sockets
     /*
     socketlist.forEach(function(socket) {
         logger.info("socket.io --> "  + " destroying socket");
@@ -315,7 +329,8 @@ process.on('SIGINT', function () {
     logger.info("socket.io     closing server");
     io.server.close();
     setTimeout(function() {
-        logger.info("ccu.io        terminating")
+        logger.info("ccu.io        terminating");
+        // Todo clean Exit
         process.exit(0);
     }, 1000);
 });

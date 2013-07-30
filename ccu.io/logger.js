@@ -58,7 +58,7 @@ var logger = {
 
                 str =   ts.getFullYear() + '-' +
                     ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
-                    ("0" + (ts.getDate() + 1).toString(10)).slice(-2) + ' ' +
+                    ("0" + (ts.getDate()).toString(10)).slice(-2) + ' ' +
                     ("0" + (ts.getHours()).toString(10)).slice(-2) + ':' +
                     ("0" + (ts.getMinutes()).toString(10)).slice(-2) + ':' +
                     ("0" + (ts.getSeconds()).toString(10)).slice(-2) + "." +
