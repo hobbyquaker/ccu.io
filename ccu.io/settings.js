@@ -1,5 +1,5 @@
 var settings = {
-    version: "0.5",
+    version: "0.6",
 
     //  Port auf dem der Webserver und Socket.IO lauscht
     ioListenPort: 8080,
