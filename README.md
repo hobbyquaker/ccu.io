@@ -24,9 +24,9 @@ CCU.IO benötigt Node.js das für viele Plattformen inklusive der CCU2 zur Verf�
 der CCU2 selbst kann hier an beiden stellen 127.0.0.1 eingetragen werden.)
 * Den Server starten:
 
-     node ccu.io.js
+    node ccu.io.js
 
-* http://<hostname>:8080/ccu.io/index.html im Browser aufrufen.
+* http://hostname:8080/ccu.io/index.html im Browser aufrufen.
 
 ## Todo/Roadmap
 
