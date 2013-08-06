@@ -4,20 +4,20 @@ var settings = {
     ioListenPort: 8080,
 
     // IP-Adresse der Homematic CCU
-    ccuIp: "172.16.23.3",
+    ccuIp: "192.168.1.100",
     binrpc: {
 
         // IP-Adresse des Node-Servers (wird der CCU mitgeteilt für RPC Init)
-        listenIp: "172.16.23.19",
+        listenIp: "192.168.1.200",
 
         // Port auf dem der xmlrpc_bin:// Server lauscht
         listenPort: 2101,
         inits: [
 
             // CUxD Init durchführen
-            { id: "io_cuxd",    port: 8701 },
+            //{ id: "io_cuxd",    port: 8701 },
             // BidCos-Wired Init durchführen
-            { id: "io_wired",   port: 2000 },
+            //{ id: "io_wired",   port: 2000 },
             // BidCos-RF Init durchführen
             { id: "io_rf",      port: 2001 }
         ]

@@ -11,32 +11,32 @@
  *
  */
 
+var settings = require('./settings.js');
 
+settings.version = "0.7";
 
+var logger =    require('./logger.js'),
+    binrpc =    require("./binrpc.js"),
+    rega =      require("./rega.js"),
+    express =   require('express'),
+    app = express(),
+    server =    require('http').createServer(app),
+    socketio =  require('socket.io'),
+    io;
 
-var datapoints = {},
+var socketlist = [],
+    homematic = {},
+    datapoints = {},
     regaObjects = {},
     regaIndex = {
         Name: {},
         Address: {}
     };
 
-var settings = require('./settings.js');
-var logger =    require('./logger.js');
-
 logger.info("ccu.io        version "+settings.version);
 logger.info("              copyright (c) 2013 hobbyquaker");
 logger.info("              press ctrl-c to stop");
 
-var binrpc =    require("./binrpc.js");
-var rega =      require("./rega.js");
-var express =   require('express'),
-    app = express(),
-    server =    require('http').createServer(app),
-    socketio =  require('socket.io'),
-    io;
-var socketlist = [];
-var homematic = {};
 var regahss = new rega({
     ccuIp: settings.ccuIp,
     ready: function() {
@@ -183,7 +183,7 @@ function initRpc() {
                         bidcos = "BidCos-Wired." + obj[1] + "." + obj[2];
                         break;
                     default:
-                        res = [obj[0] + "." + obj[1] + "." + obj[2], obj[3]];
+                        //Todo
                 }
 
                 res = [bidcos, obj[3]];
@@ -218,6 +218,11 @@ function initWebserver() {
     server.listen(settings.ioListenPort);
     logger.info("web server    listening on port "+settings.ioListenPort);
 
+    app.post('/upload/post', function(req, res, next) {
+        console.log(req.body);
+        console.log(req.files);
+    });
+
     io = socketio.listen(server);
     io.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
     initSocketIO();
@@ -247,7 +252,7 @@ function initSocketIO() {
 
         socket.on('setState', function(arr, callback) {
             // Todo Delay!
-            logger.info("socket.io <-- event");
+            logger.info("socket.io <-- setState "+JSON.stringify(arr));
             var id =    arr[0],
                 val =   arr[1],
                 ts =    arr[2],
@@ -262,7 +267,8 @@ function initSocketIO() {
                     ("0" + (timestamp.getSeconds()).toString(10)).slice(-2);
             }
 
-            setDatapoint(id, val, ts, ack);
+            // console.log("id="+id+" val="+val+" ts="+ts+" ack="+ack);
+            // console.log("datapoints[id][0]="+datapoints[id][0]);
             // If ReGa id (0-65534) and not acknowledged -> Set Datapoint on the CCU
             if (id < 65535 && val !== datapoints[id][0] && !ack) {
                 // TODO implement set State via BINRPC if TypeName=HSSDP
@@ -279,14 +285,20 @@ function initSocketIO() {
                     if (typeof val == "string") {
                         val = "\""+val+"\"";
                     }
-                    rega.script("Write(dom.GetObject("+id+").State("+val+"));", function (data) {
-                         logger("rega      <-- "+data);
-                         callback();
+                    var script = "Write(dom.GetObject("+id+").State("+val+"));";
+                    logger.verbose("rega      --> "+script);
+
+                    regahss.script(script, function (data) {
+                         logger.verbose("rega      <-- "+data);
+                         if (callback) {
+                             callback();
+                         }
                     });
 
                 //}
 
             }
+            setDatapoint(id, val, ts, ack);
 
 
         });

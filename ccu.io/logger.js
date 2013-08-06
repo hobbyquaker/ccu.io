@@ -1,6 +1,6 @@
 
 var logger = {
-    level: 3,
+    level: 2,
     timestamp: true,
     colors: {
         "5": '\u001b[31m',

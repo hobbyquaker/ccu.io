@@ -45,7 +45,23 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                     Write('","Value":null,"Parent":' # sChnId # '}');
                 }
 
+                object oWork = oChannel.DPByHssDP('DIRECTION');
+                if (oWork) {
+                    if (dpFirst) {
+                      dpFirst = false;
+                    } else {
+                      WriteLine(',');
+                    }
+                    oWId = oWork.ID();
+                    Write('"' # oWId # '":{');
+                    Write('"Name":"' # oWork.Name() # '","TypeName":"HSSDP","Operations":"5",');
+                    Write('"ValueType":16,"ValueList":"' # oWork.ValueList() # '","Timestamp":"' # oWork.Timestamp());
+                    Write('","Value":null,"Parent":' # sChnId # '}');
+                }
+
             }
+
+
 
             foreach(sDPId, oChannel.DPs().EnumUsedIDs()) {
                 object oDP = dom.GetObject(sDPId);
