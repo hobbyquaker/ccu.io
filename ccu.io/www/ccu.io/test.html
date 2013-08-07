@@ -1,0 +1,47 @@
+<script src="/lib/js/jquery-1.10.2.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+    $(document).ready(function () {
+        var output = $("#output");
+        var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host'));
+
+        $("input#go").click(function () {
+            socket.emit('readdir', "www/yahui", function(obj) {
+                console.log(obj);
+                $("pre").html(JSON.stringify(obj, null, "  "));
+            });
+
+        });
+        $("input#save").click(function () {
+            socket.emit('writeFile', "test", $("#content").val());
+
+        });
+        $("input#load").click(function () {
+            socket.emit('readFile', "test", function(obj) {
+                console.log(obj);
+                $("pre").html(JSON.stringify(obj, null, "  "));
+            });
+
+        });
+
+
+    });
+</script>
+<style type="text/css">
+    .box {
+        float: left;
+
+    }
+    textarea {
+        width: 400px;
+        height: 320px;
+        margin: 5px;
+    }
+</style>
+<body><input type="button" value="go" id="go"><br/>
+<input type="button" value="save" id="save"><input type="button" value="load" id="load">
+<input type="text" id="content">
+<br/>
+<pre></pre>
+</body>

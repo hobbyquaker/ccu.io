@@ -47,7 +47,8 @@ var settings = {
             "channels",
             "datapoints"
         ]
-    }
+    },
+    datastorePath: "datastore/"
 };
 
 module.exports = settings;

@@ -13,9 +13,10 @@
 
 var settings = require('./settings.js');
 
-settings.version = "0.7";
+settings.version = "0.8";
 
-var logger =    require('./logger.js'),
+var fs = require('fs'),
+    logger =    require('./logger.js'),
     binrpc =    require("./binrpc.js"),
     rega =      require("./rega.js"),
     express =   require('express'),
@@ -234,6 +235,39 @@ function initSocketIO() {
         var address = socket.handshake.address;
         logger.info("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
 
+        socket.on('readdir', function (path, callback) {
+            logger.info("socket.io <-- readdir "+path);
+            fs.readdir(path, function (err, data) {
+               if (err) {
+                    callback(undefined);
+               } else {
+                   callback(data);
+               }
+            });
+        });
+
+        socket.on('writeFile', function (name, obj, callback) {
+            var content = JSON.stringify(obj);
+            logger.info("socket.io <-- writeFile "+name+" "+content);
+            fs.writeFile(settings.datastorePath+name, content);
+            // Todo Fehler abfangen
+            if (callback) { callback(); }
+        });
+
+        socket.on('readFile', function (name, callback) {
+            logger.info("socket.io <-- readFile "+name);
+
+            fs.readFile(settings.datastorePath+name, function (err, data) {
+                if (err) {
+                    logger.error("ccu.io        failed loading file "+settings.datastorePath+name);
+                    callback(undefined);
+                } else {
+                    var obj = JSON.parse(data);
+                    callback(obj);
+                }
+            });
+        });
+
         socket.on('getDatapoints', function(callback) {
             logger.info("socket.io <-- getData");
             callback(datapoints);
@@ -306,13 +340,13 @@ function initSocketIO() {
         socket.on('runProgram', function(id, callback) {
             logger.info("socket.io <-- runProgram");
             // Todo Implement runProgram
-            callback();
+            if (callback) { callback(); }
         });
 
         socket.on('runScript', function(script, callback) {
             logger.info("socket.io <-- script");
             // Todo Implement runScript
-            callback();
+            if (callback) { callback(); }
         });
 
         socket.on('disconnect', function () {
