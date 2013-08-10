@@ -348,7 +348,8 @@ binrpc.prototype = {
                         data = res[0];
                         logger.verbose("binrpc    <-- "+name+" request system.multicall " + data.length);
                         response = [];
-                        for (var i = 0; i < data.length; i++) {
+                        for (var j = data.length; j > 0 ; j--) {
+                            var i = j - 1;
                             response[i] = "";
                             if (this.methods[data[i].methodName]) {
                                 logger.verbose("binrpc    <-- "+name+" multicall["+i+"] " + data[i].methodName + " " + JSON.stringify(data[i].params));
