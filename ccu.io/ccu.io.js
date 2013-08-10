@@ -21,6 +21,7 @@ var fs = require('fs'),
     rega =      require("./rega.js"),
     express =   require('express'),
     app = express(),
+    url = require('url'),
     server =    require('http').createServer(app),
     socketio =  require('socket.io'),
     io;
@@ -170,7 +171,7 @@ function initRpc() {
             event: function (obj) {
                 //Todo Implement Rega Polling Trigger via Virtual Key
 
-                var res = [];
+                var result = [];
                 var bidcos;
                 switch (obj[0]) {
                     case "io_cuxd":
@@ -187,7 +188,7 @@ function initRpc() {
                         //Todo
                 }
 
-                res = [bidcos, obj[3]];
+                result = [bidcos, obj[3]];
                 var ts = new Date();
                 var timestamp = ts.getFullYear() + '-' +
                     ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
@@ -195,6 +196,7 @@ function initRpc() {
                     ("0" + (ts.getHours()).toString(10)).slice(-2) + ':' +
                     ("0" + (ts.getMinutes()).toString(10)).slice(-2) + ':' +
                     ("0" + (ts.getSeconds()).toString(10)).slice(-2);
+
 
 
                 // Get ReGa id
@@ -206,7 +208,7 @@ function initRpc() {
                 }
 
                 /* TODO remove old event (DashUI 0.8.x compatibility) */
-                io.sockets.emit("event", res);
+                io.sockets.emit("event", result);
 
                 return "";
             }
@@ -217,17 +219,43 @@ function initRpc() {
 function initWebserver() {
     app.use('/', express.static(__dirname + '/www'));
     server.listen(settings.ioListenPort);
-    logger.info("web server    listening on port "+settings.ioListenPort);
+    logger.info("webserver     listening on port "+settings.ioListenPort);
 
-    app.post('/upload/post', function(req, res, next) {
-        console.log(req.body);
-        console.log(req.files);
+    // File Uploads
+    app.use(express.bodyParser());
+    app.post('/upload', function(req, res, next) {
+        var urlParts = url.parse(req.url, true);
+        var query = urlParts.query;
+
+        console.log(query);
+        logger.info("webserver <-- file upload "+req.files.file.name+" ("+req.files.file.size+" bytes)");
+        // get the temporary location of the file
+        var tmpPath = req.files.file.path;
+        var newName;
+        if (query.id) {
+            newName = query.id + "." + req.files.file.type.replace(/[a-z]+\//,"");
+
+        } else {
+            newName = req.files.file.name;
+        }
+        // set where the file should actually exists - in this case it is in the "images" directory
+        var targetPath = query.path + newName;
+        // move the file from the temporary location to the intended location
+        fs.rename(tmpPath, targetPath, function(err) {
+            if (err) throw err;
+            // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
+            fs.unlink(tmpPath, function() {
+                if (err) throw err;
+                res.send('File uploaded to: ' + targetPath + ' - ' + req.files.file.size + ' bytes');
+            });
+        });
     });
 
     io = socketio.listen(server);
     io.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
     initSocketIO();
 }
+
 
 function initSocketIO() {
     io.sockets.on('connection', function (socket) {
