@@ -13,7 +13,7 @@
 
 var settings = require('./settings.js');
 
-settings.version = "0.8";
+settings.version = "0.9";
 
 var fs = require('fs'),
     logger =    require('./logger.js'),
@@ -367,14 +367,16 @@ function initSocketIO() {
 
         socket.on('runProgram', function(id, callback) {
             logger.info("socket.io <-- runProgram");
-            // Todo Implement runProgram
-            if (callback) { callback(); }
+            rega.script("dom.GetObject("+id+").RunProgram();", function (data) {
+                if (callback) { callback(data); }
+            });
         });
 
         socket.on('runScript', function(script, callback) {
             logger.info("socket.io <-- script");
-            // Todo Implement runScript
-            if (callback) { callback(); }
+            rega.script(script, function (data) {
+                if (callback) { callback(data); }
+            });
         });
 
         socket.on('disconnect', function () {
