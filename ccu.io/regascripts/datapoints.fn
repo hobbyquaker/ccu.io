@@ -61,8 +61,6 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
 
             }
 
-
-
             foreach(sDPId, oChannel.DPs().EnumUsedIDs()) {
                 object oDP = dom.GetObject(sDPId);
                 if(oDP) {
@@ -109,8 +107,6 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                     Write('}');
                 }
             }
-
-
         }
 
     }

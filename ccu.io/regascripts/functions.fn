@@ -1,6 +1,6 @@
-!# funktions.fn 1.1 CCU.IO
+!# functions.fn 1.1 CCU.IO
 !#
-!# Dieses Script gibt eine Liste der Gewerken als JSON Objekt aus
+!# Dieses Script gibt eine Liste der Gewerke als JSON String aus
 !#
 !# 6'2013-7'2013 bluefox, hobbyquaker
 !#

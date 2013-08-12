@@ -34,7 +34,7 @@ rega.prototype = {
 
     },
     runScriptFile: function (script, callback) {
-        logger.verbose('rega      --> ' + script + '.fn');
+        //logger.verbose('rega      --> ' + script + '.fn');
 
         var that = this;
         fs.readFile('./regascripts/'+script+'.fn', 'utf8', function (err, data) {
@@ -43,12 +43,13 @@ rega.prototype = {
                 return false;
             }
             that.script(data, function (stdout, xml) {
-                    logger.verbose('rega      <-- response ' + stdout);
+                    logger.verbose('rega      <-- ' + stdout);
                 callback(stdout, xml);
             });
         });
     },
     script: function (script, callback) {
+        logger.verbose('rega      --> ' + script);
 
         var post_options = {
             host: this.options.ccuIp,
@@ -72,6 +73,7 @@ rega.prototype = {
                 var stdout = (data.substring(0, pos));
                 var xml = (data.substring(pos));
                 parser.parseString(xml, function (err, result) {
+                    logger.verbose('rega      <-- ' + stdout);
                     callback(stdout, result.xml);
                 });
 

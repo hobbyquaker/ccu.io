@@ -13,7 +13,7 @@
 
 var settings = require('./settings.js');
 
-settings.version = "0.9";
+settings.version = "0.9.1";
 
 var fs = require('fs'),
     logger =    require('./logger.js'),
@@ -104,7 +104,7 @@ function loadRegaData(index) {
     var type = settings.regahss.metaScripts[index];
     regahss.runScriptFile(type, function (data) {
         var data = JSON.parse(data);
-        logger.info("rega          indexing "+type);
+        logger.verbose("ccu.io        indexing "+type);
         for (var id in data) {
             var idInt = parseInt(id, 10);
 
@@ -315,7 +315,7 @@ function initSocketIO() {
         socket.on('setState', function(arr, callback) {
             // Todo Delay!
             logger.info("socket.io <-- setState "+JSON.stringify(arr));
-            var id =    arr[0],
+            var id =    parseInt(arr[0], 10),
                 val =   arr[1],
                 ts =    arr[2],
                 ack =   arr[3];
@@ -329,9 +329,12 @@ function initSocketIO() {
                     ("0" + (timestamp.getSeconds()).toString(10)).slice(-2);
             }
 
+
             // console.log("id="+id+" val="+val+" ts="+ts+" ack="+ack);
             // console.log("datapoints[id][0]="+datapoints[id][0]);
             // If ReGa id (0-65534) and not acknowledged -> Set Datapoint on the CCU
+
+
             if (id < 65535 && val !== datapoints[id][0] && !ack) {
                 // TODO implement set State via BINRPC if TypeName=HSSDP
                 // // Bidcos or Rega?
@@ -344,37 +347,42 @@ function initSocketIO() {
                     //    dp = parts[2];
                 //} else {
                     // ReGa
+                    var xval;
                     if (typeof val == "string") {
-                        val = "\""+val+"\"";
+                        xval = "'" + val.replace(/'/g, '"') + "'";
+                    } else {
+                        xval = val;
                     }
-                    var script = "Write(dom.GetObject("+id+").State("+val+"));";
-                    logger.verbose("rega      --> "+script);
+                    var script = "Write(dom.GetObject("+id+").State("+xval+"));";
 
                     regahss.script(script, function (data) {
-                         logger.verbose("rega      <-- "+data);
+                         //logger.verbose("rega      <-- "+data);
                          if (callback) {
-                             callback();
+                             callback(data);
                          }
                     });
 
                 //}
 
             }
+
             setDatapoint(id, val, ts, ack);
+
+
 
 
         });
 
-        socket.on('runProgram', function(id, callback) {
+        socket.on('programExecute', function(id, callback) {
             logger.info("socket.io <-- runProgram");
-            rega.script("dom.GetObject("+id+").RunProgram();", function (data) {
+            regahss.script("Write(dom.GetObject("+id+").ProgramExecute());", function (data) {
                 if (callback) { callback(data); }
             });
         });
 
         socket.on('runScript', function(script, callback) {
             logger.info("socket.io <-- script");
-            rega.script(script, function (data) {
+            regahss.script(script, function (data) {
                 if (callback) { callback(data); }
             });
         });
