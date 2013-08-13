@@ -13,7 +13,7 @@
 
 var settings = require('./settings.js');
 
-settings.version = "0.9.1";
+settings.version = "0.9.2";
 
 var fs = require('fs'),
     logger =    require('./logger.js'),
@@ -68,12 +68,12 @@ function setDatapoint(id, val, ts, ack) {
         logger.warn("rega      <-- unknown variable "+id);
         sendEvent([id,val,ts,ack]);
     } else if (val !== oldval[0]) {
-        // Änderung
+        // ï¿½nderung
         logger.debug("chg "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
         sendEvent([id,val,ts,ack]);
     } else {
         if (ack && !oldval[2]) {
-            // Bestätigung
+            // Bestï¿½tigung
             logger.debug("ack "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
             sendEvent([id,val,ts,ack]);
         } else if (ts !== oldval[1]) {
@@ -81,7 +81,7 @@ function setDatapoint(id, val, ts, ack) {
             logger.debug("ts "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
             sendEvent([id,val,ts,ack]);
         } else {
-            // Keine Änderung
+            // Keine ï¿½nderung
             logger.debug("eq "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
         }
 
@@ -171,24 +171,8 @@ function initRpc() {
             event: function (obj) {
                 //Todo Implement Rega Polling Trigger via Virtual Key
 
-                var result = [];
-                var bidcos;
-                switch (obj[0]) {
-                    case "io_cuxd":
-                    case "CUxD":
-                        bidcos = "CUxD." + obj[1] + "." + obj[2];
-                        break;
-                    case "io_rf":
-                        bidcos = "BidCos-RF." + obj[1] + "." + obj[2];
-                        break;
-                    case "io_wired":
-                        bidcos = "BidCos-Wired." + obj[1] + "." + obj[2];
-                        break;
-                    default:
-                        //Todo
-                }
 
-                result = [bidcos, obj[3]];
+
                 var ts = new Date();
                 var timestamp = ts.getFullYear() + '-' +
                     ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
@@ -207,9 +191,26 @@ function initRpc() {
                     datapoints[regaObj[0]] = [obj[3], timestamp, true];
                 }
 
-                /* TODO remove old event (DashUI 0.8.x compatibility) */
+                /* TODO remove old event (DashUI 0.8.x compatibility)
+                 var result = [];
+                 var bidcos;
+                switch (obj[0]) {
+                    case "io_cuxd":
+                    case "CUxD":
+                        bidcos = "CUxD." + obj[1] + "." + obj[2];
+                        break;
+                    case "io_rf":
+                        bidcos = "BidCos-RF." + obj[1] + "." + obj[2];
+                        break;
+                    case "io_wired":
+                        bidcos = "BidCos-Wired." + obj[1] + "." + obj[2];
+                        break;
+                    default:
+                    //
+                }
+                result = [bidcos, obj[3]];
                 io.sockets.emit("event", result);
-
+                */
                 return "";
             }
         }

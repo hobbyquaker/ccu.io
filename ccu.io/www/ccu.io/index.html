@@ -7,7 +7,7 @@
         var output = $("#output");
         var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host'));
         socket.on('event', function(obj) {
-            output.prepend((new Date().toLocaleString()) + " event " + JSON.stringify(obj) + "\n");
+            console.log("event " + JSON.stringify(obj));
         });
 
         $("#dataRefresh").click(function() {
@@ -17,6 +17,7 @@
                 console.log(obj);
                 $("#data").html(JSON.stringify(obj, null, "  "));
             });
+
         });
 
         $("#metaRefresh").click(function() {
