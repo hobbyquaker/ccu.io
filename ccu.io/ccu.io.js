@@ -181,19 +181,7 @@ function initRpc() {
                     ("0" + (ts.getMinutes()).toString(10)).slice(-2) + ':' +
                     ("0" + (ts.getSeconds()).toString(10)).slice(-2);
 
-
-
-                // Get ReGa id
-                var regaObj = regaIndex.Name[bidcos];
-                if (regaObj && regaObj[0]) {
-                    logger.verbose("socket.io --> broadcast event "+JSON.stringify([regaObj[0], obj[3], timestamp, true]))
-                    io.sockets.emit("event", [regaObj[0], obj[3], timestamp, true]);
-                    datapoints[regaObj[0]] = [obj[3], timestamp, true];
-                }
-
-                /* TODO remove old event (DashUI 0.8.x compatibility)
-                 var result = [];
-                 var bidcos;
+                var bidcos;
                 switch (obj[0]) {
                     case "io_cuxd":
                     case "CUxD":
@@ -208,6 +196,18 @@ function initRpc() {
                     default:
                     //
                 }
+
+                // Get ReGa id
+                var regaObj = regaIndex.Name[bidcos];
+                if (regaObj && regaObj[0]) {
+                    logger.verbose("socket.io --> broadcast event "+JSON.stringify([regaObj[0], obj[3], timestamp, true]))
+                    io.sockets.emit("event", [regaObj[0], obj[3], timestamp, true]);
+                    datapoints[regaObj[0]] = [obj[3], timestamp, true];
+                }
+
+                /* TODO remove old event (DashUI 0.8.x compatibility)
+                 var result = [];
+
                 result = [bidcos, obj[3]];
                 io.sockets.emit("event", result);
                 */
