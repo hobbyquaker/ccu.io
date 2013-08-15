@@ -1,5 +1,5 @@
 /**
- *      HomeMatic ReGaHss Schnittstelle für Node.js
+ *      HomeMatic ReGaHss Schnittstelle fï¿½r Node.js
  *
  *      Version 0.1
  *
@@ -43,7 +43,6 @@ rega.prototype = {
                 return false;
             }
             that.script(data, function (stdout, xml) {
-                    logger.verbose('rega      <-- ' + stdout);
                 callback(stdout, xml);
             });
         });

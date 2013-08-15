@@ -13,7 +13,7 @@
 
 var settings = require('./settings.js');
 
-settings.version = "0.9.2";
+settings.version = "0.9.3";
 
 var fs = require('fs'),
     logger =    require('./logger.js'),
@@ -68,12 +68,13 @@ function setDatapoint(id, val, ts, ack) {
         logger.warn("rega      <-- unknown variable "+id);
         sendEvent([id,val,ts,ack]);
     } else if (val !== oldval[0]) {
-        // �nderung
+        // Todo Änderungs-Zeitstempel -> Variablen extra behandeln
+        // Änderung
         logger.debug("chg "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
         sendEvent([id,val,ts,ack]);
     } else {
         if (ack && !oldval[2]) {
-            // Best�tigung
+            // Bestätigung
             logger.debug("ack "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
             sendEvent([id,val,ts,ack]);
         } else if (ts !== oldval[1]) {
@@ -81,7 +82,7 @@ function setDatapoint(id, val, ts, ack) {
             logger.debug("ts "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
             sendEvent([id,val,ts,ack]);
         } else {
-            // Keine �nderung
+            // Keine Änderung
             logger.debug("eq "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
         }
 
@@ -93,7 +94,7 @@ function pollRega() {
     regahss.runScriptFile("polling", function (data) {
         var data = JSON.parse(data);
         for (id in data) {
-            setDatapoint(id, data[id][0], data[id][1], true);
+            setDatapoint(parseInt(id,10), data[id][0], data[id][1], true);
         }
         setTimeout(pollRega, settings.regahss.pollDataInterval);
     });
@@ -333,9 +334,9 @@ function initSocketIO() {
 
             // console.log("id="+id+" val="+val+" ts="+ts+" ack="+ack);
             // console.log("datapoints[id][0]="+datapoints[id][0]);
+
+
             // If ReGa id (0-65534) and not acknowledged -> Set Datapoint on the CCU
-
-
             if (id < 65535 && val !== datapoints[id][0] && !ack) {
                 // TODO implement set State via BINRPC if TypeName=HSSDP
                 // // Bidcos or Rega?
