@@ -13,7 +13,7 @@
 
 var settings = require('./settings.js');
 
-settings.version = "0.9.3";
+settings.version = "0.9.4";
 
 var fs = require('fs'),
     logger =    require('./logger.js'),
@@ -370,9 +370,6 @@ function initSocketIO() {
 
             setDatapoint(id, val, ts, ack);
 
-
-
-
         });
 
         socket.on('programExecute', function(id, callback) {
@@ -412,11 +409,20 @@ process.on('SIGINT', function () {
     });
      */
 
-    logger.info("socket.io     closing server");
-    io.server.close();
-    setTimeout(function() {
-        logger.info("ccu.io        terminating");
-        // Todo clean Exit
-        process.exit(0);
-    }, 1000);
+    if (io) {
+        logger.info("socket.io     closing server");
+        io.server.close();
+    }
+
+    setTimeout(quit, 1500);
 });
+
+function quit() {
+    if (regahss.pendingRequests > 0) {
+        logger.info("rega          waiting for pending request...");
+        setTimeout(quit, 500);
+    } else {
+        logger.info("ccu.io        terminating");
+        process.exit(0);
+    }
+}

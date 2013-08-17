@@ -30,6 +30,7 @@ var rega = function(options) {
 
 rega.prototype = {
     options: {},
+    pendingRequests: 0,
     regaUp: function (success, error) {
 
     },
@@ -48,6 +49,7 @@ rega.prototype = {
         });
     },
     script: function (script, callback) {
+        var that = this;
         logger.verbose('rega      --> ' + script);
 
         var post_options = {
@@ -60,7 +62,7 @@ rega.prototype = {
                 'Content-Length': script.length
             }
         };
-
+        this.pendingRequests += 1;
         var post_req = http.request(post_options, function(res) {
             var data = "";
             res.setEncoding('utf8');
@@ -68,6 +70,7 @@ rega.prototype = {
                 data += chunk;
             });
             res.on('end', function () {
+                that.pendingRequests -= 1;
                 var pos = data.lastIndexOf("<xml>");
                 var stdout = (data.substring(0, pos));
                 var xml = (data.substring(pos));

@@ -1,5 +1,5 @@
 /**
- *      HomeMatic BIN-RPC Schnittstelle für Node.js
+ *      HomeMatic BIN-RPC Schnittstelle fï¿½r Node.js
  *
  *      Version 0.2
  *
@@ -524,7 +524,7 @@ binrpc.prototype = {
                 setTimeout(function () {
                     that.server.close();
                     logger.info("binrpc        stopping server");
-                }, 1800);
+                }, 1450);
 
             });
 
