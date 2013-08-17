@@ -64,6 +64,9 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                 foreach(sDPId, oChannel.DPs().EnumUsedIDs()) {
                     object oDP = dom.GetObject(sDPId);
                     sDPName = oDP.Name().StrValueByIndex(".", 2);
+                    if (oDP.TypeName() == "VARDP") {
+                        sDPName = oDP.Name();
+                    }
                     if(oDP) {
                         if (dpFirst) {
                           dpFirst = false;

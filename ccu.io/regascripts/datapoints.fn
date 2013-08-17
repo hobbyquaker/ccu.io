@@ -63,48 +63,50 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
 
             foreach(sDPId, oChannel.DPs().EnumUsedIDs()) {
                 object oDP = dom.GetObject(sDPId);
-                if(oDP) {
+                if (oDP) {
+                    if (oDP.TypeName != "VARDP") {
 
-                    if (dpFirst) {
-                      dpFirst = false;
-                    } else {
-                      WriteLine(',');
-                    }
-
-                    string sValueType = oDP.ValueType();
-                    Write('"' # sDPId # '":{');
-                    Write('"Name":"');
-                    WriteURL(oDP.Name());
-                    Write('","TypeName":"' # oDP.TypeName());
-                    Write('","Operations":' # oDP.Operations());
-                    Write(',"ValueType":' # sValueType);
-                    Write(',"ValueUnit":"' # oDP.ValueUnit());
-                    Write('","Timestamp":"' # oDP.Timestamp());
-                    Write('","Value":');
-
-                    if (sValueType == 20) {
-                        Write('"');
-                        WriteURL(oDP.Value());
-                        Write('"');
-                    } else {
-                        sValue = oDP.Value();
-                        if (sValueType == 2) {
-                            if (sValue) {
-                                Write("true");
-                            } else {
-                                Write("false");
-                            }
+                        if (dpFirst) {
+                          dpFirst = false;
                         } else {
-                           if (sValue == "") {
-                                Write("0");
-                           } else {
-                                Write(sValue);
-                           }
+                          WriteLine(',');
                         }
-                    }
 
-                    Write(',"Parent":' # sChnId);
-                    Write('}');
+                        string sValueType = oDP.ValueType();
+                        Write('"' # sDPId # '":{');
+                        Write('"Name":"');
+                        WriteURL(oDP.Name());
+                        Write('","TypeName":"' # oDP.TypeName());
+                        Write('","Operations":' # oDP.Operations());
+                        Write(',"ValueType":' # sValueType);
+                        Write(',"ValueUnit":"' # oDP.ValueUnit());
+                        Write('","Timestamp":"' # oDP.Timestamp());
+                        Write('","Value":');
+
+                        if (sValueType == 20) {
+                            Write('"');
+                            WriteURL(oDP.Value());
+                            Write('"');
+                        } else {
+                            sValue = oDP.Value();
+                            if (sValueType == 2) {
+                                if (sValue) {
+                                    Write("true");
+                                } else {
+                                    Write("false");
+                                }
+                            } else {
+                               if (sValue == "") {
+                                    Write("0");
+                               } else {
+                                    Write(sValue);
+                               }
+                            }
+                        }
+
+                        Write(',"Parent":' # sChnId);
+                        Write('}');
+                    }
                 }
             }
         }
