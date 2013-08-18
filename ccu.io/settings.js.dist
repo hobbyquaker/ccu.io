@@ -7,26 +7,26 @@ var settings = {
     ccuIp: "192.168.1.100",
     binrpc: {
 
-        // IP-Adresse des Node-Servers (wird der CCU mitgeteilt für RPC Init)
+        // IP-Adresse des Node-Servers (wird der CCU mitgeteilt fÃ¼r RPC Init)
         listenIp: "192.168.1.200",
 
         // Port auf dem der xmlrpc_bin:// Server lauscht
         listenPort: 2101,
         inits: [
 
-            // CUxD Init durchführen
+            // CUxD Init durchfÃ¼hren
             //{ id: "io_cuxd",    port: 8701 },
-            // BidCos-Wired Init durchführen
+            // BidCos-Wired Init durchfÃ¼hren
             //{ id: "io_wired",   port: 2000 },
-            // BidCos-RF Init durchführen
+            // BidCos-RF Init durchfÃ¼hren
             { id: "io_rf",      port: 2001 }
         ]
     },
     regahss: {
         // Variablen-Werte von der CCU Pollen
         pollData: true,
-        // Interval für Polling in milli-Sekunden
-        pollDataInterval: 10000,
+        // Interval fÃ¼r Polling in milli-Sekunden
+        pollDataInterval: 15000,
 
 
 

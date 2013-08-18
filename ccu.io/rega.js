@@ -1,7 +1,7 @@
 /**
- *      HomeMatic ReGaHss Schnittstelle f�r Node.js
+ *      HomeMatic ReGaHss Schnittstelle für Node.js
  *
- *      Version 0.1
+ *      Version 0.2
  *
  *      Copyright (c) 2013 http://hobbyquaker.github.io
  *
@@ -80,6 +80,10 @@ rega.prototype = {
                 });
 
             });
+        });
+
+        post_req.on('error', function(e) {
+            logger.error('rega          post request error: ' + e.message);
         });
 
         post_req.write(script);
