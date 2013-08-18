@@ -1,4 +1,4 @@
-!# channels.fn 1.4 CCU.IO
+!# channels.fn 1.5 CCU.IO
 !#
 !# Dieses Homematic-Script gibt alle Kanaele als JSON String aus
 !#
@@ -31,7 +31,6 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
 
         foreach(sChnId, oDevice.Channels()) {
             object oChannel = dom.GetObject(sChnId);
-            if ( (! oChannel.Internal()) ) {
                 if (cFirst) {
                   cFirst = false;
                 } else {
@@ -88,7 +87,7 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                     }
                 }
                 Write('}}');
-            }
+
         }
 
     }
