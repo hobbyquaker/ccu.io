@@ -1,6 +1,6 @@
 !# variables.fn 1.2 CCU.IO
 !#
-!# Dieses Script gibt die Systemvariablen als JSON Objekt aus
+!# Dieses Script gibt die Systemvariablen als JSON String aus
 !#
 !# 3'2013-7'2013 hobbyquaker https://github.com/hobbyquaker
 !#

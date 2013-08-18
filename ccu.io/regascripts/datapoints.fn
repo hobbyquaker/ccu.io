@@ -1,4 +1,4 @@
-!# datapoints.fn 1.3 CCU.IO
+!# datapoints.fn 1.4 CCU.IO
 !#
 !# Dieses Homematic-Script gibt eine Liste aller Datenpunkte als JSON String aus
 !#
@@ -12,6 +12,7 @@ string sValue;
 string sChnId;
 string sDPId;
 string oWId;
+string oDirId;
 
 boolean dpFirst = true;
 
@@ -39,23 +40,25 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                       WriteLine(',');
                     }
                     oWId = oWork.ID();
-                    Write('"' # oWId # '":{');
-                    Write('"Name":"' # oWork.Name() # '","TypeName":"HSSDP","Operations":"5",');
+                    Write('"' # oWId # '":{"Name":"');
+                    WriteURL(oWork.Name());
+                    Write('","TypeName":"HSSDP","Operations":"5",');
                     Write('"ValueType":2,"ValueUnit":"","Timestamp":"' # oWork.Timestamp());
                     Write('","Value":null,"Parent":' # sChnId # '}');
                 }
 
-                object oWork = oChannel.DPByHssDP('DIRECTION');
-                if (oWork) {
+                object oDir = oChannel.DPByHssDP('DIRECTION');
+                if (oDir) {
                     if (dpFirst) {
                       dpFirst = false;
                     } else {
                       WriteLine(',');
                     }
-                    oWId = oWork.ID();
-                    Write('"' # oWId # '":{');
-                    Write('"Name":"' # oWork.Name() # '","TypeName":"HSSDP","Operations":"5",');
-                    Write('"ValueType":16,"ValueList":"' # oWork.ValueList() # '","Timestamp":"' # oWork.Timestamp());
+                    oDirId = oDir.ID();
+                    Write('"' # oDirId # '":{"Name":"');
+                    WriteURL(oDir.Name());
+                    Write('","TypeName":"HSSDP","Operations":"5",');
+                    Write('"ValueType":16,"ValueList":"' # oDir.ValueList() # '","Timestamp":"' # oDir.Timestamp());
                     Write('","Value":null,"Parent":' # sChnId # '}');
                 }
 
