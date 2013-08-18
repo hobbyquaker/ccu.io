@@ -7,14 +7,12 @@
         var output = $("#output");
         var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host'));
         socket.on('event', function(obj) {
-            console.log("event " + JSON.stringify(obj));
+            $("#output").append(JSON.stringify(obj)+"\n");
         });
 
         $("#dataRefresh").click(function() {
-            console.log("refresh");
             $("#data").html("");
             socket.emit('getDatapoints', function(obj) {
-                console.log(obj);
                 $("#data").html(JSON.stringify(obj, null, "  "));
             });
 
@@ -23,7 +21,6 @@
         $("#metaRefresh").click(function() {
             $("#meta").html("");
             socket.emit('getObjects', function(obj) {
-                console.log(obj);
                 $("#meta").html(JSON.stringify(obj, null, "  "));
             });
         });
@@ -31,7 +28,6 @@
         $("#indexRefresh").click(function() {
             $("#index").html("");
             socket.emit('getIndex', function(obj) {
-                console.log(obj);
                 $("#index").html(JSON.stringify(obj, null, "  "));
             });
         });
