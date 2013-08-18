@@ -1,7 +1,7 @@
 /**
- *      HomeMatic BIN-RPC Schnittstelle f�r Node.js
+ *      HomeMatic BIN-RPC Schnittstelle für Node.js
  *
- *      Version 0.2
+ *      Version 0.3
  *
  *      Copyright (c) 2013 http://hobbyquaker.github.io
  *
@@ -402,6 +402,9 @@ binrpc.prototype = {
                 client.write(buf.toString());
             });
 
+        client.on('error', function (e) {
+            logger.error("binrpc        "+JSON.stringify(e));
+        })
 
         client.on('data', function(data) {
             logger.silly("binrpc    --> receiving chunk "+chunk+" data.length="+data.length);
@@ -470,6 +473,10 @@ binrpc.prototype = {
                 var name = c.remoteAddress + ":" + c.remotePort
 
                logger.verbose('binrpc    <-- '+name+' connected');
+
+                c.on('error', function(e) {
+                    logger.error('binrpc        '+JSON.stringify(e));
+                });
 
                 c.on('end', function() {
                    logger.verbose('binrpc    <-- '+name+' disconnected');
