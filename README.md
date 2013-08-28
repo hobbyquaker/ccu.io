@@ -47,16 +47,6 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen
 * Einbindung von User-Scripten
 * binrpc.js vervollständigen
 
-## Changelog
-
-### 0.8
-
-* neue Methode writeFile und readFile - Javascript Objekte speichern und laden (Pfad konfigurierbar in settings.js)
-* neue Methode readdir - Gibt den Inhalt eines Verzeichnisses aus (Ohne . und .., Pfad relativ zum ccu.io Wurzelverzeichnis)
-
-### 0.7 - 0.1
-
-* leider nicht wirklich aufgeschrieben und nur schrottige Commit Messages gemacht ;)
 
 ## Lizenz
 

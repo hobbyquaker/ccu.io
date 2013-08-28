@@ -48,7 +48,8 @@ var settings = {
             "datapoints"
         ]
     },
-    datastorePath: "datastore/"
+    datastorePath: "datastore/",
+    stats: true
 };
 
 module.exports = settings;

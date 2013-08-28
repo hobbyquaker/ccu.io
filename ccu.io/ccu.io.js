@@ -13,7 +13,7 @@
 
 var settings = require('./settings.js');
 
-settings.version = "0.9.8";
+settings.version = "0.9.9";
 
 var fs = require('fs'),
     logger =    require('./logger.js'),
@@ -47,6 +47,30 @@ var regahss = new rega({
 });
 
 loadRegaData();
+
+var stats = {
+    clients: 0,
+    cuxd: 0,
+    wired: 0,
+    rf: 0,
+    start: ((new Date()).getTime() / 1000),
+    uptime: function() {
+        var seconds = ((new Date()).getTime() / 1000) - stats.start;
+        return seconds.toFixed(0)+"s";
+    },
+    log: function() {
+        logger.info("ccu.io stats  cuxd: "+(stats.cuxd/settings.statsIntervalMinutes).toFixed(0)+"msg/min, wired: "+(stats.wired/settings.statsIntervalMinutes).toFixed(0)+"msg/min, rf: "+(stats.rf/settings.statsIntervalMinutes).toFixed(0)+"msg/min");
+        logger.info("ccu.io stats  "+stats.clients+" Socket.IO Clients connected");
+        logger.info("ccu.io uptime "+stats.uptime());
+        stats.cuxd = 0;
+        stats.wired = 0;
+        stats.rf = 0;
+    }
+}
+
+if (settings.stats) {
+    setInterval(stats.log, settings.statsIntervalMinutes * 60000);
+}
 
 function sendEvent(arr) {
     logger.verbose("socket.io --> broadcast event "+JSON.stringify(arr))
@@ -186,12 +210,15 @@ function initRpc() {
                 switch (obj[0]) {
                     case "io_cuxd":
                     case "CUxD":
+                        stats.cuxd += 1;
                         bidcos = "CUxD." + obj[1] + "." + obj[2];
                         break;
                     case "io_rf":
+                        stats.rf += 1;
                         bidcos = "BidCos-RF." + obj[1] + "." + obj[2];
                         break;
                     case "io_wired":
+                        stats.wired += 1;
                         bidcos = "BidCos-Wired." + obj[1] + "." + obj[2];
                         break;
                     default:
@@ -229,7 +256,7 @@ function initWebserver() {
         var urlParts = url.parse(req.url, true);
         var query = urlParts.query;
 
-        console.log(query);
+        //console.log(query);
         logger.info("webserver <-- file upload "+req.files.file.name+" ("+req.files.file.size+" bytes)");
         // get the temporary location of the file
         var tmpPath = req.files.file.path;
@@ -337,7 +364,7 @@ function initSocketIO() {
 
 
             // If ReGa id (0-65534) and not acknowledged -> Set Datapoint on the CCU
-            if (id < 65535 && val !== datapoints[id][0] && !ack) {
+            if (id < 65535 && ((val !== datapoints[id][0] && !ack) || (regaObjects[id].Name.match(/.*PRESS_SHORT/) || regaObjects[id].Name.match(/.*PRESS_LONG/)))) {
                 // TODO implement set State via BINRPC if TypeName=HSSDP
                 // // Bidcos or Rega?
                 //if (regaIndex.HSSDP.indexOf(id) != -1) {
