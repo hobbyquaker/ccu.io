@@ -14,7 +14,7 @@ var Put = require('put'),
     net = require('net'),
     binary = require('binary');
 
-var logger = require('./logger.js');
+var logger = require(__dirname+'/logger.js');
 
 var binrpc = function(options) {
     logger.info("binrpc        binrpc starting");

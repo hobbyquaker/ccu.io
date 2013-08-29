@@ -6,8 +6,8 @@ rfd, hs485d und cuxd kommuniziert. CCU.IO kann - aber muss nicht - auf der CCU2 
 Verbindung kann CCU.IO den Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis
 /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
-Die enthaltene BIN RPC Bibliothek binrpc.js und die ReGa-Schnittstelle rega.js kann auch losgelöst von CCU.IO in anderen Node basierten Projekten als Schnittstelle
-zur CCU eingesetzt werden.
+Die enthaltene BIN RPC Bibliothek binrpc.js und die ReGa-Schnittstelle rega.js kann auch losgelöst von CCU.IO in anderen
+Node basierten Projekten als Schnittstelle zur CCU eingesetzt werden.
 
 CCU.IO bildet die Schnittstelle zur CCU für folgende Projekte:
 
@@ -32,15 +32,19 @@ der CCU2 selbst kann hier an beiden stellen 127.0.0.1 eingetragen werden.)
 * Falls auch Wired-Geräte oder der CUxD vorhanden sind müssen in der settings.js die entsprechenden Kommentar-Zeichen entfernt werden.
 * Den Server starten:
 
-    node ccu.io.js
+    node ccu.io-server.js start
 
 * http://hostname:8080/ccu.io/index.html aufrufen. Auf dieser Seite können die 3 CCU.IO Objekte sowie die Events
-eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen
+eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
+
+* Den Server stoppen:
+
+    node ccu.io-server.js stop
+
+* CCU.IO schreibt ein Logfile in ccu.io/log/ccu.io.log
 
 ## Todo/Roadmap
 
-* File-Uploads
-* beliebige Objekte speichern und laden
 * Eingabefeld+Button für .emit() auf /ccu.io/index.html + Textarea für Rückgabe
 * Pseudo-Datenpunkte (nicht auf der CCU vorhanden, nur in CCU.IO)
 * Wunderground und yr.no Adapter

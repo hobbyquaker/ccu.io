@@ -1,5 +1,7 @@
+var fs = require("fs");
 
 var logger = {
+    logfile: __dirname + "/log/ccu.io.log",
     level: 2,
     timestamp: true,
     colors: {
@@ -70,9 +72,18 @@ var logger = {
                 str = str.slice(0, this.maxLength - 4) + " ...";
             }
 
-            console.log(str);
+            //console.log(str);
+            log.write(str+"\n");
         }
     }
 }
+
+var log = fs.createWriteStream(logger.logfile, {
+    flags: "a", encoding: "utf8", mode: 0644
+});
+
+process.on("uncaughtException", function(err) {
+    log.write(err.stack);
+});
 
 module.exports = logger;

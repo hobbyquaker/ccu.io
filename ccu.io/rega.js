@@ -12,7 +12,7 @@
  */
 
 
-var logger = require('./logger.js'),
+var logger = require(__dirname+'/logger.js'),
     http = require("http"),
     fs = require('fs'),
     xml2js = require('xml2js');
@@ -38,7 +38,7 @@ rega.prototype = {
         //logger.verbose('rega      --> ' + script + '.fn');
 
         var that = this;
-        fs.readFile('./regascripts/'+script+'.fn', 'utf8', function (err, data) {
+        fs.readFile(__dirname+'/regascripts/'+script+'.fn', 'utf8', function (err, data) {
             if (err) {
                 logger.error("rega          readFile "+err);
                 return false;

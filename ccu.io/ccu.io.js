@@ -11,14 +11,14 @@
  *
  */
 
-var settings = require('./settings.js');
+var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.9";
+settings.version = "0.9.10";
 
 var fs = require('fs'),
-    logger =    require('./logger.js'),
-    binrpc =    require("./binrpc.js"),
-    rega =      require("./rega.js"),
+    logger =    require(__dirname+'/logger.js'),
+    binrpc =    require(__dirname+"/binrpc.js"),
+    rega =      require(__dirname+"/rega.js"),
     express =   require('express'),
     app = express(),
     url = require('url'),
@@ -293,6 +293,7 @@ function initSocketIO() {
         logger.info("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
 
         socket.on('readdir', function (path, callback) {
+            path = __dirname+"/"+path;
             logger.info("socket.io <-- readdir "+path);
             fs.readdir(path, function (err, data) {
                if (err) {
