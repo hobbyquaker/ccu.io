@@ -44,14 +44,6 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
 
 * CCU.IO schreibt ein Logfile in ccu.io/log/ccu.io.log
 
-## Todo/Roadmap
-
-* Eingabefeld+Button für .emit() auf /ccu.io/index.html + Textarea für Rückgabe
-* Pseudo-Datenpunkte (nicht auf der CCU vorhanden, nur in CCU.IO)
-* Wunderground und yr.no Adapter
-* Einbindung von User-Scripten
-* binrpc.js vervollständigen
-
 
 ## Lizenz
 
