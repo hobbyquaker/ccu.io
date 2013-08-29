@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.10";
+settings.version = "0.9.11";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -60,7 +60,7 @@ var stats = {
     },
     log: function() {
         logger.info("ccu.io stats  cuxd: "+(stats.cuxd/settings.statsIntervalMinutes).toFixed(0)+"msg/min, wired: "+(stats.wired/settings.statsIntervalMinutes).toFixed(0)+"msg/min, rf: "+(stats.rf/settings.statsIntervalMinutes).toFixed(0)+"msg/min");
-        logger.info("ccu.io stats  "+stats.clients+" Socket.IO Clients connected");
+        logger.info("ccu.io stats  "+socketlist.length+" Socket.IO Clients connected");
         logger.info("ccu.io uptime "+stats.uptime());
         stats.cuxd = 0;
         stats.wired = 0;
@@ -195,8 +195,6 @@ function initRpc() {
         methods: {
             event: function (obj) {
                 //Todo Implement Rega Polling Trigger via Virtual Key
-
-
 
                 var ts = new Date();
                 var timestamp = ts.getFullYear() + '-' +
@@ -429,21 +427,26 @@ function initSocketIO() {
 }
 
 process.on('SIGINT', function () {
-    // Todo close Sockets
-    /*
+    stop();
+});
+
+process.on('SIGTERM', function () {
+    stop();
+});
+
+function stop() {
     socketlist.forEach(function(socket) {
-        logger.info("socket.io --> "  + " destroying socket");
-        socket.destroy();
+        logger.info("socket.io --> disconnecting socket");
+        socket.disconnect();
     });
-     */
 
     if (io) {
         logger.info("socket.io     closing server");
         io.server.close();
     }
 
-    setTimeout(quit, 1500);
-});
+    setTimeout(quit, 500);
+}
 
 function quit() {
     if (regahss.pendingRequests > 0) {
