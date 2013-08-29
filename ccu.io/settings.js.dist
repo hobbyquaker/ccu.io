@@ -7,7 +7,7 @@ var settings = {
     ccuIp: "192.168.1.100",
     binrpc: {
 
-        // IP-Adresse des Node-Servers (wird der CCU mitgeteilt für RPC Init)
+        // IP-Adresse des CCU.IO-Servers (wird der CCU mitgeteilt für RPC Init)
         listenIp: "192.168.1.200",
 
         // Port auf dem der xmlrpc_bin:// Server lauscht
@@ -28,8 +28,6 @@ var settings = {
         // Interval für Polling in milli-Sekunden
         pollDataInterval: 15000,
 
-
-
         // Todo Implement Polling Trigger
         pollDataTrigger: "BidCos-RF.BidCoS-RF:50.PRESS_LONG",
         // Todo Implement Meta Data Polling
@@ -48,7 +46,7 @@ var settings = {
             "datapoints"
         ]
     },
-    datastorePath: "datastore/",
+    datastorePath: __dirname+"/datastore/",
     stats: true
 };
 
