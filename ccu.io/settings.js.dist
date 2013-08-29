@@ -22,6 +22,13 @@ var settings = {
             { id: "io_rf",      port: 2001 }
         ]
     },
+    logging: {
+        enabled: true,
+        file: "devices-variables.log",
+        move: true,
+        varChangeOnly: true,
+        writeInterval: 60
+    },
     regahss: {
         // Variablen-Werte von der CCU Pollen
         pollData: true,

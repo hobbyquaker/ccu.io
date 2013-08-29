@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.11";
+settings.version = "0.9.12";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -24,7 +24,10 @@ var fs = require('fs'),
     url = require('url'),
     server =    require('http').createServer(app),
     socketio =  require('socket.io'),
-    io;
+    io,
+    devlog,
+    devlogCache = [],
+    notFirstVarUpdate = false;
 
 var socketlist = [],
     homematic = {},
@@ -35,9 +38,8 @@ var socketlist = [],
         Address: {}
     };
 
-logger.info("ccu.io        version "+settings.version);
+logger.info("ccu.io        starting version "+settings.version);
 logger.info("              copyright (c) 2013 hobbyquaker");
-logger.info("              press ctrl-c to stop");
 
 var regahss = new rega({
     ccuIp: settings.ccuIp,
@@ -46,6 +48,25 @@ var regahss = new rega({
     }
 });
 
+if (settings.logging.enabled) {
+
+    devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
+        flags: "a", encoding: "utf8", mode: 0644
+    });
+
+    setInterval(writeLog, settings.logging.writeInterval * 1000);
+
+    if (settings.logging.move) {
+        var midnight = new Date();
+        midnight.setHours( 23 );
+        midnight.setMinutes( 59 );
+        midnight.setSeconds( 59 );
+        midnight.setMilliseconds( 975 );
+        setTimeout(moveLog, midnight.getTime() - new Date().getTime());
+    }
+}
+
+
 loadRegaData();
 
 var stats = {
@@ -53,15 +74,19 @@ var stats = {
     cuxd: 0,
     wired: 0,
     rf: 0,
-    start: ((new Date()).getTime() / 1000),
+    start: ((new Date()).getTime()),
     uptime: function() {
-        var seconds = ((new Date()).getTime() / 1000) - stats.start;
-        return seconds.toFixed(0)+"s";
+        var mseconds = ((new Date()).getTime()) - stats.start;
+        var diff = new Date(mseconds);
+        var hours = diff.getHours();
+        var days = Math.floor(hours/24);
+        hours = hours - (24 * days);
+        return days+" Tage, "+(hours-1)+" Stunden, "+ diff.getMinutes()+" Minuten, "+diff.getSeconds()+" Sekunden";
     },
     log: function() {
         logger.info("ccu.io stats  cuxd: "+(stats.cuxd/settings.statsIntervalMinutes).toFixed(0)+"msg/min, wired: "+(stats.wired/settings.statsIntervalMinutes).toFixed(0)+"msg/min, rf: "+(stats.rf/settings.statsIntervalMinutes).toFixed(0)+"msg/min");
         logger.info("ccu.io stats  "+socketlist.length+" Socket.IO Clients connected");
-        logger.info("ccu.io uptime "+stats.uptime());
+        logger.verbose("ccu.io uptime "+stats.uptime());
         stats.cuxd = 0;
         stats.wired = 0;
         stats.rf = 0;
@@ -117,9 +142,26 @@ function setDatapoint(id, val, ts, ack) {
 function pollRega() {
     regahss.runScriptFile("polling", function (data) {
         var data = JSON.parse(data);
+        var val;
         for (id in data) {
+            if (settings.logging.enabled) {
+                var ts = Math.round((new Date()).getTime() / 1000);
+                if (typeof data[id][0] == "string") {
+                    val = unescape(data[id][0]);
+                } else {
+                    val = data[id][0];
+                }
+                if (settings.logging.varChangeOnly && notFirstVarUpdate) {
+                    if (datapoints[id][0] != val) {
+                        cacheLog(ts+" "+id+" "+val+"\n");
+                    }
+                } else {
+                    cacheLog(ts+" "+id+" "+val+"\n");
+                }
+            }
             setDatapoint(parseInt(id,10), data[id][0], data[id][1], true);
         }
+        notFirstVarUpdate = true;
         setTimeout(pollRega, settings.regahss.pollDataInterval);
     });
 }
@@ -225,6 +267,12 @@ function initRpc() {
 
                 // Get ReGa id
                 var regaObj = regaIndex.Name[bidcos];
+
+                if (regaObj && regaObj[0] && settings.logging.enabled) {
+                    var ts = Math.round((new Date()).getTime() / 1000);
+                    cacheLog(ts+" "+regaObj[0]+" "+obj[3]+"\n");
+                }
+
                 if (regaObj && regaObj[0]) {
                     logger.verbose("socket.io --> broadcast event "+JSON.stringify([regaObj[0], obj[3], timestamp, true]))
                     io.sockets.emit("event", [regaObj[0], obj[3], timestamp, true]);
@@ -255,7 +303,7 @@ function initWebserver() {
         var query = urlParts.query;
 
         //console.log(query);
-        logger.info("webserver <-- file upload "+req.files.file.name+" ("+req.files.file.size+" bytes)");
+        logger.verbose("webserver <-- file upload "+req.files.file.name+" ("+req.files.file.size+" bytes)");
         // get the temporary location of the file
         var tmpPath = req.files.file.path;
         var newName;
@@ -288,7 +336,7 @@ function initSocketIO() {
     io.sockets.on('connection', function (socket) {
         socketlist.push(socket);
         var address = socket.handshake.address;
-        logger.info("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
+        logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
 
         socket.on('readdir', function (path, callback) {
             path = __dirname+"/"+path;
@@ -304,14 +352,14 @@ function initSocketIO() {
 
         socket.on('writeFile', function (name, obj, callback) {
             var content = JSON.stringify(obj);
-            logger.info("socket.io <-- writeFile "+name+" "+content);
+            logger.verbose("socket.io <-- writeFile "+name+" "+content);
             fs.writeFile(settings.datastorePath+name, content);
             // Todo Fehler abfangen
             if (callback) { callback(); }
         });
 
         socket.on('readFile', function (name, callback) {
-            logger.info("socket.io <-- readFile "+name);
+            logger.verbose("socket.io <-- readFile "+name);
 
             fs.readFile(settings.datastorePath+name, function (err, data) {
                 if (err) {
@@ -325,24 +373,24 @@ function initSocketIO() {
         });
 
         socket.on('getDatapoints', function(callback) {
-            logger.info("socket.io <-- getData");
+            logger.verbose("socket.io <-- getData");
             callback(datapoints);
         });
 
         socket.on('getObjects', function(callback) {
-            logger.info("socket.io <-- getObjects");
+            logger.verbose("socket.io <-- getObjects");
             callback(regaObjects);
         });
 
 
         socket.on('getIndex', function(callback) {
-            logger.info("socket.io <-- getIndex");
+            logger.verbose("socket.io <-- getIndex");
             callback(regaIndex);
         });
 
         socket.on('setState', function(arr, callback) {
             // Todo Delay!
-            logger.info("socket.io <-- setState "+JSON.stringify(arr));
+            logger.verbose("socket.io <-- setState "+JSON.stringify(arr));
             var id =    parseInt(arr[0], 10),
                 val =   arr[1],
                 ts =    arr[2],
@@ -399,14 +447,14 @@ function initSocketIO() {
         });
 
         socket.on('programExecute', function(id, callback) {
-            logger.info("socket.io <-- runProgram");
+            logger.verbose("socket.io <-- runProgram");
             regahss.script("Write(dom.GetObject("+id+").ProgramExecute());", function (data) {
                 if (callback) { callback(data); }
             });
         });
 
         socket.on('runScript', function(script, callback) {
-            logger.info("socket.io <-- script");
+            logger.verbose("socket.io <-- script");
             regahss.script(script, function (data) {
                 if (callback) { callback(data); }
             });
@@ -414,12 +462,12 @@ function initSocketIO() {
 
         socket.on('disconnect', function () {
             var address = socket.handshake.address;
-            logger.info("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " disconnected");
+            logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " disconnected");
             socketlist.splice(socketlist.indexOf(socket), 1);
         });
         socket.on('close', function () {
             var address = socket.handshake.address;
-            logger.info("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " closed");
+            logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " closed");
             socketlist.splice(socketlist.indexOf(socket), 1);
         });
     });
@@ -436,12 +484,12 @@ process.on('SIGTERM', function () {
 
 function stop() {
     socketlist.forEach(function(socket) {
-        logger.info("socket.io --> disconnecting socket");
+        logger.verbose("socket.io --> disconnecting socket");
         socket.disconnect();
     });
 
     if (io) {
-        logger.info("socket.io     closing server");
+        logger.verbose("socket.io     closing server");
         io.server.close();
     }
 
@@ -450,10 +498,47 @@ function stop() {
 
 function quit() {
     if (regahss.pendingRequests > 0) {
-        logger.info("rega          waiting for pending request...");
+        logger.verbose("rega          waiting for pending request...");
         setTimeout(quit, 500);
     } else {
+        logger.info("ccu.io uptime "+stats.uptime());
         logger.info("ccu.io        terminating");
-        process.exit(0);
+        setTimeout(function () {
+            process.exit(0);
+        }, 250);
     }
+}
+
+function cacheLog(str) {
+    devlogCache.push(str);
+}
+
+function writeLog() {
+    var tmp = devlogCache;
+    devlogCache = [];
+    var l = tmp.length;
+    logger.verbose("ccu.io        writing "+l+" lines to "+settings.logging.file);
+    for (var i = 0; i < l; i++) {
+        devlog.write(tmp[i]);
+    }
+}
+
+function moveLog() {
+    setTimeout(moveLog, 86400000);
+    var ts = new Date();
+
+    logger.verbose("ccu.io        moving Logfile");
+
+    var timestamp = ts.getFullYear() + '-' +
+        ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
+        ("0" + (ts.getDate() + 1).toString(10)).slice(-2);
+
+    devlog.close();
+
+    fs.rename(__dirname+"/log/"+settings.logging.file, __dirname+"/log/"+settings.logging.file+"."+timestamp, function() {
+        devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
+            flags: "a", encoding: "utf8", mode: 0644
+        });
+    });
+
 }

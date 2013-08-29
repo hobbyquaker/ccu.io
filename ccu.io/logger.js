@@ -2,7 +2,7 @@ var fs = require("fs");
 
 var logger = {
     logfile: __dirname + "/log/ccu.io.log",
-    level: 2,
+    level: 3,
     timestamp: true,
     colors: {
         "5": '\u001b[31m',

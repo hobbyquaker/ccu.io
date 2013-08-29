@@ -2,7 +2,7 @@ CCU.IO
 ======
 
 CCU.IO ist eine Node.js Applikation die einen Web-Server für HomeMatic Web-Oberflächen bereitstellt und via BIN-RPC mit
-rfd, hs485d und cuxd kommuniziert. CCU.IO kann - aber muss nicht - auf der CCU2 installiert werden. Über eine Websocket-
+rfd, hs485d und CUxD kommuniziert. CCU.IO kann - aber muss nicht - auf der CCU2 installiert werden. Über eine Websocket-
 Verbindung kann CCU.IO den Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis
 /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
@@ -13,6 +13,7 @@ CCU.IO bildet die Schnittstelle zur CCU für folgende Projekte:
 
 * yahui https://github.com/hobbyquaker/yahui
 * DashUI (in 0.8.x noch optional neben jqHomematic/WebAPI, ab 0.9 vollständig CCU.IO) https://github.com/hobbyquaker/DashUI
+* CCU.IO-Highcharts (noch nicht veröffentlicht, geplantes Release: Oktober 2013)
 * HQ WebUI (ab Version 3.0, frühestens Ende 2013) https://github.com/hobbyquaker/hq-webui
 
 
