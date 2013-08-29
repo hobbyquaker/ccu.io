@@ -54,7 +54,8 @@ var settings = {
         ]
     },
     datastorePath: __dirname+"/datastore/",
-    stats: true
+    stats: true,
+    statsIntervalMinutes: 15
 };
 
 module.exports = settings;
