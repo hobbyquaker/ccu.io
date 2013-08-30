@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.12";
+settings.version = "0.9.13";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -372,6 +372,22 @@ function initSocketIO() {
             });
         });
 
+        socket.on('readRawFile', function (name, callback) {
+            logger.verbose("socket.io <-- readFile "+name);
+
+            fs.readFile(__dirname+"/"+name, function (err, data) {
+                if (err) {
+                    logger.error("ccu.io        failed loading file "+__dirname+"/"+name);
+                    callback(undefined);
+                } else {
+                    callback("\""+data+"\"");
+                }
+            });
+        });
+
+
+
+
         socket.on('getDatapoints', function(callback) {
             logger.verbose("socket.io <-- getData");
             callback(datapoints);
@@ -525,7 +541,8 @@ function writeLog() {
 
 function moveLog() {
     setTimeout(moveLog, 86400000);
-    var ts = new Date();
+    var ts = (new Date()).getTime() - 600000;
+    ts = new Date(ts);
 
     logger.verbose("ccu.io        moving Logfile");
 
