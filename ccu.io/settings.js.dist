@@ -37,11 +37,7 @@ var settings = {
 
         // Todo Implement Polling Trigger
         pollDataTrigger: "BidCos-RF.BidCoS-RF:50.PRESS_LONG",
-        // Todo Implement Meta Data Polling
-        pollMeta: true,
-        pollMetaInterval: 172800000,
-        // Todo Implement Meta Data Cache
-        cacheMeta: false,
+
         metaScripts: [
             "favorites",
             "variables",

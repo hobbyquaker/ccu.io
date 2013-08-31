@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.13";
+settings.version = "0.9.14";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -61,11 +61,10 @@ if (settings.logging.enabled) {
         midnight.setHours( 23 );
         midnight.setMinutes( 59 );
         midnight.setSeconds( 59 );
-        midnight.setMilliseconds( 975 );
+        midnight.setMilliseconds( 950 );
         setTimeout(moveLog, midnight.getTime() - new Date().getTime());
     }
 }
-
 
 loadRegaData();
 
@@ -241,7 +240,7 @@ function initRpc() {
                 var ts = new Date();
                 var timestamp = ts.getFullYear() + '-' +
                     ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
-                    ("0" + (ts.getDate() + 1).toString(10)).slice(-2) + ' ' +
+                    ("0" + (ts.getDate()).toString(10)).slice(-2) + ' ' +
                     ("0" + (ts.getHours()).toString(10)).slice(-2) + ':' +
                     ("0" + (ts.getMinutes()).toString(10)).slice(-2) + ':' +
                     ("0" + (ts.getSeconds()).toString(10)).slice(-2);
@@ -541,7 +540,7 @@ function writeLog() {
 
 function moveLog() {
     setTimeout(moveLog, 86400000);
-    var ts = (new Date()).getTime() - 600000;
+    var ts = (new Date()).getTime() - 3600000;
     ts = new Date(ts);
 
     logger.verbose("ccu.io        moving Logfile");
