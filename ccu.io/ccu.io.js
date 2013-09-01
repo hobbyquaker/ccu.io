@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.14";
+settings.version = "0.9.15";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -547,7 +547,7 @@ function moveLog() {
 
     var timestamp = ts.getFullYear() + '-' +
         ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
-        ("0" + (ts.getDate() + 1).toString(10)).slice(-2);
+        ("0" + (ts.getDate()).toString(10)).slice(-2);
 
     devlog.close();
 
