@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.15";
+settings.version = "0.9.16";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -38,8 +38,8 @@ var socketlist = [],
         Address: {}
     };
 
-logger.info("ccu.io        starting version "+settings.version);
-logger.info("              copyright (c) 2013 hobbyquaker");
+logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
+
 
 var regahss = new rega({
     ccuIp: settings.ccuIp,
@@ -170,7 +170,7 @@ function loadRegaData(index) {
     var type = settings.regahss.metaScripts[index];
     regahss.runScriptFile(type, function (data) {
         var data = JSON.parse(data);
-        logger.verbose("ccu.io        indexing "+type);
+        logger.info("ccu.io        indexing "+type);
         for (var id in data) {
             var idInt = parseInt(id, 10);
 
@@ -313,7 +313,10 @@ function initWebserver() {
             newName = req.files.file.name;
         }
         // set where the file should actually exists - in this case it is in the "images" directory
-        var targetPath = query.path + newName;
+        var targetPath = __dirname + "/" + query.path + newName;
+
+        logger.debug("move "+tmpPath+" -> "+targetPath);
+
         // move the file from the temporary location to the intended location
         fs.rename(tmpPath, targetPath, function(err) {
             if (err) throw err;
