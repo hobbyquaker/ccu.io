@@ -18,7 +18,7 @@ CCU.IO bildet die Schnittstelle zur CCU für folgende Projekte:
 * [DashUI](https://github.com/hobbyquaker/DashUI)
 * [CCU.IO-Highcharts](https://github.com/hobbyquaker/CCU-IO-Highcharts)
 
-## Vorraussetzungen
+## Voraussetzungen
 
 CCU.IO benötigt Node.js das für viele Plattformen inklusive der CCU2 zur Verfügung steht:
 * Binärfile für die CCU2 hab ich gebaut und hier veröffentlicht: https://github.com/hobbyquaker/node-ccu2
