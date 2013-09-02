@@ -14,10 +14,9 @@ Node basierten Projekten als Schnittstelle zur CCU eingesetzt werden.
 
 CCU.IO bildet die Schnittstelle zur CCU für folgende Projekte:
 
-* yahui https://github.com/hobbyquaker/yahui
-* DashUI (in 0.8.x noch optional neben jqHomematic/WebAPI, ab 0.9 vollständig CCU.IO) https://github.com/hobbyquaker/DashUI
-* CCU.IO-Highcharts https://github.com/hobbyquaker/CCU-IO-Highcharts
-* HQ WebUI (ab Version 3.0, frühestens Ende 2013) https://github.com/hobbyquaker/hq-webui
+* [yahui](https://github.com/hobbyquaker/yahui)
+* [DashUI](https://github.com/hobbyquaker/DashUI)
+* [CCU.IO-Highcharts](https://github.com/hobbyquaker/CCU-IO-Highcharts)
 
 ## Vorraussetzungen
 
