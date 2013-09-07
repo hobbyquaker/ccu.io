@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.16";
+settings.version = "0.9.17";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -272,6 +272,7 @@ function initRpc() {
                     cacheLog(ts+" "+regaObj[0]+" "+obj[3]+"\n");
                 }
 
+
                 if (regaObj && regaObj[0]) {
                     logger.verbose("socket.io --> broadcast event "+JSON.stringify([regaObj[0], obj[3], timestamp, true]))
                     io.sockets.emit("event", [regaObj[0], obj[3], timestamp, true]);
@@ -334,6 +335,16 @@ function initWebserver() {
 }
 
 
+function formatTimestamp() {
+    var timestamp = new Date();
+    var ts = timestamp.getFullYear() + '-' +
+        ("0" + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
+        ("0" + (timestamp.getDate() + 1).toString(10)).slice(-2) + ' ' +
+        ("0" + (timestamp.getHours()).toString(10)).slice(-2) + ':' +
+        ("0" + (timestamp.getMinutes()).toString(10)).slice(-2) + ':' +
+        ("0" + (timestamp.getSeconds()).toString(10)).slice(-2);
+    return timestamp;
+}
 function initSocketIO() {
     io.sockets.on('connection', function (socket) {
         socketlist.push(socket);
@@ -404,6 +415,21 @@ function initSocketIO() {
         socket.on('getIndex', function(callback) {
             logger.verbose("socket.io <-- getIndex");
             callback(regaIndex);
+        });
+
+        socket.on('addStringVariable', function(name, desc, str, callback) {
+            logger.verbose("socket.io <-- addStringVariable");
+            regahss.addStringVariable(name, desc, str, function (id) {
+                if (id) {
+                    var ts = formatTimestamp();
+                    datapoints[id] = [str, ts, true];
+                    regaObjects[id] = {Name:name, TypeName: "VARDP", DPInfo: "DESC", ValueType: 20, ValueSubType: 11};
+                    regaIndex.VARDP.push(id);
+                    regaIndex.Name[id] = [13305, "VARDP", null];
+                    logger.info("ccu.io        added string variable "+id+" "+name);
+                }
+                callback(id);
+            });
         });
 
         socket.on('setState', function(arr, callback) {

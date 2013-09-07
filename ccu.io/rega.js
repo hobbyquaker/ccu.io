@@ -34,6 +34,36 @@ rega.prototype = {
     regaUp: function (success, error) {
 
     },
+    addStringVariable: function (name, desc, str, callback) {
+        var script = "object test = dom.GetObject('"+name+"');\n" +
+            "if (test) {\n" +
+            "WriteLine('false');\n" +
+            "} else {\n" +
+            "object o = dom.CreateObject(OT_VARDP);\n" +
+            "o.Name('"+name+"');\n" +
+            "dom.GetObject(ID_SYSTEM_VARIABLES).Add(o.ID());\n" +
+            "o.DPInfo('"+desc+"');\n" +
+            "o.DPArchive(false);\n" +
+            "o.ValueUnit('');\n" +
+            "o.ValueType(20);\n" +
+            "o.ValueSubType(11);\n" +
+            "o.State('"+str+"');\n" +
+            "WriteLine(o.ID());\n" +
+            "}";
+
+        this.script(script, function (res) {
+            var id = parseInt(res, 10);
+            if (res == "false") {
+                logger.error("rega          addStringVariable("+name+") already exists");
+                callback(false);
+            } else if (id > 0) {
+                callback(id);
+            } else {
+                logger.error("rega          addStringVariable("+name+") unknown error");
+                callback(false);
+            }
+        });
+    },
     runScriptFile: function (script, callback) {
         //logger.verbose('rega      --> ' + script + '.fn');
 
