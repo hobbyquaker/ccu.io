@@ -1,8 +1,8 @@
-!# functions.fn 1.1 CCU.IO
+!# functions.fn 1.2 CCU.IO
 !#
 !# Dieses Script gibt eine Liste der Gewerke als JSON String aus
 !#
-!# 6'2013-7'2013 bluefox, hobbyquaker
+!# 6'2013-9'2013 bluefox, hobbyquaker
 !#
 
 object  oFunction;
@@ -34,7 +34,7 @@ foreach (sFunctionId, dom.GetObject(ID_FUNCTIONS).EnumUsedIDs())
 		} else {
 		  bFirstSecond = false;
 		}
-		Write('"' # sChannelId # '"');
+		Write(sChannelId);
     }
     Write(']}');
 }
