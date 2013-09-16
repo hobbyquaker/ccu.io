@@ -2,12 +2,37 @@
 <script src="/lib/js/jquery-1.10.2.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-
+    var regaObjects = null;
+    function getObjDesc (id) {
+        if (regaObjects != null && regaObjects[id] !== undefined) {
+            var parent = "";
+            var p = regaObjects[id]["Parent"];
+            if (p !== undefined && regaObjects[p]["DPs"] !== undefined)
+                parent = regaObjects[p]["Name"] + "/";
+            else if (regaObjects[id]["TypeName"] !== undefined) {
+                if (regaObjects[id]["TypeName"] == "VARDP") {  
+                    "Variable" + " / ";
+                }
+                else
+                if (regaObjects[id]["TypeName"] == "PROGRAM") {  
+                    "Program" + " / ";
+                }
+            }
+        
+            if (regaObjects[id]["Address"] !== undefined)
+                return parent + regaObjects[id]["Name"] + "/" + regaObjects[id]["Address"];
+            else
+                return parent + regaObjects[id]["Name"];
+        }
+        else
+            return "";
+    }
     $(document).ready(function () {
         var output = $("#output");
         var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host'));
         socket.on('event', function(obj) {
             $("#output").prepend(JSON.stringify(obj)+"\n");
+            $("#output").prepend(getObjDesc(obj[0]));       
         });
 
         $("#dataRefresh").click(function() {
@@ -22,6 +47,7 @@
             $("#meta").html("");
             socket.emit('getObjects', function(obj) {
                 $("#meta").html(JSON.stringify(obj, null, "  "));
+                regaObjects = obj;
             });
         });
 
@@ -30,6 +56,9 @@
             socket.emit('getIndex', function(obj) {
                 $("#index").html(JSON.stringify(obj, null, "  "));
             });
+        });
+        $("#clearOutput").click(function() {
+            $("#output").html("");
         });
 
     });
@@ -65,7 +94,7 @@
         <textarea id="index"></textarea>
     </div>
     <div class="box">
-        Events<br/>
+        Events&nbsp;<input value="Clear" type="button" id="clearOutput"><br/>
         <textarea style="width:1220px" id="output"></textarea>
     </div>
 

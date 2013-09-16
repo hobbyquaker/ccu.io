@@ -514,6 +514,9 @@ binrpc.prototype = {
                         logger.silly(buf);
 
                         c.write(buf);
+                        // Reinit buffer if the socket stay opened
+                        receiver = new Buffer(0);
+                        chunk = 0;
                     }
 
                 });
