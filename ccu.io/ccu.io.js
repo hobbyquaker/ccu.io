@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.18";
+settings.version = "0.9.19";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -262,6 +262,15 @@ function initRpc() {
                         break;
                     default:
                     //
+                }
+
+                // STATE korrigieren
+                if (obj[2] == "STATE") {
+                    if (obj[3] === "1" || obj[3] === 1) {
+                        obj[3] = true;
+                    } else if (obj[3] === "0" || obj[3] === 0) {
+                        obj[3] = false;
+                    }
                 }
 
                 // Get ReGa id
