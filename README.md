@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.20
+aktuelle Version: 0.9.21
 
 
 CCU.IO ist eine Node.js Applikation die einen Web-Server für HomeMatic Web-Oberflächen bereitstellt und via BIN-RPC mit
