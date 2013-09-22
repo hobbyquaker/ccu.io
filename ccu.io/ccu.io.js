@@ -40,7 +40,6 @@ var socketlist = [],
 
 logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
 
-
 var regahss = new rega({
     ccuIp: settings.ccuIp,
     ready: function() {
@@ -109,26 +108,40 @@ function setDatapoint(id, val, ts, ack) {
     }
 
     var oldval = datapoints[id];
-    datapoints[id] = [val,ts,ack];
+    var lc = null; // last change
+    var obj; // Event argument
+    if (oldval && oldval[3] !== undefined) {
+        lc = oldval[3];
+        datapoints[id] = [val,ts,ack,lc];
+        obj = [id,val,ts,ack,lc];
+    }
+    else {
+        datapoints[id] = [val,ts,ack];
+        obj = [id,val,ts,ack];
+    }
 
     if (!oldval) {
         // Neu
         logger.warn("rega      <-- unknown variable "+id);
-        sendEvent([id,val,ts,ack]);
+        sendEvent(obj);
     } else if (val !== oldval[0]) {
         // Todo Änderungs-Zeitstempel -> Variablen extra behandeln
         // Änderung
         logger.debug("chg "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
-        sendEvent([id,val,ts,ack]);
+        // Calculate new timestamp
+        lc = Math.round((new Date()).getTime() / 1000);
+        datapoints[id] = [val,ts,ack,lc];
+        obj = [id,val,ts,ack,lc];
+        sendEvent(obj);
     } else {
         if (ack && !oldval[2]) {
             // Bestätigung
             logger.debug("ack "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
-            sendEvent([id,val,ts,ack]);
+            sendEvent(obj);
         } else if (ts !== oldval[1]) {
             // Aktualisierung
             logger.debug("ts "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
-            sendEvent([id,val,ts,ack]);
+            sendEvent(obj);
         } else {
             // Keine Änderung
             logger.debug("eq "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
@@ -136,7 +149,6 @@ function setDatapoint(id, val, ts, ack) {
 
     }
 }
-
 
 function pollRega() {
     regahss.runScriptFile("polling", function (data) {
@@ -206,7 +218,6 @@ function loadRegaData(index) {
 
             // Meta-Daten setzen
             regaObjects[id] = data[id];
-
         }
 
         index += 1;
@@ -284,8 +295,29 @@ function initRpc() {
 
                 if (regaObj && regaObj[0]) {
                     logger.verbose("socket.io --> broadcast event "+JSON.stringify([regaObj[0], obj[3], timestamp, true]))
-                    io.sockets.emit("event", [regaObj[0], obj[3], timestamp, true]);
-                    datapoints[regaObj[0]] = [obj[3], timestamp, true];
+                    var event = null; // Event argument
+      
+                    if (datapoints[regaObj[0]]) {
+                        // If value changed
+                        if (datapoints[regaObj[0]][0] != obj[3]) {
+                            // Remember timestamp
+                            var lc = Math.round((new Date()).getTime() / 1000);
+                            datapoints[regaObj[0]] = [obj[3],timestamp,true,lc];
+                            event = [regaObj[0],obj[3],timestamp,true,lc];
+                        }
+                        else {
+                            if (datapoints[regaObj[0]][3] != undefined) {
+                                datapoints[regaObj[0]] = [obj[3],timestamp,true, datapoints[regaObj[0]][3]];
+                                event = [regaObj[0],obj[3],timestamp,true, datapoints[regaObj[0]][3]];
+                            }
+                            else {
+                                datapoints[regaObj[0]] = [obj[3],timestamp,true];
+                                event = [regaObj[0],obj[3],timestamp,true];
+                            }
+                        }
+                    }
+
+                    io.sockets.emit("event", event);
                 }
 
                 /* TODO remove old event (DashUI 0.8.x compatibility)
@@ -343,7 +375,6 @@ function initWebserver() {
     initSocketIO();
 }
 
-
 function formatTimestamp() {
     var timestamp = new Date();
     var ts = timestamp.getFullYear() + '-' +
@@ -354,6 +385,7 @@ function formatTimestamp() {
         ("0" + (timestamp.getSeconds()).toString(10)).slice(-2);
     return timestamp;
 }
+
 function initSocketIO() {
     io.sockets.on('connection', function (socket) {
         socketlist.push(socket);
@@ -407,9 +439,6 @@ function initSocketIO() {
             });
         });
 
-
-
-
         socket.on('getDatapoints', function(callback) {
             logger.verbose("socket.io <-- getData");
             callback(datapoints);
@@ -419,7 +448,6 @@ function initSocketIO() {
             logger.verbose("socket.io <-- getObjects");
             callback(regaObjects);
         });
-
 
         socket.on('getIndex', function(callback) {
             logger.verbose("socket.io <-- getIndex");
@@ -496,7 +524,6 @@ function initSocketIO() {
             }
 
             setDatapoint(id, val, ts, ack);
-
         });
 
         socket.on('programExecute', function(id, callback) {
@@ -518,6 +545,7 @@ function initSocketIO() {
             logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " disconnected");
             socketlist.splice(socketlist.indexOf(socket), 1);
         });
+        
         socket.on('close', function () {
             var address = socket.handshake.address;
             logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " closed");
