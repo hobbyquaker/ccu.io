@@ -4,11 +4,13 @@ var daemon = require("daemonize2").setup({
     pidfile: "ccu.io.pid"
 });
 
-
+var fs = require('fs');
 
 switch (process.argv[2]) {
 
     case "start":
+        checkDirPermission(__dirname+"/datastore");
+        checkDirPermission(__dirname+"/log");
         daemon.start();
         break;
 
@@ -22,6 +24,8 @@ switch (process.argv[2]) {
 
     case "restart":
         daemon.stop(function(err) {
+            checkDirPermission(__dirname+"/datastore");
+            checkDirPermission(__dirname+"/log");
             daemon.start();
         });
         break;
@@ -36,4 +40,15 @@ switch (process.argv[2]) {
 
     default:
         console.log("Usage: [start|stop|kill|restart|status]");
+}
+
+
+function checkDirPermission(path) {
+    try {
+        fs.writeFileSync(path+'/permission.test', 'test');
+    } catch (e) {
+        console.log("Error: no permission to write in "+path);
+        process.exit(1);
+    }
+    fs.unlinkSync(path+'/permission.test');
 }
