@@ -16,6 +16,9 @@ var logger = require(__dirname+'/logger.js'),
     http = require("http"),
     fs = require('fs'),
     xml2js = require('xml2js');
+// var iconv = require('iconv-lite');
+
+
 
 var parser = new xml2js.Parser({explicitArray:false});
 
@@ -32,6 +35,73 @@ rega.prototype = {
     options: {},
     pendingRequests: 0,
     regaUp: function (success, error) {
+
+    },
+    checkTime: function (callback) {
+        this.script('WriteLine(system.Date("%F %X").ToTime().ToInteger());', function (data) {
+            var ccuTime = parseInt(data, 10);
+            var localTime = Math.round(new Date().getTime() / 1000);
+            var diff = localTime - ccuTime
+            logger.info("ccu.io        time difference local-ccu " + diff.toString() + "s");
+            callback();
+        });
+    },
+    loadStringTable: function (callback) {
+
+        var options = {
+            host: this.options.ccuIp,
+            port: 80,
+            path: '/config/stringtable_de.txt'
+        };
+
+        http.get(options, function(res) {
+            var data = "";
+
+            res.on('data', function (chunk) {
+                data += chunk;
+            });
+            res.on('end', function () {
+                var str = iconv.decode(data, 'ISO-8859-1');
+                var dataArr = str.split("\n");
+                var lang = {};
+                for (var i = 0; i < dataArr.length; i++) {
+                    var line = dataArr[i];
+                    if (line && line != "") {
+                        var resultArr = line.match(/^([A-Z0-9_-]+)\|?([A-Z0-9_-]+)?=?([A-Z0-9_-]+)?[ \t]+(.+)$/);
+                        if (resultArr) {
+                            if (!lang[resultArr[1]]) {
+                                lang[resultArr[1]] = {};
+                            }
+                            if (resultArr[3]) {
+                                if (!lang[resultArr[1]][resultArr[2]]) {
+                                    lang[resultArr[1]][resultArr[2]] = {};
+                                }
+                                if (!lang[resultArr[1]][resultArr[2]][resultArr[3]]) {
+                                    lang[resultArr[1]][resultArr[2]][resultArr[3]] = {};
+                                }
+                                lang[resultArr[1]][resultArr[2]][resultArr[3]].text = resultArr[4];
+                            } else if (resultArr[2]) {
+                                if (!lang[resultArr[1]][resultArr[2]]) {
+                                    lang[resultArr[1]][resultArr[2]] = {};
+                                }
+                                lang[resultArr[1]][resultArr[2]].text = resultArr[4];
+                            } else {
+                                lang[resultArr[1]].text = resultArr[4];
+                            }
+                        }
+
+                    }
+
+                }
+
+
+                logger.info("ccu.io        stringtable loaded");
+                callback(lang);
+            });
+
+        }).on('error', function(e) {
+            callback(false);
+        });
 
     },
     addStringVariable: function (name, desc, str, callback) {

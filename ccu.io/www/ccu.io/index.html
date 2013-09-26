@@ -57,6 +57,15 @@
                 $("#index").html(JSON.stringify(obj, null, "  "));
             });
         });
+
+        $("#stringtableRefresh").click(function() {
+            $("#stringtable").html("");
+            socket.emit('getStringtable', function(obj) {
+                $("#stringtable").html(JSON.stringify(obj, null, "  "));
+            });
+        });
+
+
         $("#clearOutput").click(function() {
             $("#output").html("");
         });
@@ -83,17 +92,24 @@
     </div>
 
     <div class="box">
-        datapoints, getDatapoints(),  Arrays: value, timestamp [,ack]<br>
+        datapoints, getDatapoints(), ID Arrays: value, timestamp, ack, LastChange<br>
         <input id="dataRefresh" type="button" value="refresh"/><br/>
         <textarea id="data"></textarea>
     </div>
 
-    <div class="box">
-        regaIndex, getIndex(), Name Arrays: id, TypeName [,Parent]<br>
-        <input id="indexRefresh" type="button" value="refresh"/><br/>
-        <textarea id="index"></textarea>
-    </div>
-    <div class="box">
+<div class="box">
+    regaIndex, getIndex(), Name Arrays: id, TypeName [,Parent]<br>
+    <input id="indexRefresh" type="button" value="refresh"/><br/>
+    <textarea id="index"></textarea>
+</div>
+<!--
+<div class="box">
+    stringtable<br>
+    <input id="stringtableRefresh" type="button" value="refresh"/><br/>
+    <textarea id="stringtable"></textarea>
+</div>
+-->
+<div class="box">
         Events&nbsp;<input value="Clear" type="button" id="clearOutput"><br/>
         <textarea style="width:1220px" id="output"></textarea>
     </div>

@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.22";
+settings.version = "0.9.23";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -31,6 +31,7 @@ var fs = require('fs'),
 
 var socketlist = [],
     homematic = {},
+    stringtable = {},
     datapoints = {},
     regaObjects = {},
     regaIndex = {
@@ -40,6 +41,8 @@ var socketlist = [],
 
 logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
 
+
+
 var regahss = new rega({
     ccuIp: settings.ccuIp,
     ready: function() {
@@ -48,7 +51,6 @@ var regahss = new rega({
 });
 
 if (settings.logging.enabled) {
-
     devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
         flags: "a", encoding: "utf8", mode: 0644
     });
@@ -65,7 +67,17 @@ if (settings.logging.enabled) {
     }
 }
 
-loadRegaData();
+
+
+/*
+regahss.loadStringTable(function (data) {
+    stringtable = data;
+});
+ */
+
+
+
+regahss.checkTime(loadRegaData);
 
 var stats = {
     clients: 0,
@@ -100,7 +112,7 @@ function sendEvent(arr) {
     io.sockets.emit("event", arr);
 }
 
-function setDatapoint(id, val, ts, ack) {
+function setDatapoint(id, val, ts, ack, lc) {
 
     // unescape HomeMatic Script WriteURL()
     if (typeof val == "string") {
@@ -108,43 +120,46 @@ function setDatapoint(id, val, ts, ack) {
     }
 
     var oldval = datapoints[id];
-    var lc = null; // last change
     var obj; // Event argument
-    if (oldval && oldval[3] !== undefined) {
-        lc = oldval[3];
-        datapoints[id] = [val,ts,ack,lc];
-        obj = [id,val,ts,ack,lc];
-    }
-    else {
-        datapoints[id] = [val,ts,ack];
-        obj = [id,val,ts,ack];
-    }
+
+
 
     if (!oldval) {
         // Neu
         logger.warn("rega      <-- unknown variable "+id);
         sendEvent(obj);
-    } else if (val !== oldval[0]) {
-        // Todo Änderungs-Zeitstempel -> Variablen extra behandeln
-        // Änderung
-        logger.debug("chg "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
-        // Calculate new timestamp
-        lc = Math.round((new Date()).getTime() / 1000);
+
+
+
+        logger.debug("chg "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
+
         datapoints[id] = [val,ts,ack,lc];
         obj = [id,val,ts,ack,lc];
         sendEvent(obj);
+
     } else {
+
+        // Änderung
+        if (!lc && val != oldval[0]) {
+            lc = formatTimestamp();
+        } else {
+            lc = oldval[3];
+        }
+
+        datapoints[id] = [val,ts,ack,lc];
+        obj = [id,val,ts,ack,lc];
+
         if (ack && !oldval[2]) {
             // Bestätigung
-            logger.debug("ack "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
+            logger.debug("ack "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
             sendEvent(obj);
         } else if (ts !== oldval[1]) {
             // Aktualisierung
-            logger.debug("ts "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
+            logger.debug("ts "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
             sendEvent(obj);
         } else {
             // Keine Änderung
-            logger.debug("eq "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack]));
+            logger.debug("eq "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
         }
 
     }
@@ -170,12 +185,13 @@ function pollRega() {
                     cacheLog(ts+" "+id+" "+val+"\n");
                 }
             }
-            setDatapoint(parseInt(id,10), data[id][0], data[id][1], true);
+            setDatapoint(id, data[id][0], formatTimestamp(), true, data[id][1]);
         }
         notFirstVarUpdate = true;
         setTimeout(pollRega, settings.regahss.pollDataInterval);
     });
 }
+
 
 function loadRegaData(index) {
     if (!index) { index = 0; }
@@ -183,6 +199,7 @@ function loadRegaData(index) {
     regahss.runScriptFile(type, function (data) {
         var data = JSON.parse(data);
         logger.info("ccu.io        indexing "+type);
+        var timestamp = formatTimestamp();
         for (var id in data) {
             var idInt = parseInt(id, 10);
 
@@ -209,8 +226,14 @@ function loadRegaData(index) {
             }
 
             // ggf. Werte setzen
-            if (type == "variables" || type == "datapoints") {
-                datapoints[id] = [data[id].Value, data[id].Timestamp, true];
+            if (type == "variables") {
+                datapoints[id] = [data[id].Value, data[id].Timestamp, true, data[id].Timestamp];
+                // Werte aus data Objekt entfernen
+                delete data[id].Value;
+                delete data[id].Timestamp
+            }
+            if (type == "datapoints") {
+                datapoints[id] = [data[id].Value, timestamp, true, data[id].Timestamp];
                 // Werte aus data Objekt entfernen
                 delete data[id].Value;
                 delete data[id].Timestamp
@@ -248,13 +271,7 @@ function initRpc() {
             event: function (obj) {
                 //Todo Implement Rega Polling Trigger via Virtual Key
 
-                var ts = new Date();
-                var timestamp = ts.getFullYear() + '-' +
-                    ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
-                    ("0" + (ts.getDate()).toString(10)).slice(-2) + ' ' +
-                    ("0" + (ts.getHours()).toString(10)).slice(-2) + ':' +
-                    ("0" + (ts.getMinutes()).toString(10)).slice(-2) + ':' +
-                    ("0" + (ts.getSeconds()).toString(10)).slice(-2);
+                var timestamp = formatTimestamp();
 
                 var bidcos;
                 switch (obj[0]) {
@@ -287,45 +304,33 @@ function initRpc() {
                 // Get ReGa id
                 var regaObj = regaIndex.Name[bidcos];
 
+                // Logging
                 if (regaObj && regaObj[0] && settings.logging.enabled) {
                     var ts = Math.round((new Date()).getTime() / 1000);
                     cacheLog(ts+" "+regaObj[0]+" "+obj[3]+"\n");
                 }
 
-
                 if (regaObj && regaObj[0]) {
-                    logger.verbose("socket.io --> broadcast event "+JSON.stringify([regaObj[0], obj[3], timestamp, true]))
+                    var id = regaObj[0];
+                    var val = obj[3];
+                    logger.verbose("socket.io --> broadcast event "+JSON.stringify([id, val, timestamp, true]))
                     var event = null; // Event argument
       
-                    if (datapoints[regaObj[0]]) {
-                        // If value changed
-                        if (datapoints[regaObj[0]][0] != obj[3]) {
-                            // Remember timestamp
-                            var lc = Math.round((new Date()).getTime() / 1000);
-                            datapoints[regaObj[0]] = [obj[3],timestamp,true,lc];
-                            event = [regaObj[0],obj[3],timestamp,true,lc];
-                        }
-                        else {
-                            if (datapoints[regaObj[0]][3] != undefined) {
-                                datapoints[regaObj[0]] = [obj[3],timestamp,true, datapoints[regaObj[0]][3]];
-                                event = [regaObj[0],obj[3],timestamp,true, datapoints[regaObj[0]][3]];
-                            }
-                            else {
-                                datapoints[regaObj[0]] = [obj[3],timestamp,true];
-                                event = [regaObj[0],obj[3],timestamp,true];
-                            }
+                    if (datapoints[id]) {
+                        if (datapoints[id][0] != val) {
+                            // value changed
+                            datapoints[id] = [val, timestamp, true, timestamp];
+                            event = [id, val, timestamp, true, timestamp];
+                        } else {
+                            // no change - keep LastChange
+                            datapoints[id] = [val, timestamp, true, datapoints[id][3]];
+                            event = [id, val, timestamp, true, datapoints[id][3]];
                         }
                     }
 
                     io.sockets.emit("event", event);
                 }
 
-                /* TODO remove old event (DashUI 0.8.x compatibility)
-                 var result = [];
-
-                result = [bidcos, obj[3]];
-                io.sockets.emit("event", result);
-                */
                 return "";
             }
         }
@@ -383,7 +388,7 @@ function formatTimestamp() {
         ("0" + (timestamp.getHours()).toString(10)).slice(-2) + ':' +
         ("0" + (timestamp.getMinutes()).toString(10)).slice(-2) + ':' +
         ("0" + (timestamp.getSeconds()).toString(10)).slice(-2);
-    return timestamp;
+    return ts;
 }
 
 function initSocketIO() {
@@ -454,6 +459,11 @@ function initSocketIO() {
             callback(regaIndex);
         });
 
+        socket.on('getStringtable', function(callback) {
+            logger.verbose("socket.io <-- getStringtable");
+            callback(stringtable);
+        });
+
         socket.on('addStringVariable', function(name, desc, str, callback) {
             logger.verbose("socket.io <-- addStringVariable");
             regahss.addStringVariable(name, desc, str, function (id) {
@@ -477,13 +487,7 @@ function initSocketIO() {
                 ts =    arr[2],
                 ack =   arr[3];
             if (!ts) {
-                var timestamp = new Date();
-                var ts = timestamp.getFullYear() + '-' +
-                    ("0" + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
-                    ("0" + (timestamp.getDate() + 1).toString(10)).slice(-2) + ' ' +
-                    ("0" + (timestamp.getHours()).toString(10)).slice(-2) + ':' +
-                    ("0" + (timestamp.getMinutes()).toString(10)).slice(-2) + ':' +
-                    ("0" + (timestamp.getSeconds()).toString(10)).slice(-2);
+                ts = formatTimestamp();
             }
 
 
@@ -624,3 +628,4 @@ function moveLog() {
     });
 
 }
+
