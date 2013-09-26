@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.23";
+settings.version = "0.9.24";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -384,7 +384,7 @@ function formatTimestamp() {
     var timestamp = new Date();
     var ts = timestamp.getFullYear() + '-' +
         ("0" + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
-        ("0" + (timestamp.getDate() + 1).toString(10)).slice(-2) + ' ' +
+        ("0" + (timestamp.getDate()).toString(10)).slice(-2) + ' ' +
         ("0" + (timestamp.getHours()).toString(10)).slice(-2) + ':' +
         ("0" + (timestamp.getMinutes()).toString(10)).slice(-2) + ':' +
         ("0" + (timestamp.getSeconds()).toString(10)).slice(-2);
