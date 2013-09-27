@@ -1,4 +1,4 @@
-!# datapoints.fn 1.4 CCU.IO
+!# datapoints.fn 1.5 CCU.IO
 !#
 !# Dieses Homematic-Script gibt eine Liste aller Datenpunkte als JSON String aus
 !#
@@ -82,6 +82,13 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                         Write('","TypeName":"' # oDP.TypeName());
                         Write('","Operations":' # oDP.Operations());
                         Write(',"ValueType":' # sValueType);
+
+                        if (sValueType == 16) {
+                            Write(',"ValueList":"');
+                            WriteURL(oDP.ValueList());
+                            Write("'");
+                        }
+
                         Write(',"ValueUnit":"' # oDP.ValueUnit());
                         Write('","Timestamp":"' # oDP.Timestamp());
                         Write('","Value":');
