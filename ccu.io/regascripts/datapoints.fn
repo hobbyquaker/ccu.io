@@ -86,7 +86,7 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                         if (sValueType == 16) {
                             Write(',"ValueList":"');
                             WriteURL(oDP.ValueList());
-                            Write("'");
+                            Write('"');
                         }
 
                         Write(',"ValueUnit":"' # oDP.ValueUnit());
