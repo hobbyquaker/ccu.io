@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.24";
+settings.version = "0.9.25";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
