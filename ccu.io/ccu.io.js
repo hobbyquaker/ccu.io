@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.25";
+settings.version = "0.9.26";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -442,6 +442,10 @@ function initSocketIO() {
                     callback("\""+data+"\"");
                 }
             });
+        });
+
+        socket.on('getVersion', function(callback) {
+            callback(settings.version);
         });
 
         socket.on('getDatapoints', function(callback) {
