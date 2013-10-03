@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.26";
+settings.version = "0.9.28";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -69,11 +69,10 @@ if (settings.logging.enabled) {
 
 
 
-/*
 regahss.loadStringTable(function (data) {
     stringtable = data;
 });
- */
+
 
 
 
@@ -314,21 +313,22 @@ function initRpc() {
                     var id = regaObj[0];
                     var val = obj[3];
                     logger.verbose("socket.io --> broadcast event "+JSON.stringify([id, val, timestamp, true]))
-                    var event = null; // Event argument
+                    var event = [id, val, timestamp, true, timestamp];
       
                     if (datapoints[id]) {
                         if (datapoints[id][0] != val) {
                             // value changed
                             datapoints[id] = [val, timestamp, true, timestamp];
-                            event = [id, val, timestamp, true, timestamp];
                         } else {
                             // no change - keep LastChange
                             datapoints[id] = [val, timestamp, true, datapoints[id][3]];
                             event = [id, val, timestamp, true, datapoints[id][3]];
                         }
+                    } else {
+                        datapoints[id] = [val, timestamp, true, timestamp];
                     }
-
                     io.sockets.emit("event", event);
+
                 }
 
                 return "";
@@ -339,6 +339,7 @@ function initRpc() {
 
 function initWebserver() {
     app.use('/', express.static(__dirname + '/www'));
+    app.use('/log', express.static(__dirname + '/log'));
     server.listen(settings.ioListenPort);
     logger.info("webserver     listening on port "+settings.ioListenPort);
 

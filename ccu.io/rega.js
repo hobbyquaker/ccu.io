@@ -16,7 +16,7 @@ var logger = require(__dirname+'/logger.js'),
     http = require("http"),
     fs = require('fs'),
     xml2js = require('xml2js');
-// var iconv = require('iconv-lite');
+var iconv = require('iconv-lite');
 
 
 
