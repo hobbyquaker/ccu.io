@@ -17,7 +17,7 @@ var logger = require(__dirname+'/logger.js'),
     fs = require('fs'),
     xml2js = require('xml2js');
 var iconv = require('iconv-lite');
-
+var request = require('request');
 
 
 var parser = new xml2js.Parser({explicitArray:false});
@@ -47,62 +47,43 @@ rega.prototype = {
         });
     },
     loadStringTable: function (callback) {
-
-        var options = {
-            host: this.options.ccuIp,
-            port: 80,
-            path: '/config/stringtable_de.txt'
-        };
-
-        http.get(options, function(res) {
-            var data = "";
-
-            res.on('data', function (chunk) {
-                data += chunk;
-            });
-            res.on('end', function () {
-                var str = iconv.decode(data, 'ISO-8859-1');
-                var dataArr = str.split("\n");
-                var lang = {};
-                for (var i = 0; i < dataArr.length; i++) {
-                    var line = dataArr[i];
-                    if (line && line != "") {
-                        var resultArr = line.match(/^([A-Z0-9_-]+)\|?([A-Z0-9_-]+)?=?([A-Z0-9_-]+)?[ \t]+(.+)$/);
-                        if (resultArr) {
-                            if (!lang[resultArr[1]]) {
-                                lang[resultArr[1]] = {};
-                            }
-                            if (resultArr[3]) {
-                                if (!lang[resultArr[1]][resultArr[2]]) {
-                                    lang[resultArr[1]][resultArr[2]] = {};
-                                }
-                                if (!lang[resultArr[1]][resultArr[2]][resultArr[3]]) {
-                                    lang[resultArr[1]][resultArr[2]][resultArr[3]] = {};
-                                }
-                                lang[resultArr[1]][resultArr[2]][resultArr[3]].text = resultArr[4];
-                            } else if (resultArr[2]) {
-                                if (!lang[resultArr[1]][resultArr[2]]) {
-                                    lang[resultArr[1]][resultArr[2]] = {};
-                                }
-                                lang[resultArr[1]][resultArr[2]].text = resultArr[4];
-                            } else {
-                                lang[resultArr[1]].text = resultArr[4];
-                            }
+            request.get({ url: 'http://' + this.options.ccuIp + '/config/stringtable_de.txt', encoding: null }, function(err, res, body) {
+            var data = body;
+            var str = iconv.decode(data, 'ISO-8859-1');
+            var dataArr = str.split("\n");
+            var lang = {};
+            for (var i = 0; i < dataArr.length; i++) {
+                var line = dataArr[i];
+                if (line && line != "") {
+                    var resultArr = line.match(/^([A-Z0-9_-]+)\|?([A-Z0-9_-]+)?=?([A-Z0-9_-]+)?[ \t]+(.+)$/);
+                    if (resultArr) {
+                        if (!lang[resultArr[1]]) {
+                            lang[resultArr[1]] = {};
                         }
-
+                        if (resultArr[3]) {
+                            if (!lang[resultArr[1]][resultArr[2]]) {
+                                lang[resultArr[1]][resultArr[2]] = {};
+                            }
+                            if (!lang[resultArr[1]][resultArr[2]][resultArr[3]]) {
+                                lang[resultArr[1]][resultArr[2]][resultArr[3]] = {};
+                            }
+                            lang[resultArr[1]][resultArr[2]][resultArr[3]].text = resultArr[4];
+                        } else if (resultArr[2]) {
+                            if (!lang[resultArr[1]][resultArr[2]]) {
+                                lang[resultArr[1]][resultArr[2]] = {};
+                            }
+                            lang[resultArr[1]][resultArr[2]].text = resultArr[4];
+                        } else {
+                            lang[resultArr[1]].text = resultArr[4];
+                        }
                     }
 
                 }
 
-
-                logger.info("ccu.io        stringtable loaded");
-                callback(lang);
-            });
-
-        }).on('error', function(e) {
-            callback(false);
+            }
+            logger.info("ccu.io        stringtable loaded");
+            callback(lang);
         });
-
     },
     addStringVariable: function (name, desc, str, callback) {
         var script = "object test = dom.GetObject('"+name+"');\n" +
