@@ -192,8 +192,13 @@ function pollRega() {
 }
 
 
-function loadRegaData(index) {
+function loadRegaData(index, err) {
     if (!index) { index = 0; }
+    if (err) {
+        // Just start webServer for debug
+        initWebserver();
+        return;
+    }
     var type = settings.regahss.metaScripts[index];
     regahss.runScriptFile(type, function (data) {
         var data = JSON.parse(data);
