@@ -16,6 +16,7 @@ CCU.IO bildet die Schnittstelle zur CCU für folgende Projekte:
 * [yahui](https://github.com/hobbyquaker/yahui)
 * [DashUI](https://github.com/hobbyquaker/DashUI)
 * [CCU.IO-Highcharts](https://github.com/hobbyquaker/CCU-IO-Highcharts)
+* [CCU.IO-Eventlist](https://github.com/GermanBluefox/CCU-IO.Eventlist)
 
 ## Voraussetzungen
 
