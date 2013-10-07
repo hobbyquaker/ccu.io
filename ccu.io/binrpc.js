@@ -218,7 +218,7 @@ binrpc.prototype = {
                     .buffer("rest", data.length)
                     .vars;
                 flt.content = parseFloat(((Math.pow(2, flt.exponent)) * (flt.mantissa / (1 << 30))).toFixed(6));
-                logger.silly("float "+flt.content);
+                logger.silly("float exponent=" + flt.exponent + " mantissa=" + flt.mantissa + " value="+flt.content);
                 return flt;
                 break;
             case 0x03:
@@ -247,6 +247,7 @@ binrpc.prototype = {
                     .word32bu("value")
                     .buffer("rest", data.length)
                     .vars;
+                if (int.value & 2147483648) { int.value = int.value - 4294967296; }
                 int.content = int.value;
                 logger.silly("integer " + int.content);
                 return (int);
