@@ -586,10 +586,19 @@ function stop() {
     setTimeout(quit, 500);
 }
 
+var quitCounter = 0;
+
 function quit() {
     if (regahss.pendingRequests > 0) {
+        quitCounter += 1;
+        if (quitCounter > 20) {
+            logger.verbose("rega          waited too long ... killing process");
+            setTimeout(function () {
+                process.exit(0);
+            }, 250);        }
         logger.verbose("rega          waiting for pending request...");
         setTimeout(quit, 500);
+
     } else {
         logger.info("ccu.io uptime "+stats.uptime());
         logger.info("ccu.io        terminating");
@@ -606,6 +615,12 @@ function cacheLog(str) {
 var logMoving = false;
 
 function writeLog() {
+
+    if (logMoving) {
+        setTimeout(writeLog, 250);
+        return false;
+    }
+
     var tmp = devlogCache;
     devlogCache = [];
 
@@ -638,8 +653,9 @@ function moveLog() {
     devlog.close();
 
     fs.rename(__dirname+"/log/"+settings.logging.file, __dirname+"/log/"+settings.logging.file+"."+timestamp, function() {
-        logger.verbose("ccu.io        creating new Logfile");
         logMoving = false;
+
+        //logger.verbose("ccu.io        creating new Logfile");
         //devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
         //    flags: "w", encoding: "utf8", mode: 0644
         //});
