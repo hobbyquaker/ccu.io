@@ -630,7 +630,9 @@ function writeLog() {
     var file = __dirname+"/log/"+settings.logging.file;
 
     fs.appendFile(file, tmp.join(""), function (err) {
-        logger.error("ccu.io        writing to "+settings.logging.file + " error: "+JSON.stringify(err));
+        if (err) {
+            logger.error("ccu.io        writing to "+settings.logging.file + " error: "+JSON.stringify(err));
+        }
     });
 
     //for (var i = 0; i < l; i++) {
