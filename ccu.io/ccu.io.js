@@ -51,9 +51,9 @@ var regahss = new rega({
 });
 
 if (settings.logging.enabled) {
-    devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
-        flags: "a", encoding: "utf8", mode: 0644
-    });
+    //devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
+    //    flags: "a", encoding: "utf8", mode: 0644
+    //});
 
     setInterval(writeLog, settings.logging.writeInterval * 1000);
 
@@ -603,22 +603,33 @@ function cacheLog(str) {
     devlogCache.push(str);
 }
 
+var logMoving = false;
+
 function writeLog() {
     var tmp = devlogCache;
     devlogCache = [];
+
     var l = tmp.length;
     logger.verbose("ccu.io        writing "+l+" lines to "+settings.logging.file);
-    for (var i = 0; i < l; i++) {
-        devlog.write(tmp[i]);
-    }
+
+    var file = __dirname+"/log/"+settings.logging.file;
+
+    fs.appendFile(file, tmp.join(""), function (err) {
+        logger.error("ccu.io        writing to "+settings.logging.file + " error: "+JSON.stringify(err));
+    });
+
+    //for (var i = 0; i < l; i++) {
+    //    devlog.write(tmp[i]);
+    //}
 }
 
 function moveLog() {
+    logMoving = true;
     setTimeout(moveLog, 86400000);
     var ts = (new Date()).getTime() - 3600000;
     ts = new Date(ts);
 
-    logger.verbose("ccu.io        moving Logfile");
+    logger.info("ccu.io        moving Logfile");
 
     var timestamp = ts.getFullYear() + '-' +
         ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
@@ -627,9 +638,11 @@ function moveLog() {
     devlog.close();
 
     fs.rename(__dirname+"/log/"+settings.logging.file, __dirname+"/log/"+settings.logging.file+"."+timestamp, function() {
-        devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
-            flags: "a", encoding: "utf8", mode: 0644
-        });
+        logger.verbose("ccu.io        creating new Logfile");
+        logMoving = false;
+        //devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
+        //    flags: "w", encoding: "utf8", mode: 0644
+        //});
     });
 
 }
