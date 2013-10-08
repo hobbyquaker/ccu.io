@@ -1,1 +1,9 @@
-70000       yr.js - Wettervorhersage HTML
+70000                           yr.js - Wettervorhersage von yr.no 48h Tabelle HTML
+
+
+
+
+268435456 bis 268500991         reserviert für zweite CCU
+536870912 bis 536936447         reserviert für dritte CCU
+805306368 bis 805371903         reserviert für vierte CCU
+

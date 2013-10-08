@@ -45,6 +45,27 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
 
 * CCU.IO schreibt ein Logfile in ccu.io/log/ccu.io.log
 
+## Todo/Roadmap
+
+* Don't Log Flag in regaObjects
+* Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist und sinnvoll damit umgehen
+* Polling-Trigger fertig implementieren
+* Button in CCU.IO Oberfläche um Objekte neu von der CCU zu laden (damit man nicht immer neustarten muss nach Änderungen auf der CCU)
+* Adapter (einbinden von nicht-Homematic-Systemen, Webservices etc.)
+* Doku für Adapter-Entwickler
+* Script-Engine
+* Doku für Script-Engine
+* BIN-RPC Implementierung vervollständigen
+* CCU.IO-Pseudo-Gerät in CCU? Könnte sinnvoll sein z.B: für Polling-Trigger u.v.m. ...
+* rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
+* Raspbian-Paket für einfache Installation (stryke)
+* Automatisches Update (stryke)
+* CCU2-Paket für einfache Installation
+* Web-based Setup (komfortabel CCU IP einstellen, Logging konfigurieren, Updates durchführen etc...)
+* Unterstützung für mehrere CCUs?
+
+## Changelog
+
 
 ## Lizenz
 
