@@ -38,12 +38,14 @@ rega.prototype = {
 
     },
     checkTime: function (callback) {
-        this.script('WriteLine(system.Date("%F %X").ToTime().ToInteger());', function (data) {
-            var ccuTime = parseInt(data, 10);
-            var localTime = Math.round(new Date().getTime() / 1000);
-            var diff = localTime - ccuTime
-            logger.info("ccu.io        time difference local-ccu " + diff.toString() + "s");
-            callback();
+        this.script('WriteLine(system.Date("%F %X").ToTime().ToInteger());', function (data, err) {
+            if (!err) {
+                var ccuTime = parseInt(data, 10);
+                var localTime = Math.round(new Date().getTime() / 1000);
+                var diff = localTime - ccuTime
+                logger.info("ccu.io        time difference local-ccu " + diff.toString() + "s");
+            }
+            callback(0, err);
         });
     },
     loadStringTable: function (callback) {
@@ -165,6 +167,7 @@ rega.prototype = {
 
         post_req.on('error', function(e) {
             logger.error('rega          post request error: ' + e.message);
+            callback (null, 'rega          post request error: ' + e.message);
         });
 
         post_req.write(script);

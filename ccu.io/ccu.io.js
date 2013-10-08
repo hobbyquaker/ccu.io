@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.30";
+settings.version = "0.9.32";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -40,8 +40,9 @@ var socketlist = [],
     };
 
 logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
+logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
 
-
+var debugMode = (process.argv.indexOf("--debug") != -1 ? true : false);
 
 var regahss = new rega({
     ccuIp: settings.ccuIp,
@@ -192,8 +193,13 @@ function pollRega() {
 }
 
 
-function loadRegaData(index) {
+function loadRegaData(index, err) {
     if (!index) { index = 0; }
+    if (err && debugMode) {
+        // Just start webServer for debug
+        initWebserver();
+        return;
+    }
     var type = settings.regahss.metaScripts[index];
     regahss.runScriptFile(type, function (data) {
         var data = JSON.parse(data);
@@ -491,6 +497,7 @@ function initSocketIO() {
                 val =   arr[1],
                 ts =    arr[2],
                 ack =   arr[3];
+
             if (!ts) {
                 ts = formatTimestamp();
             }
@@ -635,9 +642,6 @@ function writeLog() {
         }
     });
 
-    //for (var i = 0; i < l; i++) {
-    //    devlog.write(tmp[i]);
-    //}
 }
 
 function moveLog() {
@@ -652,15 +656,8 @@ function moveLog() {
         ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
         ("0" + (ts.getDate()).toString(10)).slice(-2);
 
-    devlog.close();
-
     fs.rename(__dirname+"/log/"+settings.logging.file, __dirname+"/log/"+settings.logging.file+"."+timestamp, function() {
         logMoving = false;
-
-        //logger.verbose("ccu.io        creating new Logfile");
-        //devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
-        //    flags: "w", encoding: "utf8", mode: 0644
-        //});
     });
 
 }
