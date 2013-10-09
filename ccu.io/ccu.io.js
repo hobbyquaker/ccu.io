@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.34";
+settings.version = "0.9.35";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -25,9 +25,34 @@ var fs = require('fs'),
     server =    require('http').createServer(app),
     socketio =  require('socket.io'),
     io,
+    ioS,
     devlog,
     devlogCache = [],
     notFirstVarUpdate = false;
+
+var serverHTTPS = null,
+    appS = null,
+    ioS = null;
+
+if (settings.ioListenPortHTTPS) {
+    var options = null;
+    try {
+        options = {
+            key: fs.readFileSync(__dirname+'/cert/privatekey.pem'),
+            cert: fs.readFileSync(__dirname+'/cert/certificate.pem')
+        };
+    }catch(err) {
+        console.log(err.message);
+    }
+    if (options) {
+        appS = express();
+        if (settings.httpsCredentials) {
+            appS.use(express.basicAuth(settings.httpsCredentials.user, settings.httpsCredentials.password));
+        }
+
+        serverHTTPS = require('https').createServer(options, appS);
+    }
+}
 
 var socketlist = [],
     homematic = {},
@@ -110,7 +135,8 @@ if (settings.stats) {
 
 function sendEvent(arr) {
     logger.verbose("socket.io --> broadcast event "+JSON.stringify(arr))
-    io.sockets.emit("event", arr);
+    if (io) io.sockets.emit("event", arr);
+    if (ioS) ioS.sockets.emit("event", arr);
 }
 
 function setDatapoint(id, val, ts, ack, lc) {
@@ -258,6 +284,7 @@ function loadRegaData(index, err, rebuild) {
                 logger.info("rega          data succesfully reloaded");
                 logger.info("socket.io --> broadcast reload")
                 io.sockets.emit("reload");
+                if (ioS) ioS.sockets.emit("reload");
 
             } else {
                 logger.info("rega          data succesfully loaded");
@@ -336,7 +363,7 @@ function initRpc() {
                     var val = obj[3];
                     logger.verbose("socket.io --> broadcast event "+JSON.stringify([id, val, timestamp, true]))
                     var event = [id, val, timestamp, true, timestamp];
-      
+
                     if (datapoints[id]) {
                         if (datapoints[id][0] != val) {
                             // value changed
@@ -350,6 +377,7 @@ function initRpc() {
                         datapoints[id] = [val, timestamp, true, timestamp];
                     }
                     io.sockets.emit("event", event);
+                    if (ioS) ioS.sockets.emit("event", event);
 
                 }
 
@@ -358,49 +386,68 @@ function initRpc() {
         }
     });
 }
+function uploadParser (req, res, next) {
+    var urlParts = url.parse(req.url, true);
+    var query = urlParts.query;
+
+    //console.log(query);
+    logger.verbose("webserver <-- file upload "+req.files.file.name+" ("+req.files.file.size+" bytes)");
+    // get the temporary location of the file
+    var tmpPath = req.files.file.path;
+    var newName;
+    if (query.id) {
+        newName = query.id + "." + req.files.file.type.replace(/[a-z]+\//,"");
+
+    } else {
+        newName = req.files.file.name;
+    }
+    // set where the file should actually exists - in this case it is in the "images" directory
+    var targetPath = __dirname + "/" + query.path + newName;
+
+    logger.debug("move "+tmpPath+" -> "+targetPath);
+
+    // move the file from the temporary location to the intended location
+    fs.rename(tmpPath, targetPath, function(err) {
+        if (err) throw err;
+        // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
+        fs.unlink(tmpPath, function() {
+            if (err) throw err;
+            res.send('File uploaded to: ' + targetPath + ' - ' + req.files.file.size + ' bytes');
+        });
+    });
+}
 
 function initWebserver() {
     app.use('/', express.static(__dirname + '/www'));
     app.use('/log', express.static(__dirname + '/log'));
+    if (appS) {
+        appS.use('/', express.static(__dirname + '/www'));
+        appS.use('/log', express.static(__dirname + '/log'));
+    }
     server.listen(settings.ioListenPort);
     logger.info("webserver     listening on port "+settings.ioListenPort);
 
+    if (serverHTTPS){
+        serverHTTPS.listen(settings.ioListenPortHTTPS);
+        logger.info("HTTPSserver     listening on port "+settings.ioListenPortHTTPS);
+    }
+
     // File Uploads
     app.use(express.bodyParser());
-    app.post('/upload', function(req, res, next) {
-        var urlParts = url.parse(req.url, true);
-        var query = urlParts.query;
-
-        //console.log(query);
-        logger.verbose("webserver <-- file upload "+req.files.file.name+" ("+req.files.file.size+" bytes)");
-        // get the temporary location of the file
-        var tmpPath = req.files.file.path;
-        var newName;
-        if (query.id) {
-            newName = query.id + "." + req.files.file.type.replace(/[a-z]+\//,"");
-
-        } else {
-            newName = req.files.file.name;
-        }
-        // set where the file should actually exists - in this case it is in the "images" directory
-        var targetPath = __dirname + "/" + query.path + newName;
-
-        logger.debug("move "+tmpPath+" -> "+targetPath);
-
-        // move the file from the temporary location to the intended location
-        fs.rename(tmpPath, targetPath, function(err) {
-            if (err) throw err;
-            // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-            fs.unlink(tmpPath, function() {
-                if (err) throw err;
-                res.send('File uploaded to: ' + targetPath + ' - ' + req.files.file.size + ' bytes');
-            });
-        });
-    });
+    app.post('/upload', uploadParser);
+    if (appS) {
+        appS.use(express.bodyParser());
+        appS.post('/upload', uploadParser);
+    }
 
     io = socketio.listen(server);
     io.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
-    initSocketIO();
+    initSocketIO(io);
+    if (serverHTTPS){
+        ioS = socketio.listen(serverHTTPS);
+        ioS.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
+        initSocketIO(ioS);
+    }
 }
 
 function formatTimestamp() {
@@ -414,8 +461,8 @@ function formatTimestamp() {
     return ts;
 }
 
-function initSocketIO() {
-    io.sockets.on('connection', function (socket) {
+function initSocketIO(_io) {
+    _io.sockets.on('connection', function (socket) {
         socketlist.push(socket);
         var address = socket.handshake.address;
         logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
@@ -434,11 +481,11 @@ function initSocketIO() {
             path = __dirname+"/"+path;
             logger.info("socket.io <-- readdir "+path);
             fs.readdir(path, function (err, data) {
-               if (err) {
+                if (err) {
                     callback(undefined);
-               } else {
-                   callback(data);
-               }
+                } else {
+                    callback(data);
+                }
             });
         });
 
@@ -538,28 +585,28 @@ function initSocketIO() {
                 // TODO implement set State via BINRPC if TypeName=HSSDP
                 // // Bidcos or Rega?
                 //if (regaIndex.HSSDP.indexOf(id) != -1) {
-                    // BINRPC
-                    //var name = regaObjects[id].Name;
-                    //var parts = name.split(".");
-                    //var iface = parts[0],
-                    //    channel = parts[1],
-                    //    dp = parts[2];
+                // BINRPC
+                //var name = regaObjects[id].Name;
+                //var parts = name.split(".");
+                //var iface = parts[0],
+                //    channel = parts[1],
+                //    dp = parts[2];
                 //} else {
-                    // ReGa
-                    var xval;
-                    if (typeof val == "string") {
-                        xval = "'" + val.replace(/'/g, '"') + "'";
-                    } else {
-                        xval = val;
-                    }
-                    var script = "Write(dom.GetObject("+id+").State("+xval+"));";
+                // ReGa
+                var xval;
+                if (typeof val == "string") {
+                    xval = "'" + val.replace(/'/g, '"') + "'";
+                } else {
+                    xval = val;
+                }
+                var script = "Write(dom.GetObject("+id+").State("+xval+"));";
 
-                    regahss.script(script, function (data) {
-                         //logger.verbose("rega      <-- "+data);
-                         if (callback) {
-                             callback(data);
-                         }
-                    });
+                regahss.script(script, function (data) {
+                    //logger.verbose("rega      <-- "+data);
+                    if (callback) {
+                        callback(data);
+                    }
+                });
 
                 //}
 
@@ -587,7 +634,7 @@ function initSocketIO() {
             logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " disconnected");
             socketlist.splice(socketlist.indexOf(socket), 1);
         });
-        
+
         socket.on('close', function () {
             var address = socket.handshake.address;
             logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " closed");
@@ -615,7 +662,10 @@ function stop() {
         logger.verbose("socket.io     closing server");
         io.server.close();
     }
-
+    if (ioS) {
+        logger.verbose("socket.io     closing HTTPS server");
+        ioS.server.close();
+    }
     setTimeout(quit, 500);
 }
 
