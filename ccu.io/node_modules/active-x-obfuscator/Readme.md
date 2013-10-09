@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/felixge/node-active-x-obfuscator.png)](http://travis-ci.org/felixge/node-active-x-obfuscator)
 # active-x-obfuscator
 
 A module to (safely) obfuscate all occurrences of the string 'ActiveX' inside

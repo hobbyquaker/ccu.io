@@ -22,7 +22,7 @@ var reqOptions = {
 
 var http = 		require("http"),
 	xml2js = 	require("xml2js"),
-    logger =    require(__dirname+'/../logger.js');
+    logger =    require(__dirname+'/../../logger.js');
 
 var io = require('socket.io-client'),
     socket = io.connect("127.0.0.1", {

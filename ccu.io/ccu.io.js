@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.32";
+settings.version = "0.9.33";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -37,7 +37,8 @@ var socketlist = [],
     regaIndex = {
         Name: {},
         Address: {}
-    };
+    },
+    regaReady;
 
 logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
 logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
@@ -113,7 +114,7 @@ function sendEvent(arr) {
 }
 
 function setDatapoint(id, val, ts, ack, lc) {
-
+    if (!regaReady) { return; }
     // unescape HomeMatic Script WriteURL()
     if (typeof val == "string") {
         val = unescape(val);
@@ -193,7 +194,7 @@ function pollRega() {
 }
 
 
-function loadRegaData(index, err) {
+function loadRegaData(index, err, rebuild) {
     if (!index) { index = 0; }
     if (err && debugMode) {
         // Just start webServer for debug
@@ -250,21 +251,33 @@ function loadRegaData(index, err) {
 
         index += 1;
         if (index < settings.regahss.metaScripts.length) {
-            loadRegaData(index);
+            loadRegaData(index, null, rebuild);
         } else {
-            settings.regaReady = true;
-            logger.info("rega          data succesfully loaded");
-            if (settings.regahss.pollData) {
-                pollRega();
-            }
-            initRpc();
-            initWebserver();
+            regaReady = true;
+            if (rebuild) {
+                logger.info("rega          data succesfully reloaded");
+                logger.info("socket.io --> broadcast reload")
+                io.sockets.emit("reload");
 
+            } else {
+                logger.info("rega          data succesfully loaded");
+            }
+
+
+            if (!rebuild) {
+                if (settings.regahss.pollData) {
+                    pollRega();
+                }
+                initRpc();
+                initWebserver();
+            }
         }
 
     });
 
 }
+
+
 
 function initRpc() {
     homematic = new binrpc({
@@ -274,6 +287,9 @@ function initRpc() {
         inits: settings.binrpc.inits,
         methods: {
             event: function (obj) {
+
+                if (!regaReady) { return; }
+
                 //Todo Implement Rega Polling Trigger via Virtual Key
 
                 var timestamp = formatTimestamp();
@@ -403,6 +419,16 @@ function initSocketIO() {
         socketlist.push(socket);
         var address = socket.handshake.address;
         logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
+
+        socket.on('reloadData', function () {
+            regaReady = false;
+            regaObjects = {};
+            regaIndex = {
+                Name: {},
+                Address: {}
+            };
+            loadRegaData(0, null, true);
+        });
 
         socket.on('readdir', function (path, callback) {
             path = __dirname+"/"+path;
