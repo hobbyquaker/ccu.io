@@ -1,0 +1,26 @@
+body {
+    font-size: 0.7em;
+    font-family: sans-serif;
+}
+
+ul.ui-tabs-nav li.ui-state-focus a {
+    outline: none !important;
+}
+
+textarea.data-area {
+    width: 100%;
+    min-height: 400px;
+}
+
+button.ui-multiselect {
+    height: 26px;
+    vertical-align: -1px;
+}
+
+input.ui-pg-input {
+    height: 22px !important;
+}
+
+table.ui-jqgrid-btable tr td {
+    font-size: 11px;
+}

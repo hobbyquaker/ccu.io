@@ -1,467 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2c3da533-c98a-486a-8382-2c115a5fe099" name="Default" comment="added http-server for log-directory">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/animated-overlay.gif" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-bg_diagonal-maze_20_6e4f1c_10x10.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-bg_diagonal-maze_40_000000_10x10.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-bg_diagonals-medium_20_d34d17_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-bg_diagonals-small_0_aaaaaa_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-bg_diagonals-small_25_c5ddfc_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-bg_diagonals-small_40_db4865_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-bg_diagonals-small_50_262626_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-bg_diagonals-small_50_93c3cd_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-bg_diagonals-small_50_ff3853_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-bg_diagonals-small_75_ccd232_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-bg_diagonals-thick_15_0b3e6f_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-bg_diagonals-thick_15_444444_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-bg_diagonals-thick_18_b81900_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-bg_diagonals-thick_20_666666_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-bg_diagonals-thick_20_e69700_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-bg_diagonals-thick_22_1484e6_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-bg_diagonals-thick_26_2293f7_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-bg_diagonals-thick_75_f3d8d8_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-bg_diagonals-thick_8_333333_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-bg_diagonals-thick_90_eeeeee_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-bg_diagonals-thick_95_ffdc2e_40x40.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-bg_diamond_10_4f4221_10x8.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-bg_diamond_20_372806_10x8.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-bg_diamond_25_675423_10x8.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-bg_diamond_25_d5ac5d_10x8.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-bg_diamond_8_261803_10x8.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-bg_diamond_8_443113_10x8.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-bg_dots-medium_30_0b58a2_4x4.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-bg_dots-medium_80_ffff38_4x4.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-bg_dots-small_20_333333_2x2.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-bg_dots-small_30_a32d00_2x2.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-bg_dots-small_35_35414f_2x2.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-bg_dots-small_40_00498f_2x2.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-bg_dots-small_65_a6a6a6_2x2.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-bg_fine-grain_10_eceadf_60x60.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-bg_fine-grain_10_f8f7f6_60x60.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-bg_fine-grain_15_eceadf_60x60.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-bg_fine-grain_15_f7f3de_60x60.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-bg_fine-grain_15_ffffff_60x60.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-bg_fine-grain_65_654b24_60x60.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-bg_fine-grain_68_b83400_60x60.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-bg_flat_0_303030_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-bg_flat_0_333333_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-bg_flat_0_4c4c4c_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-bg_flat_0_aaaaaa_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-bg_flat_0_aaaaaa_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-bg_flat_0_aaaaaa_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-bg_flat_0_aaaaaa_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-bg_flat_0_aaaaaa_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-bg_flat_0_aaaaaa_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-bg_flat_0_aaaaaa_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-bg_flat_0_aaaaaa_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-bg_flat_0_e69700_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-bg_flat_0_e6b900_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-bg_flat_0_eeeeee_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-bg_flat_0_eeeeee_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-bg_flat_0_eeeeee_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-bg_flat_10_000000_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-bg_flat_15_cd0a0a_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-bg_flat_30_cccccc_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-bg_flat_30_cccccc_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-bg_flat_30_cccccc_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-bg_flat_40_292929_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-bg_flat_50_5c5c5c_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-bg_flat_50_5c5c5c_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-bg_flat_50_5c5c5c_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-bg_flat_55_994d53_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-bg_flat_55_999999_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-bg_flat_55_c0402a_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-bg_flat_55_eeeeee_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-bg_flat_55_fafafa_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-bg_flat_55_fbec88_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-bg_flat_55_ffffff_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-bg_flat_65_ffffff_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-bg_flat_65_ffffff_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-bg_flat_75_aaaaaa_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-bg_flat_75_aaaaaa_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-bg_flat_75_ba9217_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-bg_flat_75_ddd4b0_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-bg_flat_75_ffffff_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-bg_flat_75_ffffff_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-bg_flat_75_ffffff_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-bg_flat_75_ffffff_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-bg_glass_100_e4f1fb_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-bg_glass_100_f5f0e5_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-bg_glass_100_f6f6f6_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-bg_glass_100_f8f8f8_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-bg_glass_100_fdf5ce_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-bg_glass_15_5f391b_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-bg_glass_20_555555_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-bg_glass_25_cb842e_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-bg_glass_35_dddddd_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-bg_glass_40_0078a3_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-bg_glass_40_0a0a0a_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-bg_glass_40_111111_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-bg_glass_40_ffc73d_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-bg_glass_40_ffc73d_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-bg_glass_45_0078ae_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-bg_glass_50_3baae3_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-bg_glass_55_1c1c1c_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-bg_glass_55_f1fbe5_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-bg_glass_55_f8da4e_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-bg_glass_55_fbf5d0_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-bg_glass_55_fbf8ee_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-bg_glass_55_fbf9ee_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-bg_glass_55_fcf0ba_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-bg_glass_60_000000_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-bg_glass_60_eeeeee_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-bg_glass_65_ffffff_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-bg_glass_65_ffffff_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-bg_glass_65_ffffff_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-bg_glass_70_ede4d4_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-bg_glass_75_79c9ec_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-bg_glass_75_d0e5f5_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-bg_glass_75_dadada_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-bg_glass_75_e6e6e6_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-bg_glass_80_d7ebf9_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-bg_glass_85_dfeffc_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-bg_glass_95_fef1ec_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-bg_glass_95_fef1ec_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-bg_glass_95_fef1ec_1x400.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-bg_gloss-wave_100_ece8da_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-bg_gloss-wave_16_121212_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-bg_gloss-wave_20_111111_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-bg_gloss-wave_20_1c160d_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-bg_gloss-wave_25_333333_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-bg_gloss-wave_25_453326_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-bg_gloss-wave_30_3d3644_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-bg_gloss-wave_30_44372c_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-bg_gloss-wave_35_f6a828_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-bg_gloss-wave_45_817865_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-bg_gloss-wave_45_e14f1c_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-bg_gloss-wave_50_6eac2c_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-bg_gloss-wave_55_000000_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-bg_gloss-wave_55_5c9ccc_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-bg_gloss-wave_60_fece2f_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-bg_gloss-wave_70_ffdd57_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-bg_gloss-wave_75_2191c0_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-bg_gloss-wave_85_9fda58_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-bg_gloss-wave_90_fff9e5_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-bg_gloss-wave_95_f6ecd5_500x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-bg_highlight-hard_100_eeeeee_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-bg_highlight-hard_100_f2f5f7_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-bg_highlight-hard_100_f4f0ec_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-bg_highlight-hard_100_f5f3e5_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-bg_highlight-hard_100_f6f6f6_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-bg_highlight-hard_100_f9f9f9_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-bg_highlight-hard_100_fafaf4_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-bg_highlight-hard_15_459e00_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-bg_highlight-hard_15_888888_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-bg_highlight-hard_20_0972a5_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-bg_highlight-hard_30_285c00_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-bg_highlight-hard_40_aaaaaa_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-bg_highlight-hard_55_555555_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-bg_highlight-hard_65_fee4bd_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-bg_highlight-hard_65_fee4bd_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-bg_highlight-hard_70_000000_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-bg_highlight-hard_75_f5f5b5_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-bg_highlight-hard_95_cccccc_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-bg_highlight-soft_100_dcd9de_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-bg_highlight-soft_100_deedf7_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-bg_highlight-soft_100_eae6ea_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-bg_highlight-soft_100_eeeeee_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-bg_highlight-soft_100_f6f6f6_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-bg_highlight-soft_100_f9f9f9_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-bg_highlight-soft_100_feeebd_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-bg_highlight-soft_15_cc0000_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-bg_highlight-soft_20_201913_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-bg_highlight-soft_20_619226_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-bg_highlight-soft_25_0073ea_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-bg_highlight-soft_25_30273a_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-bg_highlight-soft_25_67b021_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-bg_highlight-soft_25_ffef8f_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-bg_highlight-soft_33_003147_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-bg_highlight-soft_33_3a8104_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-bg_highlight-soft_35_222222_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-bg_highlight-soft_35_adadad_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-bg_highlight-soft_44_444444_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-bg_highlight-soft_45_5f5964_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-bg_highlight-soft_50_4eb305_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-bg_highlight-soft_50_aaaaaa_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-bg_highlight-soft_50_dddddd_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-bg_highlight-soft_60_4ca20b_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-bg_highlight-soft_60_dddddd_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-bg_highlight-soft_75_cccccc_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-bg_highlight-soft_75_ffe45c_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-bg_highlight-soft_80_eeeeee_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-bg_highlight-soft_80_eeeeee_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-bg_highlight-soft_95_ffedad_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-bg_inset-hard_100_eeeeee_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-bg_inset-hard_100_f5f8f9_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-bg_inset-hard_100_fcfdfd_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-bg_inset-hard_100_fcfdfd_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-bg_inset-hard_45_cd0a0a_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-bg_inset-hard_55_ffeb80_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-bg_inset-hard_75_999999_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-bg_inset-soft_100_f4f0ec_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-bg_inset-soft_10_201913_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-bg_inset-soft_10_285c00_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-bg_inset-soft_15_121212_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-bg_inset-soft_15_2b2922_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-bg_inset-soft_25_000000_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-bg_inset-soft_30_f58400_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-bg_inset-soft_30_ffffff_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-bg_inset-soft_50_c9c9c9_1x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-bg_loop_25_000000_21x21.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-bg_white-lines_85_f7f7ba_40x100.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-icons_000000_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-icons_004276_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-icons_00498f_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-icons_0073ea_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-icons_0078ae_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-icons_056b93_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-icons_070603_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-icons_0a82eb_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-icons_0b54d5_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-icons_1f1f1f_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-icons_217bc0_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-icons_222222_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-icons_222222_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-icons_222222_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-icons_222222_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-icons_222222_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-icons_222222_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-icons_222222_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-icons_228ef1_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-icons_2694e8_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-icons_2e83ff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-icons_2e83ff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-icons_2e83ff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-icons_3383bb_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-icons_3572ac_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-icons_3d3d3d_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-icons_3d80b3_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-icons_454545_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-icons_454545_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-icons_454545_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-icons_454545_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-icons_454545_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-icons_469bdd_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-icons_4b8e0b_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-icons_4b8e0b_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-icons_4ca300_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-icons_4eb305_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-icons_5fa5e3_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-icons_666666_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-icons_666666_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-icons_6da8d5_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-icons_70b2e1_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-icons_72a7cf_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-icons_72b42d_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-icons_734d99_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-icons_808080_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-icons_847e71_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-icons_888888_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-icons_88a206_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-icons_8DC262_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-icons_8c291d_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-icons_8d78a5_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-icons_98d2fb_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-icons_999999_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-icons_9bcc60_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-icons_9ccdfc_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-icons_9fda58_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-icons_a83300_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-icons_a83300_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-icons_a8a3ae_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-icons_aaaaaa_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-icons_add978_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-icons_b83400_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-icons_b8ec79_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-icons_bbbbbb_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-icons_bbbbbb_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-icons_bd7b00_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-icons_c02669_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-icons_c47a23_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-icons_c98000_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-icons_cb672b_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-icons_cc0000_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-icons_cccccc_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-icons_cccccc_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-icons_cccccc_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-icons_cd0a0a_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-icons_cd0a0a_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/images/ui-icons_cd0a0a_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-icons_cd0a0a_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-icons_cd0a0a_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-icons_cd0a0a_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-icons_d19405_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-icons_d8e7f3_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-icons_d8e7f3_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-icons_e0fdff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-icons_e1e463_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-icons_e3ddc9_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-icons_e8e2b5_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-icons_e9cd86_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-icons_eb990f_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-icons_ebccce_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-icons_ed9f26_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-icons_ededed_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-icons_eeeeee_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-icons_ef8c08_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-icons_efec9f_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-icons_f08000_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-icons_f1fd86_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/images/ui-icons_f29a00_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-icons_f2ec64_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-icons_f35f07_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-icons_f5e175_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-icons_f7a50d_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/images/ui-icons_f9bd01_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-icons_f9f2bd_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-icons_fadc7a_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/images/ui-icons_fbc856_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-icons_fbdb93_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/images/ui-icons_fcd113_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-icons_fcdd4a_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-icons_ff0084_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-icons_ff7519_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/images/ui-icons_ff7519_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-icons_ffcf29_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-icons_ffd27a_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/images/ui-icons_ffe180_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-icons_ffeb33_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/images/ui-icons_ffffff_256x240.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/.name" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/ccu.io.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jquery-ui-1.10.3.full.min.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/jquery-ui.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/jquery-ui.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/black-tie/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/blitzer/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/cupertino/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dark-hive/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/dot-luv/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/eggplant/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/excite-bike/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/flick/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/hot-sneaks/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/humanity/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/le-frog/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/mint-choc/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/overcast/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/pepper-grinder/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/redmond/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/smoothness/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/south-street/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/start/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/sunny/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/swanky-purse/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/trontastic/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-darkness/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/ui-lightness/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/css/themes/jquery-ui/vader/jquery.ui.theme.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/sass_stdlib.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+    <list default="true" id="2c3da533-c98a-486a-8382-2c115a5fe099" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/ccu.io/css/ccu.io.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/ccu.io/js/ccu.io.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ccu.io.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381174327488" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381045695052" ignored="false" />
+    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381343786356" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381253334973" ignored="false" />
     <file path="/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380918544304" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/index.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380988689173" ignored="false" />
     <file path="/index.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381157149041" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/css/dashui.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380917832363" ignored="false" />
     <file path="/dashui.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380917795581" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381045688580" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380809950454" ignored="false" />
-    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380974243128" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381253339971" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381254457564" ignored="false" />
+    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381335951264" ignored="false" />
     <file path="/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381044828298" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/yahui/js/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381044866660" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381044929643" ignored="false" />
@@ -471,10 +27,10 @@
     <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/Readme.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380831374855" ignored="false" />
     <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/charts/js/charts.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381157236776" ignored="false" />
     <file path="/charts.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381156919780" ignored="false" />
-    <file path="/ccu.io.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381164500368" ignored="false" />
+    <file path="/ccu.io.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381242275511" ignored="false" />
     <file path="/polling.fn" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1379516135145" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/basic.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381084312997" ignored="false" />
-    <file path="/basic.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381084312997" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/basic.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381340912734" ignored="false" />
+    <file path="/basic.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381340908744" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/jqui-mfd.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380803352164" ignored="false" />
     <file path="/jqui-mfd.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380393717568" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/jqui.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380804562891" ignored="false" />
@@ -485,13 +41,13 @@
     <file path="/yahui.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380286665711" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/yahui/js/settings-dist.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380892320540" ignored="false" />
     <file path="/settings-dist.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380034981745" ignored="false" />
-    <file path="/rega.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380821281578" ignored="false" />
+    <file path="/rega.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381241147916" ignored="false" />
     <file path="$PROJECT_DIR$/../CUxD-Highcharts/cuxchart/js/cuxchart.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380126088096" ignored="false" />
     <file path="/cuxchart.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380126086079" ignored="false" />
     <file path="/test.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380190401696" ignored="false" />
     <file path="/ccu.io-server.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380190891416" ignored="false" />
     <file path="/datapoints.fn" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380266978493" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381045858543" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381253186757" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/edit.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380990551333" ignored="false" />
     <file path="/edit.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380990198514" ignored="false" />
     <file path="/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380989889246" ignored="false" />
@@ -531,6 +87,11 @@
     <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/charts/css/cuxchart.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381143272788" ignored="false" />
     <file path="/cuxchart.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381143262219" ignored="false" />
     <file path="/binrpc.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381174289677" ignored="false" />
+    <file path="/yr.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381242919496" ignored="false" />
+    <file path="/adapter_ids.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381258641053" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/yr-adapter.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381248109110" ignored="false" />
+    <file path="/yr-adapter.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381247954449" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/js/config.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381247985093" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -555,11 +116,24 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ccu.io.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ccu.io.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="633" column="12" selection-start="20910" selection-end="20910" vertical-scroll-proportion="19.338085">
-              <folding />
+            <state line="15" column="26" selection-start="283" selection-end="283" vertical-scroll-proportion="-9.0">
+              <folding>
+                <marker date="1381332609000" expanded="true" signature="842:876" placeholder="{...}" />
+                <marker date="1381332609000" expanded="true" signature="5456:8252" placeholder="{...}" />
+                <marker date="1381332609000" expanded="true" signature="5715:8234" placeholder="{...}" />
+                <marker date="1381332609000" expanded="true" signature="5879:7862" placeholder="{...}" />
+                <marker date="1381332609000" expanded="true" signature="7975:8013" placeholder="{...}" />
+                <marker date="1381332609000" expanded="true" signature="8019:8236" placeholder="{...}" />
+                <marker date="1381332609000" expanded="true" signature="8156:8171" placeholder="{...}" />
+                <marker date="1381332609000" expanded="true" signature="8330:11113" placeholder="{...}" />
+                <marker date="1381332609000" expanded="true" signature="8382:11109" placeholder="{...}" />
+                <marker date="1381332609000" expanded="true" signature="8514:11103" placeholder="{...}" />
+                <marker date="1381332609000" expanded="true" signature="8575:11093" placeholder="{...}" />
+                <marker date="1381332609000" expanded="true" signature="14001:20291" placeholder="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -573,28 +147,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="datapoints.fn" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccu.io/regascripts/datapoints.fn">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="88" column="37" selection-start="2991" selection-end="2991" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccu.io/test.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="24" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="106" column="33" selection-start="3373" selection-end="3373" vertical-scroll-proportion="-66.25">
+            <state line="130" column="6" selection-start="6266" selection-end="6266" vertical-scroll-proportion="-66.25">
               <folding />
             </state>
           </provider>
@@ -603,25 +159,50 @@
       <file leaf-file-name="rega.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ccu.io/rega.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="31" selection-start="1202" selection-end="1202" vertical-scroll-proportion="0.0">
+            <state line="169" column="78" selection-start="6034" selection-end="6034" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="README.md" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="71" selection-start="980" selection-end="980" vertical-scroll-proportion="0.0">
+            <state line="71" column="89" selection-start="3507" selection-end="3507" vertical-scroll-proportion="1.6931638">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="variables.fn" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccu.io/regascripts/variables.fn">
+      <file leaf-file-name="yr.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccu.io/adapter/yr/yr.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="0" selection-start="159" selection-end="249" vertical-scroll-proportion="0.0">
+            <state line="24" column="41" selection-start="548" selection-end="548" vertical-scroll-proportion="0.0">
+              <folding>
+                <marker date="1381259004000" expanded="true" signature="1718:1766" placeholder="..." />
+                <marker date="1381259004000" expanded="true" signature="3291:3355" placeholder="{...}" />
+                <marker date="1381259004000" expanded="true" signature="3371:3456" placeholder="{...}" />
+                <marker date="1381259004000" expanded="true" signature="3472:3557" placeholder="{...}" />
+                <marker date="1381259004000" expanded="true" signature="3572:3615" placeholder="{...}" />
+                <marker date="1381259004000" expanded="true" signature="3635:3658" placeholder="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="adapter_ids.txt" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccu.io/doc/adapter_ids.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="9" column="0" selection-start="260" selection-end="260" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="yr-example-object.json" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccu.io/adapter/yr/yr-example-object.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="24" column="18" selection-start="808" selection-end="808" vertical-scroll-proportion="-15.0">
               <folding />
             </state>
           </provider>
@@ -630,7 +211,7 @@
       <file leaf-file-name="settings.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ccu.io/settings.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="41" column="0" selection-start="1103" selection-end="1103" vertical-scroll-proportion="0.0">
+            <state line="20" column="37" selection-start="602" selection-end="602" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -664,22 +245,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/ccu.io/regascripts/devices.fn" />
-        <option value="$PROJECT_DIR$/ccu.io/regascripts/variables.fn" />
-        <option value="$PROJECT_DIR$/ccu.io/regascripts/channels.fn" />
         <option value="$PROJECT_DIR$/ccu.io/logger.js" />
-        <option value="$PROJECT_DIR$/ccu.io/settings.js" />
         <option value="$PROJECT_DIR$/ccu.io/settings.js.dist" />
         <option value="$PROJECT_DIR$/ccu.io/regascripts/functions.fn" />
         <option value="$PROJECT_DIR$/ccu.io/regascripts/polling.fn" />
         <option value="$PROJECT_DIR$/ccu.io/test.js" />
         <option value="$PROJECT_DIR$/ccu.io/ccu.io-server.js" />
         <option value="$PROJECT_DIR$/ccu.io/regascripts/datapoints.fn" />
-        <option value="$PROJECT_DIR$/ccu.io/rega.js" />
         <option value="$PROJECT_DIR$/ccu.io/www/ccu.io/index.html" />
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/ccu.io/ccu.io.js" />
         <option value="$PROJECT_DIR$/ccu.io/binrpc.js" />
+        <option value="$PROJECT_DIR$/ccu.io/rega.js" />
+        <option value="$PROJECT_DIR$/ccu.io/settings.js" />
+        <option value="$PROJECT_DIR$/ccu.io/adapter/yr.js" />
+        <option value="$PROJECT_DIR$/ccu.io/ccu.io.js" />
+        <option value="$PROJECT_DIR$/ccu.io/doc/adapter_ids.txt" />
+        <option value="$PROJECT_DIR$/ccu.io/adapter/yr/yr.js" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -856,15 +437,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="themes" />
+              <option name="myItemId" value="ccu.io" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -889,6 +462,10 @@
               <option name="myItemId" value="ccu.io" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -904,7 +481,109 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="regascripts" />
+              <option name="myItemId" value="www" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="css" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node_modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="doc" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="datastore" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="adapter" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="adapter" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="yr" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -997,11 +676,11 @@
       <recent name="$PROJECT_DIR$/ccu.io/www" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ccu.io/adapter/yr" />
       <recent name="$PROJECT_DIR$/ccu.io" />
       <recent name="$PROJECT_DIR$/ccu.io/www/lib/js" />
       <recent name="$PROJECT_DIR$/ccu.io/www" />
       <recent name="$PROJECT_DIR$/ccu.io/www/ccu.io" />
-      <recent name="$PROJECT_DIR$/ccu.io/www/socket.io" />
     </key>
   </component>
   <component name="RunManager">
@@ -1366,7 +1045,35 @@
       <created>1381174329005</created>
       <updated>1381174329005</updated>
     </task>
-    <option name="localTasksCounter" value="81" />
+    <task id="LOCAL-00081" summary="added jqueryui-full and all jqueryui themes to lib dir">
+      <created>1381174586821</created>
+      <updated>1381174586821</updated>
+    </task>
+    <task id="LOCAL-00082" summary="bugfix moveLog, debug option (run ccu.io without ccu-connection)">
+      <created>1381253621135</created>
+      <updated>1381253621135</updated>
+    </task>
+    <task id="LOCAL-00083" summary="updated Readme">
+      <created>1381258456974</created>
+      <updated>1381258456974</updated>
+    </task>
+    <task id="LOCAL-00084" summary="neue Oberfläche, Button zum neu-laden der CCU Daten, Node Module auf neusten Stand gebracht">
+      <created>1381336159040</created>
+      <updated>1381336159040</updated>
+    </task>
+    <task id="LOCAL-00085" summary="neue Oberfläche, Button zum neu-laden der CCU Daten, Node Module auf neusten Stand gebracht">
+      <created>1381336171910</created>
+      <updated>1381336171910</updated>
+    </task>
+    <task id="LOCAL-00086" summary="added missing node modules">
+      <created>1381343664556</created>
+      <updated>1381343664556</updated>
+    </task>
+    <task id="LOCAL-00087" summary="added missing files in lib dir">
+      <created>1381343787315</created>
+      <updated>1381343787315</updated>
+    </task>
+    <option name="localTasksCounter" value="88" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1393,8 +1100,9 @@
     <frame x="0" y="0" width="1366" height="768" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16305916" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16305916" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756132" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32954547" sideWeight="0.8124098" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32954547" sideWeight="0.8369408" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1404,12 +1112,11 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2925532" sideWeight="0.21725732" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25378788" sideWeight="0.8369408" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25378788" sideWeight="0.6724387" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -1457,7 +1164,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated version" />
+    <option name="LAST_COMMIT_MESSAGE" value="added missing files in lib dir" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1471,13 +1178,7 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="changed Loglevel and Statsinterval" />
-    <MESSAGE value="added readRawFile method" />
-    <MESSAGE value="removed strange +1 on getDay oO" />
-    <MESSAGE value="fixed strange +1 on getDay oO" />
-    <MESSAGE value="fixed bug: file upload path" />
     <MESSAGE value="updated Readme&#10;" />
-    <MESSAGE value="updated Readme" />
     <MESSAGE value="fixed addStringVariable bugs" />
     <MESSAGE value="fixed functions.fn - channel IDs as Integer-Values" />
     <MESSAGE value="conversion of STATE values to bool" />
@@ -1496,6 +1197,12 @@
     <MESSAGE value="bugfix writeLog" />
     <MESSAGE value="fixed decoding of negative integers" />
     <MESSAGE value="updated version" />
+    <MESSAGE value="added jqueryui-full and all jqueryui themes to lib dir" />
+    <MESSAGE value="bugfix moveLog, debug option (run ccu.io without ccu-connection)" />
+    <MESSAGE value="updated Readme" />
+    <MESSAGE value="neue Oberfläche, Button zum neu-laden der CCU Daten, Node Module auf neusten Stand gebracht" />
+    <MESSAGE value="added missing node modules" />
+    <MESSAGE value="added missing files in lib dir" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1503,21 +1210,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ccu.io/datastore/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/log/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/regascripts/favorites.fn">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ccu.io/regascripts/functions.fn">
       <provider selected="true" editor-type-id="text-editor">
         <state line="4" column="11" selection-start="109" selection-end="109" vertical-scroll-proportion="0.0" />
@@ -1556,30 +1248,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io-server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="23" selection-start="140" selection-end="140" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/rega.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="31" selection-start="1202" selection-end="1202" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="106" column="33" selection-start="3373" selection-end="3373" vertical-scroll-proportion="-66.25">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/settings.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="0" selection-start="1103" selection-end="1103" vertical-scroll-proportion="0.0">
+        <state line="130" column="6" selection-start="6266" selection-end="6266" vertical-scroll-proportion="-66.25">
           <folding />
         </state>
       </provider>
@@ -1591,16 +1262,78 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
+    <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io-server.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="71" selection-start="980" selection-end="980" vertical-scroll-proportion="0.0">
+        <state line="6" column="23" selection-start="140" selection-end="140" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/adapter/yr/yr-example-object.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="18" selection-start="808" selection-end="808" vertical-scroll-proportion="-15.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/settings.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="37" selection-start="602" selection-end="602" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/rega.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="169" column="78" selection-start="6034" selection-end="6034" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="633" column="12" selection-start="20910" selection-end="20910" vertical-scroll-proportion="19.338085">
+        <state line="15" column="26" selection-start="283" selection-end="283" vertical-scroll-proportion="-9.0">
+          <folding>
+            <marker date="1381332609000" expanded="true" signature="842:876" placeholder="{...}" />
+            <marker date="1381332609000" expanded="true" signature="5456:8252" placeholder="{...}" />
+            <marker date="1381332609000" expanded="true" signature="5715:8234" placeholder="{...}" />
+            <marker date="1381332609000" expanded="true" signature="5879:7862" placeholder="{...}" />
+            <marker date="1381332609000" expanded="true" signature="7975:8013" placeholder="{...}" />
+            <marker date="1381332609000" expanded="true" signature="8019:8236" placeholder="{...}" />
+            <marker date="1381332609000" expanded="true" signature="8156:8171" placeholder="{...}" />
+            <marker date="1381332609000" expanded="true" signature="8330:11113" placeholder="{...}" />
+            <marker date="1381332609000" expanded="true" signature="8382:11109" placeholder="{...}" />
+            <marker date="1381332609000" expanded="true" signature="8514:11103" placeholder="{...}" />
+            <marker date="1381332609000" expanded="true" signature="8575:11093" placeholder="{...}" />
+            <marker date="1381332609000" expanded="true" signature="14001:20291" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/doc/adapter_ids.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="0" selection-start="260" selection-end="260" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/adapter/yr/yr.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="41" selection-start="548" selection-end="548" vertical-scroll-proportion="0.0">
+          <folding>
+            <marker date="1381259004000" expanded="true" signature="1718:1766" placeholder="..." />
+            <marker date="1381259004000" expanded="true" signature="3291:3355" placeholder="{...}" />
+            <marker date="1381259004000" expanded="true" signature="3371:3456" placeholder="{...}" />
+            <marker date="1381259004000" expanded="true" signature="3472:3557" placeholder="{...}" />
+            <marker date="1381259004000" expanded="true" signature="3572:3615" placeholder="{...}" />
+            <marker date="1381259004000" expanded="true" signature="3635:3658" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="71" column="89" selection-start="3507" selection-end="3507" vertical-scroll-proportion="1.6931638">
           <folding />
         </state>
       </provider>
