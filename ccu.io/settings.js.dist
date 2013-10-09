@@ -2,6 +2,14 @@ var settings = {
 
     //  Port auf dem der Webserver und Socket.IO lauscht
     ioListenPort: 8080,
+    // Port auf dem der HTTPS Webserver lauscht, lass es kommentiert falls nicht gebraucht
+    //ioListenPortHTTPS: 8081,
+
+    // Login und Passwort für HTTPS server. Lass es kommentiert, falls Authentikation nicht erforderlich ist
+    //httpsCredentials: {
+    //    user: "admin",
+    //    password: "password"
+    //},
 
     // IP-Adresse der Homematic CCU
     ccuIp: "192.168.1.100",
