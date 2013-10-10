@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.35
+aktuelle Version: 0.9.37
 
 CCU.IO ist eine Node.js Applikation die einen Web-Server für HomeMatic Web-Oberflächen bereitstellt und via BIN-RPC mit
 rfd, hs485d und CUxD kommuniziert. CCU.IO kann - aber muss nicht - auf der CCU2 installiert werden. Über eine Websocket-
@@ -65,25 +65,30 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
 
 ## Changelog
 
+### 0.9.37
+
+* (Bluefox) SSL Support
+* (Bluefox) Basic Auth
+
 ### 0.9.36
 
-* Bugfix file upload
+* (Hobbyquaker) Bugfix file upload
 
 ### 0.9.35
 
-* Anonymisierungs-Funktion anonymisiert nun auch Adressen
-* fehlende Node-Module hinzugefügt, überflüssige entfernt
-* Speichern von nicht-json-Dateien im Datastore verhindert
+* (Hobbyquaker) Anonymisierungs-Funktion anonymisiert nun auch Adressen
+* (Hobbyquaker) fehlende Node-Module hinzugefügt, überflüssige entfernt
+* (Hobbyquaker) Speichern von nicht-json-Dateien im Datastore verhindert
 
 ### 0.9.34
 
-* fehlende Dateien ergänzt
+* (Hobbyquaker) fehlende Dateien ergänzt
 
 ### 0.9.33
 
-* neue CCU.IO Oberfläche
-* Button in CCU.IO Oberfläche um Objekte neu von der CCU zu laden (damit man nicht immer neustarten muss nach Änderungen auf der CCU)
-* Button zum "anonymisieren" von regaObjects und regaIndex (aus-x-en der BidCos-Adressen)
+* (Hobbyquaker) neue CCU.IO Oberfläche
+* (Hobbyquaker) Button in CCU.IO Oberfläche um Objekte neu von der CCU zu laden (damit man nicht immer neustarten muss nach Änderungen auf der CCU)
+* (Hobbyquaker) Button zum "anonymisieren" von regaObjects und regaIndex (aus-x-en der BidCos-Adressen)
 
 
 ## Lizenz

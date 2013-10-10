@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.36";
+settings.version = "0.9.37";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -21,13 +21,42 @@ var fs = require('fs'),
     rega =      require(__dirname+"/rega.js"),
     express =   require('express'),
     app = express(),
+    appSsl,
     url = require('url'),
     server =    require('http').createServer(app),
+    serverSsl,
     socketio =  require('socket.io'),
     io,
-    devlog,
+    ioSsl,
     devlogCache = [],
     notFirstVarUpdate = false;
+
+
+if (settings.authentication && settings.authentication.enabled) {
+    app.use(express.basicAuth(settings.authentication.user, settings.authentication.password));
+}
+
+
+if (settings.ioListenPortSsl) {
+    var options = null;
+
+    // Zertifikate vorhanden?
+    try {
+        options = {
+            key: fs.readFileSync(__dirname+'/cert/privatekey.pem'),
+            cert: fs.readFileSync(__dirname+'/cert/certificate.pem')
+        };
+    } catch(err) {
+        logger.error(err.message);
+    }
+    if (options) {
+        appSsl = express();
+        if (settings.authentication && settings.authentication.enabled) {
+            appSsl.use(express.basicAuth(settings.authentication.user, settings.authentication.password));
+        }
+        serverSsl = require('https').createServer(options, appSsl);
+    }
+}
 
 var socketlist = [],
     homematic = {},
@@ -110,7 +139,12 @@ if (settings.stats) {
 
 function sendEvent(arr) {
     logger.verbose("socket.io --> broadcast event "+JSON.stringify(arr))
-    io.sockets.emit("event", arr);
+    if (io) {
+        io.sockets.emit("event", arr);
+    }
+    if (ioSsl) {
+        ioSsl.sockets.emit("event", arr);
+    }
 }
 
 function setDatapoint(id, val, ts, ack, lc) {
@@ -258,6 +292,9 @@ function loadRegaData(index, err, rebuild) {
                 logger.info("rega          data succesfully reloaded");
                 logger.info("socket.io --> broadcast reload")
                 io.sockets.emit("reload");
+                if (ioSsl) {
+                    ioSsl.sockets.emit("reload");
+                }
 
             } else {
                 logger.info("rega          data succesfully loaded");
@@ -350,6 +387,9 @@ function initRpc() {
                         datapoints[id] = [val, timestamp, true, timestamp];
                     }
                     io.sockets.emit("event", event);
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("event", event);
+                    }
 
                 }
 
@@ -359,51 +399,82 @@ function initRpc() {
     });
 }
 
+function uploadParser(req, res, next) {
+    var urlParts = url.parse(req.url, true);
+    var query = urlParts.query;
+
+    //console.log(query);
+
+    // get the temporary location of the file
+    var tmpPath = req.files.file.path;
+
+    logger.info("webserver <-- file upload "+req.files.file.name+" ("+req.files.file.size+" bytes) to "+tmpPath);
+    logger.info("webserver <-- file upload query params "+JSON.stringify(query));
+
+    var newName;
+    if (query.id) {
+        newName = query.id + "." + req.files.file.name.replace(/.*\./, "");
+    } else {
+        newName = req.files.file.name;
+    }
+    // set where the file should actually exists - in this case it is in the "images" directory
+    var targetPath = __dirname + "/" + query.path + newName;
+    logger.info("webserver     move uploaded file "+tmpPath+" -> "+targetPath);
+
+
+    // move the file from the temporary location to the intended location
+    fs.rename(tmpPath, targetPath, function(err) {
+        if (err) throw err;
+        // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
+        fs.unlink(tmpPath, function() {
+            if (err) throw err;
+            res.send('File uploaded to: ' + targetPath + ' - ' + req.files.file.size + ' bytes');
+        });
+    });
+}
+
 function initWebserver() {
     app.use('/', express.static(__dirname + '/www'));
     app.use('/log', express.static(__dirname + '/log'));
-    server.listen(settings.ioListenPort);
-    logger.info("webserver     listening on port "+settings.ioListenPort);
 
     // File Uploads
     app.use(express.bodyParser());
-    app.post('/upload', function(req, res, next) {
-        var urlParts = url.parse(req.url, true);
-        var query = urlParts.query;
+    app.post('/upload', uploadParser);
 
-        //console.log(query);
+    if (appSsl) {
+        appSsl.use('/', express.static(__dirname + '/www'));
+        appSsl.use('/log', express.static(__dirname + '/log'));
 
-        // get the temporary location of the file
-        var tmpPath = req.files.file.path;
+        // File Uploads
+        appSsl.use(express.bodyParser());
+        appSsl.post('/upload', uploadParser);
+    }
+    if (settings.authentication.enabled) {
+        logger.info("webserver     basic auth enabled");
+    }
+    server.listen(settings.ioListenPort);
+    logger.info("webserver     listening on port "+settings.ioListenPort);
 
-        logger.info("webserver <-- file upload "+req.files.file.name+" ("+req.files.file.size+" bytes) to "+tmpPath);
-        logger.info("webserver <-- file upload query params"+JSON.stringify(query));
+    if (serverSsl){
+        serverSsl.listen(settings.ioListenPortSsl);
+        logger.info("webserver ssl listening on port "+settings.ioListenPortSsl);
+    }
 
-        var newName;
-        if (query.id) {
-            newName = query.id + "." + req.files.file.name.replace(/.*\./, "");
-        } else {
-            newName = req.files.file.name;
-        }
-        // set where the file should actually exists - in this case it is in the "images" directory
-        var targetPath = __dirname + "/" + query.path + newName;
-        logger.info("webserver     move uploaded file "+tmpPath+" -> "+targetPath);
-
-
-        // move the file from the temporary location to the intended location
-        fs.rename(tmpPath, targetPath, function(err) {
-            if (err) throw err;
-            // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-            fs.unlink(tmpPath, function() {
-                if (err) throw err;
-                res.send('File uploaded to: ' + targetPath + ' - ' + req.files.file.size + ' bytes');
-            });
-        });
-    });
+    if (appSsl) {
+        appSsl.use(express.bodyParser());
+        appSsl.post('/upload', uploadParser);
+    }
 
     io = socketio.listen(server);
     io.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
-    initSocketIO();
+
+    initSocketIO(io);
+    if (serverSsl){
+        ioSsl = socketio.listen(serverSsl);
+        ioSsl.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
+        initSocketIO(ioSsl);
+    }
+
 }
 
 function formatTimestamp() {
@@ -417,8 +488,8 @@ function formatTimestamp() {
     return ts;
 }
 
-function initSocketIO() {
-    io.sockets.on('connection', function (socket) {
+function initSocketIO(_io) {
+    _io.sockets.on('connection', function (socket) {
         socketlist.push(socket);
         var address = socket.handshake.address;
         logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
@@ -541,28 +612,28 @@ function initSocketIO() {
                 // TODO implement set State via BINRPC if TypeName=HSSDP
                 // // Bidcos or Rega?
                 //if (regaIndex.HSSDP.indexOf(id) != -1) {
-                    // BINRPC
-                    //var name = regaObjects[id].Name;
-                    //var parts = name.split(".");
-                    //var iface = parts[0],
-                    //    channel = parts[1],
-                    //    dp = parts[2];
+                // BINRPC
+                //var name = regaObjects[id].Name;
+                //var parts = name.split(".");
+                //var iface = parts[0],
+                //    channel = parts[1],
+                //    dp = parts[2];
                 //} else {
-                    // ReGa
-                    var xval;
-                    if (typeof val == "string") {
-                        xval = "'" + val.replace(/'/g, '"') + "'";
-                    } else {
-                        xval = val;
-                    }
-                    var script = "Write(dom.GetObject("+id+").State("+xval+"));";
+                // ReGa
+                var xval;
+                if (typeof val == "string") {
+                    xval = "'" + val.replace(/'/g, '"') + "'";
+                } else {
+                    xval = val;
+                }
+                var script = "Write(dom.GetObject("+id+").State("+xval+"));";
 
-                    regahss.script(script, function (data) {
-                         //logger.verbose("rega      <-- "+data);
-                         if (callback) {
-                             callback(data);
-                         }
-                    });
+                regahss.script(script, function (data) {
+                    //logger.verbose("rega      <-- "+data);
+                    if (callback) {
+                        callback(data);
+                    }
+                });
 
                 //}
 
@@ -618,7 +689,10 @@ function stop() {
         logger.verbose("socket.io     closing server");
         io.server.close();
     }
-
+    if (ioSsl) {
+        logger.verbose("socket.io     closing HTTPS server");
+        ioSsl.server.close();
+    }
     setTimeout(quit, 500);
 }
 
