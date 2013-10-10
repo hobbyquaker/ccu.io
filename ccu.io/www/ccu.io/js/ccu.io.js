@@ -38,13 +38,14 @@ $(document).ready(function () {
                 $("textarea#datastore").val("");
                 $("#datastoreSave").button("disable");
             } else {
+
+                $("textarea#datastore").val("");
+                $("#datastoreSave").button("disable");
+
                 socket.emit("readFile", [file], function (data) {
                     if (data) {
                         $("textarea#datastore").val(JSON.stringify(data, null, 2));
                         $("#datastoreSave").button("enable");
-                    } else {
-                        $("textarea#datastore").val("");
-                        $("#datastoreSave").button("disable");
                     }
                 });
             }
