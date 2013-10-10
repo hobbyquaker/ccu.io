@@ -99,6 +99,9 @@ $(document).ready(function () {
         for (var id in regaObjects) {
             anon[id] = regaObjects[id];
             anon[id].Name = regaObjects[id].Name.replace(/[A-Z]EQ[0-9]{7}/, "*EQ*******");
+            if (anon[id].Address) {
+                anon[id].Address = regaObjects[id].Address.replace(/[A-Z]EQ[0-9]{7}/, "*EQ*******");
+            }
         }
         $("#meta").html(JSON.stringify(anon, null, "  "));
     });
