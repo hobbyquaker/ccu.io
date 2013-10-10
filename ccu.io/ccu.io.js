@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.35";
+settings.version = "0.9.36";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -372,20 +372,23 @@ function initWebserver() {
         var query = urlParts.query;
 
         //console.log(query);
-        logger.verbose("webserver <-- file upload "+req.files.file.name+" ("+req.files.file.size+" bytes)");
+
         // get the temporary location of the file
         var tmpPath = req.files.file.path;
+
+        logger.info("webserver <-- file upload "+req.files.file.name+" ("+req.files.file.size+" bytes) to "+tmpPath);
+        logger.info("webserver <-- file upload query params"+JSON.stringify(query));
+
         var newName;
         if (query.id) {
-            newName = query.id + "." + req.files.file.type.replace(/[a-z]+\//,"");
-
+            newName = query.id + "." + req.files.file.name.replace(/.*\./, "");
         } else {
             newName = req.files.file.name;
         }
         // set where the file should actually exists - in this case it is in the "images" directory
         var targetPath = __dirname + "/" + query.path + newName;
+        logger.info("webserver     move uploaded file "+tmpPath+" -> "+targetPath);
 
-        logger.debug("move "+tmpPath+" -> "+targetPath);
 
         // move the file from the temporary location to the intended location
         fs.rename(tmpPath, targetPath, function(err) {

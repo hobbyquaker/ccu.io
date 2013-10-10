@@ -65,6 +65,10 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
 
 ## Changelog
 
+### 0.9.36
+
+* Bugfix file upload
+
 ### 0.9.35
 
 * Anonymisierungs-Funktion anonymisiert nun auch Adressen
