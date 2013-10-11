@@ -13,17 +13,17 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.37";
+settings.version = "0.9.38";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
     binrpc =    require(__dirname+"/binrpc.js"),
     rega =      require(__dirname+"/rega.js"),
     express =   require('express'),
-    app = express(),
+    app,
     appSsl,
     url = require('url'),
-    server =    require('http').createServer(app),
+    server,
     serverSsl,
     socketio =  require('socket.io'),
     io,
@@ -31,9 +31,15 @@ var fs = require('fs'),
     devlogCache = [],
     notFirstVarUpdate = false;
 
+if (settings.ioListenPort) {
+    aoo =  express();
 
-if (settings.authentication && settings.authentication.enabled) {
-    app.use(express.basicAuth(settings.authentication.user, settings.authentication.password));
+    if (settings.authentication && settings.authentication.enabled) {
+        app.use(express.basicAuth(settings.authentication.user, settings.authentication.password));
+    }
+
+    server =    require('http').createServer(app)
+
 }
 
 
@@ -291,7 +297,9 @@ function loadRegaData(index, err, rebuild) {
             if (rebuild) {
                 logger.info("rega          data succesfully reloaded");
                 logger.info("socket.io --> broadcast reload")
-                io.sockets.emit("reload");
+                if (io) {
+                    io.sockets.emit("reload");
+                }
                 if (ioSsl) {
                     ioSsl.sockets.emit("reload");
                 }
@@ -386,7 +394,9 @@ function initRpc() {
                     } else {
                         datapoints[id] = [val, timestamp, true, timestamp];
                     }
-                    io.sockets.emit("event", event);
+                    if (io) {
+                        io.sockets.emit("event", event);
+                    }
                     if (ioSsl) {
                         ioSsl.sockets.emit("event", event);
                     }
@@ -434,12 +444,14 @@ function uploadParser(req, res, next) {
 }
 
 function initWebserver() {
-    app.use('/', express.static(__dirname + '/www'));
-    app.use('/log', express.static(__dirname + '/log'));
+    if (app) {
+        app.use('/', express.static(__dirname + '/www'));
+        app.use('/log', express.static(__dirname + '/log'));
 
-    // File Uploads
-    app.use(express.bodyParser());
-    app.post('/upload', uploadParser);
+        // File Uploads
+        app.use(express.bodyParser());
+        app.post('/upload', uploadParser);
+    }
 
     if (appSsl) {
         appSsl.use('/', express.static(__dirname + '/www'));
@@ -449,31 +461,26 @@ function initWebserver() {
         appSsl.use(express.bodyParser());
         appSsl.post('/upload', uploadParser);
     }
-    if (settings.authentication.enabled) {
+    if (settings.authentication && settings.authentication.enabled) {
         logger.info("webserver     basic auth enabled");
     }
-    server.listen(settings.ioListenPort);
-    logger.info("webserver     listening on port "+settings.ioListenPort);
+
+    if (server) {
+        server.listen(settings.ioListenPort);
+        logger.info("webserver     listening on port "+settings.ioListenPort);
+        io = socketio.listen(server);
+        io.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
+        initSocketIO(io);
+    }
 
     if (serverSsl){
         serverSsl.listen(settings.ioListenPortSsl);
         logger.info("webserver ssl listening on port "+settings.ioListenPortSsl);
-    }
-
-    if (appSsl) {
-        appSsl.use(express.bodyParser());
-        appSsl.post('/upload', uploadParser);
-    }
-
-    io = socketio.listen(server);
-    io.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
-
-    initSocketIO(io);
-    if (serverSsl){
         ioSsl = socketio.listen(serverSsl);
         ioSsl.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
         initSocketIO(ioSsl);
     }
+
 
 }
 
