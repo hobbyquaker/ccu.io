@@ -9,7 +9,7 @@ ul.ui-tabs-nav li.ui-state-focus a {
 
 textarea.data-area {
     width: 100%;
-    min-height: 400px;
+    min-height: 440px;
 }
 
 button.ui-multiselect {
@@ -29,6 +29,14 @@ table.ui-jqgrid-btable tr td {
     font-size: 11px;
 }
 
-.ui-jqgrid-htable td th {
+.ui-jqgrid-htable tr th {
     font-size: 12px;
+}
+
+.ui-pg-table tr td {
+    font-size: 11px;
+}
+
+a.ui-jqgrid-titlebar-close {
+    display: none;
 }

@@ -8,32 +8,16 @@ $(document).ready(function () {
     var eventCounter = 0;
     var $mainTabs = $("#mainTabs");
     var $subTabs5 = $("#subTabs5");
+    var $datapointGrid = $("#grid_datapoints");
     var $eventGrid = $("#grid_events");
 
     var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host'));
 
-
-
-    socket.on('event', function(obj) {
-        obj[1] = $('<div/>').text(obj[1]).html();
-
-        var data = {
-            id: eventCounter,
-            ise_id: obj[0],
-            type: (regaObjects[obj[0]] ? regaObjects[obj[0]].TypeName : ""),
-            name: (regaObjects[obj[0]] ? regaObjects[obj[0]].Name : ""),
-            parent: (regaObjects[obj[0]] && regaObjects[obj[0]].Parent ? regaObjects[regaObjects[obj[0]].Parent].Name : ""),
-            value: obj[1],
-            timestamp: obj[2],
-            ack: obj[3],
-            lastchange: obj[4]
-        };
-        $eventGrid.jqGrid('addRowData', eventCounter++, data, "first");
-        //console.log($mainTabs.tabs("option", "active") + " " + $subTabs5.tabs("option", "active"));
-        if ($mainTabs.tabs("option", "active") == 4 && $subTabs5.tabs("option", "active") == 3) {
-            $eventGrid.trigger("reloadGrid");
-        }
+    socket.emit('getStringtable', function(obj) {
+        $("#stringtable").html(JSON.stringify(obj, null, "  "));
     });
+
+
 
     socket.on('reload', function() {
         window.location.reload();
@@ -154,14 +138,7 @@ $(document).ready(function () {
     });
 
 
-    $("#stringtableRefresh").button().click(function() {
-        $("#stringtable").html("");
-        socket.emit('getStringtable', function(obj) {
-            $("#stringtable").html(JSON.stringify(obj, null, "  "));
-        });
-    });
 
-    $("#stringtableSave").button();
 
 
 
@@ -192,21 +169,22 @@ $(document).ready(function () {
     $("#grid_datapoints").jqGrid({
         datatype: "local",
 
-        colNames:['id', 'Name', 'TypeName', 'Value', 'Timestamp', 'ack', 'lastChange'],
+        colNames:['id', 'TypeName', 'Name', 'Parent Name', 'Value', 'Timestamp', 'ack', 'lastChange'],
         colModel:[
-            {name:'id',index:'id', width:80, sorttype: "int"},
+            {name:'id',index:'id', width:60, sorttype: "int"},
+            {name:'type',index:'type', width:80},
             {name:'name',index:'name', width:240},
-            {name:'type',index:'type', width:100},
-            {name:'val',index:'val', width:300},
-            {name:'timestamp',index:'timestamp', width:150},
-            {name:'ack',index:'ack', width:60},
-            {name:'lastChange',index:'lastChange', width:150}
+            {name:'parent',index:'parent', width:240},
+            {name:'val',index:'val', width:160},
+            {name:'timestamp',index:'timestamp', width:140},
+            {name:'ack',index:'ack', width:50},
+            {name:'lastChange',index:'lastChange', width:140}
         ],
         rowNum:20,
         autowidth: true,
         width: 1200,
-        height: 400,
-        rowList:[10,20,100,250,500,1000],
+        height: 440,
+        rowList:[20,100,500,1000],
         pager: jQuery('#pager_datapoints'),
         sortname: 'timestamp',
         viewrecords: true,
@@ -214,11 +192,13 @@ $(document).ready(function () {
         sortorder: "asc",
         caption:"datapoints"
     }).jqGrid('filterToolbar',{
-            autosearch: true,
-            searchOnEnter: false,
-            enableClear: false
-
-    }).navGrid('#pagerjq_datapoints',{edit:false,add:false,del:false});
+        autosearch: true,
+        searchOnEnter: false,
+        enableClear: false
+    }).navGrid('#pager_datapoints',{search:false, refresh: false, edit:false,add:true,addicon: "ui-icon-refresh", del:false, addfunc: function() {
+        $datapointGrid.jqGrid("clearGridData");
+         loadDatapoints();
+    }});
 
 
     socket.emit('getIndex', function(obj) {
@@ -228,42 +208,86 @@ $(document).ready(function () {
             regaObjects = obj;
             $("#meta").html(JSON.stringify(obj, null, "  "));
             regaObjects = obj;
-            socket.emit('getDatapoints', function(obj) {
-                var i = 1;
-                for (var id in obj) {
-                    if (isNaN(id)) { continue; }
-                    var data = {
-                        id: id,
-                        name: (regaObjects[id] ? regaObjects[id].Name : ""),
-                        type: (regaObjects[id] ? regaObjects[id].TypeName : ""),
-                        val: $('<div/>').text(obj[id][0]).html(),
-                        timestamp: (obj[id][1] == "1970-01-01 01:00:00" ? "" : obj[id][1]),
-                        ack: obj[id][2],
-                        lastChange: (obj[id][3] == "1970-01-01 01:00:00" ? "" : obj[id][3])
-                    };
-                    $("#grid_datapoints").jqGrid('addRowData',id,data);
+
+            socket.on('event', function(obj) {
+                obj[1] = $('<div/>').text(obj[1]).html();
+
+                // Update Datapoint Grid
+                var oldData = $datapointGrid.jqGrid('getRowData',obj[0]);
+                var data = {
+                    id: obj[0],
+                    name: oldData.name,
+                    parent: oldData.parent,
+                    type: oldData.type,
+                    val: obj[1],
+                    timestamp: (obj[2] == "1970-01-01 01:00:00" ? "" : obj[2]),
+                    ack: obj[3],
+                    lastChange: (obj[4] == "1970-01-01 01:00:00" ? "" : obj[4])
+                };
+                $datapointGrid.jqGrid('setRowData', obj[0], data);
+                if ($mainTabs.tabs("option", "active") == 4 && $subTabs5.tabs("option", "active") == 2) {
+                    $datapointGrid.trigger("reloadGrid");
                 }
-                $("#grid_datapoints").trigger("reloadGrid");
+
+                // Update Event Grid
+                var data = {
+                    id: eventCounter,
+                    ise_id: obj[0],
+                    type: (regaObjects[obj[0]] ? regaObjects[obj[0]].TypeName : ""),
+                    name: (regaObjects[obj[0]] ? regaObjects[obj[0]].Name : ""),
+                    parent: (regaObjects[obj[0]] && regaObjects[obj[0]].Parent ? regaObjects[regaObjects[obj[0]].Parent].Name : ""),
+                    value: obj[1],
+                    timestamp: obj[2],
+                    ack: obj[3],
+                    lastchange: obj[4]
+                };
+                $eventGrid.jqGrid('addRowData', eventCounter++, data, "first");
+                //console.log($mainTabs.tabs("option", "active") + " " + $subTabs5.tabs("option", "active"));
+                if ($mainTabs.tabs("option", "active") == 4 && $subTabs5.tabs("option", "active") == 3) {
+                    $eventGrid.trigger("reloadGrid");
+                }
             });
+
+            loadDatapoints();
+
         });
     });
 
-
+    function loadDatapoints() {
+        socket.emit('getDatapoints', function(obj) {
+            var i = 1;
+            for (var id in obj) {
+                if (isNaN(id)) { continue; }
+                var data = {
+                    id: id,
+                    name: (regaObjects[id] ? regaObjects[id].Name : ""),
+                    parent: (regaObjects[id] && regaObjects[id].Parent ? regaObjects[regaObjects[id].Parent].Name : ""),
+                    type: (regaObjects[id] ? regaObjects[id].TypeName : ""),
+                    val: $('<div/>').text(obj[id][0]).html(),
+                    timestamp: (obj[id][1] == "1970-01-01 01:00:00" ? "" : obj[id][1]),
+                    ack: obj[id][2],
+                    lastChange: (obj[id][3] == "1970-01-01 01:00:00" ? "" : obj[id][3])
+                };
+                $("#grid_datapoints").jqGrid('addRowData',id,data);
+            }
+            $("#grid_datapoints").trigger("reloadGrid");
+        });
+    }
 
 
 
     $("#grid_events").jqGrid({
         datatype: "local",
-        colNames:['eventCount','id', 'Type', 'Name', 'Parent Name','Value', 'Timestamp', 'Ack', 'LastChange'],
+        colNames:['eventCount','id', 'TypeName', 'Name', 'Parent Name','Value', 'Timestamp', 'ack', 'lastChange'],
         colModel:[
             {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
             {name:'ise_id',index:'ise_id', width:60, sorttype: "int"},
-            {name:'type',index:'type', width:60},
-            {name:'name',index:'name', width:200},
-            {name:'parent',index:'parent', width:200},
-            {name:'value',index:'value', width:200},
+            {name:'type',index:'type', width:80},
+            {name:'name',index:'name', width:240},
+            {name:'parent',index:'parent', width:240},
+            {name:'value',index:'value', width:160},
             {name:'timestamp',index:'timestamp', width:140},
-            {name:'ack',index:'ack', width:60},
+            {name:'ack',index:'ack', width:50},
             {name:'lastchange',index:'lastchange', width:140}
         ],
         cmTemplate: {sortable:false},
@@ -271,7 +295,7 @@ $(document).ready(function () {
         autowidth: true,
         width: 1200,
         height: 440,
-        rowList:[10,20,100,500,1000],
+        rowList:[20,100,500,1000],
         pager: $('#pager_events'),
         sortname: "id",
         sortorder: "desc",
@@ -279,35 +303,14 @@ $(document).ready(function () {
         sortorder: "desc",
         caption: "Events"
     }).jqGrid('filterToolbar',{
-            autosearch: true,
-            searchOnEnter: false,
-            enableClear: false
-    }).navGrid('#pager_events',{edit:false,add:false,del:false});
+        autosearch: true,
+        searchOnEnter: false,
+        enableClear: false
+    }).navGrid('#pager_events',{search:false, refresh:false, edit:false,add:true, addicon: "ui-icon-trash", del:false, addfunc: function () {
+        $eventGrid.jqGrid("clearGridData");
+        eventCounter = 0;
+    }});
 
 
-    function getObjDesc (id) {
-        if (regaObjects != null && regaObjects[id] !== undefined) {
-            var parent = "";
-            var p = regaObjects[id]["Parent"];
-            if (p !== undefined && regaObjects[p]["DPs"] !== undefined)
-                parent = regaObjects[p]["Name"] + "/";
-            else if (regaObjects[id]["TypeName"] !== undefined) {
-                if (regaObjects[id]["TypeName"] == "VARDP") {
-                    "Variable" + " / ";
-                }
-                else
-                if (regaObjects[id]["TypeName"] == "PROGRAM") {
-                    "Program" + " / ";
-                }
-            }
-
-            if (regaObjects[id]["Address"] !== undefined)
-                return parent + regaObjects[id]["Name"] + "/" + regaObjects[id]["Address"];
-            else
-                return parent + regaObjects[id]["Name"];
-        }
-        else
-            return "";
-    }
 
 });
