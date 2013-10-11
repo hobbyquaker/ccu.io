@@ -32,7 +32,7 @@ var fs = require('fs'),
     notFirstVarUpdate = false;
 
 if (settings.ioListenPort) {
-    aoo =  express();
+    app =  express();
 
     if (settings.authentication && settings.authentication.enabled) {
         app.use(express.basicAuth(settings.authentication.user, settings.authentication.password));
