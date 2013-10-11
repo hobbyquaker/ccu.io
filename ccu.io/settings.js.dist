@@ -5,9 +5,10 @@ var settings = {
     // Port auf dem der https Webserver lauscht - falls nicht benötigt auskommentiert belassen
     //ioListenPortSsl: 8443,
 
-    // Passwort-Schutz (HTTP Basic Authentication)
+    // Passwort-Schutz (HTTP Basic Authentication) - Achtung! Wirkt nur auf http(s), Websockets bleiben ungeschützt!
     authentication: {
         enabled: false,
+        enabledSsl: false,
         user: "admin",
         password: "password"
     },
@@ -60,7 +61,17 @@ var settings = {
     },
     datastorePath: __dirname+"/datastore/",
     stats: true,
-    statsIntervalMinutes: 15
+    statsIntervalMinutes: 15,
+
+    adaptersEnabled: false,
+    adapters: {
+        yr: {
+            mode: "periodical",
+            period: 120,     // Minuten
+            location: "Germany/Baden-W%C3%BCrttemberg/Stuttgart"
+        }
+    }
+
 };
 
 module.exports = settings;

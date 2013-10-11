@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.38";
+settings.version = "0.9.39";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -30,6 +30,8 @@ var fs = require('fs'),
     ioSsl,
     devlogCache = [],
     notFirstVarUpdate = false;
+
+var childProcess = require('child_process');
 
 if (settings.ioListenPort) {
     app =  express();
@@ -57,7 +59,7 @@ if (settings.ioListenPortSsl) {
     }
     if (options) {
         appSsl = express();
-        if (settings.authentication && settings.authentication.enabled) {
+        if (settings.authentication && settings.authentication.enabledSsl) {
             appSsl.use(express.basicAuth(settings.authentication.user, settings.authentication.password));
         }
         serverSsl = require('https').createServer(options, appSsl);
@@ -461,6 +463,7 @@ function initWebserver() {
         appSsl.use(express.bodyParser());
         appSsl.post('/upload', uploadParser);
     }
+
     if (settings.authentication && settings.authentication.enabled) {
         logger.info("webserver     basic auth enabled");
     }
@@ -479,8 +482,15 @@ function initWebserver() {
         ioSsl = socketio.listen(serverSsl);
         ioSsl.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
         initSocketIO(ioSsl);
+
     }
 
+    logger.info("ccu.io        ready");
+
+    if (settings.adaptersEnabled) {
+        logger.info("ccu.io        adapters enabled");
+        setTimeout(startAdapters, 2000);
+    }
 
 }
 
@@ -647,6 +657,15 @@ function initSocketIO(_io) {
             }
 
             setDatapoint(id, val, ts, ack);
+
+
+            // Virtual Datapoint
+            if (id > 65535) {
+                if (callback) {
+                    callback();
+                }
+            }
+
         });
 
         socket.on('programExecute', function(id, callback) {
@@ -675,8 +694,37 @@ function initSocketIO(_io) {
             socketlist.splice(socketlist.indexOf(socket), 1);
         });
     });
-    logger.info("ccu.io        ready");
+
 }
+
+function startAdapters () {
+    if (!settings.adapters) {
+        return false;
+    }
+    for (adapter in settings.adapters) {
+        logger.info("ccu.io        found adapter "+adapter);
+        var mode = settings.adapters[adapter].mode;
+        var period = settings.adapters[adapter].period * 60000;
+
+        var path = __dirname + "/adapter/"+adapter+"/"+adapter+".js"
+
+        logger.info("ccu.io        starting adapter "+path);
+        childProcess.fork(path);
+
+        switch (mode) {
+            case "periodical":
+                setInterval(function () {
+                    logger.info("ccu.io        starting adapter "+path+" (interval="+period+"ms");
+                    childProcess.fork(path);
+                }, period);
+                break;
+
+            default:
+
+        }
+    }
+}
+
 
 process.on('SIGINT', function () {
     stop();

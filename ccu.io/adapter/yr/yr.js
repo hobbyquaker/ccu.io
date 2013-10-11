@@ -7,16 +7,16 @@
  *
  *
  */
+var settings = require(__dirname+'/../../settings.js');
 
-var settings = {
-    location: "Germany/Baden-W%C3%BCrttemberg/Stuttgart",
-    ccuIoPort: 8080
-};
+if (!settings.adapters.yr) {
+    process.exit();
+}
 
 var reqOptions = {
     hostname: 'www.yr.no',
     port: 80,
-    path: '/place/'+settings.location+'/forecast.xml',
+    path: '/place/'+settings.adapters.yr.location+'/forecast.xml',
     method: 'GET'
 };
 
@@ -24,17 +24,28 @@ var http = 		require("http"),
 	xml2js = 	require("xml2js"),
     logger =    require(__dirname+'/../../logger.js');
 
-var io = require('socket.io-client'),
-    socket = io.connect("127.0.0.1", {
-        port: settings.ccuIoPort
-    });
+var io = require('socket.io-client');
+
+    if (settings.ioListenPort) {
+        var socket = io.connect("127.0.0.1", {
+            port: settings.ioListenPort
+        });
+    } else if (settings.ioListenPortSsl) {
+        var socket = io.connect("127.0.0.1", {
+            port: settings.ioListenPortSsl,
+            secure: true,
+        });
+    } else {
+        process.exit();
+    }
+
 
 socket.on('connect', function () {
-    console.log("yr.no Adapter connected to CCU.IO");
+    logger.info("adapter yr    connected to ccu.io");
 });
 
 socket.on('disconnect', function () {
-    console.log("yr.no Adapter disconnected from CCU.IO");
+    logger.info("adapter yr    disconnected from ccu.io");
 });
 
 var req = http.request(reqOptions, function(res) {
@@ -52,7 +63,7 @@ var req = http.request(reqOptions, function(res) {
 });
 
 req.on('error', function(e) {
-  console.log("Got error: " + e.message);
+  logger.error("adapter yr    " + e.message);
 });
 
 req.end()
@@ -66,10 +77,9 @@ function parseData(xml) {
 	var parser = new xml2js.Parser(options);
 	parser.parseString(xml, function (err, result) {
 		if (err) {
-			console.log("error parsing xml");
-			console.log(err);
-		} else {
-
+            logger.error("adapter yr   "+err);
+        } else {
+            logger.info("adapter yr    got weather data from yr.no");
 			var forecastArr = result.weatherdata.forecast.tabular.time;
 
 			for (var i = 0; i < forecastArr.length; i++) {
@@ -106,7 +116,6 @@ function parseData(xml) {
 					}
 				}
 				
-				console.log(period);
 
 				tableMiddle += '<td><img src="'+period.symbol.url+'" alt="'+period.symbol.name+'" title="'+period.symbol.name+'"><br/>';
 				tableBottom += '<td><span class="">'+period.temperature.value+'°C</span></td>';
@@ -114,10 +123,15 @@ function parseData(xml) {
 			}
             var style = '<style type="text/css">tr.yr-day td {font-family: sans-serif; font-size: 9px; padding:0; margin: 0;}\ntr.yr-time td {text-align: center; font-family: sans-serif; font-size: 10px; padding:0; margin: 0;}\ntr.yr-temp td {text-align: center; font-family: sans-serif; font-size: 12px; padding:0; margin: 0;}\ntr.yr-img td {text-align: center; padding:0; margin: 0;}\ntr.yr-time td img {padding:0; margin: 0;}</style>'
 			var table = style + tableDay + tableHead + tableMiddle + tableBottom + "</tr></table>";
-			console.log(table);
 			//console.log(JSON.stringify(result, null, "  "));
-            socket.emit("setState", [70000, table]);
-            socket.close();
+            socket.emit("setState", [70000, table], function () {
+                socket.disconnect();
+                logger.info("adapter yr    terminating");
+                setTimeout(function () {
+                     process.exit();
+                }, 1000);
+            });
+
 		}
 	});
 }
