@@ -5,14 +5,34 @@ $(document).ready(function () {
 
     $(".jqui-tabs").tabs();
 
-
+    var eventCounter = 0;
+    var $mainTabs = $("#mainTabs");
+    var $subTabs5 = $("#subTabs5");
+    var $eventGrid = $("#grid_events");
 
     var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host'));
 
+
+
     socket.on('event', function(obj) {
         obj[1] = $('<div/>').text(obj[1]).html();
-        $("#output").prepend(JSON.stringify(obj)+"\n");
-        $("#output").prepend(getObjDesc(obj[0]));
+
+        var data = {
+            id: eventCounter,
+            ise_id: obj[0],
+            type: (regaObjects[obj[0]] ? regaObjects[obj[0]].TypeName : ""),
+            name: (regaObjects[obj[0]] ? regaObjects[obj[0]].Name : ""),
+            parent: (regaObjects[obj[0]] && regaObjects[obj[0]].Parent ? regaObjects[regaObjects[obj[0]].Parent].Name : ""),
+            value: obj[1],
+            timestamp: obj[2],
+            ack: obj[3],
+            lastchange: obj[4]
+        };
+        $eventGrid.jqGrid('addRowData', eventCounter++, data, "first");
+        //console.log($mainTabs.tabs("option", "active") + " " + $subTabs5.tabs("option", "active"));
+        if ($mainTabs.tabs("option", "active") == 4 && $subTabs5.tabs("option", "active") == 3) {
+            $eventGrid.trigger("reloadGrid");
+        }
     });
 
     socket.on('reload', function() {
@@ -231,25 +251,39 @@ $(document).ready(function () {
 
 
 
-/*
+
     $("#grid_events").jqGrid({
-        colNames:['Timestamp','Severity', 'Message'],
+        datatype: "local",
+        colNames:['eventCount','id', 'Type', 'Name', 'Parent Name','Value', 'Timestamp', 'Ack', 'LastChange'],
         colModel:[
-            {name:'timestamp',index:'timestamp', width:100},
-            {name:'severity',index:'severity', width:100},
-            {name:'message',index:'message', width:800}
+            {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
+            {name:'ise_id',index:'ise_id', width:60, sorttype: "int"},
+            {name:'type',index:'type', width:60},
+            {name:'name',index:'name', width:200},
+            {name:'parent',index:'parent', width:200},
+            {name:'value',index:'value', width:200},
+            {name:'timestamp',index:'timestamp', width:140},
+            {name:'ack',index:'ack', width:60},
+            {name:'lastchange',index:'lastchange', width:140}
         ],
-        rowNum:10,
+        cmTemplate: {sortable:false},
+        rowNum:20,
         autowidth: true,
-        width: "100%",
-        rowList:[10,20,30],
-        //pager: $('#pager_events'),
-        sortname: 'timestamp',
+        width: 1200,
+        height: 440,
+        rowList:[10,20,100,500,1000],
+        pager: $('#pager_events'),
+        sortname: "id",
+        sortorder: "desc",
         viewrecords: true,
         sortorder: "desc",
-        caption:"Events"
-    }); //.navGrid('#pager_events',{edit:false,add:false,del:false});
-    */
+        caption: "Events"
+    }).jqGrid('filterToolbar',{
+            autosearch: true,
+            searchOnEnter: false,
+            enableClear: false
+    }).navGrid('#pager_events',{edit:false,add:false,del:false});
+
 
     function getObjDesc (id) {
         if (regaObjects != null && regaObjects[id] !== undefined) {

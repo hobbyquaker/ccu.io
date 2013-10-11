@@ -24,3 +24,11 @@ input.ui-pg-input {
 table.ui-jqgrid-btable tr td {
     font-size: 11px;
 }
+
+.ui-search-table tr td {
+    font-size: 11px;
+}
+
+.ui-jqgrid-htable td th {
+    font-size: 12px;
+}
