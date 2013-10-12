@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.39
+aktuelle Version: 0.9.40
 
 CCU.IO ist eine Node.js Applikation die einen Web-Server für HomeMatic Web-Oberflächen bereitstellt und via BIN-RPC mit
 rfd, hs485d und CUxD kommuniziert. CCU.IO kann - aber muss nicht - auf der CCU2 installiert werden. Über eine Websocket-
@@ -64,6 +64,10 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.40
+
+* (Hobbyquaker) Script-Engine implementiert (proof-of-concept, wird sich noch einiges ändern!)
 
 ### 0.9.39
 

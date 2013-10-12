@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.39";
+settings.version = "0.9.40";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -491,6 +491,9 @@ function initWebserver() {
         logger.info("ccu.io        adapters enabled");
         setTimeout(startAdapters, 2000);
     }
+    if (settings.scriptEngineEnabled) {
+        startScriptEngine();
+    }
 
 }
 
@@ -697,6 +700,12 @@ function initSocketIO(_io) {
 
 }
 
+function startScriptEngine() {
+    var path = __dirname + "/script-engine.js";
+    logger.info("ccu.io        starting script-engine");
+    childProcess.fork(path);
+}
+
 function startAdapters () {
     if (!settings.adapters) {
         return false;
@@ -706,7 +715,7 @@ function startAdapters () {
         var mode = settings.adapters[adapter].mode;
         var period = settings.adapters[adapter].period * 60000;
 
-        var path = __dirname + "/adapter/"+adapter+"/"+adapter+".js"
+        var path = __dirname + "/adapter/"+adapter+"/"+adapter+".js";
 
         logger.info("ccu.io        starting adapter "+path);
         childProcess.fork(path);

@@ -70,7 +70,9 @@ var settings = {
             period: 120,     // Minuten
             location: "Germany/Baden-W%C3%BCrttemberg/Stuttgart"
         }
-    }
+    },
+
+    scriptEngineEnabled: false
 
 };
 
