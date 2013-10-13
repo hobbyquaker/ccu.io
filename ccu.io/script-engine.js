@@ -67,7 +67,7 @@ var scriptEngine = {
     initEventHandler: function () {
         var that = this;
         that.socket.on('event', function (obj) {
-
+            if (!obj) { return; }
             var id =    obj[0];
 
             var name,
@@ -123,6 +123,8 @@ var scriptEngine = {
 
 
             var oldObj = datapoints[id];
+
+            if (!oldObj) { oldObj = []; }
 
             datapoints[id] = [obj[1], obj[2], obj[3], obj[4]];
 
@@ -190,6 +192,23 @@ var scriptEngine = {
         // change matching
         if (pattern.change) {
             switch (pattern.change) {
+                case "eq":
+                    if (event.newState.value == event.oldState.value) {
+                        if (pattern.logic == "or") { return true; }
+                        matched = true;
+                    } else {
+                        if (pattern.logic == "and") { return false; }
+                    }
+                    break;
+                case "ne":
+                    if (event.newState.value != event.oldState.value) {
+                        if (pattern.logic == "or") { return true; }
+                        matched = true;
+                    } else {
+                        if (pattern.logic == "and") { return false; }
+                    }
+                    break;
+
                 case "gt":
                     if (event.newState.value > event.oldState.value) {
                         if (pattern.logic == "or") { return true; }

@@ -28,9 +28,9 @@ Dokumentation Pattern Attribute
     name        string          name ist gleich
                 RegExp          name matched Regulären Ausdruck
 
-    change      string          "eq", "neq", "gt", "ge", "lt", "le" (default: undefined)
+    change      string          "eq", "ne", "gt", "ge", "lt", "le"
                                     "eq"    Wert muss gleich geblieben sein (val == oldval)
-                                    "neq"   Wert muss sich geändert haben (val != oldval)
+                                    "ne"   Wert muss sich geändert haben (val != oldval)
                                     "gt"    Wert muss großer geworden sein (val > oldval)
                                     "ge"    Wert muss größer geworden oder gleich geblieben sein (val >= oldval)
                                     "lt"    Wert muss kleiner geworden sein (val < oldval)
@@ -42,7 +42,7 @@ Dokumentation Pattern Attribute
     valLt       mixed           Wert ist kleiner
     valLe       mixed           Wert ist kleiner oder gleich
 
-    ack         bool            Wert ist bestätigt (default: undefined)
+    ack         bool            Wert ist bestätigt
 
     oldVal      mixed           vorheriger Wert ist gleich
     oldValGt    mixed           vorheriger Wert ist größer
@@ -50,7 +50,7 @@ Dokumentation Pattern Attribute
     oldValLt    mixed           vorheriger Wert ist kleiner
     oldValLe    mixed           vorheriger Wert ist kleiner oder gleich
 
-    oldAck      bool            vorheriger Wert ist bestätigt (default: undefined)
+    oldAck      bool            vorheriger Wert ist bestätigt
 
     ts          string          Timestamp ist gleich
     tsGt        string          Timestamp ist größer
@@ -104,9 +104,9 @@ Dokumentation Pattern Attribute
 
 
 subscribe({name:/STATE$/, room:"Hobbyraum", deviceType:/HM-Sec-SC|HM-Sec-RHS/, change: "gt"}, function (obj) {
-    console.log("Fenster im Hobbraum geöffnet!");
+    console.log("Fenster im Hobbyraum geöffnet!");
 });
 
 subscribe({name:/STATE$/, room:"Hobbyraum", deviceType:/HM-Sec-SC|HM-Sec-RHS/, change: "lt"}, function (obj) {
-    console.log("Fenster im Hobbraum geschlossen!");
+    console.log("Fenster im Hobbyraum geschlossen!");
 });
