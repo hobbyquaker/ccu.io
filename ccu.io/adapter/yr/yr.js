@@ -93,19 +93,22 @@ function parseData(xml) {
 			var tableMiddle = '</tr><tr class="yr-img">';
 			var tableBottom = '</tr><tr class="yr-temp">';
 			var dateObj = new Date();
-			var todayEnd = dateObj.getFullYear() + "-" + ("0" + (dateObj.getMonth() + 1)).slice(-2) + "-" + ("0" + dateObj.getDate()).slice(-2) + "T24:00:00";
+			var dayEnd = dateObj.getFullYear() + "-" + ("0" + (dateObj.getMonth() + 1)).slice(-2) + "-" + ("0" + dateObj.getDate()).slice(-2) + "T24:00:00";
 			var daySwitch = false;
-			for (var i = 0; i < 5; i++) {
+			for (var i = 0; i < 8; i++) {
 				var period = forecastArr[i];
 				switch (i) {
 				case 0:
 					tableHead += "<td>jetzt</td>";
 					break;
 				default:
-					if (period.from > todayEnd) {
+					if (period.from > dayEnd) {
 						if (!daySwitch) {
 							daySwitch = true;
-							tableDay += '<td colspan="'+i+'">Heute</td><td colspan="'+(5-i)+'">Morgen</td>';
+							tableDay += '<td colspan="'+i+'">Heute</td><td colspan="4">Morgen</td>';
+                            if (i < 3) {
+                                tableDay += '<td colspan="'+(4-i)+'">Übermorgen</td>';
+                            }
 							tableHead += '<td>'+parseInt(period.from.substring(11,13),10).toString()+'-'+parseInt(period.to.substring(11,13),10).toString()+'</td>';
 						} else {
 							tableHead += '<td>'+parseInt(period.from.substring(11,13),10).toString()+'-'+parseInt(period.to.substring(11,13),10).toString()+'</td>';
