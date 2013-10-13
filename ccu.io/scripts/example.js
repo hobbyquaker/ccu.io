@@ -1,4 +1,25 @@
-/*  Pattern Attribute
+/*
+
+Dokumenation Script-Engine
+--------------------------
+
+    Eigene Scripte können einfach im Verzeichnis scripts abgelegt werden. Bitte beachten - wenn Änderungen an den Scripten
+    erfolgen muss die Script-Engine neu gestartet werden. Daher macht es beim Entwickeln sinn die Script-Engine nicht
+    von CCU.IO aus starten zu lassen (settings.js scriptEngineEnabled: false) sondern von der Commandozeile aus via
+    node script-engine.js zu starten. Dann kann man auch console.log zum Debuggen verwenden.
+
+    Innerhalb der Scripte stehen folgende Funktionen zur Verfügung:
+
+    subscribe(pattern, callback)
+    setState(id, value)
+    executeProgram(id)
+    log(msg)
+
+    Beispiele siehe unten.
+
+
+Dokumentation Pattern Attribute
+-------------------------------
 
     logic       string          "and" oder "or" Logik zum Verknüpfen der Bedingungen nutzen (default: "and")
 
@@ -80,3 +101,12 @@
 
 
     */
+
+
+subscribe({name:/STATE$/, room:"Hobbyraum", deviceType:/HM-Sec-SC|HM-Sec-RHS/, change: "gt"}, function (obj) {
+    console.log("Fenster im Hobbraum geöffnet!");
+});
+
+subscribe({name:/STATE$/, room:"Hobbyraum", deviceType:/HM-Sec-SC|HM-Sec-RHS/, change: "lt"}, function (obj) {
+    console.log("Fenster im Hobbraum geschlossen!");
+});
