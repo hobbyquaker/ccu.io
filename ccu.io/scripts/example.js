@@ -21,7 +21,7 @@
     valLt       mixed           Wert ist kleiner
     valLe       mixed           Wert ist kleiner oder gleich
 
-    ack         bool            Wert ist bestätigt (default: false)
+    ack         bool            Wert ist bestätigt (default: undefined)
 
     oldVal      mixed           vorheriger Wert ist gleich
     oldValGt    mixed           vorheriger Wert ist größer
@@ -29,7 +29,7 @@
     oldValLt    mixed           vorheriger Wert ist kleiner
     oldValLe    mixed           vorheriger Wert ist kleiner oder gleich
 
-    oldAck      bool            vorheriger Wert ist bestätigt (default: false)
+    oldAck      bool            vorheriger Wert ist bestätigt (default: undefined)
 
     ts          string          Timestamp ist gleich
     tsGt        string          Timestamp ist größer
