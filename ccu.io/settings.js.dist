@@ -67,8 +67,8 @@ var settings = {
     adapters: {
         yr: {
             enabled: false,
+            mode: "periodical",
             settings: {
-                mode: "periodical",
                 period: 120,     // Minutes
                 location: "Germany/Baden-W%C3%BCrttemberg/Stuttgart"
             }
