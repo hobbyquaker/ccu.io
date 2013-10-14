@@ -77,6 +77,8 @@ var socketlist = [],
     },
     regaReady;
 
+var ignoreNextUpdate = [];
+
 logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
 logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
 
@@ -165,6 +167,7 @@ function setDatapoint(id, val, ts, ack, lc) {
     var oldval = datapoints[id];
     var obj; // Event argument
 
+    logger.verbose("setDatapoint "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
 
 
     if (!oldval) {
@@ -174,7 +177,6 @@ function setDatapoint(id, val, ts, ack, lc) {
 
 
 
-        logger.debug("chg "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
 
         datapoints[id] = [val,ts,ack,lc];
         obj = [id,val,ts,ack,lc];
@@ -192,18 +194,30 @@ function setDatapoint(id, val, ts, ack, lc) {
         datapoints[id] = [val,ts,ack,lc];
         obj = [id,val,ts,ack,lc];
 
+        if (val == oldval[0] && ack == oldval[2] && ts == oldval[1] && lc == oldval[3]) {
+            // Keine Änderung
+        } else {
+            sendEvent(obj);
+        }
+
+/*
         if (ack && !oldval[2]) {
             // Bestätigung
-            logger.debug("ack "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
+            logger.info("ack "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
+            sendEvent(obj);
+        } else if (val != oldval[0]) {
+            // Änderung
+            logger.info("chg "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
             sendEvent(obj);
         } else if (ts !== oldval[1]) {
             // Aktualisierung
-            logger.debug("ts "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
+            logger.info("ts "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
             sendEvent(obj);
         } else {
             // Keine Änderung
-            logger.debug("eq "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
+            logger.info("eq "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
         }
+        */
 
     }
 }
@@ -371,6 +385,12 @@ function initRpc() {
 
                 // Get ReGa id
                 var regaObj = regaIndex.Name[bidcos];
+
+                if (regaObj && regaObj[0] && ignoreNextUpdate.indexOf(regaObj[0]) != -1) {
+                    logger.verbose("ccu.io        ignoring event dp "+regaObj[0]);
+                    ignoreNextUpdate.splice(ignoreNextUpdate.indexOf(regaObj[0]), 1);
+                    return;
+                }
 
                 // Logging
                 if (regaObj && regaObj[0] && settings.logging.enabled) {
@@ -656,6 +676,20 @@ function initSocketIO(_io) {
                 });
 
                 //}
+
+                // Bei Update von Thermostaten den nächsten Event von SET_TEMPERATURE und CONTROL_MODE ignorieren!
+                if (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/)) {
+                    var parent = regaObjects[regaObjects[id].Parent];
+                    var setTemp = parent.DPs.SET_TEMPERATURE;
+                    var ctrlMode = parent.DPs.CONTROL_MODE;
+                    if (ignoreNextUpdate.indexOf(setTemp) == -1) {
+                        ignoreNextUpdate.push(setTemp);
+                    }
+                    if (ignoreNextUpdate.indexOf(ctrlMode) == -1) {
+                        ignoreNextUpdate.push(ctrlMode);
+                    }
+                    logger.verbose("ccu.io        ignoring next update for "+JSON.stringify(ignoreNextUpdate));
+                }
 
             }
 
