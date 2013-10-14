@@ -9,14 +9,14 @@
  */
 var settings = require(__dirname+'/../../settings.js');
 
-if (!settings.adapters.yr) {
+if (!settings.adapters.yr || !settings.adapters.yr.enabled) {
     process.exit();
 }
 
 var reqOptions = {
     hostname: 'www.yr.no',
     port: 80,
-    path: '/place/'+settings.adapters.yr.location+'/forecast.xml',
+    path: '/place/'+settings.adapters.yr.settings.location+'/forecast.xml',
     method: 'GET'
 };
 

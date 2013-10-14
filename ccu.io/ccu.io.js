@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.42";
+settings.version = "0.9.43";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -745,6 +745,9 @@ function startAdapters () {
         return false;
     }
     for (adapter in settings.adapters) {
+        if (!settings.adapters[adapter].enabled) {
+            continue;
+        }
         logger.info("ccu.io        found adapter "+adapter);
         var mode = settings.adapters[adapter].mode;
         var period = settings.adapters[adapter].period * 60000;

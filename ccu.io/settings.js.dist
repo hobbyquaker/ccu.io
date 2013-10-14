@@ -63,12 +63,24 @@ var settings = {
     stats: true,
     statsIntervalMinutes: 15,
 
-    adaptersEnabled: false,
+    adaptersEnabled: true,
     adapters: {
         yr: {
-            mode: "periodical",
-            period: 120,     // Minuten
-            location: "Germany/Baden-W%C3%BCrttemberg/Stuttgart"
+            enabled: false,
+            settings: {
+                mode: "periodical",
+                period: 120,     // Minutes
+                location: "Germany/Baden-W%C3%BCrttemberg/Stuttgart"
+            }
+        },
+        mysql: {
+            enabled: false,
+            settings: {
+                host: "127.0.0.1",
+                user: "root",
+                pass: "root",
+                db: "ccu_io"
+            }
         }
     },
 
