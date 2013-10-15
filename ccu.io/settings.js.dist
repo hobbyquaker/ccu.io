@@ -68,8 +68,8 @@ var settings = {
         yr: {
             enabled: false,
             mode: "periodical",
+            period: 120,     // Minutes
             settings: {
-                period: 120,     // Minutes
                 location: "Germany/Baden-W%C3%BCrttemberg/Stuttgart"
             }
         },

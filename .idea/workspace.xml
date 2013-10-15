@@ -1,42 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2c3da533-c98a-486a-8382-2c115a5fe099" name="Default" comment="added mysql node module">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/abs.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/base-in.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/base-out.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/browser/bignumber-vs-number.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/ceil.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/cmp.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/config.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/browser/console-errors.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/div.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/browser/every-test.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/every-test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/floor.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/minus.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/mod.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/neg.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/others.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/plus.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/pow.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/browser/quick-test.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/quick-test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/round.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/browser/single-test.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/sqrt.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/times.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/toExponential.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/toFixed.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/toFraction.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/toPrecision.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/toString.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/mysql/node_modules/bignumber.js/test/v8-LICENCE.txt" />
+    <list default="true" id="2c3da533-c98a-486a-8382-2c115a5fe099" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccu.io/ccu.io.js" afterPath="$PROJECT_DIR$/ccu.io/ccu.io.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccu.io/adapter/mysql/mysql.js" afterPath="$PROJECT_DIR$/ccu.io/adapter/mysql/mysql.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccu.io/adapter/mysql/schema.sql" afterPath="$PROJECT_DIR$/ccu.io/adapter/mysql/schema.sql" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccu.io/settings.js.dist" afterPath="$PROJECT_DIR$/ccu.io/settings.js.dist" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ccu.io.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381769921049" ignored="false" />
+    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381814317362" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381762507943" ignored="false" />
     <file path="/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381503138568" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/index.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380988689173" ignored="false" />
@@ -45,7 +20,7 @@
     <file path="/dashui.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381502965755" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381762513846" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381762696961" ignored="false" />
-    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381765614262" ignored="false" />
+    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381862471438" ignored="false" />
     <file path="/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381759947798" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/yahui/js/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381759953797" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381763012966" ignored="false" />
@@ -126,8 +101,8 @@
     <file path="/script-engine.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381691327160" ignored="false" />
     <file path="/example.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381644564334" ignored="false" />
     <file path="/heizung-zusammenfassung.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381687341932" ignored="false" />
-    <file path="/mysql.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381768582614" ignored="false" />
-    <file path="/schema.sql" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381767478456" ignored="false" />
+    <file path="/mysql.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381862294135" ignored="false" />
+    <file path="/schema.sql" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381851094311" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,7 +130,7 @@
       <file leaf-file-name="ccu.io.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="748" column="21" selection-start="24933" selection-end="24933" vertical-scroll-proportion="0.0">
+            <state line="15" column="26" selection-start="283" selection-end="283" vertical-scroll-proportion="-9.0">
               <folding />
             </state>
           </provider>
@@ -182,7 +157,7 @@
       <file leaf-file-name="README.md" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="3" column="24" selection-start="39" selection-end="39" vertical-scroll-proportion="0.0">
+            <state line="68" column="43" selection-start="3301" selection-end="3301" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -191,16 +166,16 @@
       <file leaf-file-name="mysql.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ccu.io/adapter/mysql/mysql.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="53" column="35" selection-start="1057" selection-end="1057" vertical-scroll-proportion="0.0">
+            <state line="9" column="0" selection-start="147" selection-end="147" vertical-scroll-proportion="-2.6470587">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="settings.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="settings.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ccu.io/settings.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="75" column="6" selection-start="2001" selection-end="2001" vertical-scroll-proportion="0.5607477">
+            <state line="73" column="12" selection-start="1906" selection-end="1906" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -209,19 +184,19 @@
       <file leaf-file-name="settings.js.dist" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ccu.io/settings.js.dist">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="76" column="22" selection-start="2131" selection-end="2131" vertical-scroll-proportion="0.0">
+            <state line="71" column="12" selection-start="1978" selection-end="1978" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="schema.sql" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="schema.sql" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ccu.io/adapter/mysql/schema.sql">
           <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
             <state />
           </provider>
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="37" selection-start="269" selection-end="269" vertical-scroll-proportion="0.0">
+            <state line="8" column="37" selection-start="249" selection-end="249" vertical-scroll-proportion="0.26548672">
               <folding />
             </state>
           </provider>
@@ -280,13 +255,13 @@
         <option value="$PROJECT_DIR$/ccu.io/script-engine.js" />
         <option value="$PROJECT_DIR$/ccu.io/scripts/example.js" />
         <option value="$PROJECT_DIR$/ccu.io/scripts/heizung-zusammenfassung.js" />
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/ccu.io/ccu.io.js" />
         <option value="$PROJECT_DIR$/ccu.io/adapter/yr/yr.js" />
-        <option value="$PROJECT_DIR$/ccu.io/adapter/mysql/mysql.js" />
-        <option value="$PROJECT_DIR$/ccu.io/adapter/mysql/schema.sql" />
-        <option value="$PROJECT_DIR$/ccu.io/settings.js.dist" />
         <option value="$PROJECT_DIR$/ccu.io/settings.js" />
+        <option value="$PROJECT_DIR$/ccu.io/settings.js.dist" />
+        <option value="$PROJECT_DIR$/ccu.io/adapter/mysql/schema.sql" />
+        <option value="$PROJECT_DIR$/ccu.io/adapter/mysql/mysql.js" />
+        <option value="$PROJECT_DIR$/ccu.io/ccu.io.js" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -1071,7 +1046,15 @@
       <created>1381769720566</created>
       <updated>1381769720567</updated>
     </task>
-    <option name="localTasksCounter" value="116" />
+    <task id="LOCAL-00116" summary="added mysql node module">
+      <created>1381770293265</created>
+      <updated>1381770293265</updated>
+    </task>
+    <task id="LOCAL-00117" summary="added mysql node module">
+      <created>1381770571398</created>
+      <updated>1381770571398</updated>
+    </task>
+    <option name="localTasksCounter" value="118" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1098,20 +1081,20 @@
     <frame x="0" y="0" width="1366" height="768" extended-state="0" />
     <editor active="false" />
     <layout>
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16305916" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756132" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32954547" sideWeight="0.8124098" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2925532" sideWeight="0.21725732" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32954547" sideWeight="0.8369408" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2659091" sideWeight="0.6724387" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32611832" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2925532" sideWeight="0.21725732" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2659091" sideWeight="0.8369408" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.16305916" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756132" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1125,8 +1108,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
-    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
-    <option name="CHECK_NEW_TODO" value="true" />
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
     <option name="myTodoPanelSettings">
       <value>
         <are-packages-shown value="false" />
@@ -1237,7 +1220,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="15" selection-start="2243" selection-end="2243" vertical-scroll-proportion="-3.367347" />
+        <state line="47" column="15" selection-start="2243" selection-end="2243" vertical-scroll-proportion="-3.367347">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ccu.io/scripts/example.js">
@@ -1248,13 +1233,6 @@
     <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/js/ccu.io.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="217" column="31" selection-start="6794" selection-end="6794" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/scripts/heizung-zusammenfassung.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="12" selection-start="394" selection-end="394" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -1280,9 +1258,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/scripts/heizung-zusammenfassung.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="12" selection-start="394" selection-end="394" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ccu.io/adapter/mysql/mysql.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="35" selection-start="1057" selection-end="1057" vertical-scroll-proportion="0.0">
+        <state line="9" column="0" selection-start="147" selection-end="147" vertical-scroll-proportion="-2.6470587">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="26" selection-start="283" selection-end="283" vertical-scroll-proportion="-9.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="68" column="43" selection-start="3301" selection-end="3301" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/settings.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="12" selection-start="1906" selection-end="1906" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/settings.js.dist">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="71" column="12" selection-start="1978" selection-end="1978" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -1292,35 +1305,7 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="37" selection-start="269" selection-end="269" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="748" column="21" selection-start="24933" selection-end="24933" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="24" selection-start="39" selection-end="39" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/settings.js.dist">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="22" selection-start="2131" selection-end="2131" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/settings.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="75" column="6" selection-start="2001" selection-end="2001" vertical-scroll-proportion="0.5607477">
+        <state line="8" column="37" selection-start="249" selection-end="249" vertical-scroll-proportion="0.26548672">
           <folding />
         </state>
       </provider>
