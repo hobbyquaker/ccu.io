@@ -48,7 +48,6 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
 ## Todo/Roadmap
 
 * Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist und sinnvoll damit umgehen
-
 * Doku für Adapter-Entwickler
 * Doku für Script-Engine
 * BIN-RPC Implementierung vervollständigen
