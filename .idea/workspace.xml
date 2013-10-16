@@ -2,21 +2,64 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2c3da533-c98a-486a-8382-2c115a5fe099" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-ar.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-bg.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-bg1251.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-cat.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-cn.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-cs.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-da.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-de.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-dk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-el.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-en.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-es.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-fa.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-fi.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-fr.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-gl.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-he.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-hr.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-hr1250.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-hu.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-id.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-is.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-it.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-ja.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-kr.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-lt.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-mne.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-nl.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-no.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-pl.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-pt-br.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-pt.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-ro.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-ru.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-sk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-sr-latin.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-sr.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-sv.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-th.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-tr.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-tw.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-ua.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/i18n/grid.locale-vi.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/www/lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ccu.io.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381952573486" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381863965696" ignored="false" />
+    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953696528" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953566274" ignored="false" />
     <file path="/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381503138568" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/index.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380988689173" ignored="false" />
     <file path="/index.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381493237700" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/css/dashui.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381761928800" ignored="false" />
     <file path="/dashui.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381502965755" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381863976419" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381864003929" ignored="false" />
-    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381952244884" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953622769" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953687766" ignored="false" />
+    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953687074" ignored="false" />
     <file path="/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381759947798" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/yahui/js/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381759953797" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381763012966" ignored="false" />
@@ -46,7 +89,7 @@
     <file path="/test.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381669863751" ignored="false" />
     <file path="/ccu.io-server.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380190891416" ignored="false" />
     <file path="/datapoints.fn" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380266978493" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381761928800" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953493378" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/edit.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380990551333" ignored="false" />
     <file path="/edit.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380990198514" ignored="false" />
     <file path="/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381502563101" ignored="false" />
@@ -72,7 +115,7 @@
     <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/charts/menu.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381149993840" ignored="false" />
     <file path="/menu.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381149993184" ignored="false" />
     <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/charts/css/menu.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381142429780" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets/js/hqWidgets.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381761928800" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets/js/hqWidgets.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953493378" ignored="false" />
     <file path="/hqWidgets.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380992452271" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/css/dhive/jquery-ui.min.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380917860406" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/css/start/jquery-ui.min.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380917870118" ignored="false" />
@@ -154,7 +197,7 @@
       <file leaf-file-name="README.md" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="94" selection-start="2345" selection-end="2345" vertical-scroll-proportion="0.72115386">
+            <state line="49" column="94" selection-start="2345" selection-end="2345" vertical-scroll-proportion="0.66346157">
               <folding />
             </state>
           </provider>
@@ -319,6 +362,136 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="www" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="www" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="www" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jqGrid" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="www" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jqGrid" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="i18n" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ccu.io" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="www" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1061,7 +1234,11 @@
       <created>1381952580388</created>
       <updated>1381952580388</updated>
     </task>
-    <option name="localTasksCounter" value="122" />
+    <task id="LOCAL-00122" summary="diverses, siehe changelog 0.9.46">
+      <created>1381952837497</created>
+      <updated>1381952837497</updated>
+    </task>
+    <option name="localTasksCounter" value="123" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1099,7 +1276,7 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2925532" sideWeight="0.21725732" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27045456" sideWeight="0.8427128" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27045456" sideWeight="0.8427128" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1320,7 +1497,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="94" selection-start="2345" selection-end="2345" vertical-scroll-proportion="0.72115386">
+        <state line="49" column="94" selection-start="2345" selection-end="2345" vertical-scroll-proportion="0.66346157">
           <folding />
         </state>
       </provider>
