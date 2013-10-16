@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.44";
+settings.version = "0.9.45";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -29,7 +29,8 @@ var fs = require('fs'),
     io,
     ioSsl,
     devlogCache = [],
-    notFirstVarUpdate = false;
+    notFirstVarUpdate = false,
+    children = [];
 
 var childProcess = require('child_process');
 
@@ -108,14 +109,9 @@ if (settings.logging.enabled) {
     }
 }
 
-
-
 regahss.loadStringTable(function (data) {
     stringtable = data;
 });
-
-
-
 
 regahss.checkTime(loadRegaData);
 
@@ -174,8 +170,6 @@ function setDatapoint(id, val, ts, ack, lc) {
         // Neu
         logger.warn("rega      <-- unknown variable "+id);
         sendEvent(obj);
-
-
 
 
         datapoints[id] = [val,ts,ack,lc];
@@ -630,6 +624,28 @@ function initSocketIO(_io) {
             });
         });
 
+        socket.on('setObject', function(id, obj, callback) {
+            if (!obj) {
+                return;
+            }
+            regaObjects[id] = obj;
+
+            if (obj.TypeName) {
+                if (!regaIndex[TypeName]) {
+                    regaIndex[TypeName] = [];
+                }
+                regaIndex[TypeName].push(id);
+            }
+
+            if (obj.Name) {
+                regaIndex.Name[obj.Name] = [id, obj.TypeName, obj.Parent];
+            }
+
+            if (obj.Address) {
+                regaIndex.Address[obj.Address] = [id, TypeName, obj.Parent];
+            }
+        });
+
         socket.on('setState', function(arr, callback) {
             // Todo Delay!
             logger.verbose("socket.io <-- setState "+JSON.stringify(arr));
@@ -737,7 +753,7 @@ function initSocketIO(_io) {
 function startScriptEngine() {
     var path = __dirname + "/script-engine.js";
     logger.info("ccu.io        starting script-engine");
-    childProcess.fork(path);
+    children.push(childProcess.fork(path));
 }
 
 function startAdapters () {
@@ -748,14 +764,14 @@ function startAdapters () {
         if (!settings.adapters[adapter].enabled) {
             continue;
         }
-        logger.info("ccu.io        found adapter "+adapter);
+        //logger.info("ccu.io        found adapter "+adapter);
         var mode = settings.adapters[adapter].mode;
         var period = settings.adapters[adapter].period * 60000;
 
         var path = __dirname + "/adapter/"+adapter+"/"+adapter+".js";
 
         logger.info("ccu.io        starting adapter "+path);
-        childProcess.fork(path);
+        children.push(childProcess.fork(path));
 
         switch (mode) {
             case "periodical":
@@ -782,18 +798,24 @@ process.on('SIGTERM', function () {
 
 function stop() {
     socketlist.forEach(function(socket) {
-        logger.verbose("socket.io --> disconnecting socket");
+        logger.info("socket.io --> disconnecting socket");
         socket.disconnect();
     });
 
     if (io) {
-        logger.verbose("socket.io     closing server");
+        logger.info("ccu.io        closing http server");
         io.server.close();
     }
     if (ioSsl) {
-        logger.verbose("socket.io     closing HTTPS server");
+        logger.info("ccu.io        closing https server");
         ioSsl.server.close();
     }
+
+    logger.info("ccu.io        killing child processes");
+    for (var i = 0; i < children.length; i++) {
+        children[i].kill();
+    }
+
     setTimeout(quit, 500);
 }
 

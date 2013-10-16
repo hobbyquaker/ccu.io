@@ -1,10 +1,8 @@
 /**
- * MySQL Adapter for CCU.IO
+ *
+ * MySQL Adapter for CCU.IO v1.1
  *
  * Copyright (c) 10'2013 hobbyquaker http://hobbyquaker.github.io
- *
- * Loggt Events in MySQL Tabelle
- *
  *
  */
 
@@ -17,7 +15,6 @@ if (!settings.adapters.mysql) {
 var logger =    require(__dirname+'/../../logger.js'),
     io =        require('socket.io-client'),
     fs =        require('fs'),
-    crypto =    require('crypto'),
     mysql =     require('mysql'),
     connection;
 
@@ -52,30 +49,50 @@ socket.on('reload', function () {
     loadData();
 });
 
+
 socket.on('event', function (obj) {
-    if (!obj || !obj[0]) { return; }
+    if (!obj || !obj[0]) {
+        return;
+    }
     if (connected) {
         var name = "";
         if (regaObjects) {
+
             if (regaObjects[obj[0]]) {
                 name = regaObjects[obj[0]].Name;
-            }
-            var sql = "INSERT INTO events (id, name, val, ack, timestamp, lastchange) VALUES('"+obj[0]+"', '"+name+"', '"+obj[1]+"', "+(obj[3]?"true":"false")+", '"+obj[2]+"', '"+obj[4]+"');";
-            connection.query(sql, function(err) {
-                if (err) {
-                    logger.error("adapter mysql INSERT INTO events "+err)
+                // Variablen nur bei Änderung loggen
+                if (regaObjects[obj[0]].TypeName == "VARDP" || regaObjects[obj[0]].TypeName == "ALARMDP") {
+                    if (datapoints[obj[0]] && obj[4] == datapoints[obj[0]][3]) {
+                        return;
+                    }
                 }
-            });
+            }
+
             var sql = "REPLACE INTO datapoints (id, val, ack, timestamp, lastchange) VALUES('"+obj[0]+"', '"+obj[1]+"', "+(obj[3]?"true":"false")+", '"+obj[2]+"', '"+obj[4]+"');";
             connection.query(sql, function(err) {
                 if (err) {
                     logger.error("adapter mysql REPLACE INTO datapoints "+err)
                 }
             });
+
+            if (settings.adapters.mysql.settings.enableEventLog) {
+                // Variablen nur bei Änderung loggen
+                if (regaObjects[obj[0]] && (regaObjects[obj[0]].TypeName == "VARDP" || regaObjects[obj[0]].TypeName == "ALARMDP")) {
+                    if (datapoints[obj[0]] && obj[4] == datapoints[obj[0]][3]) {
+                        return;
+                    }
+                }
+
+                var sql = "INSERT INTO events (id, name, val, ack, timestamp, lastchange) VALUES('"+obj[0]+"', '"+name+"', '"+obj[1]+"', "+(obj[3]?"true":"false")+", '"+obj[2]+"', '"+obj[4]+"');";
+                connection.query(sql, function(err) {
+                    if (err) {
+                        logger.error("adapter mysql INSERT INTO events "+err)
+                    }
+                });
+            }
+
         }
-
     }
-
 });
 
 function loadData() {
@@ -85,23 +102,8 @@ function loadData() {
             logger.info("adapter mysql fetched regaObjects from ccu.io");
             regaObjects = objects;
 
-            try { var savedHash = fs.readFileSync(__dirname+"//objects.hash"); }
-            catch (e) { var savedHash = undefined; }
-            var hash = crypto.createHash('md5').update(JSON.stringify(objects)).digest("hex");
-
-            fs.writeFile(__dirname+"/objects.hash", hash, function (err) {
-                if (err) {
-                    logger.error("adapter mysql can't save objects.hash "+err);
-                }
-            });
-
-            if (savedHash != hash) {
-                updateObjects();
-                updateDatapoints();
-            } else {
-                logger.info("adapter mysql database objects are up-to-date");
-                updateDatapoints();
-            }
+            updateObjects();
+            updateDatapoints();
 
             if (!connected) {
                 connection = mysql.createConnection({
@@ -125,8 +127,6 @@ function loadData() {
     });
 
 }
-
-
 
 function updateObjects() {
     if (!connected) {
@@ -165,6 +165,7 @@ function updateObjects() {
             valueMax =      object.ValueMax,
             valueType =     object.ValueType,
             valueSubType =  object.ValueSubType,
+            valueUnit =     object.ValueUnit,
             valueList =     object.ValueList;
 
         if (type.match(/^ENUM/)) {
@@ -182,7 +183,7 @@ function updateObjects() {
             info = object.DPInfo;
         }
 
-        var sql = "REPLACE INTO objects (id, parent, name, type, info, hssType, address, interface, operations, chnDirection, chnType, chnLabel, valueMin, valueMax, valueType, valueSubType, valueList) VALUES ('" +
+        var sql = "REPLACE INTO objects (id, parent, name, type, info, hssType, address, interface, operations, chnDirection, chnType, chnLabel, valueMin, valueMax, valueType, valueSubType, valueUnit, valueList) VALUES ('" +
             (id?id:"") + "', '" +
             (parent?parent:"") + "', '" +
             (name?name:"") + "', '" +
@@ -199,8 +200,8 @@ function updateObjects() {
             (valueMax?valueMax:"") + "', '" +
             (valueType?valueType:"") + "', '" +
             (valueSubType?valueSubType:"") + "', '" +
+            (valueUnit?valueUnit:"") + "', '" +
             (valueList?valueList:"") + "');";
-
 
         connection.query(sql, function(err) {
             if (err) {
@@ -208,11 +209,10 @@ function updateObjects() {
                 console.log(err);
             }
         });
+
     }
 
-
 }
-
 
 function updateDatapoints() {
     if (!connected) {
@@ -243,7 +243,6 @@ function updateDatapoints() {
         });
     }
 
-
 }
 
 function escapeQuote(txt) {
@@ -253,5 +252,22 @@ function escapeQuote(txt) {
         return txt;
     }
 }
+
+function stop() {
+    logger.info("adapter mysql closing MySQL connection");
+    connection.destroy();
+    logger.info("adapter mysql terminating");
+    setTimeout(function () {
+        process.exit();
+    }, 250);
+}
+
+process.on('SIGINT', function () {
+    stop();
+});
+
+process.on('SIGTERM', function () {
+    stop();
+});
 
 loadData();

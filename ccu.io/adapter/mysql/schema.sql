@@ -1,4 +1,3 @@
-
 CREATE TABLE IF NOT EXISTS `datapoints` (
   `id` int(11) NOT NULL,
   `val` text NOT NULL,
@@ -7,7 +6,6 @@ CREATE TABLE IF NOT EXISTS `datapoints` (
   `lastchange` datetime NOT NULL,
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE IF NOT EXISTS `events` (
   `id` int(11) NOT NULL,
@@ -19,17 +17,19 @@ CREATE TABLE IF NOT EXISTS `events` (
   KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-
 CREATE TABLE IF NOT EXISTS `objects` (
   `id` int(11) NOT NULL,
   `parent` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `typeName` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL,
   `info` varchar(255) NOT NULL,
   `hssType` varchar(255) NOT NULL,
   `address` varchar(255) NOT NULL,
   `interface` varchar(255) NOT NULL,
+  `operations` int(11) NOT NULL,
+  `chnDirection` int(11) NOT NULL,
+  `chnType` varchar(255) NOT NULL,
+  `chnLabel` varchar(255) NOT NULL,
   `valueMin` varchar(255) NOT NULL,
   `valueMax` varchar(255) NOT NULL,
   `valueUnit` varchar(255) NOT NULL,

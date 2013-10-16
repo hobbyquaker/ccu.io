@@ -635,7 +635,7 @@ var scriptEngine = {
 }
 
 function runScript(path) {
-    scriptEngine.logger.info("script-engine loading "+path);
+    scriptEngine.logger.verbose("script-engine loading "+path);
     var script = scriptEngine.fs.readFileSync(path);
     // Todo use vm.runInContext
     //var context = scriptEngine.vm.createContext(global);
@@ -646,8 +646,7 @@ function runScript(path) {
 
     try {
         eval(script.toString());
-        scriptEngine.logger.info("script-engine registered "+(scriptEngine.subscribers.length-length)+" subscribers");
-        scriptEngine.logger.info("script-engine finished "+path);
+        scriptEngine.logger.info("script-engine registered "+(scriptEngine.subscribers.length-length)+" subscribers in "+path);
     } catch (e) {
         scriptEngine.logger.info("script-engine "+path+" "+e);
     }
@@ -685,6 +684,22 @@ function executeProgram(id, callback) {
         }
     });
 }
+
+function stop() {
+    scriptEngine.logger.info("script-engine terminating");
+    setTimeout(function () {
+        process.exit();
+    }, 250);
+}
+
+process.on('SIGINT', function () {
+    stop();
+});
+
+process.on('SIGTERM', function () {
+    stop();
+});
+
 
 scriptEngine.init();
 

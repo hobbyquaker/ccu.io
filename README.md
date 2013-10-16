@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.44
+aktuelle Version: 0.9.45
 
 CCU.IO ist eine Node.js Applikation die einen Web-Server für HomeMatic Web-Oberflächen bereitstellt und via BIN-RPC mit
 rfd, hs485d und CUxD kommuniziert. CCU.IO kann - aber muss nicht - auf der CCU2 installiert werden. Über eine Websocket-
@@ -50,20 +50,25 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
 * Don't Log Flag in regaObjects
 * Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist und sinnvoll damit umgehen
 * Polling-Trigger fertig implementieren
-* Adapter (einbinden von nicht-Homematic-Systemen, Webservices etc.)
 * Doku für Adapter-Entwickler
-* Script-Engine
 * Doku für Script-Engine
 * BIN-RPC Implementierung vervollständigen
 * CCU.IO-Pseudo-Gerät in CCU? Könnte sinnvoll sein z.B: für Polling-Trigger u.v.m. ...
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
-* Raspbian-Paket für einfache Installation (stryke)
 * Automatisches Update (stryke)
 * CCU2-Paket für einfache Installation
-* Web-based Setup (komfortabel CCU IP einstellen, Logging konfigurieren, Updates durchführen etc...)
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.45
+
+* (Hobbyquaker) Beenden der Kind-Prozesse (Adapter, Script-Engine) beim Beenden von CCU.IO
+* (Hobbyquaker) diverse Kleinigkeiten, Bugfixes
+* (Hobbyquaker) Variable 40 und 41 (Anzahl Servicemeldungen und Anzahl Alarme) zu variables.fn hinzugefügt
+* (Hobbyquaker) Neue Methode setObject
+* (Hobbyquaker) MySQL-Adapter: Variablen werden nur bei Änderungen in event-Tabelle geschrieben
+* (Hobbyquaker) Bugfix MySQL-Adapater: ValueUnit wurde nicht in Datenbank geschrieben
 
 ### 0.9.44
 * (Hobbyquaker) MySQL-Adapter ausgearbeitet
@@ -71,7 +76,6 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
 ### 0.9.43
 * (Hobbyquaker) Bei Änderungen an SET_TEMPERATURE und MANU_MODE nächsten temp und mode Event vom Thermostat ignorieren
 * (Hobbyquaker) Neuer Adapter für Logging in MySQL Datenbank
-
 
 ### 0.9.42
 * (Stryke) Installer/Updater v0.1 integriert
