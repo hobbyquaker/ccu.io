@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.45";
+settings.version = "0.9.46";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -30,7 +30,8 @@ var fs = require('fs'),
     ioSsl,
     devlogCache = [],
     notFirstVarUpdate = false,
-    children = [];
+    children = [],
+    pollTimer;
 
 var childProcess = require('child_process');
 
@@ -239,7 +240,7 @@ function pollRega() {
             setDatapoint(id, data[id][0], formatTimestamp(), true, data[id][1]);
         }
         notFirstVarUpdate = true;
-        setTimeout(pollRega, settings.regahss.pollDataInterval);
+        pollTimer = setTimeout(pollRega, settings.regahss.pollDataInterval);
     });
 }
 
@@ -345,7 +346,6 @@ function initRpc() {
 
                 if (!regaReady) { return; }
 
-                //Todo Implement Rega Polling Trigger via Virtual Key
 
                 var timestamp = formatTimestamp();
 
@@ -368,6 +368,11 @@ function initRpc() {
                     //
                 }
 
+                if (bidcos == settings.pollDataTrigger) {
+                    clearTimeout(pollTimer);
+                    pollRega();
+                }
+
                 // STATE korrigieren
                 if (obj[2] == "STATE") {
                     if (obj[3] === "1" || obj[3] === 1) {
@@ -388,8 +393,10 @@ function initRpc() {
 
                 // Logging
                 if (regaObj && regaObj[0] && settings.logging.enabled) {
-                    var ts = Math.round((new Date()).getTime() / 1000);
-                    cacheLog(ts+" "+regaObj[0]+" "+obj[3]+"\n");
+                    if (!regaObjects[regaObj] || !regaObjects[regaObj].dontLog) {
+                        var ts = Math.round((new Date()).getTime() / 1000);
+                        cacheLog(ts+" "+regaObj[0]+" "+obj[3]+"\n");
+                    }
                 }
 
                 if (regaObj && regaObj[0]) {
@@ -644,6 +651,9 @@ function initSocketIO(_io) {
             if (obj.Address) {
                 regaIndex.Address[obj.Address] = [id, TypeName, obj.Parent];
             }
+            if (callback) {
+                callback();
+            }
         });
 
         socket.on('setState', function(arr, callback) {
@@ -664,34 +674,37 @@ function initSocketIO(_io) {
 
 
             // If ReGa id (0-65534) and not acknowledged -> Set Datapoint on the CCU
-            if (id < 65535 && ((val !== datapoints[id][0] && !ack) || (regaObjects[id].Name.match(/.*PRESS_SHORT/) || regaObjects[id].Name.match(/.*PRESS_LONG/)))) {
-                // TODO implement set State via BINRPC if TypeName=HSSDP
-                // // Bidcos or Rega?
-                //if (regaIndex.HSSDP.indexOf(id) != -1) {
-                // BINRPC
-                //var name = regaObjects[id].Name;
-                //var parts = name.split(".");
-                //var iface = parts[0],
-                //    channel = parts[1],
-                //    dp = parts[2];
-                //} else {
-                // ReGa
-                var xval;
-                if (typeof val == "string") {
-                    xval = "'" + val.replace(/'/g, '"') + "'";
+            if (id < 65535 && ((val !== datapoints[id][0] && !ack) || (regaObjects[id].Name.match(/PRESS_SHORT$/) || regaObjects[id].Name.match(/PRESS_LONG$/) || regaObjects[id].Name.match(/CMD_EXEC$/)))) {
+
+                // Bidcos or Rega?
+                if (regaIndex.HSSDP.indexOf(id) != -1) {
+                    // Set State via xmlrpc_bin
+                    var name = regaObjects[id].Name;
+                    var parts = name.split(".");
+                    var iface = parts[0],
+                        port = homematic.ifacePorts[iface],
+                        channel = parts[1],
+                        dp = parts[2];
+                    // TODO BINRPC FLOAT....
+                    homematic.request(port, "setValue", [channel, dp, val.toString()]);
                 } else {
-                    xval = val;
-                }
-                var script = "Write(dom.GetObject("+id+").State("+xval+"));";
-
-                regahss.script(script, function (data) {
-                    //logger.verbose("rega      <-- "+data);
-                    if (callback) {
-                        callback(data);
+                    // Set State via ReGa
+                    var xval;
+                    if (typeof val == "string") {
+                        xval = "'" + val.replace(/'/g, '"') + "'";
+                    } else {
+                        xval = val;
                     }
-                });
+                    var script = "Write(dom.GetObject("+id+").State("+xval+"));";
 
-                //}
+                    regahss.script(script, function (data) {
+                        //logger.verbose("rega      <-- "+data);
+                        if (callback) {
+                            callback(data);
+                        }
+                    });
+
+                }
 
                 // Bei Update von Thermostaten den nächsten Event von SET_TEMPERATURE und CONTROL_MODE ignorieren!
                 if (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/)) {

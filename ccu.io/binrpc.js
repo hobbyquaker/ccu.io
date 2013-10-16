@@ -28,6 +28,11 @@ var binrpc = function(options) {
 };
 
 binrpc.prototype = {
+    ifacePorts: {
+        "BidCos-Wired": 2000,
+        "BidCos-RF": 2001,
+        "CUxD": 8701
+    },
     inits: [],
     options: {
 

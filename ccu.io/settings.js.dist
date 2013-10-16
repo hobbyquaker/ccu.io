@@ -80,7 +80,8 @@ var settings = {
                 user: "root",
                 pass: "root",
                 db: "ccu_io",
-                enableEventLog: true
+                enableEventLog: true,
+                logChangesOnly: false
             }
         }
     },

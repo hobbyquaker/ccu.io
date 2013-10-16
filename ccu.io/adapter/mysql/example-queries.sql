@@ -1,4 +1,4 @@
--- Geräte- und Kanal-Namen zu einem gegebenen Datenpunkt abfragen
+-- Geräte-, Kanal- und Datenpunkt-Namen zu einer gegebenen Datenpunkt-ID abfragen
 SELECT  datapoint.name AS datapointName,
         device.name AS deviceName,
         channel.name AS channelName
@@ -20,7 +20,7 @@ FROM  objects AS devices
 WHERE devices.type = 'DEVICE'
 GROUP BY deviceHssType
 
--- Liste aller Kanäle vom Typ DIMMER oder SWITCH die deren STATE bzw LEVEL Datenpunkt nicht den Wert 0 oder false hat
+-- Liste aller Kanäle vom Typ DIMMER oder SWITCH deren STATE bzw LEVEL Datenpunkt nicht den Wert 0 oder false hat
 SELECT  channels.name AS channelName,
         dpvalues.val AS stateOrLevel
 FROM objects AS channels
@@ -35,8 +35,5 @@ WHERE   channels.type =  "CHANNEL"
           RIGHT( datapoints.name, 6 ) = ".STATE"
           OR RIGHT( datapoints.name, 6 ) = ".LEVEL"
         )
-        AND (
-          dpvalues.val != 0
-          OR dpvalues.val = "true"
-        )
+        AND dpvalues.val != 0
 

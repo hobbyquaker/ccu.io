@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.45
+aktuelle Version: 0.9.46
 
 CCU.IO ist eine Node.js Applikation die einen Web-Server für HomeMatic Web-Oberflächen bereitstellt und via BIN-RPC mit
 rfd, hs485d und CUxD kommuniziert. CCU.IO kann - aber muss nicht - auf der CCU2 installiert werden. Über eine Websocket-
@@ -47,19 +47,26 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
 
 ## Todo/Roadmap
 
-* Don't Log Flag in regaObjects
 * Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist und sinnvoll damit umgehen
-* Polling-Trigger fertig implementieren
+
 * Doku für Adapter-Entwickler
 * Doku für Script-Engine
 * BIN-RPC Implementierung vervollständigen
 * CCU.IO-Pseudo-Gerät in CCU? Könnte sinnvoll sein z.B: für Polling-Trigger u.v.m. ...
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
-* Automatisches Update (stryke)
 * CCU2-Paket für einfache Installation
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.46
+
+* (Hobbyquaker) setValue nun (wenn möglich) via binrpc statt ReGa
+* (Hobbyquaker) Neue Methode setObject() in script-engine
+* (Hobbyquaker) Polling Trigger implementiert (über virtuelle Taste kann sofortiges Pollen der Variablen angestoßen werden)
+* (Hobbyquaker) wenn regaObject[id].dontLog wird kein Logging durchgeführt
+* (Hobbyquaker) Neue Option für MySQL-Adapter: nur geänderte Datenpunkte loggen
+
 
 ### 0.9.45
 

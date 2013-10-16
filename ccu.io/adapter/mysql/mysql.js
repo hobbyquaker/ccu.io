@@ -1,6 +1,6 @@
 /**
  *
- * MySQL Adapter for CCU.IO v1.1
+ * MySQL Adapter for CCU.IO v1.2
  *
  * Copyright (c) 10'2013 hobbyquaker http://hobbyquaker.github.io
  *
@@ -60,12 +60,6 @@ socket.on('event', function (obj) {
 
             if (regaObjects[obj[0]]) {
                 name = regaObjects[obj[0]].Name;
-                // Variablen nur bei Änderung loggen
-                if (regaObjects[obj[0]].TypeName == "VARDP" || regaObjects[obj[0]].TypeName == "ALARMDP") {
-                    if (datapoints[obj[0]] && obj[4] == datapoints[obj[0]][3]) {
-                        return;
-                    }
-                }
             }
 
             var sql = "REPLACE INTO datapoints (id, val, ack, timestamp, lastchange) VALUES('"+obj[0]+"', '"+obj[1]+"', "+(obj[3]?"true":"false")+", '"+obj[2]+"', '"+obj[4]+"');";
@@ -75,7 +69,20 @@ socket.on('event', function (obj) {
                 }
             });
 
+            if (regaObjects[obj[0]].dontLog) {
+                return;
+            }
+
             if (settings.adapters.mysql.settings.enableEventLog) {
+                // Grundsätzlich nur bei Änderung loggen?
+                if (settings.adapters.mysql.settings.logChangesOnly) {
+                    if (!name || !(name.match(/PRESS_LONG$/) || name.match(/PRESS_SHORT$/) || name.match(/CMD_EXEC$/))) {
+                        if (datapoints[obj[0]] && obj[4] == datapoints[obj[0]][3]) {
+                            return;
+                        }
+                    }
+                }
+
                 // Variablen nur bei Änderung loggen
                 if (regaObjects[obj[0]] && (regaObjects[obj[0]].TypeName == "VARDP" || regaObjects[obj[0]].TypeName == "ALARMDP")) {
                     if (datapoints[obj[0]] && obj[4] == datapoints[obj[0]][3]) {

@@ -685,6 +685,14 @@ function executeProgram(id, callback) {
     });
 }
 
+function setObject(id, obj, callback) {
+    scriptEngine.socket.emit("setObject", obj, function () {
+        if (callback) {
+            callback();
+        }
+    });
+}
+
 function stop() {
     scriptEngine.logger.info("script-engine terminating");
     setTimeout(function () {
