@@ -25,10 +25,10 @@ NODE=false
 CCUIO=true     # CCU.IO installieren = 1
 
 # Optionale Addons
-DASHUI=false    # DashUI installieren = 1
-CHARTS=false    # CCU-IO-Highcharts installieren = 1
-YAHUI=false     # yahui installieren = 1
-EVENTLIST=false # CCU-IO Eventlist installieren = 1
+DASHUI=true    # DashUI installieren = 1
+CHARTS=true    # CCU-IO-Highcharts installieren = 1
+YAHUI=true     # yahui installieren = 1
+EVENTLIST=true # CCU-IO Eventlist installieren = 1
 
 #if [ ! ${CCUIO_PATH} ]
 #then
