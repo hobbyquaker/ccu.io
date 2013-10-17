@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.46";
+settings.version = "0.9.47";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -31,6 +31,7 @@ var fs = require('fs'),
     devlogCache = [],
     notFirstVarUpdate = false,
     children = [],
+    childScriptEngine,
     pollTimer;
 
 var childProcess = require('child_process');
@@ -545,6 +546,19 @@ function initSocketIO(_io) {
             loadRegaData(0, null, true);
         });
 
+        socket.on('reloadScriptEngine', function (callback) {
+            if (settings.scriptEngineEnabled) {
+                childScriptEngine.kill();
+                setTimeout(function () {
+                    startScriptEngine();
+                    if (callback) {
+                        callback();
+                    }
+                }, 1500);
+            }
+        });
+
+
         socket.on('readdir', function (path, callback) {
             path = __dirname+"/"+path;
             logger.info("socket.io <-- readdir "+path);
@@ -766,7 +780,7 @@ function initSocketIO(_io) {
 function startScriptEngine() {
     var path = __dirname + "/script-engine.js";
     logger.info("ccu.io        starting script-engine");
-    children.push(childProcess.fork(path));
+    childScriptEngine = childProcess.fork(path);
 }
 
 function startAdapters () {
@@ -823,6 +837,10 @@ function stop() {
         logger.info("ccu.io        closing https server");
         ioSsl.server.close();
     }
+
+    logger.info("ccu.io        killing script-engine");
+    childScriptEngine.kill();
+
 
     logger.info("ccu.io        killing child processes");
     for (var i = 0; i < children.length; i++) {

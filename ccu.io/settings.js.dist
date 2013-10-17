@@ -86,7 +86,11 @@ var settings = {
         }
     },
 
-    scriptEngineEnabled: false
+    scriptEngineEnabled: false,
+
+    // Längen- und Breitengrad für Astro-Funktion der Script-Engine
+    longitude: 9.1833,
+    latitude: 48.7667
 
 };
 

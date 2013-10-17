@@ -296,6 +296,9 @@ binrpc.prototype = {
                 logger.silly(res.content);
                 break;
         }
+        if (!res) {
+            return;
+        }
 
         if (res.rest.length > 0) {
            logger.error("binrpc    <-- rest..... ");

@@ -37,3 +37,16 @@ WHERE   channels.type =  "CHANNEL"
         )
         AND dpvalues.val != 0
 
+-- Liste aller Datenpunkte mit Wert und Einheit
+SELECT  datapoints.id AS datapointId,
+        dpObjects.type AS datapointType,
+        devices.name AS deviceName,
+        channels.name AS channelName,
+        dpObjects.name AS datapointName,
+        SUBSTRING_INDEX( dpObjects.name,  ".", -1 ) AS datapointNamePart,
+        datapoints.val,
+        dpObjects.valueUnit
+FROM datapoints
+LEFT JOIN objects AS dpObjects ON dpObjects.id = datapoints.id
+LEFT JOIN objects AS channels ON channels.id = dpObjects.parent
+LEFT JOIN objects AS devices ON devices.id = dpObjects.parent

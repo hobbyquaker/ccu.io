@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.46
+aktuelle Version: 0.9.47
 
 CCU.IO ist eine Node.js Applikation die einen Web-Server für HomeMatic Web-Oberflächen bereitstellt und via BIN-RPC mit
 rfd, hs485d und CUxD kommuniziert. CCU.IO kann - aber muss nicht - auf der CCU2 installiert werden. Über eine Websocket-
@@ -45,11 +45,174 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
 
 * CCU.IO schreibt ein Logfile in ccu.io/log/ccu.io.log
 
+## Script-Engine
+
+Eigene Scripte können einfach im Verzeichnis scripts abgelegt werden. Bitte beachten - wenn Änderungen an den Scripten
+erfolgen muss die Script-Engine neu gestartet werden (über Button in CCU.IO Oberfläche unter CCU.IO->Control machbar)
+
+Innerhalb der Scripte stehen folgende Funktionen zur Verfügung:
+
+
+### log(msg)
+
+Etwas in ccu.io/log/ccu.io.log schreiben
+
+### setState(id, val)
+
+Den Wert eines Datenpunktes ändern
+
+### executeProgram(id)
+
+Ein Homematic Programm ausführen
+
+### setObject(id, object)
+
+Ein Objekt in die regaObjects einfügen
+
+### subscribe(pattern, callback)
+
+Einen Event abbonieren. Das pattern-Objekt bietet folgende Attribute:
+
+    logic       string          "and" oder "or" Logik zum Verknüpfen der Bedingungen nutzen (default: "and")
+
+    id          integer         ID ist gleich
+
+    name        string          name ist gleich
+                RegExp          name matched Regulären Ausdruck
+
+    change      string          "eq", "ne", "gt", "ge", "lt", "le"
+                                    "eq"    Wert muss gleich geblieben sein (val == oldval)
+                                    "ne"    Wert muss sich geändert haben (val != oldval)
+                                    "gt"    Wert muss großer geworden sein (val > oldval)
+                                    "ge"    Wert muss größer geworden oder gleich geblieben sein (val >= oldval)
+                                    "lt"    Wert muss kleiner geworden sein (val < oldval)
+                                    "le"    Wert muss kleiner geworden oder gleich geblieben sein (val <= oldval)
+
+    val         mixed           Wert ist gleich
+    valGt       mixed           Wert ist größer
+    valGe       mixed           Wert ist größer oder gleich
+    valLt       mixed           Wert ist kleiner
+    valLe       mixed           Wert ist kleiner oder gleich
+
+    ack         bool            Wert ist bestätigt
+
+    oldVal      mixed           vorheriger Wert ist gleich
+    oldValGt    mixed           vorheriger Wert ist größer
+    oldValGe    mixed           vorheriger Wert ist größer oder gleich
+    oldValLt    mixed           vorheriger Wert ist kleiner
+    oldValLe    mixed           vorheriger Wert ist kleiner oder gleich
+
+    oldAck      bool            vorheriger Wert ist bestätigt
+
+    ts          string          Timestamp ist gleich
+    tsGt        string          Timestamp ist größer
+    tsGe        string          Timestamp ist größer oder gleich
+    tsLt        string          Timestamp ist kleiner
+    tsLe        string          Timestamp ist kleiner oder gleich
+
+    oldTs       string          vorheriger Timestamp ist gleich
+    oldTsGt     string          vorheriger Timestamp ist größer
+    oldTsGe     string          vorheriger Timestamp ist größer oder gleich
+    oldTsLt     string          vorheriger Timestamp ist kleiner
+    oldTsLe     string          vorheriger Timestamp ist kleiner oder gleich
+
+    lc          string          Lastchange ist gleich
+    lcGt        string          Lastchange ist größer
+    lcGe        string          Lastchange ist größer oder gleich
+    lcLt        string          Lastchange ist kleiner
+    lcLe        string          Lastchange ist kleiner oder gleich
+
+    oldLc       string          vorheriger Lastchange ist gleich
+    oldLcGt     string          vorheriger Lastchange ist größer
+    oldLcGe     string          vorheriger Lastchange ist größer oder gleich
+    oldLcLt     string          vorheriger Lastchange ist kleiner
+    oldLcLe     string          vorheriger Lastchange ist kleiner oder gleich
+
+    room        integer         Raum ID ist gleich
+                string          Raum ist gleich
+                RegExp          Raum matched Regulären Ausdruck
+
+    func        integer         Gewerk ID ist gleich
+                string          Gewerk ist gleich
+                RegExp          Gewerk matched Regulären Ausdruck
+
+    channel     integer         Kanal ID ist gleich
+                string          Kanal-Name ist gleich
+                RegExp          Kanal-Name matched Regulären Ausdruck
+
+    device      integer         Geräte ID ist gleich
+                string          Geräte-Name ist gleich
+                RegExp          Geräte-Name matched Regulären Ausdruck
+
+    channelType string          Kanal HssType ist gleich
+                RegExp          Kanal HssType matched Regulären Ausdruck
+
+    deviceType  string          Geräte HssType ist gleich
+                RegExp          Geräte HssType matched Regulären Ausdruck
+
+### schedule(pattern, callback)
+
+Zeitmodul mit Astrofunktion.
+
+Pattern kann ein String in Cron-Syntax sein, z.B.:
+
+    schedule("*/2 * * * *", function () {
+        log("wird alle 2 Minuten ausgeführt!");
+    });
+
+
+Pattern kann aber auch ein Objekt sein, insbesondere dann notwendig wenn man Sekundengenaue Ausführung benötigt:
+
+    schedule({second: [20, 25]}, function () {
+        log("Wird um xx:xx:20 und xx:xx:25 ausgeführt!");
+    });
+
+    schedule({hour: 12, minute: 30}, function () {
+        log("Wird um 12:30Uhr ausgeführt!");
+    });
+
+
+Pattern kann auch ein Javascript-Date-Objekt (also ein bestimmter Zeitpunkt sein) - dann findet nur eine einmalige Ausführung statt.
+
+
+#### Astrofunktion
+
+Über das Attribut "astro" kann die Astrofunktion genutzt werden:
+
+    schedule({astro:"sunrise"}, function () {
+        log("Sonnenaufgang!");
+    });
+
+    schedule({astro:"sunset", shift:10}, function () {
+        log("Sonnenuntergang!");
+    });
+
+
+Das Attribut shift ist eine Verschiebung in Minuten, kann auch negativ sein um die Events vorzuziehen.
+
+Folgende Werte sind für das Attribut astro verwendbar:
+
+* sunrise: sunrise (top edge of the sun appears on the horizon)
+* sunriseEnd: sunrise ends (bottom edge of the sun touches the horizon)
+* goldenHourEnd: morning golden hour (soft light, best time for photography) ends
+* solarNoon: solar noon (sun is in the highest position)
+* goldenHour: evening golden hour starts
+* sunsetStart: sunset starts (bottom edge of the sun touches the horizon)
+* sunset: sunset (sun disappears below the horizon, evening civil twilight starts)
+* dusk: dusk (evening nautical twilight starts)
+* nauticalDusk: nautical dusk (evening astronomical twilight starts)
+* night: night starts (dark enough for astronomical observations)
+* nightEnd: night ends (morning astronomical twilight starts)
+* nauticalDawn: nautical dawn (morning nautical twilight starts)
+* dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
+* nadir: nadir (darkest moment of the night, sun is in the lowest position)
+
+### Adapter
+
 ## Todo/Roadmap
 
 * Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist und sinnvoll damit umgehen
 * Doku für Adapter-Entwickler
-* Doku für Script-Engine
 * BIN-RPC Implementierung vervollständigen
 * CCU.IO-Pseudo-Gerät in CCU? Könnte sinnvoll sein z.B: für Polling-Trigger u.v.m. ...
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
@@ -57,6 +220,13 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.47
+
+* (Hobbyquaker) Zeitmodul mit Astro-Funktion für die Script-Engine
+* (Hobbyquaker) Neue Optionen longitude und latitude in settings.js (wird für Astrofunktion benötigt)
+* (Hobbyquaker) BIN-RPC Bug behoben (hatte kein Impact, hat aber unschöne Log-Meldung generiert)
+* (Hobbyquaker) fehlende Dateien in ccu.io/www/lib ergänzt, führte dazu dass die Reiter datapoints und events in der CCU.IO-Oberfläche leer waren
 
 ### 0.9.46
 
