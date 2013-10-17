@@ -184,11 +184,11 @@ Pattern kann auch ein Javascript-Date-Objekt (also ein bestimmter Zeitpunkt sein
     });
 
     schedule({astro:"sunset", shift:10}, function () {
-        log("Sonnenuntergang!");
+        log("10 Minuten nach Sonnenuntergang!");
     });
 
-
 Das Attribut shift ist eine Verschiebung in Minuten, kann auch negativ sein um die Events vorzuziehen.
+
 
 Folgende Werte sind für das Attribut astro verwendbar:
 
