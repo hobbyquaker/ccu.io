@@ -2,32 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2c3da533-c98a-486a-8382-2c115a5fe099" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/node-schedule/.npmignore" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/suncalc/.npmignore" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/suncalc/LICENSE" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/node-schedule/README.md" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/suncalc/README.md" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/node-schedule/test/convenience-method-test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/node-schedule/lib/increment.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/node-schedule/test/job-test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/node-schedule/package.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/suncalc/package.json" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/node-schedule/test/range-test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/node-schedule/test/recurrence-rule-test.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/node-schedule/lib/schedule.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/suncalc/suncalc.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ccu.io/node_modules/suncalc/test.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccu.io/binrpc.js" afterPath="$PROJECT_DIR$/ccu.io/binrpc.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccu.io/ccu.io.js" afterPath="$PROJECT_DIR$/ccu.io/ccu.io.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccu.io/adapter/mysql/example-queries.sql" afterPath="$PROJECT_DIR$/ccu.io/adapter/mysql/example-queries.sql" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccu.io/script-engine.js" afterPath="$PROJECT_DIR$/ccu.io/script-engine.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccu.io/settings.js.dist" afterPath="$PROJECT_DIR$/ccu.io/settings.js.dist" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ccu.io.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953769962" ignored="false" />
+    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382032925366" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953566274" ignored="false" />
     <file path="/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381503138568" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/index.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380988689173" ignored="false" />
@@ -36,7 +16,7 @@
     <file path="/dashui.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381502965755" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953622769" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953687766" ignored="false" />
-    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382032768897" ignored="false" />
+    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382036007282" ignored="false" />
     <file path="/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381759947798" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/yahui/js/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381759953797" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381763012966" ignored="false" />
@@ -146,10 +126,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ccu.io.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ccu.io.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="26" selection-start="283" selection-end="283" vertical-scroll-proportion="0.34768212">
+            <state line="15" column="26" selection-start="283" selection-end="283" vertical-scroll-proportion="-8.4">
               <folding />
             </state>
           </provider>
@@ -173,10 +153,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="README.md" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="226" column="101" selection-start="9666" selection-end="9666" vertical-scroll-proportion="0.0">
+            <state line="214" column="6" selection-start="8974" selection-end="8974" vertical-scroll-proportion="0.21303657">
               <folding />
             </state>
           </provider>
@@ -993,7 +973,15 @@
       <created>1381953771187</created>
       <updated>1381953771187</updated>
     </task>
-    <option name="localTasksCounter" value="124" />
+    <task id="LOCAL-00124" summary="diverses, siehe Changelog 0.9.47">
+      <created>1382032811003</created>
+      <updated>1382032811003</updated>
+    </task>
+    <task id="LOCAL-00125" summary="updated Readme">
+      <created>1382032926432</created>
+      <updated>1382032926432</updated>
+    </task>
+    <option name="localTasksCounter" value="126" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1084,7 +1072,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="added missing jqGrid files" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated Readme" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1098,8 +1086,6 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="added missing files in lib dir" />
-    <MESSAGE value="added missing files in www/ccu.io dir" />
     <MESSAGE value="added missing files" />
     <MESSAGE value="added missing node_modules" />
     <MESSAGE value="fixed anonymization of Addresses" />
@@ -1123,6 +1109,8 @@
     <MESSAGE value="diverses, siehe changelos 0.9.45" />
     <MESSAGE value="diverses, siehe changelog 0.9.46" />
     <MESSAGE value="added missing jqGrid files" />
+    <MESSAGE value="diverses, siehe Changelog 0.9.47" />
+    <MESSAGE value="updated Readme" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1245,16 +1233,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
+    <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="226" column="101" selection-start="9666" selection-end="9666" vertical-scroll-proportion="0.0">
+        <state line="15" column="26" selection-start="283" selection-end="283" vertical-scroll-proportion="-8.4">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io.js">
+    <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="26" selection-start="283" selection-end="283" vertical-scroll-proportion="0.34768212">
+        <state line="214" column="6" selection-start="8974" selection-end="8974" vertical-scroll-proportion="0.21303657">
           <folding />
         </state>
       </provider>

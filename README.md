@@ -212,6 +212,9 @@ Folgende Werte sind für das Attribut astro verwendbar:
 ## Todo/Roadmap
 
 * Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist und sinnvoll damit umgehen
+* Hue Adapter
+* Plugwise Adapter
+* ArtNet (DMX) Adapter
 * Doku für Adapter-Entwickler
 * BIN-RPC Implementierung vervollständigen
 * CCU.IO-Pseudo-Gerät in CCU? Könnte sinnvoll sein z.B: für Polling-Trigger u.v.m. ...
