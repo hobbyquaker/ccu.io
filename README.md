@@ -214,6 +214,7 @@ Folgende Werte sind für das Attribut astro verwendbar:
 * Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist und sinnvoll damit umgehen
 * Hue Adapter
 * Plugwise Adapter
+* LIRC Adapter
 * ArtNet (DMX) Adapter
 * Doku für Adapter-Entwickler
 * BIN-RPC Implementierung vervollständigen

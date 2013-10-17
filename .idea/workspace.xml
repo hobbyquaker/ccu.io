@@ -7,7 +7,7 @@
     </list>
     <ignored path="ccu.io.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382032925366" ignored="false" />
+    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382036016895" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953566274" ignored="false" />
     <file path="/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381503138568" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/index.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380988689173" ignored="false" />
@@ -16,7 +16,7 @@
     <file path="/dashui.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381502965755" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953622769" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953687766" ignored="false" />
-    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382036007282" ignored="false" />
+    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382036449594" ignored="false" />
     <file path="/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381759947798" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/yahui/js/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381759953797" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381763012966" ignored="false" />
@@ -156,7 +156,7 @@
       <file leaf-file-name="README.md" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="214" column="6" selection-start="8974" selection-end="8974" vertical-scroll-proportion="0.21303657">
+            <state line="216" column="14" selection-start="9015" selection-end="9015" vertical-scroll-proportion="0.21303657">
               <folding />
             </state>
           </provider>
@@ -981,7 +981,11 @@
       <created>1382032926432</created>
       <updated>1382032926432</updated>
     </task>
-    <option name="localTasksCounter" value="126" />
+    <task id="LOCAL-00126" summary="updated Readme">
+      <created>1382036018797</created>
+      <updated>1382036018797</updated>
+    </task>
+    <option name="localTasksCounter" value="127" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1020,7 +1024,7 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2925532" sideWeight="0.21725732" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27045456" sideWeight="0.6724387" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27045456" sideWeight="0.6724387" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1242,7 +1246,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="214" column="6" selection-start="8974" selection-end="8974" vertical-scroll-proportion="0.21303657">
+        <state line="216" column="14" selection-start="9015" selection-end="9015" vertical-scroll-proportion="0.21303657">
           <folding />
         </state>
       </provider>
