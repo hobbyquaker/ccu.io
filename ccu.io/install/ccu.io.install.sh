@@ -5,7 +5,7 @@
 #Variablen setzen
 ########################################################################
 
-Version=0.2
+Version=0.3.1
 SCRIPT_NAME=$( basename $0 )
 TS=$( date +%Y%m%d%H%M%S )
 TMP=/tmp
@@ -128,10 +128,24 @@ copy_log_debug ()
   set +xv
   rm ${LOG} ${TMP}/${SCRIPT_NAME}.${TS}.debug.txt
 }
+
+ja_nein_abfrage ()
+{
+  while [ ${GUELTIG} != 1 ]
+  do
+    read ANTWORT
+    case "${ANTWORT}" in
+      [JjYy])    ERGEBNIS=1; GUELTIG=1 ;;
+      [Nn])      ERGEBNIS=0; GUELTIG=1 ;;
+      *)         GUELTIG=0 ;;
+    esac
+  done
+}
 ########################################################################
 # Vorbedingungen pruefen
 ########################################################################
 
+# Abfrage ob das Script von root aufgerufen wird
 if [ $( whoami ) != root ]
 then
 	echo "Das Programm muss als root laufen da es Verzeichnisse anlegt und Rechte anpasst"
@@ -140,8 +154,6 @@ then
 	copy_log_debug
   exit 1
 fi
-
-# cd ${TMP}
 
 # Pruefen ob es noch ein altes master.zip gibt und dieses gegebenenfalls sichern
 if [ -f ${TMP}/master.zip ]
@@ -158,23 +170,13 @@ then
   echo "Soll eine Aktualisierung von CCU.IO durchgeführt werden?"
   echo "YyJj/Nn"
   GUELTIG=0
-  while [ ${GUELTIG} != 1 ]
-  do
-    read ANTWORT
-    case "${ANTWORT}" in
-      [JjYy])    ERGEBNIS=1; GUELTIG=1 ;;
-      [Nn])      ERGEBNIS=0; GUELTIG=1 ;;
-      *)         GUELTIG=0 ;;
-    esac
-  done
+  ja_nein_abfrage
   if [ ${ERGEBNIS} = 1 ]
   then
     CCUIO_UPDATE=true
     echo "Ab hier geht es mit der Update Routine weiter" >> ${LOG}
   else
-    echo "Die Antwort ist NEIN"
-    echo "Dadurch beendet sich das Programm"
-    echo "Es ist kein Update gewuenscht, das Programm beendet sich" >> ${LOG}
+    echo "Es ist kein Update gewuenscht, das Programm beendet sich" | tee -a ${LOG}
     copy_log_debug
     exit
   fi
@@ -340,15 +342,7 @@ then
     echo "Wird CUXd verwendet?" | tee -a ${LOG}
     echo "YyJj/Nn"
     GUELTIG=0
-    while [ ${GUELTIG} != 1 ]
-    do
-      read ANTWORT
-      case "${ANTWORT}" in
-        [JjYy])    ERGEBNIS=1; GUELTIG=1 ;;
-        [Nn])      ERGEBNIS=0; GUELTIG=1 ;;
-        *)         GUELTIG=0 ;;
-      esac
-    done
+    ja_nein_abfrage
     if [ ${ERGEBNIS} = 1 ]
     then
       echo "CUXd soll verwendet werden" >> ${LOG}
@@ -358,15 +352,7 @@ then
     echo "Wird Wired verwendet?" | tee -a ${LOG}
     echo "YyJj/Nn"
     GUELTIG=0
-    while [ ${GUELTIG} != 1 ]
-    do
-      read ANTWORT
-      case "${ANTWORT}" in
-        [JjYy])    ERGEBNIS=1; GUELTIG=1 ;;
-        [Nn])      ERGEBNIS=0; GUELTIG=1 ;;
-        *)         GUELTIG=0 ;;
-      esac
-    done
+    ja_nein_abfrage
     if [ ${ERGEBNIS} = 1 ]
     then
       echo "Wired soll verwendet werden" >> ${LOG}
@@ -392,6 +378,11 @@ then
   ADDON_PATH=${ADDON}
   LINK="https://github.com/hobbyquaker/${ADDON}/archive/master.zip"
   install yahui
+  echo "yahui settings-dist.js nach settings.js kopieren" >> ${LOG}
+  if [ ! -f ${CCUIO_PATH}/www/${ADDON_PATH}/js/settings.js ]
+  then
+   cp ${CCUIO_PATH}/www/${ADDON_PATH}/js/settings-dist.js ${CCUIO_PATH}/www/${ADDON_PATH}/js/settings.js
+  fi
 fi
 
 # DashUI aktualisieren
