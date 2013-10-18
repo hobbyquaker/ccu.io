@@ -8,6 +8,13 @@ $(document).ready(function () {
     var eventCounter = 0;
     var $mainTabs = $("#mainTabs");
     var $subTabs5 = $("#subTabs5");
+
+    $mainTabs.tabs({
+        activate: function (e, ui) {
+            resizeGrids();
+        }
+    });
+
     var $datapointGrid = $("#grid_datapoints");
     var $eventGrid = $("#grid_events");
 
@@ -22,6 +29,7 @@ $(document).ready(function () {
     socket.on('reload', function() {
         window.location.reload();
     });
+
 
     socket.emit("getVersion", function (version) {
         $(".ccu-io-version").html(version);
@@ -78,6 +86,12 @@ $(document).ready(function () {
     $("#refreshCCU").button().click(function () {
         socket.emit('reloadData');
         $("#reloading").show();
+    });
+    $("#reloadScriptEngine").button().click(function () {
+        $("#reloadScriptEngine").button("disable");
+        socket.emit('reloadScriptEngine', function () {
+            $("#reloadScriptEngine").button("enable");
+        });
     });
 
     $("#dataRefresh").button().click(function() {
@@ -165,6 +179,8 @@ $(document).ready(function () {
 
 */
 
+    var datapointsLastSel;
+    var datapointsEditing = false;
 
     $("#grid_datapoints").jqGrid({
         datatype: "local",
@@ -175,7 +191,7 @@ $(document).ready(function () {
             {name:'type',index:'type', width:80},
             {name:'name',index:'name', width:240},
             {name:'parent',index:'parent', width:240},
-            {name:'val',index:'val', width:160},
+            {name:'val',index:'val', width:160, editable:true},
             {name:'timestamp',index:'timestamp', width:140},
             {name:'ack',index:'ack', width:50},
             {name:'lastChange',index:'lastChange', width:140}
@@ -190,7 +206,24 @@ $(document).ready(function () {
         viewrecords: true,
         sortname: "id",
         sortorder: "asc",
-        caption:"datapoints"
+        caption:"datapoints",
+        onSelectRow: function(id){
+            if(id && id!==datapointsLastSel){
+                $('#grid_datapoints').restoreRow(datapointsLastSel);
+                datapointsLastSel=id;
+            }
+            $('#grid_datapoints').editRow(id, true, function () {
+                // onEdit
+                datapointsEditing = true;
+            }, function (obj) {
+                // success
+            }, "clientArray", null, function () {
+                // afterSave
+                datapointsEditing = false;
+                //console.log(datapointsLastSel+ " "+$("#grid_datapoints").jqGrid("getCell", datapointsLastSel, "val"));
+                socket.emit('setState', [datapointsLastSel, $("#grid_datapoints").jqGrid("getCell", datapointsLastSel, "val")]);
+            });
+        }
     }).jqGrid('filterToolbar',{
         autosearch: true,
         searchOnEnter: false,
@@ -224,8 +257,10 @@ $(document).ready(function () {
                     ack: obj[3],
                     lastChange: (obj[4] == "1970-01-01 01:00:00" ? "" : obj[4])
                 };
-                $datapointGrid.jqGrid('setRowData', obj[0], data);
-                if ($mainTabs.tabs("option", "active") == 4 && $subTabs5.tabs("option", "active") == 2) {
+                if (!datapointsEditing || datapointsLastSel != obj[0]) {
+                    $datapointGrid.jqGrid('setRowData', obj[0], data);
+                }
+                if ($mainTabs.tabs("option", "active") == 4 && $subTabs5.tabs("option", "active") == 2 && !datapointsEditing) {
                     $datapointGrid.trigger("reloadGrid");
                 }
 
@@ -311,6 +346,16 @@ $(document).ready(function () {
         eventCounter = 0;
     }});
 
+    function resizeGrids() {
+        var x = $(window).width();
+        var y = $(window).height();
+        if (x < 720) { x = 720; }
+        if (y < 480) { y = 480; }
+        $(".gridSub").setGridHeight(y - 250).setGridWidth(x - 100);
+    }
+    $(window).resize(function() {
+        resizeGrids();
+    });
 
 
 });

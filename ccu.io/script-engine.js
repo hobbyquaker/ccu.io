@@ -742,11 +742,11 @@ function setObject(id, obj, callback) {
 
 
 process.on('SIGINT', function () {
-    stop();
+    scriptEngine.stop();
 });
 
 process.on('SIGTERM', function () {
-    stop();
+    scriptEngine.stop();
 });
 
 

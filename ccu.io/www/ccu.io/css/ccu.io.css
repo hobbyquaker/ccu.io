@@ -1,6 +1,8 @@
 body {
     font-size: 0.7em;
     font-family: sans-serif;
+    min-width: 720px;
+    min-height: 480px;
 }
 
 ul.ui-tabs-nav li.ui-state-focus a {
