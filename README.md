@@ -216,6 +216,8 @@ Folgende Werte sind für das Attribut astro verwendbar:
 * Plugwise Adapter
 * LIRC Adapter
 * ArtNet (DMX) Adapter
+* iCal Adapter
+* Oberfläche vervollständigen
 * Doku für Adapter-Entwickler
 * BIN-RPC Implementierung vervollständigen
 * CCU.IO-Pseudo-Gerät in CCU? Könnte sinnvoll sein z.B: für Polling-Trigger u.v.m. ...
