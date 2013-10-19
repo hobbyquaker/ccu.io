@@ -317,14 +317,7 @@ then
     echo "Rechte von ccu.io anpassen" >> ${LOG}
     chmod 755 /etc/init.d/ccu.io.sh 
     echo "Init Scripte verlinken" >> ${LOG}
-    ln -s /etc/init.d/ccu.io.sh /etc/rc1.d/K01ccu.io.sh
-    ln -s /etc/init.d/ccu.io.sh /etc/rc2.d/S03ccu.io.sh
-    ln -s /etc/init.d/ccu.io.sh /etc/rc0.d/K01ccu.io.sh
-    ln -s /etc/init.d/ccu.io.sh /etc/rc4.d/S03ccu.io.sh
-    ln -s /etc/init.d/ccu.io.sh /etc/rc5.d/S03ccu.io.sh
-    ln -s /etc/init.d/ccu.io.sh /etc/rc3.d/S03ccu.io.sh
-    ln -s /etc/init.d/ccu.io.sh /etc/rc6.d/K01ccu.io.sh
-    
+    update-rc.d ccu.io.sh defaults
     # settings.js anpassen
     echo "settings.js anpassen" >> ${LOG}
     cp ${CCUIO_PATH}/settings.js.dist ${CCUIO_PATH}/settings.js
