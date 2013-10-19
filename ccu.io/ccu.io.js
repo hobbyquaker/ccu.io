@@ -13,13 +13,15 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.49";
+settings.version = "0.9.51";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
     binrpc =    require(__dirname+"/binrpc.js"),
     rega =      require(__dirname+"/rega.js"),
     express =   require('express'),
+    http =      require('http'),
+    https =     require('https'),
     app,
     appSsl,
     url = require('url'),
@@ -604,6 +606,53 @@ function initSocketIO(_io) {
                     callback("\""+data+"\"");
                 }
             });
+        });
+
+        socket.on('readJsonFile', function (name, callback) {
+            logger.verbose("socket.io <-- readFile "+name);
+
+            fs.readFile(__dirname+"/"+name, function (err, data) {
+                if (err) {
+                    logger.error("ccu.io        failed loading file "+__dirname+"/"+name);
+                    callback(undefined);
+                } else {
+                    callback(JSON.parse(data));
+                }
+            });
+        });
+
+        socket.on('getUrl', function (url, callback) {
+            logger.info("ccu.io        GET "+url);
+            if (url.match(/^https/)) {
+                https.get(url, function(res) {
+                    var body = "";
+                    res.on("data", function (data) {
+                        body += data;
+                    });
+                    res.on("end", function () {
+                        callback(body);
+                    });
+
+                }).on('error', function(e) {
+                    logger.error("ccu.io        GET "+url+" "+ e.message);
+                });
+            } else {
+                http.get(url, function(res) {
+                    var body = "";
+                    res.on("data", function (data) {
+                        body += data;
+                    });
+                    res.on("end", function () {
+                        callback(body);
+                    });
+                }).on('error', function(e) {
+                    logger.error("ccu.io        GET "+url+" "+ e.message);
+                });
+            }
+        });
+
+        socket.on('getSettings', function (callback) {
+            callback(settings);
         });
 
         socket.on('getVersion', function(callback) {
