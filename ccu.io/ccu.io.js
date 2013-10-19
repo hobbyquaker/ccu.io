@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.51";
+settings.version = "0.9.52";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -701,10 +701,12 @@ function initSocketIO(_io) {
             regaObjects[id] = obj;
 
             if (obj.TypeName) {
-                if (!regaIndex[TypeName]) {
-                    regaIndex[TypeName] = [];
+                if (!regaIndex[obj.TypeName]) {
+                    regaIndex[obj.TypeName] = [];
                 }
-                regaIndex[TypeName].push(id);
+                if (regaIndex[obj.TypeName].indexOf(id) == -1) {
+                    regaIndex[obj.TypeName].push(id);
+                }
             }
 
             if (obj.Name) {
@@ -712,7 +714,7 @@ function initSocketIO(_io) {
             }
 
             if (obj.Address) {
-                regaIndex.Address[obj.Address] = [id, TypeName, obj.Parent];
+                regaIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
             }
             if (callback) {
                 callback();

@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.51
+aktuelle Version: 0.9.52
 
 CCU.IO ist eine Node.js Applikation die einen Web-Server für HomeMatic Web-Oberflächen bereitstellt und via BIN-RPC mit
 rfd, hs485d und CUxD kommuniziert. CCU.IO kann - aber muss nicht - auf der CCU2 installiert werden. Über eine Websocket-
@@ -230,6 +230,10 @@ Folgende Werte sind für das Attribut astro verwendbar:
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.52
+* (Hobbyquaker) Bugfix in setObject Methode
+* (Hobbyquaker) Neue Datenpunkte yr-Adapter (rain24h, rain48h, minTemp24h, maxTemp24h, minTemp48h, maxTemp48h)
 
 ### 0.9.51
 

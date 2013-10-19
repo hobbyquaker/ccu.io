@@ -1,5 +1,10 @@
 70000                           yr - Wettervorhersage von yr.no 48h Tabelle HTML
-
+70001                           yr - Regen 24h
+70002                           yr - Regen 48h
+70003                           yr - min Temp 24h
+70004                           yr - min Temp 48h
+70005                           yr - max Temp 24h
+70006                           yr - max Temp 48h
 
 
 

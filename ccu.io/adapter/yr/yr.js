@@ -80,7 +80,7 @@ function parseData(xml) {
             logger.error("adapter yr   "+err);
         } else {
             logger.info("adapter yr    got weather data from yr.no");
-			var forecastArr = result.weatherdata.forecast.tabular.time;
+          	var forecastArr = result.weatherdata.forecast.tabular.time;
 
 			for (var i = 0; i < forecastArr.length; i++) {
 				var period = forecastArr[i];
@@ -97,7 +97,7 @@ function parseData(xml) {
 			var daySwitch = false;
 			for (var i = 0; i < 8; i++) {
 				var period = forecastArr[i];
-				switch (i) {
+          		switch (i) {
 				case 0:
 					tableHead += "<td>jetzt</td>";
 					break;
@@ -127,13 +127,142 @@ function parseData(xml) {
             var style = '<style type="text/css">tr.yr-day td {font-family: sans-serif; font-size: 9px; padding:0; margin: 0;}\ntr.yr-time td {text-align: center; font-family: sans-serif; font-size: 10px; padding:0; margin: 0;}\ntr.yr-temp td {text-align: center; font-family: sans-serif; font-size: 12px; padding:0; margin: 0;}\ntr.yr-img td {text-align: center; padding:0; margin: 0;}\ntr.yr-time td img {padding:0; margin: 0;}</style>'
 			var table = style + tableDay + tableHead + tableMiddle + tableBottom + "</tr></table>";
 			//console.log(JSON.stringify(result, null, "  "));
-            socket.emit("setState", [70000, table], function () {
-                socket.disconnect();
-                logger.info("adapter yr    terminating");
-                setTimeout(function () {
-                     process.exit();
-                }, 1000);
+
+            if (forecastArr[0].precipitation.Value != "0" || forecastArr[1].precipitation.Value != "1" || forecastArr[2].precipitation.Value != "2" || forecastArr[3].precipitation.Value != "3") {
+                var rain24 = true;
+            } else {
+                var rain24 = false;
+            }
+            if (forecastArr[0].precipitation.Value != "4" || forecastArr[1].precipitation.Value != "5" || forecastArr[2].precipitation.Value != "6" || forecastArr[3].precipitation.Value != "7") {
+                var rain48 = true;
+            } else {
+                var rain48 = false;
+            }
+
+            var minTemp24 = 100;
+            var maxTemp24 = -100;
+            var minTemp48 = 100;
+            var maxTemp48 = -100;
+            for (var i = 0; i < 4; i++) {
+                if (forecastArr[i].temperature.value > maxTemp24) {
+                    maxTemp24 = forecastArr[i].temperature.value;
+                }
+                if (forecastArr[i].temperature.value < minTemp24) {
+                    minTemp24 = forecastArr[i].temperature.value;
+                }
+                if (forecastArr[i+4].temperature.value > maxTemp48) {
+                    maxTemp48 = forecastArr[i].temperature.value;
+                }
+                if (forecastArr[i+4].temperature.value < minTemp48) {
+                    minTemp48 = forecastArr[i].temperature.value;
+                }
+            }
+
+
+            socket.emit("setObject", 70001, {
+                Name: "yr.no Regen 24h",
+                DPInfo: "Regen in den nächsten 24h",
+                TypeName: "VARDP",
+                "ValueMin": null,
+                "ValueMax": null,
+                "ValueUnit": "",
+                "ValueType": 2,
+                "ValueSubType": 2,
+                "ValueList": ""
+            }, function() {
+                socket.emit("setState", [70001, rain24]);
             });
+
+            socket.emit("setObject", 70002, {
+                Name: "yr.no Regen 48h",
+                DPInfo: "Regen in den darauffolgenden 24h",
+                TypeName: "VARDP",
+                "ValueMin": null,
+                "ValueMax": null,
+                "ValueUnit": "",
+                "ValueType": 2,
+                "ValueSubType": 2,
+                "ValueList": ""
+            }, function() {
+                socket.emit("setState", [70002, rain48]);
+            });
+
+            socket.emit("setObject", 70003, {
+                Name: "yr.no Temp min 24h",
+                DPInfo: "minimale Temperatur in den nächsten 24h",
+                TypeName: "VARDP",
+                "ValueMin": null,
+                "ValueMax": null,
+                "ValueUnit": "°C",
+                "ValueType": 4,
+                "ValueSubType": 0,
+                "ValueList": ""
+            }, function() {
+                socket.emit("setState", [70003, minTemp24]);
+            });
+            socket.emit("setObject", 70004, {
+                Name: "yr.no Temp min 48h",
+                DPInfo: "minimale Temperatur in den darauffolgenden 24h",
+                TypeName: "VARDP",
+                "ValueMin": null,
+                "ValueMax": null,
+                "ValueUnit": "°C",
+                "ValueType": 4,
+                "ValueSubType": 0,
+                "ValueList": ""
+            }, function() {
+                socket.emit("setState", [70004, minTemp48]);
+            });
+
+            socket.emit("setObject", 70005, {
+                Name: "yr.no Temp min 24h",
+                DPInfo: "maximale Temperatur in den nächsten 24h",
+                TypeName: "VARDP",
+                "ValueMin": null,
+                "ValueMax": null,
+                "ValueUnit": "°C",
+                "ValueType": 4,
+                "ValueSubType": 0,
+                "ValueList": ""
+            }, function() {
+                socket.emit("setState", [70005, maxTemp24]);
+            });
+            socket.emit("setObject", 70006, {
+                Name: "yr.no Temp min 48h",
+                DPInfo: "maximale Temperatur in den darauffolgenden 24h",
+                TypeName: "VARDP",
+                "ValueMin": null,
+                "ValueMax": null,
+                "ValueUnit": "°C",
+                "ValueType": 4,
+                "ValueSubType": 0,
+                "ValueList": ""
+            }, function() {
+                socket.emit("setState", [70006, maxTemp48]);
+            });
+
+
+            socket.emit("setObject", 70000, {
+                Name: "yr.no Wettervorhersage",
+                DPInfo: "48h Vorhersage als HTML Tabelle",
+                TypeName: "VARDP",
+                "ValueMin": null,
+                "ValueMax": null,
+                "ValueUnit": "",
+                "ValueType": 20,
+                "ValueSubType": 11,
+                "ValueList": ""
+
+            }, function() {
+                socket.emit("setState", [70000, table], function () {
+                    socket.disconnect();
+                    logger.info("adapter yr    terminating");
+                    setTimeout(function () {
+                        process.exit();
+                    }, 1000);
+                });
+            });
+
 
 		}
 	});
