@@ -151,10 +151,10 @@ function parseData(xml) {
                     minTemp24 = forecastArr[i].temperature.value;
                 }
                 if (forecastArr[i+4].temperature.value > maxTemp48) {
-                    maxTemp48 = forecastArr[i].temperature.value;
+                    maxTemp48 = forecastArr[i+4].temperature.value;
                 }
                 if (forecastArr[i+4].temperature.value < minTemp48) {
-                    minTemp48 = forecastArr[i].temperature.value;
+                    minTemp48 = forecastArr[i+4].temperature.value;
                 }
             }
 
