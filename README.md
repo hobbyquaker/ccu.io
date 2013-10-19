@@ -218,6 +218,8 @@ Folgende Werte sind für das Attribut astro verwendbar:
 * Plugwise Adapter
 * LIRC Adapter
 * ArtNet (DMX) Adapter
+* Email Adapter
+* Growl/Prowl Adapter
 * iCal Adapter
 * Oberfläche vervollständigen
 * Doku für Adapter-Entwickler
