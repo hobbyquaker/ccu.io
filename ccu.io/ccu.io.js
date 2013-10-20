@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.52";
+settings.version = "0.9.53";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -738,9 +738,8 @@ function initSocketIO(_io) {
             // console.log("datapoints[id][0]="+datapoints[id][0]);
 
 
-            // If ReGa id (0-65534) and not acknowledged -> Set Datapoint on the CCU
-            if (id < 65535 && ((val !== datapoints[id][0] && !ack) || (regaObjects[id].Name.match(/PRESS_SHORT$/) || regaObjects[id].Name.match(/PRESS_LONG$/) || regaObjects[id].Name.match(/CMD_EXEC$/)))) {
-
+            // If ReGa id (0-65534)
+            if (id < 65535) {
                 // Bidcos or Rega?
                 if (regaIndex.HSSDP.indexOf(id) != -1) {
                     // Set State via xmlrpc_bin
@@ -750,8 +749,9 @@ function initSocketIO(_io) {
                         port = homematic.ifacePorts[iface],
                         channel = parts[1],
                         dp = parts[2];
-                    // TODO BINRPC FLOAT....
+                    // TODO BINRPC FLOAT....?
                     homematic.request(port, "setValue", [channel, dp, val.toString()]);
+                    logger.info("BINRPC setValue "+channel+dp+" "+val);
                 } else {
                     // Set State via ReGa
                     var xval;
@@ -910,7 +910,8 @@ function quit() {
             logger.verbose("rega          waited too long ... killing process");
             setTimeout(function () {
                 process.exit(0);
-            }, 250);        }
+            }, 250);
+        }
         logger.verbose("rega          waiting for pending request...");
         setTimeout(quit, 500);
 

@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2c3da533-c98a-486a-8382-2c115a5fe099" name="Default" comment="updated Readme">
+    <list default="true" id="2c3da533-c98a-486a-8382-2c115a5fe099" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ccu.io/adapter/yr/yr-example-object.json" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ccu.io/ccu.io.js" afterPath="$PROJECT_DIR$/ccu.io/ccu.io.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="ccu.io.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382165429548" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953566274" ignored="false" />
-    <file path="/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381503138568" ignored="false" />
+    <file path="/Dummy.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382262037333" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382284308484" ignored="false" />
+    <file path="/dashui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382282838705" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/index.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380988689173" ignored="false" />
-    <file path="/index.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382112233634" ignored="false" />
+    <file path="/index.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382191333921" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/css/dashui.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381761928800" ignored="false" />
     <file path="/dashui.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381502965755" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953622769" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953687766" ignored="false" />
-    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382114947881" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/js/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382284315757" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382284353561" ignored="false" />
+    <file path="/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382284395010" ignored="false" />
     <file path="/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382105646914" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/yahui/js/yahui.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382105652516" ignored="false" />
     <file path="$PROJECT_DIR$/../yahui/README.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382104894431" ignored="false" />
@@ -25,10 +28,10 @@
     <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/Readme.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381434371526" ignored="false" />
     <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/charts/js/charts.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381434295348" ignored="false" />
     <file path="/charts.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381434279040" ignored="false" />
-    <file path="/ccu.io.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382111932872" ignored="false" />
+    <file path="/ccu.io.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382283962830" ignored="false" />
     <file path="/polling.fn" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1379516135145" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/basic.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381503454996" ignored="false" />
-    <file path="/basic.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381503454996" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/basic.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382261868040" ignored="false" />
+    <file path="/basic.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382261855606" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/jqui-mfd.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380803352164" ignored="false" />
     <file path="/jqui-mfd.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380393717568" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/jqui.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380804562891" ignored="false" />
@@ -45,10 +48,10 @@
     <file path="/test.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381669863751" ignored="false" />
     <file path="/ccu.io-server.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380190891416" ignored="false" />
     <file path="/datapoints.fn" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380266978493" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953493378" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382283831129" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/edit.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380990551333" ignored="false" />
     <file path="/edit.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380990198514" ignored="false" />
-    <file path="/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381502563101" ignored="false" />
+    <file path="/dashuiEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382194428947" ignored="false" />
     <file path="/doc.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380793344225" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/basic/doc.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380793343897" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/css/doc.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380398301020" ignored="false" />
@@ -67,26 +70,26 @@
     <file path="/Readme.md" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381434366526" ignored="false" />
     <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/charts/index.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381157149780" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets/css/hqWidgets.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380809903884" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgetsEdit.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381761928800" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgetsEdit.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382262066375" ignored="false" />
     <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/charts/menu.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381149993840" ignored="false" />
     <file path="/menu.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381149993184" ignored="false" />
     <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/charts/css/menu.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381142429780" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets/js/hqWidgets.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381953493378" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets/js/hqWidgets.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382262066375" ignored="false" />
     <file path="/hqWidgets.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380992452271" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/css/dhive/jquery-ui.min.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380917860406" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/css/start/jquery-ui.min.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380917870118" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/css/ui-dn/jquery-ui.min.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380917880228" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets-debug.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380988073841" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgetsEdit-debug.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380985309771" ignored="false" />
-    <file path="/hqWidgets.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380989641404" ignored="false" />
+    <file path="/hqWidgets.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382283831129" ignored="false" />
     <file path="/hqWidgetsEdit.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380985379939" ignored="false" />
     <file path="/hqWidgets-debug.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1380988005273" ignored="false" />
-    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets/js/hqWidgetsEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381761928800" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/hqWidgets/js/hqWidgetsEdit.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382262066375" ignored="false" />
     <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/charts/css/cuxchart.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381143272788" ignored="false" />
     <file path="/cuxchart.css" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381143262219" ignored="false" />
     <file path="/binrpc.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382028510531" ignored="false" />
-    <file path="/yr.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381768277959" ignored="false" />
-    <file path="/adapter_ids.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381258641053" ignored="false" />
+    <file path="/yr.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382196678282" ignored="false" />
+    <file path="/adapter_ids.txt" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382196358194" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/widgets/yr-adapter.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381248109110" ignored="false" />
     <file path="/yr-adapter.html" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381247954449" ignored="false" />
     <file path="$PROJECT_DIR$/../DashUI/dashui/js/config.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1381247985093" ignored="false" />
@@ -103,6 +106,10 @@
     <file path="/schedule-test.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382026934011" ignored="false" />
     <file path="/skeleton.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382121176911" ignored="false" />
     <file path="/ical.js" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382126700052" ignored="false" />
+    <file path="$PROJECT_DIR$/../DashUI/dashui/io-addon.json" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382258258370" ignored="false" />
+    <file path="/io-addon.json" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382167817088" ignored="false" />
+    <file path="$PROJECT_DIR$/../yahui/yahui/io-addon.json" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382168020465" ignored="false" />
+    <file path="$PROJECT_DIR$/../CCU.IO-Highcharts/charts/io-addon.json" changelist="2c3da533-c98a-486a-8382-2c115a5fe099" time="1382170415533" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,28 +134,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="ccu.io.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ccu.io.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="26" selection-start="283" selection-end="283" vertical-scroll-proportion="-9.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ccu.io.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/js/ccu.io.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="352" column="32" selection-start="12318" selection-end="12318" vertical-scroll-proportion="-211.2">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="script-engine.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccu.io/script-engine.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="748" column="17" selection-start="26775" selection-end="26775" vertical-scroll-proportion="0.0">
+            <state line="750" column="14" selection-start="24702" selection-end="24702" vertical-scroll-proportion="22.681452">
               <folding />
             </state>
           </provider>
@@ -157,25 +146,71 @@
       <file leaf-file-name="README.md" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="219" column="29" selection-start="9083" selection-end="9083" vertical-scroll-proportion="0.0">
+            <state line="234" column="80" selection-start="9922" selection-end="9922" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="skeleton.js" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ccu.io/adapter/skeleton.js">
+      <file leaf-file-name="yr.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccu.io/adapter/yr/yr.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="44" selection-start="259" selection-end="259" vertical-scroll-proportion="0.25301206">
+            <state line="226" column="27" selection-start="8154" selection-end="8154" vertical-scroll-proportion="-11.44">
+              <folding>
+                <marker date="1382196680000" expanded="true" signature="2126:2174" placeholder="..." />
+                <marker date="1382196680000" expanded="true" signature="3828:3892" placeholder="{...}" />
+                <marker date="1382196680000" expanded="true" signature="3908:3993" placeholder="{...}" />
+                <marker date="1382196680000" expanded="true" signature="4009:4094" placeholder="{...}" />
+                <marker date="1382196680000" expanded="true" signature="4109:4152" placeholder="{...}" />
+                <marker date="1382196680000" expanded="true" signature="4172:4195" placeholder="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="adapter_ids.txt" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccu.io/doc/adapter_ids.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="49" selection-start="374" selection-end="374" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="aws.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccu.io/adapter/aws/aws.js">
+      <file leaf-file-name="ccu.io.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/js/ccu.io.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="45" column="8" selection-start="1273" selection-end="1273" vertical-scroll-proportion="0.0">
+            <state line="34" column="12" selection-start="1045" selection-end="1045" vertical-scroll-proportion="-20.4">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/test.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="21" column="69" selection-start="1278" selection-end="1278" vertical-scroll-proportion="-8.25">
+              <folding>
+                <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#td#0;n#tr#0;n#table#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ccu.io.install.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ccu.io/install/ccu.io.install.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -186,40 +221,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rega.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccu.io/rega.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="19" column="0" selection-start="385" selection-end="418" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="mysql.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccu.io/adapter/mysql/mysql.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="56" column="0" selection-start="1069" selection-end="1154" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="yr.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ccu.io/adapter/yr/yr.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="26" column="0" selection-start="626" selection-end="1209" vertical-scroll-proportion="0.0">
-              <folding>
-                <marker date="1381768348000" expanded="false" signature="2118:2166" placeholder="..." />
-                <marker date="1381768348000" expanded="true" signature="3812:3876" placeholder="{...}" />
-                <marker date="1381768348000" expanded="true" signature="3892:3977" placeholder="{...}" />
-                <marker date="1381768348000" expanded="true" signature="3993:4078" placeholder="{...}" />
-                <marker date="1381768348000" expanded="true" signature="4093:4136" placeholder="{...}" />
-                <marker date="1381768348000" expanded="true" signature="4156:4179" placeholder="{...}" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -243,8 +244,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/ccu.io/adapter/mysql/schema.sql" />
-        <option value="$PROJECT_DIR$/ccu.io/settings.js.dist" />
         <option value="$PROJECT_DIR$/ccu.io/adapter/mysql/mysql.js" />
         <option value="$PROJECT_DIR$/ccu.io/settings.js" />
         <option value="$PROJECT_DIR$/ccu.io/adapter/mysql/example-queries.sql" />
@@ -253,12 +252,14 @@
         <option value="$PROJECT_DIR$/ccu.io/regascripts/variables.fn" />
         <option value="$PROJECT_DIR$/ccu.io/script-engine.js" />
         <option value="$PROJECT_DIR$/ccu.io/www/ccu.io/css/ccu.io.css" />
-        <option value="$PROJECT_DIR$/ccu.io/www/ccu.io/js/ccu.io.js" />
-        <option value="$PROJECT_DIR$/ccu.io/www/ccu.io/index.html" />
-        <option value="$PROJECT_DIR$/ccu.io/ccu.io.js" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/ccu.io/adapter/skeleton.js" />
         <option value="$PROJECT_DIR$/ccu.io/adapter/ical/ical.js" />
+        <option value="$PROJECT_DIR$/ccu.io/www/ccu.io/index.html" />
+        <option value="$PROJECT_DIR$/ccu.io/www/ccu.io/js/ccu.io.js" />
+        <option value="$PROJECT_DIR$/ccu.io/doc/adapter_ids.txt" />
+        <option value="$PROJECT_DIR$/ccu.io/adapter/yr/yr.js" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/ccu.io/ccu.io.js" />
       </list>
     </option>
   </component>
@@ -406,15 +407,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ccu.io" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
+              <option name="myItemId" value="install" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -432,25 +425,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="scripts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ccu.io" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ccu.io" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ccu.io" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="regascripts" />
+              <option name="myItemId" value="doc" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -512,28 +487,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="mysql" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ccu.io" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ccu.io" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ccu.io" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="adapter" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="aws" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -547,13 +500,13 @@
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="122" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="120" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder1" value="1" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="120" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder0" value="0" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/ccu.io" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="125" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="910" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="910" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="910" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="125" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="122" />
@@ -1208,7 +1161,31 @@
       <created>1382165431081</created>
       <updated>1382165431081</updated>
     </task>
-    <option name="localTasksCounter" value="134" />
+    <task id="LOCAL-00134" summary="updated Readme">
+      <created>1382165496343</created>
+      <updated>1382165496343</updated>
+    </task>
+    <task id="LOCAL-00135" summary="updated Readme">
+      <created>1382165576656</created>
+      <updated>1382165576656</updated>
+    </task>
+    <task id="LOCAL-00136" summary="v0.9.51 - see changelog">
+      <created>1382191567619</created>
+      <updated>1382191567619</updated>
+    </task>
+    <task id="LOCAL-00137" summary="updated readme&#10;">
+      <created>1382191693240</created>
+      <updated>1382191693240</updated>
+    </task>
+    <task id="LOCAL-00138" summary="0.9.52 - see changelog">
+      <created>1382196566558</created>
+      <updated>1382196566558</updated>
+    </task>
+    <task id="LOCAL-00139" summary="0.9.52 - see changelog">
+      <created>1382196690369</created>
+      <updated>1382196690369</updated>
+    </task>
+    <option name="localTasksCounter" value="140" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1235,10 +1212,10 @@
     <frame x="0" y="0" width="1366" height="768" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.15584415" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32756132" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15584415" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756132" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32954547" sideWeight="0.8124098" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32954547" sideWeight="0.8427128" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32954547" sideWeight="0.84415585" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -1246,7 +1223,7 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2925532" sideWeight="0.21725732" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.275" sideWeight="0.6724387" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20833333" sideWeight="0.84415585" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1299,7 +1276,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="aws adapter" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.9.52 - see changelog" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1313,9 +1290,6 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="fixed anonymization of Addresses" />
-    <MESSAGE value="prevent saving of none-json files" />
-    <MESSAGE value="updated Version and Readme" />
     <MESSAGE value="bugfix file upload" />
     <MESSAGE value="0.9.37 Release, see Readme" />
     <MESSAGE value="Show Events in Grid" />
@@ -1336,8 +1310,11 @@
     <MESSAGE value="added missing jqGrid files" />
     <MESSAGE value="diverses, siehe Changelog 0.9.47" />
     <MESSAGE value="see changelog 0.9.49" />
-    <MESSAGE value="updated Readme" />
     <MESSAGE value="aws adapter" />
+    <MESSAGE value="updated Readme" />
+    <MESSAGE value="v0.9.51 - see changelog" />
+    <MESSAGE value="updated readme&#10;" />
+    <MESSAGE value="0.9.52 - see changelog" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1352,90 +1329,15 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ccu.io/scripts/schedule-test.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="0" selection-start="219" selection-end="376" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/binrpc.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="298" column="13" selection-start="9294" selection-end="9294" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/adapter/mysql/example-queries.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="0" selection-start="1460" selection-end="1984" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/css/ccu.io.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="22" selection-start="102" selection-end="102" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="89" selection-start="2276" selection-end="2276" vertical-scroll-proportion="-10.714286">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ccu.io/regascripts/variables.fn">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="19" selection-start="19" selection-end="19" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/js/ccu.io.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="352" column="32" selection-start="12318" selection-end="12318" vertical-scroll-proportion="-211.2">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="26" selection-start="283" selection-end="283" vertical-scroll-proportion="-9.0">
-          <folding />
-        </state>
+        <state line="0" column="19" selection-start="19" selection-end="19" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ccu.io/script-engine.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="748" column="17" selection-start="26775" selection-end="26775" vertical-scroll-proportion="0.0">
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="219" column="29" selection-start="9083" selection-end="9083" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/adapter/yr/yr.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="0" selection-start="626" selection-end="1209" vertical-scroll-proportion="0.0">
-          <folding>
-            <marker date="1381768348000" expanded="false" signature="2118:2166" placeholder="..." />
-            <marker date="1381768348000" expanded="true" signature="3812:3876" placeholder="{...}" />
-            <marker date="1381768348000" expanded="true" signature="3892:3977" placeholder="{...}" />
-            <marker date="1381768348000" expanded="true" signature="3993:4078" placeholder="{...}" />
-            <marker date="1381768348000" expanded="true" signature="4093:4136" placeholder="{...}" />
-            <marker date="1381768348000" expanded="true" signature="4156:4179" placeholder="{...}" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1460,6 +1362,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/adapter/skeleton.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="44" selection-start="259" selection-end="259" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/install/ccu.io.install.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/test.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ccu.io/settings.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -1467,9 +1390,54 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ccu.io/adapter/skeleton.js">
+    <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="44" selection-start="259" selection-end="259" vertical-scroll-proportion="0.25301206">
+        <state line="21" column="69" selection-start="1278" selection-end="1278" vertical-scroll-proportion="-8.25">
+          <folding>
+            <element signature="n#style#0;n#table#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#table#0;n#div#0;n#div#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/www/ccu.io/js/ccu.io.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="12" selection-start="1045" selection-end="1045" vertical-scroll-proportion="-20.4">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/doc/adapter_ids.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="49" selection-start="374" selection-end="374" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/adapter/yr/yr.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="226" column="27" selection-start="8154" selection-end="8154" vertical-scroll-proportion="-11.44">
+          <folding>
+            <marker date="1382196680000" expanded="true" signature="2126:2174" placeholder="..." />
+            <marker date="1382196680000" expanded="true" signature="3828:3892" placeholder="{...}" />
+            <marker date="1382196680000" expanded="true" signature="3908:3993" placeholder="{...}" />
+            <marker date="1382196680000" expanded="true" signature="4009:4094" placeholder="{...}" />
+            <marker date="1382196680000" expanded="true" signature="4109:4152" placeholder="{...}" />
+            <marker date="1382196680000" expanded="true" signature="4172:4195" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="234" column="80" selection-start="9922" selection-end="9922" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ccu.io/ccu.io.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="750" column="14" selection-start="24702" selection-end="24702" vertical-scroll-proportion="22.681452">
           <folding />
         </state>
       </provider>
