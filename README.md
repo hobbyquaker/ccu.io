@@ -76,11 +76,8 @@ Eine Variable oder einen Datenpunkt setzen
 #### Beispiele
 
     http://ccu-io-host:ccu.io-port/api/set/BidCos-RF.FEQ1234567:1.LEVEL/?value=0.7
-
     http://ccu-io-host:ccu.io-port/api/set/Licht-Küche/LEVEL/?value=0.7
-
     http://ccu-io-host:ccu.io-port/api/set/Anwesenheit/?value=0
-
     http://ccu-io-host:ccu.io-port/api/set/950/?value=1
 
 ### executeProgram
@@ -88,19 +85,22 @@ Eine Variable oder einen Datenpunkt setzen
 Ein Programm ausführen. Kann über ID oder Name angesprochen werden
 
 #### Beispiele
-    http://ccu-io-host:ccu.io-port/api/executeProgram/1205
 
+    http://ccu-io-host:ccu.io-port/api/executeProgram/1205
     http://ccu-io-host:ccu.io-port/api/executeProgram/Alle-Lichter-an
 
 
 ### getObjects
+
     http://ccu-io-host:ccu.io-port/api/getObjects
 
 
 ### getIndex
+
     http://ccu-io-host:ccu.io-port/api/getIndex
 
 ### getDatapoints
+
     http://ccu-io-host:ccu.io-port/api/getDatapoints
 
 
