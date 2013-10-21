@@ -57,16 +57,16 @@ basierende Schnittstelle die Daten im JSON-Format zurückliefert. Folgende Komma
 #### Beispiele
 
 Ein Objekt über die ID abfragen
-    http://<ccu-io-host>:<ccu-io-port>/api/get/950
+    http://ccu-io-host:ccu.io-port/api/get/950
 
 Ein Objekt über den Namen abfragen
-    http://<ccu-io-host>:<ccu-io-port>/api/get/Anwesenheit
+    http://ccu-io-host:ccu.io-port/api/get/Anwesenheit
 
 Ein Objekt über den Kanal-Namen und den Datenpunktbezeichner abfragen
-    http://<ccu-io-host>:<ccu-io-port>/api/get/Licht-Küche/LEVEL
+    http://ccu-io-host:ccu.io-port/api/get/Licht-Küche/LEVEL
 
 Ein Objekt über die BidCos-Adresse abfragen
-    http://<ccu-io-host>:<ccu-io-port>/api/get/BidCos-RF.FEQ1234567:1.LEVEL
+    http://ccu-io-host:ccu.io-port/api/get/BidCos-RF.FEQ1234567:1.LEVEL
 
 
 ### set
@@ -75,33 +75,33 @@ Eine Variable oder einen Datenpunkt setzen
 
 #### Beispiele
 
-    http://<ccu-io-host>:<ccu-io-port>/api/set/BidCos-RF.FEQ1234567:1.LEVEL/?value=0.7
+    http://ccu-io-host:ccu.io-port/api/set/BidCos-RF.FEQ1234567:1.LEVEL/?value=0.7
 
-    http://<ccu-io-host>:<ccu-io-port>/api/set/Licht-Küche/LEVEL/?value=0.7
+    http://ccu-io-host:ccu.io-port/api/set/Licht-Küche/LEVEL/?value=0.7
 
-    http://<ccu-io-host>:<ccu-io-port>/api/set/Anwesenheit/?value=0
+    http://ccu-io-host:ccu.io-port/api/set/Anwesenheit/?value=0
 
-    http://<ccu-io-host>:<ccu-io-port>/api/set/950/?value=1
+    http://ccu-io-host:ccu.io-port/api/set/950/?value=1
 
 ### executeProgram
 
 Ein Programm ausführen. Kann über ID oder Name angesprochen werden
 
 #### Beispiele
-    http://<ccu-io-host>:<ccu-io-port>/api/executeProgram/1205
+    http://ccu-io-host:ccu.io-port/api/executeProgram/1205
 
-    http://<ccu-io-host>:<ccu-io-port>/api/executeProgram/Alle-Lichter-an
+    http://ccu-io-host:ccu.io-port/api/executeProgram/Alle-Lichter-an
 
 
 ### getObjects
-    http://<ccu-io-host>:<ccu-io-port>/api/getObjects
+    http://ccu-io-host:ccu.io-port/api/getObjects
 
 
 ### getIndex
-    http://<ccu-io-host>:<ccu-io-port>/api/getIndex
+    http://ccu-io-host:ccu.io-port/api/getIndex
 
 ### getDatapoints
-    http://<ccu-io-host>:<ccu-io-port>/api/getDatapoints
+    http://ccu-io-host:ccu.io-port/api/getDatapoints
 
 
 ## Script-Engine
