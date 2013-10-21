@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.53";
+settings.version = "0.9.54";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -34,7 +34,9 @@ var fs = require('fs'),
     notFirstVarUpdate = false,
     children = [],
     childScriptEngine,
-    pollTimer;
+    pollTimer,
+    ccuReachable = false,
+    ccuRegaUp = false;
 
 var childProcess = require('child_process');
 
@@ -91,8 +93,27 @@ var debugMode = (process.argv.indexOf("--debug") != -1 ? true : false);
 
 var regahss = new rega({
     ccuIp: settings.ccuIp,
-    ready: function() {
+    ready: function(err) {
+        if (err == "ReGaHSS down") {
+            logger.error("rega          ReGaHSS down");
+            ccuReachable = true;
+            ccuRegaUp = false;
+        } else if (err == "CCU unreachable") {
+            logger.error("ccu.io        CCU unreachable");
+            ccuReachable = false;
+            ccuRegaUp = false;
+        } else {
+            logger.info("rega          ReGaHSS up");
+            ccuReachable = true;
+            ccuRegaUp = true;
 
+            regahss.loadStringTable(function (data) {
+                stringtable = data;
+            });
+
+            regahss.checkTime(loadRegaData);
+
+        }
     }
 });
 
@@ -113,11 +134,7 @@ if (settings.logging.enabled) {
     }
 }
 
-regahss.loadStringTable(function (data) {
-    stringtable = data;
-});
 
-regahss.checkTime(loadRegaData);
 
 var stats = {
     clients: 0,
@@ -469,6 +486,107 @@ function uploadParser(req, res, next) {
     });
 }
 
+function findDatapoint(needle, hssdp) {
+    if (!datapoints[needle]) {
+        if (regaIndex.Name[needle]) {
+            // Get by Name
+            needle = regaIndex.Name[needle][0];
+            if (hssdp) {
+                // Get by Name and Datapoint
+                if (regaObjects[needle].DPs) {
+                    return regaObjects[needle].DPs[hssdp];
+                } else {
+                    return false;
+                }
+            }
+        } else if (regaIndex.Address[needle]) {
+            needle = regaIndex.Address[needle][0];
+            if (hssdp) {
+                // Get by Channel-Address and Datapoint
+                if (regaObjects[needle].DPs && regaObjects[needle].DPs[hssdp]) {
+                    needle = regaObjects[needle].DPs[hssdp];
+                }
+            }
+        } else if (needle.match(/[a-zA-Z-]+\.[0-9A-Za-z-]+:[0-9]+\.[A-Z_]+/)) {
+            // Get by full BidCos-Address
+            addrArr = needle.split(".");
+            if (regaIndex.Address[addrArr[1]]) {
+                needle = regaObjects[regaIndex.Address[addrArr[1]]].DPs[addArr[2]];
+            }
+        } else {
+            return false;
+        }
+    }
+    return needle;
+
+}
+
+function restApi(req, res) {
+
+    var path = req.params[0];
+    var tmpArr = path.split("/");
+    var command = tmpArr[0];
+    var response;
+
+    switch(command) {
+        case "get":
+            if (!tmpArr[1]) {
+                response = {error: "no object/datapoint given"};
+            }
+            var dp = findDatapoint(tmpArr[1], tmpArr[2]);
+            if (!dp) {
+                response = {error: "no object/datapoint found"};
+            } else {
+                response = {id:dp};
+                if (datapoints[dp]) {
+                    response.value = datapoints[dp][0];
+                    response.ack = datapoints[dp][2];
+                    response.timestamp = datapoints[dp][1];
+                    response.lastchange = datapoints[dp][3];
+                }
+                if (regaObjects[dp]) {
+                    for (var attr in regaObjects[dp]) {
+                        response[attr] = regaObjects[dp][attr];
+                    }
+                }
+            }
+
+            break;
+        case "set":
+            if (!tmpArr[1]) {
+                response = {error: "no object/datapoint given"};
+            }
+            var dp = findDatapoint(tmpArr[1], tmpArr[2]);
+            var value;
+            if (req.query) {
+                value = req.query.value;
+            }
+            if (!value) {
+                response = {error: "no value given"};
+            } else {
+                setState(dp, value);
+                response = {id:dp,value:value};
+            }
+            break;
+        case "executeProgram":
+            response = {error: "sorry, command not yet implemented"};
+            break;
+        case "getIndex":
+            response = regaIndex;
+            break;
+        case "getObjects":
+            response = regaObjects;
+            break;
+        case "getDatapoints":
+            response = datapoints;
+            break;
+        default:
+            response = {error: "command "+command+" unknown"};
+    }
+
+    res.json(response);
+}
+
 function initWebserver() {
     if (app) {
         app.use('/', express.static(__dirname + '/www'));
@@ -477,6 +595,8 @@ function initWebserver() {
         // File Uploads
         app.use(express.bodyParser());
         app.post('/upload', uploadParser);
+
+        app.get('/api/*', restApi);
     }
 
     if (appSsl) {
@@ -531,6 +651,78 @@ function formatTimestamp() {
         ("0" + (timestamp.getSeconds()).toString(10)).slice(-2);
     return ts;
 }
+
+function setState(id,val,ts,ack) {
+    logger.verbose("socket.io <-- setState id="+id+" val="+val+" ts="+ts+" ack="+ack);
+    if (!ts) {
+        ts = formatTimestamp();
+    }
+
+
+    // console.log("id="+id+" val="+val+" ts="+ts+" ack="+ack);
+    // console.log("datapoints[id][0]="+datapoints[id][0]);
+
+
+    // If ReGa id (0-65534)
+    if (id < 65535) {
+        // Bidcos or Rega?
+        if (regaIndex.HSSDP.indexOf(id) != -1) {
+            // Set State via xmlrpc_bin
+            var name = regaObjects[id].Name;
+            var parts = name.split(".");
+            var iface = parts[0],
+                port = homematic.ifacePorts[iface],
+                channel = parts[1],
+                dp = parts[2];
+            // TODO BINRPC FLOAT....?
+            homematic.request(port, "setValue", [channel, dp, val.toString()]);
+            logger.info("BINRPC setValue "+channel+dp+" "+val);
+        } else {
+            // Set State via ReGa
+            var xval;
+            if (typeof val == "string") {
+                xval = "'" + val.replace(/'/g, '"') + "'";
+            } else {
+                xval = val;
+            }
+            var script = "Write(dom.GetObject("+id+").State("+xval+"));";
+
+            regahss.script(script, function (data) {
+                //logger.verbose("rega      <-- "+data);
+                if (callback) {
+                    callback(data);
+                }
+            });
+
+        }
+
+        // Bei Update von Thermostaten den nächsten Event von SET_TEMPERATURE und CONTROL_MODE ignorieren!
+        if (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/)) {
+            var parent = regaObjects[regaObjects[id].Parent];
+            var setTemp = parent.DPs.SET_TEMPERATURE;
+            var ctrlMode = parent.DPs.CONTROL_MODE;
+            if (ignoreNextUpdate.indexOf(setTemp) == -1) {
+                ignoreNextUpdate.push(setTemp);
+            }
+            if (ignoreNextUpdate.indexOf(ctrlMode) == -1) {
+                ignoreNextUpdate.push(ctrlMode);
+            }
+            logger.verbose("ccu.io        ignoring next update for "+JSON.stringify(ignoreNextUpdate));
+        }
+
+    }
+
+    setDatapoint(id, val, ts, ack);
+
+
+    // Virtual Datapoint
+    if (id > 65535) {
+        if (callback) {
+            callback();
+        }
+    }
+}
+
 
 function initSocketIO(_io) {
     _io.sockets.on('connection', function (socket) {
@@ -721,81 +913,16 @@ function initSocketIO(_io) {
             }
         });
 
+
         socket.on('setState', function(arr, callback) {
             // Todo Delay!
-            logger.verbose("socket.io <-- setState "+JSON.stringify(arr));
-            var id =    parseInt(arr[0], 10),
+
+            var id =    arr[0],
                 val =   arr[1],
                 ts =    arr[2],
                 ack =   arr[3];
 
-            if (!ts) {
-                ts = formatTimestamp();
-            }
-
-
-            // console.log("id="+id+" val="+val+" ts="+ts+" ack="+ack);
-            // console.log("datapoints[id][0]="+datapoints[id][0]);
-
-
-            // If ReGa id (0-65534)
-            if (id < 65535) {
-                // Bidcos or Rega?
-                if (regaIndex.HSSDP.indexOf(id) != -1) {
-                    // Set State via xmlrpc_bin
-                    var name = regaObjects[id].Name;
-                    var parts = name.split(".");
-                    var iface = parts[0],
-                        port = homematic.ifacePorts[iface],
-                        channel = parts[1],
-                        dp = parts[2];
-                    // TODO BINRPC FLOAT....?
-                    homematic.request(port, "setValue", [channel, dp, val.toString()]);
-                    logger.info("BINRPC setValue "+channel+dp+" "+val);
-                } else {
-                    // Set State via ReGa
-                    var xval;
-                    if (typeof val == "string") {
-                        xval = "'" + val.replace(/'/g, '"') + "'";
-                    } else {
-                        xval = val;
-                    }
-                    var script = "Write(dom.GetObject("+id+").State("+xval+"));";
-
-                    regahss.script(script, function (data) {
-                        //logger.verbose("rega      <-- "+data);
-                        if (callback) {
-                            callback(data);
-                        }
-                    });
-
-                }
-
-                // Bei Update von Thermostaten den nächsten Event von SET_TEMPERATURE und CONTROL_MODE ignorieren!
-                if (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/)) {
-                    var parent = regaObjects[regaObjects[id].Parent];
-                    var setTemp = parent.DPs.SET_TEMPERATURE;
-                    var ctrlMode = parent.DPs.CONTROL_MODE;
-                    if (ignoreNextUpdate.indexOf(setTemp) == -1) {
-                        ignoreNextUpdate.push(setTemp);
-                    }
-                    if (ignoreNextUpdate.indexOf(ctrlMode) == -1) {
-                        ignoreNextUpdate.push(ctrlMode);
-                    }
-                    logger.verbose("ccu.io        ignoring next update for "+JSON.stringify(ignoreNextUpdate));
-                }
-
-            }
-
-            setDatapoint(id, val, ts, ack);
-
-
-            // Virtual Datapoint
-            if (id > 65535) {
-                if (callback) {
-                    callback();
-                }
-            }
+            setState(id,val,ts,ack);
 
         });
 

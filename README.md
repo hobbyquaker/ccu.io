@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.53
+aktuelle Version: 0.9.54
 
 CCU.IO ist eine Node.js Applikation die einen Web-Server für HomeMatic Web-Oberflächen bereitstellt und via BIN-RPC mit
 rfd, hs485d und CUxD kommuniziert. CCU.IO kann - aber muss nicht - auf der CCU2 installiert werden. Über eine Websocket-
@@ -46,6 +46,63 @@ eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
     node ccu.io-server.js stop
 
 * CCU.IO schreibt ein Logfile in ccu.io/log/ccu.io.log
+
+## Simple API
+
+CCU.IO bietet neben der Möglichkeit via Socket.IO zu kommunizieren auch die "Simple API", eine auf HTTP-GET-Requests
+basierende Schnittstelle die Daten im JSON-Format zurückliefert. Folgende Kommandos stehen zur Verfügung:
+
+### get
+
+#### Beispiele
+
+Ein Objekt über die ID abfragen
+    http://<ccu-io-host>:<ccu-io-port>/api/get/950
+
+Ein Objekt über den Namen abfragen
+    http://<ccu-io-host>:<ccu-io-port>/api/get/Anwesenheit
+
+Ein Objekt über den Kanal-Namen und den Datenpunktbezeichner abfragen
+    http://<ccu-io-host>:<ccu-io-port>/api/get/Licht-Küche/LEVEL
+
+Ein Objekt über die BidCos-Adresse abfragen
+    http://<ccu-io-host>:<ccu-io-port>/api/get/BidCos-RF.FEQ1234567:1.LEVEL
+
+
+### set
+
+Eine Variable oder einen Datenpunkt setzen
+
+#### Beispiele
+
+    http://<ccu-io-host>:<ccu-io-port>/api/set/BidCos-RF.FEQ1234567:1.LEVEL/?value=0.7
+
+    http://<ccu-io-host>:<ccu-io-port>/api/set/Licht-Küche/LEVEL/?value=0.7
+
+    http://<ccu-io-host>:<ccu-io-port>/api/set/Anwesenheit/?value=0
+
+    http://<ccu-io-host>:<ccu-io-port>/api/set/950/?value=1
+
+### executeProgram
+
+Ein Programm ausführen. Kann über ID oder Name angesprochen werden
+
+#### Beispiele
+    http://<ccu-io-host>:<ccu-io-port>/api/executeProgram/1205
+
+    http://<ccu-io-host>:<ccu-io-port>/api/executeProgram/Alle-Lichter-an
+
+
+### getObjects
+    http://<ccu-io-host>:<ccu-io-port>/api/getObjects
+
+
+### getIndex
+    http://<ccu-io-host>:<ccu-io-port>/api/getIndex
+
+### getDatapoints
+    http://<ccu-io-host>:<ccu-io-port>/api/getDatapoints
+
 
 ## Script-Engine
 
@@ -214,12 +271,13 @@ Folgende Werte sind für das Attribut astro verwendbar:
 ## Todo/Roadmap
 
 * Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist und sinnvoll damit umgehen
+* REST API
 * Hue Adapter
 * Plugwise Adapter
 * LIRC Adapter
 * ArtNet (DMX) Adapter
 * Email Adapter
-* Growl/Prowl Adapter
+* Growl/Prowl Adapter (?)
 * iCal Adapter
 * Oberfläche vervollständigen
 * Doku für Adapter-Entwickler
@@ -230,6 +288,9 @@ Folgende Werte sind für das Attribut astro verwendbar:
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.54
+* (Hobbyquaker) "Simple API" implementiert, einfaches Abfragen und Setzen von Werten/Objekten via HTTP GET (executeProgram noch nicht implementiert)
 
 ### 0.9.53
 * (Hobbyquaker) Bugfix Werte an CCU senden (impact z.B. bei RAMP_TIME Datenpunkt)
