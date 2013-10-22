@@ -16,20 +16,20 @@ set -xv
 LOG=${TMP}/${SCRIPT_NAME}.${TS}.log.txt
 echo "Programmstart ${SCRIPT_NAME} ${TS}" >> ${LOG}
 
-if [ -f ${START_PATH}/settings.js ]
+if [ -f ${START_PATH}/settings.sh ]
 then
-  . ${START_PATH}/settings.js
+  . ${START_PATH}/settings.sh
 else
-  cp ${START_PATH}/settings-dist.js ${START_PATH}/settings.js 
-  chown -R ${CCUIO_USER} ${START_PATH}/settings.js
-  chmod 755 ${START_PATH}/settings.js
-  . ${START_PATH}/settings.js
+  cp ${START_PATH}/settings-dist.sh ${START_PATH}/settings.sh
+  chown -R ${CCUIO_USER} ${START_PATH}/settings.sh
+  chmod 755 ${START_PATH}/settings.sh
+  . ${START_PATH}/settings.sh
 fi
 if [ ${PARAMETER} ]
 then
   DASHUI=false
-  CHARTS=false   
-  YAHUI=false    
+  CHARTS=false
+  YAHUI=false
   EVENTLIST=false
   CCUIO=false
   CCUIO_UPDATE=false
@@ -285,7 +285,7 @@ then
     echo "Programm beendet sich"
     copy_log_debug
     exit 1
-  fi                     
+  fi
   mv nodejs-master ${TMP}
   echo "Installiere das im NODEJS.zip enthaltene node\*.deb" | tee -a ${LOG}
   dpkg -i ${TMP}/nodejs-master/nodejs_0.10.20-1_armhf.deb
@@ -297,7 +297,7 @@ then
     exit 1
   fi
   echo "Verlinke /usr/local/bin/node mit /usr/local/bin/nodejs" | tee -a ${LOG}
-  ln -s /usr/local/bin/node /usr/local/bin/nodejs   
+  ln -s /usr/local/bin/node /usr/local/bin/nodejs
   echo "Es werden die temprären Dateien der node Installation aufgeraeumt" | tee -a ${LOG}
   rm ${TMP}/NODEJS.zip
   rm -r ${TMP}/nodejs-master/
@@ -328,13 +328,13 @@ then
       copy_log_debug
       exit 1
     fi
-    
+
     # Init Scripte anlegen
     echo "Startscripte von ccu.io kopieren" | tee -a ${LOG}
     echo "ccu.io nach /etc/init.d/ kopieren" >> ${LOG}
     cp ccu.io.sh /etc/init.d/
     echo "Rechte von ccu.io anpassen" >> ${LOG}
-    chmod 755 /etc/init.d/ccu.io.sh 
+    chmod 755 /etc/init.d/ccu.io.sh
     echo "Init Scripte verlinken" >> ${LOG}
     update-rc.d ccu.io.sh defaults
     # settings.js anpassen
@@ -370,14 +370,14 @@ then
       echo "Wired soll verwendet werden" >> ${LOG}
       sed -i "s/.*io_wired.*/            \{ id\: \"io_wired\"\,    port\: 2000 \}\,/g" ${CCUIO_PATH}/settings.js
     fi
-    
+
     # Rechte anpassen
     echo "Es werden die Rechte der Installation angepasst" | tee -a ${LOG}
-    chown -R ${CCUIO_USER} ${CCUIO_PATH} 
-  fi  
-fi  
-  
-  
+    chown -R ${CCUIO_USER} ${CCUIO_PATH}
+  fi
+fi
+
+
 # CCU.IO aktualisieren
 if [ ${CCUIO_UPDATE} = true ]
 then
