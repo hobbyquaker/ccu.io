@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.55";
+settings.version = "0.9.56";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -187,7 +187,7 @@ function setDatapoint(id, val, ts, ack, lc) {
     logger.verbose("setDatapoint "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
 
 
-    if (!oldval) {
+    if (!oldval && !regaObjects[id]) {
         // Neu
         logger.warn("rega      <-- unknown variable "+id);
         sendEvent(obj);
@@ -1053,28 +1053,35 @@ process.on('SIGTERM', function () {
 });
 
 function stop() {
-    socketlist.forEach(function(socket) {
-        logger.info("socket.io --> disconnecting socket");
-        socket.disconnect();
-    });
+    try {
+        socketlist.forEach(function(socket) {
+            logger.info("socket.io --> disconnecting socket");
+            socket.disconnect();
+        });
 
-    if (io) {
-        logger.info("ccu.io        closing http server");
-        io.server.close();
+        if (io && io.server) {
+            logger.info("ccu.io        closing http server");
+            io.server.close();
+        }
+        if (ioSsl && ioSsl.server) {
+            logger.info("ccu.io        closing https server");
+            ioSsl.server.close();
+        }
+
+        if (childScriptEngine) {
+            logger.info("ccu.io        killing script-engine");
+            childScriptEngine.kill();
+        }
+
+
+        logger.info("ccu.io        killing child processes");
+        for (var i = 0; i < children.length; i++) {
+            children[i].kill();
+        }
+    } catch (e) {
+        logger.error("ccu.io       something went wrong "+e)
     }
-    if (ioSsl) {
-        logger.info("ccu.io        closing https server");
-        ioSsl.server.close();
-    }
 
-    logger.info("ccu.io        killing script-engine");
-    childScriptEngine.kill();
-
-
-    logger.info("ccu.io        killing child processes");
-    for (var i = 0; i < children.length; i++) {
-        children[i].kill();
-    }
 
     setTimeout(quit, 500);
 }
@@ -1082,6 +1089,7 @@ function stop() {
 var quitCounter = 0;
 
 function quit() {
+    logger.info("ccu.io          quit");
     if (regahss.pendingRequests > 0) {
         quitCounter += 1;
         if (quitCounter > 20) {

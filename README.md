@@ -1,14 +1,12 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.55
+aktuelle Version: 0.9.56
 
-CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-
-Verbindung kann CCU.IO den Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis
+CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO den Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis
 /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
-Die enthaltene BIN RPC Bibliothek binrpc.js und die ReGa-Schnittstelle rega.js kann auch losgelöst von CCU.IO in anderen
-Node basierten Projekten als Schnittstelle zur CCU eingesetzt werden.
+Die enthaltene BIN RPC Bibliothek binrpc.js und die ReGa-Schnittstelle rega.js kann auch losgelöst von CCU.IO in anderen Node basierten Projekten als Schnittstelle zur CCU eingesetzt werden.
 
 CCU.IO bildet die Schnittstelle zur CCU für folgende Projekte:
 
@@ -127,6 +125,52 @@ Ein Programm ausführen. Kann über ID oder Name angesprochen werden
 ### getDatapoints
 
     http://ccu-io-host:ccu.io-port/api/getDatapoints
+    
+
+## Socket.IO Schnittstelle
+
+[Socket.IO](http://socket.io) ist nicht nur für die Kommunikation mit Web-Browsern der beste Weg mit CCU.IO zu kommunizieren. Es gibt Socket.IO Implementierungen für viele Sprachen, siehe [https://github.com/learnboost/socket.io/wiki#in-other-languages](https://github.com/learnboost/socket.io/wiki#in-other-languages)
+
+CCU.IO ruft bei jedem Event (Änderung oder Aktualisierung eines Datenpunkts oder einer Variable) die Methode "event" auf allen verbundenen Clients auf. Als Parameter wird ein Array mit folgender Struktur übergeben [id, val, timestamp, ack, lastchange]
+
+Folgende Methoden können via Socket.IO aufgerufen werden:
+
+### reloadScriptEngine()
+
+Lädt die Script-Engine neu. Notwendig wenn Änderungen an einem Script vorgenommen wurden.
+
+### readdir(path, callback)
+
+Gibt den Inhalt eines bestimmten Verzeichnisses zurück.
+Die Methode callback wird mit einem Array des Verzeichnisinhalts zurückgerufen
+
+### writeFile(name, object, callback)
+
+Wandelt object in JSON um und schreibt es in die Datei name im datastore-Verzeichnis
+
+### readFile(name, callback)
+
+List eine JSON Datei im datastore-Verzeichnis und gibt das geparste Objekt als Parameter an die callback Funktion zurück
+
+### readRawFile(name, callback)
+
+Liest eine beliebige Datei (name kann auch einen Pfad beinhalten) und gibt das Ergebnis als String an die callback Funktion zurück. Der Pfad ist relativ zum ccu.io-Verzeichnis
+
+### readJsonFile(name, callback)
+
+List eine JSON Datei und gibt das geparste Objekt als Parameter an die callback Funktion zurück. Der Pfad ist relativ zum ccu.io-Verzeichnis
+
+### getUrl(url, callback)
+### getSettings(callback)
+### getDatapoints(callback)
+### getObjects(callback)
+### getIndex(callback)
+### getStringtable(callback)
+### addStringVariable(name, desc, str, callback)
+### setObject(id, obj, callback)
+### setState(arr, callback)
+### programExecute(id, callback)
+### runScript(script, callback)
 
 
 ## Script-Engine
@@ -312,6 +356,10 @@ Folgende Werte sind für das Attribut astro verwendbar:
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.56
+* (Hobbyquaker) Bugfix "Hänger" beim Beenden von CCU.IO
+
 
 ### 0.9.55
 * (Hobbyquaker) Neue Methode "getPlainValue" in Simple API
