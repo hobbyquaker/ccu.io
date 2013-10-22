@@ -16,14 +16,14 @@ set -xv
 LOG=${TMP}/${SCRIPT_NAME}.${TS}.log.txt
 echo "Programmstart ${SCRIPT_NAME} ${TS}" >> ${LOG}
 
-if [ -f ${START_PATH}/settings.sh ]
+if [ -f ${START_PATH}/settings ]
 then
-  . ${START_PATH}/settings.sh
+  . ${START_PATH}/settings
 else
-  cp ${START_PATH}/settings-dist.sh ${START_PATH}/settings.sh
-  chown -R ${CCUIO_USER} ${START_PATH}/settings.sh
-  chmod 755 ${START_PATH}/settings.sh
-  . ${START_PATH}/settings.sh
+  cp ${START_PATH}/settings-dist ${START_PATH}/settings
+  chown -R ${CCUIO_USER} ${START_PATH}/settings
+  chmod 755 ${START_PATH}/settings
+  . ${START_PATH}/settings
 fi
 if [ ${PARAMETER} ]
 then
