@@ -1,10 +1,9 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.54
+aktuelle Version: 0.9.55
 
-CCU.IO ist eine Node.js Applikation die einen Web-Server für HomeMatic Web-Oberflächen bereitstellt und via BIN-RPC mit
-rfd, hs485d und CUxD kommuniziert. CCU.IO kann - aber muss nicht - auf der CCU2 installiert werden. Über eine Websocket-
+CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-
 Verbindung kann CCU.IO den Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis
 /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
@@ -21,57 +20,82 @@ CCU.IO bildet die Schnittstelle zur CCU für folgende Projekte:
 ## Voraussetzungen
 
 CCU.IO benötigt Node.js (Version >= 0.8) das für viele Plattformen inklusive der CCU2 zur Verfügung steht:
-* Binärfile für die CCU2 hab ich gebaut und hier veröffentlicht: https://github.com/hobbyquaker/node-ccu2
-* Binärpakete für den Raspberry Pi gibt es hier: https://gist.github.com/adammw/3245130
-* In den Repositories vieler Linux und BSD Distributionen vorhanden.
-* Binaries und Sourcen für Linux, OSX, Solaris und Windows gibt es hier: http://nodejs.org/download/
+
+* Binärfile für die CCU2 hab ich gebaut und hier veröffentlicht: [https://github.com/hobbyquaker/node-ccu2](https://github.com/hobbyquaker/node-ccu2)
+* Binärpakete für den Raspberry Pi gibt es hier: [https://gist.github.com/adammw/3245130](https://gist.github.com/adammw/3245130)
+* In den Repositories der meisten Linux Distributionen vorhanden.
+* Sourcen sowie Binaries für Linux, OSX, Windows und diverse andere Systeme gibt es hier: [http://nodejs.org/download/](http://nodejs.org/download/)
 
 ## Installation
 
-### Für eine komfortable Installation auf RaspberryPi (Raspbian) steht Strykes Install-Script zur Verfügung. Siehe http://homematic-forum.de/forum/viewtopic.php?f=48&t=14556
+### Manuelle Installation
 
+* [Dieses Zip-File](https://github.com/hobbyquaker/ccu.io/archive/master.zip) herunterladen und entpacken
 * Die Datei settings.js.dist in settings.js umbennen
 * in settings.js müssen die IP des Hosts auf dem Node.js läuft sowie die IP der CCU angepasst werden. (Läuft CCU.IO auf
 der CCU2 selbst kann hier an beiden stellen 127.0.0.1 eingetragen werden.)
 * Falls auch Wired-Geräte oder der CUxD vorhanden sind müssen in der settings.js die entsprechenden Kommentar-Zeichen entfernt werden.
 * Den Server starten:
+    `node ccu.io-server.js start`
 
-    node ccu.io-server.js start
 
-* http://hostname:8080/ccu.io/index.html aufrufen. Auf dieser Seite können die 3 CCU.IO Objekte sowie die Events
-eingesehen werden. Hilfreich beim Entwickeln von CCU.IO basierten Anwendungen.
+### Automatische Installation auf RaspberryPi (Rapsbian)
 
-* Den Server stoppen:
+    wget https://github.com/hobbyquaker/ccu.io/archive/master.zip
+    unzip master.zip
+    cd ccu.io-master/ccu.io/install/
+    chmod 755 ccu.io.install.sh
+    sudo ./ccu.io.install.sh
 
-    node ccu.io-server.js stop
 
-* CCU.IO schreibt ein Logfile in ccu.io/log/ccu.io.log
+Siehe auch [http://homematic-forum.de/forum/viewtopic.php?f=48&t=14556](http://homematic-forum.de/forum/viewtopic.php?f=48&t=14556)
+
+## Dokumentation
+
+Die CCU.IO Oberfläche ist unter http://ccu-io-host:ccu-io-port/ccu.io/ erreichbar.
+
+CCU.IO schreibt ein Logfile in ccu.io/log/ccu.io.log
 
 ## Simple API
 
 CCU.IO bietet neben der Möglichkeit via Socket.IO zu kommunizieren auch die "Simple API", eine auf HTTP-GET-Requests
-basierende Schnittstelle die Daten im JSON-Format zurückliefert. Folgende Kommandos stehen zur Verfügung:
+basierende Schnittstelle die Daten im JSON- oder Plain-Text-Format zurückliefert. Folgende Kommandos stehen zur Verfügung:
 
 ### get
 
 #### Beispiele
 
-Ein Objekt über die ID abfragen
+Ein Objekt über die ID abfragen. Liefert Daten im JSON-Format. Lässt sich auf alle Objekte im CCU.IO-regaObjects-Objekt anwenden.
+
     http://ccu-io-host:ccu.io-port/api/get/950
 
 Ein Objekt über den Namen abfragen
+
     http://ccu-io-host:ccu.io-port/api/get/Anwesenheit
 
-Ein Objekt über den Kanal-Namen und den Datenpunktbezeichner abfragen
+Ein Datenpunkt über den Kanal-Namen und den Datenpunktbezeichner abfragen
+
     http://ccu-io-host:ccu.io-port/api/get/Licht-Küche/LEVEL
 
-Ein Objekt über die BidCos-Adresse abfragen
+Ein Datenpunkt über die Kanal-Adresse und den Datenpunktbezeichner abfragen
+
+    http://ccu-io-host:ccu.io-port/api/get/FEQ1234567:1/LEVEL
+
+
+Ein Datenpunkt über die BidCos-Adresse abfragen
+
     http://ccu-io-host:ccu.io-port/api/get/BidCos-RF.FEQ1234567:1.LEVEL
 
 
+### getPlainValue
+
+Diese Methode liefert direkt den Wert eines Datenpunkts mit Content-Type text/plain. Bietet die gleichen Möglichkeiten einen Datenpunkt zu adressieren wie die Methode `get`. Diese Methode lässt sich im Gegensatz zur Methode `get` nur auf Variablen und Datenpunkte anwenden.
+
+    http://ccu-io-host:ccu.io-port/api/getPlainValue/950
+
 ### set
 
-Eine Variable oder einen Datenpunkt setzen
+Eine Variable oder einen Datenpunkt setzen. Bietet die gleichen Möglichkeiten einen Datenpunkt zu adressieren wie die Methode `get`, lässt sich aber nur auf Datenpunkte und Variablen anwenden.
 
 #### Beispiele
 
@@ -80,14 +104,15 @@ Eine Variable oder einen Datenpunkt setzen
     http://ccu-io-host:ccu.io-port/api/set/Anwesenheit/?value=0
     http://ccu-io-host:ccu.io-port/api/set/950/?value=1
 
-### executeProgram
+### programExecute
 
 Ein Programm ausführen. Kann über ID oder Name angesprochen werden
 
+
 #### Beispiele
 
-    http://ccu-io-host:ccu.io-port/api/executeProgram/1205
-    http://ccu-io-host:ccu.io-port/api/executeProgram/Alle-Lichter-an
+    http://ccu-io-host:ccu.io-port/api/programExecute/1205
+    http://ccu-io-host:ccu.io-port/api/programExecute/Alle-Lichter-an
 
 
 ### getObjects
@@ -271,7 +296,6 @@ Folgende Werte sind für das Attribut astro verwendbar:
 ## Todo/Roadmap
 
 * Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist und sinnvoll damit umgehen
-* REST API
 * Hue Adapter
 * Plugwise Adapter
 * LIRC Adapter
@@ -288,6 +312,10 @@ Folgende Werte sind für das Attribut astro verwendbar:
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.55
+* (Hobbyquaker) Neue Methode "getPlainValue" in Simple API
+* (Hobbyquaker) Tool hinzugefügt um CUxD Logs ins CCU.IO-Format zu konvertiern
 
 ### 0.9.54
 * (Hobbyquaker) "Simple API" implementiert, einfaches Abfragen und Setzen von Werten/Objekten via HTTP GET (executeProgram noch nicht implementiert)
