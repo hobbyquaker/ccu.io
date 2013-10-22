@@ -359,6 +359,7 @@ Folgende Werte sind für das Attribut astro verwendbar:
 
 ### 0.9.56
 * (Hobbyquaker) Bugfix "Hänger" beim Beenden von CCU.IO
+* (Stryke) Installer: Parameter gesteuerter Aufruf und Config Datei
 
 
 ### 0.9.55
