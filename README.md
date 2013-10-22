@@ -37,13 +37,18 @@ der CCU2 selbst kann hier an beiden stellen 127.0.0.1 eingetragen werden.)
     `node ccu.io-server.js start`
 
 
-### Automatische Installation auf RaspberryPi (Rapsbian)
+### Script-gesteuerte Installation auf RaspberryPi (Rapsbian)
+
+Über das Installer Script von Stryke werden auch die Addons (yahui, dashui, …) mit installiert werden.
+
 
     wget https://github.com/hobbyquaker/ccu.io/archive/master.zip
     unzip master.zip
     cd ccu.io-master/ccu.io/install/
     chmod 755 ccu.io.install.sh
     sudo ./ccu.io.install.sh
+    
+In der Datei install/settings kann konfiguriert werden welche Addons installiert werden sollen, unter welchem User CCU.IO laufen soll und in welchem Pfad es installiert werden soll.
 
 
 Siehe auch [http://homematic-forum.de/forum/viewtopic.php?f=48&t=14556](http://homematic-forum.de/forum/viewtopic.php?f=48&t=14556)
