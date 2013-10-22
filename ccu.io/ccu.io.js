@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.54";
+settings.version = "0.9.55";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -215,24 +215,24 @@ function setDatapoint(id, val, ts, ack, lc) {
             sendEvent(obj);
         }
 
-/*
-        if (ack && !oldval[2]) {
-            // Bestätigung
-            logger.info("ack "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
-            sendEvent(obj);
-        } else if (val != oldval[0]) {
-            // Änderung
-            logger.info("chg "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
-            sendEvent(obj);
-        } else if (ts !== oldval[1]) {
-            // Aktualisierung
-            logger.info("ts "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
-            sendEvent(obj);
-        } else {
-            // Keine Änderung
-            logger.info("eq "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
-        }
-        */
+        /*
+         if (ack && !oldval[2]) {
+         // Bestätigung
+         logger.info("ack "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
+         sendEvent(obj);
+         } else if (val != oldval[0]) {
+         // Änderung
+         logger.info("chg "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
+         sendEvent(obj);
+         } else if (ts !== oldval[1]) {
+         // Aktualisierung
+         logger.info("ts "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
+         sendEvent(obj);
+         } else {
+         // Keine Änderung
+         logger.info("eq "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
+         }
+         */
 
     }
 }
@@ -397,7 +397,7 @@ function initRpc() {
                 if (obj[2] == "STATE") {
                     if (obj[3] === "1" || obj[3] === 1) {
                         obj[3] = true;
-                    } else if (obj[3] === "0" || obj[3] === 0) {
+                    } else if (obj[3] === "0" || obj[3] === 0) {
                         obj[3] = false;
                     }
                 }
@@ -424,7 +424,7 @@ function initRpc() {
                     var val = obj[3];
                     logger.verbose("socket.io --> broadcast event "+JSON.stringify([id, val, timestamp, true]))
                     var event = [id, val, timestamp, true, timestamp];
-      
+
                     if (datapoints[id]) {
                         if (datapoints[id][0] != val) {
                             // value changed
@@ -528,15 +528,35 @@ function restApi(req, res) {
     var command = tmpArr[0];
     var response;
 
+    var responseType = "json";
+    var status = 500;
+
+    res.set("Access-Control-Allow-Origin", "*");
+
     switch(command) {
+        case "getPlainValue":
+            responseType = "plain";
+            if (!tmpArr[1]) {
+                response = "error: no datapoint given";
+            }
+            var dp = findDatapoint(tmpArr[1], tmpArr[2]);
+            if (!dp || !datapoints[dp]) {
+                response = "error: datapoint not found";
+            } else {
+                response = String(datapoints[dp][0]);
+                status = 200;
+            }
+            break;
         case "get":
+
             if (!tmpArr[1]) {
                 response = {error: "no object/datapoint given"};
             }
             var dp = findDatapoint(tmpArr[1], tmpArr[2]);
             if (!dp) {
-                response = {error: "no object/datapoint found"};
+                response = {error: "object/datapoint not found"};
             } else {
+                status = 200;
                 response = {id:dp};
                 if (datapoints[dp]) {
                     response.value = datapoints[dp][0];
@@ -550,11 +570,10 @@ function restApi(req, res) {
                     }
                 }
             }
-
             break;
         case "set":
             if (!tmpArr[1]) {
-                response = {error: "no object/datapoint given"};
+                response = {error: "object/datapoint not given"};
             }
             var dp = findDatapoint(tmpArr[1], tmpArr[2]);
             var value;
@@ -565,26 +584,56 @@ function restApi(req, res) {
                 response = {error: "no value given"};
             } else {
                 setState(dp, value);
+                status = 200;
                 response = {id:dp,value:value};
             }
             break;
-        case "executeProgram":
-            response = {error: "sorry, command not yet implemented"};
+        case "programExecute":
+            if (!tmpArr[1]) {
+                response = {error: "no program given"};
+            }
+            var id;
+            if (regaIndex.Program && regaIndex.PROGRAM.indexOf(tmpArr[1]) != -1) {
+                id = tmpArr[1]
+            } else if (regaIndex.Name && regaIndex.Name[tmpArr[1]]) {
+                if (regaObjects[tmpArr[1]].TypeName == "PROGRAM") {
+                    id = regaIndex.Name[tmpArr[1]][0];
+                }
+            }
+            if (!id) {
+                response = {error: "program not found"};
+            } else {
+                status = 200;
+                programExecute(id);
+                response = {id:id};
+            }
             break;
         case "getIndex":
             response = regaIndex;
+            status = 200;
             break;
         case "getObjects":
             response = regaObjects;
+            status = 200;
             break;
         case "getDatapoints":
             response = datapoints;
+            status = 200;
             break;
         default:
             response = {error: "command "+command+" unknown"};
     }
+    switch (responseType) {
+        case "json":
+            res.json(response);
+            break;
+        case "plain":
+            res.set('Content-Type', 'text/plain');
+            res.send(response);
+            break;
 
-    res.json(response);
+    }
+
 }
 
 function initWebserver() {
@@ -652,7 +701,14 @@ function formatTimestamp() {
     return ts;
 }
 
-function setState(id,val,ts,ack) {
+function programExecute(id, callback) {
+    logger.verbose("socket.io <-- programExecute");
+    regahss.script("Write(dom.GetObject("+id+").ProgramExecute());", function (data) {
+        if (callback) { callback(data); }
+    });
+}
+
+function setState(id,val,ts,ack, callback) {
     logger.verbose("socket.io <-- setState id="+id+" val="+val+" ts="+ts+" ack="+ack);
     if (!ts) {
         ts = formatTimestamp();
@@ -757,11 +813,11 @@ function initSocketIO(_io) {
             path = __dirname+"/"+path;
             logger.info("socket.io <-- readdir "+path);
             fs.readdir(path, function (err, data) {
-               if (err) {
+                if (err) {
                     callback(undefined);
-               } else {
-                   callback(data);
-               }
+                } else {
+                    callback(data);
+                }
             });
         });
 
@@ -826,8 +882,8 @@ function initSocketIO(_io) {
                     });
 
                 }).on('error', function(e) {
-                    logger.error("ccu.io        GET "+url+" "+ e.message);
-                });
+                        logger.error("ccu.io        GET "+url+" "+ e.message);
+                    });
             } else {
                 http.get(url, function(res) {
                     var body = "";
@@ -838,8 +894,8 @@ function initSocketIO(_io) {
                         callback(body);
                     });
                 }).on('error', function(e) {
-                    logger.error("ccu.io        GET "+url+" "+ e.message);
-                });
+                        logger.error("ccu.io        GET "+url+" "+ e.message);
+                    });
             }
         });
 
@@ -922,16 +978,11 @@ function initSocketIO(_io) {
                 ts =    arr[2],
                 ack =   arr[3];
 
-            setState(id,val,ts,ack);
+            setState(id,val,ts,ack, callback);
 
         });
 
-        socket.on('programExecute', function(id, callback) {
-            logger.verbose("socket.io <-- runProgram");
-            regahss.script("Write(dom.GetObject("+id+").ProgramExecute());", function (data) {
-                if (callback) { callback(data); }
-            });
-        });
+        socket.on('programExecute', programExecute);
 
         socket.on('runScript', function(script, callback) {
             logger.verbose("socket.io <-- script");
@@ -945,7 +996,7 @@ function initSocketIO(_io) {
             logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " disconnected");
             socketlist.splice(socketlist.indexOf(socket), 1);
         });
-        
+
         socket.on('close', function () {
             var address = socket.handshake.address;
             logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " closed");
@@ -1097,4 +1148,3 @@ function moveLog() {
     });
 
 }
-
