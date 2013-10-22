@@ -1,54 +1,55 @@
 #!/bin/sh
-#set -x # Debug Modus, zum aktivieren das # am Anfang der Zeile entfernen
+# set -xv
 
 ########################################################################
-#Variablen setzen
+# Konfiguration der Umgebung
 ########################################################################
 
-Version=0.3.1
+Version=0.4
 SCRIPT_NAME=$( basename $0 )
+START_PATH=$( dirname $0 )
+PARAMETER=$1
 TS=$( date +%Y%m%d%H%M%S )
 TMP=/tmp
-#exec 1>${TMP}/${SCRIPT_NAME}.${TS}.debug.txt
-#exec 2>&1
 exec 2>${TMP}/${SCRIPT_NAME}.${TS}.debug.txt
 set -xv
 LOG=${TMP}/${SCRIPT_NAME}.${TS}.log.txt
 echo "Programmstart ${SCRIPT_NAME} ${TS}" >> ${LOG}
 
-# Ab hier bitte die Variablnen anpassen
-CCUIO_PATH="/opt/ccu.io"   # Hier den Pfad angeben in dem sich ccu.io befindet
-CCUIO_CMD="/etc/init.d/ccu.io.sh"     # Hier den Aufruf von ccu.io angeben
-CCUIO_USER=pi                           # Hier den User angeben unter dem ccu.io laufen soll
-CCUIO_UPDATE=false
-NODE=false
-CCUIO=true     # CCU.IO installieren = 1
-
-# Optionale Addons
-DASHUI=true    # DashUI installieren = 1
-CHARTS=true    # CCU-IO-Highcharts installieren = 1
-YAHUI=true     # yahui installieren = 1
-EVENTLIST=true # CCU-IO Eventlist installieren = 1
-
-#if [ ! ${CCUIO_PATH} ]
-#then
-#	echo "Die Variable CCUIO_PATH wurde nicht gesetzt"
-#	echo "es wird der Standard \"/opt/ccu.io\" genutzt"
-#	CCUIO_PATH="/opt/ccu.io"
-#fi
-#if [ ! "${CCUIO_CMD}" ]
-#then
-#	echo "Es wurde kein ccu.io Kommando angegeben"
-#	echo "es wird der Standard \"node ${CCUIO_PATH}/ccu.io-server.js\" genommen"
-#	CCUIO_CMD="node ${CCUIO_PATH}/ccu.io-server.js"
-#fi
-#if [ ! ${CCUIO_USER} ]
-#then
-#	echo "Es wurde kein ccu.io User angegeben"
-#	echo "Es wird der Standarduser \"root\" verwendet"
-#	echo "ccu.io sollte nicht unter \"root\" laufen"
-#        CCUIO_USER="root"
-#fi
+if [ -f ${START_PATH}/settings.js ]
+then
+  . ${START_PATH}/settings.js
+else
+  cp ${START_PATH}/settings-dist.js ${START_PATH}/settings.js 
+  chown -R ${CCUIO_USER} ${START_PATH}/settings.js
+  chmod 755 ${START_PATH}/settings.js
+  . ${START_PATH}/settings.js
+fi
+if [ ${PARAMETER} ]
+then
+  DASHUI=false
+  CHARTS=false   
+  YAHUI=false    
+  EVENTLIST=false
+  CCUIO=false
+  CCUIO_UPDATE=false
+  if [ ${PARAMETER} = DASHUI ]
+  then
+    DASHUI=true
+  fi
+  if [ ${PARAMETER} = CHARTS ]
+  then
+    CHARTS=true
+  fi
+  if [ ${PARAMETER} = YAHUI ]
+  then
+    YAHUI=true
+  fi
+  if [ ${PARAMETER} = EVENTLIST ]
+  then
+    EVENTLIST=true
+  fi
+fi
 
 ########################################################################
 # Funktionen
@@ -125,6 +126,7 @@ copy_log_debug ()
 {
   # Kopieren der Log und Debugdateien in das LOG Verzeichnis von ccu.io"
   cp ${LOG} ${TMP}/${SCRIPT_NAME}.${TS}.debug.txt ${CCUIO_PATH}/log
+  chown -R ${CCUIO_USER} ${CCUIO_PATH}/log
   set +xv
   rm ${LOG} ${TMP}/${SCRIPT_NAME}.${TS}.debug.txt
 }
@@ -141,30 +143,34 @@ ja_nein_abfrage ()
     esac
   done
 }
+
+root_abfrage ()
+{
+  # Abfrage ob das Script von root aufgerufen wird
+  if [ $( whoami ) != root ]
+  then
+  	echo "Das Programm muss als root laufen da es Verzeichnisse anlegt und Rechte anpasst"
+  	echo "bitte das Script mit \"sudo ${SCRIPT_NAME}\" aufrufen"
+  	echo "Das Programm wurde nicht als root gestartet" >> ${LOG}
+  	copy_log_debug
+    exit 1
+  fi
+}
+
 ########################################################################
 # Vorbedingungen pruefen
 ########################################################################
-
-# Abfrage ob das Script von root aufgerufen wird
-if [ $( whoami ) != root ]
-then
-	echo "Das Programm muss als root laufen da es Verzeichnisse anlegt und Rechte anpasst"
-	echo "bitte das Script mit \"sudo ${SCRIPT_NAME}\" aufrufen"
-	echo "Das Programm wurde nicht als root gestartet" >> ${LOG}
-	copy_log_debug
-  exit 1
-fi
 
 # Pruefen ob es noch ein altes master.zip gibt und dieses gegebenenfalls sichern
 if [ -f ${TMP}/master.zip ]
 then
   echo "Altes master.zip gefunden" | tee -a ${LOG}
   echo "sichere altes master.zip als master.zip.${TS}"
-  mv ${TMP}/master.zip ${TMP}/master.zip.${TS}
+  sudo mv ${TMP}/master.zip ${TMP}/master.zip.${TS}
 fi
 
 # Pruefen ob es eine ccu.io Installation gibt
-if [ -d ${CCUIO_PATH} ]
+if [ -d ${CCUIO_PATH} -a ! ${PARAMETER} ]
 then
   echo "Es wurde eine vorhandene ccu.io Installation gefunden" | tee -a ${LOG}
   echo "Soll eine Aktualisierung von CCU.IO durchgeführt werden?"
@@ -174,6 +180,7 @@ then
   if [ ${ERGEBNIS} = 1 ]
   then
     CCUIO_UPDATE=true
+    CCUIO=false
     echo "Ab hier geht es mit der Update Routine weiter" >> ${LOG}
   else
     echo "Es ist kein Update gewuenscht, das Programm beendet sich" | tee -a ${LOG}
@@ -181,13 +188,12 @@ then
     exit
   fi
 else
-  mkdir -p ${CCUIO_PATH}
-  if [ ${?} != 0 ]
+  CCUIO_UPDATE=false
+  if [ ${PARAMETER} ]
   then
-    echo "Fehler beim erstellen des Verzeichnisses ${CCUIO_PATH}" | tee -a ${LOG}
-    echo "Programm beendet sich"
-    copy_log_debug
-    exit 1
+    CCUIO=false
+  else
+    CCUIO=true
   fi
 fi
 
@@ -198,12 +204,16 @@ if [ $? -eq 0 ]
 then
   echo "Es wurde ein nodejs \"node\" im Pfad gefunden" >> ${LOG}
   NODE=true
+else
+  NODE=false
 fi
 nodejs --help 2>/dev/null|grep nodejs 2>&1 >> ${LOG}
-if [ $? -eq 0 ]
+if [ ${?} -eq 0 ]
 then
   echo "Es wurde ein nodejs \"nodejs\" im Pfad gefunden" >> ${LOG}
   NODE=true
+else
+  NODE=false
 fi
 
 ########################################################################
@@ -213,6 +223,7 @@ fi
 # Alte CCU.IO Version in /tmp sichern
 if [ ${CCUIO_UPDATE} = true ]
 then
+  root_abfrage
   echo "Sichern der alten ccu.io Umgebung" | tee -a ${LOG}
   echo "Das Sicher kann einen Moment dauern"
   tar cfz ${TMP}/ccu.io.${TS}.tar.gz ${CCUIO_PATH} #1>/dev/null
@@ -225,32 +236,35 @@ then
   else
     echo " Der alte Versionsstand von ccu.io wurde unter ${TMP}/ccu.io.${TS}.tar.gz gesichert" | tee -a ${LOG}
   fi
-  echo "Pruefen ob ccu.io laeuft" >> ${LOG}
-  ps -e|grep ccu.io >> ${LOG}
-  if [ ${?} = 0 ]
+fi
+
+# Pruefen ob ccu.io laeuft
+echo "Pruefen ob ccu.io laeuft" >> ${LOG}
+ps -e|grep ccu.io >> ${LOG}
+if [ ${?} = 0 -a ! ${PARAMETER} ]
+then
+  if [ -f /etc/init.d/ccu.io.sh ]
   then
-    if [ -f /etc/init.d/ccu.io.sh ]
+    /etc/init.d/ccu.io.sh stop
+  else
+    echo "Es wurde kein init.d Script für CCU.io gefunden" | tee -a ${LOG}
+    echo "CCU.IO wird gekillt" | tee -a ${LOG}
+    killall ccu.io
+    ps -e|grep ccu.io >> ${LOG}
+    if [ ${?} = 0 ]
     then
-      /etc/init.d/ccu.io.sh stop
-    else
-      echo "Es wurde kein init.d Script für CCU.io gefunden" | tee -a ${LOG}
-      echo "CCU.IO wird gekillt" | tee -a ${LOG}
-      killall ccu.io
-      ps -e|grep ccu.io >> ${LOG}
-      if [ ${?} = 0 ]
-      then
-        echo "CCU.IO lässt sich nicht beenden, bitte prüfen" | tee -a ${LOG}
-        echo "Der Installer beendet sich jetzt"
-        copy_log_debug
-        exit
-      fi
+      echo "CCU.IO lässt sich nicht beenden, bitte prüfen" | tee -a ${LOG}
+      echo "Der Installer beendet sich jetzt"
+      copy_log_debug
+      exit
     fi
   fi
-fi  
+fi
 
 # NODE installieren
 if [ ${NODE} = false ]
 then
+  root_abfrage
   ADDON=node
   echo "Lade das node Paket von Github" | tee -a ${LOG}
   wget https://github.com/stryke76/nodejs/archive/master.zip
@@ -290,11 +304,20 @@ then
 fi
 
 # CCU.IO installieren
-if [ ${CCUIO} = true ]
+if [ ${CCUIO} = true -a ! ${PARAMETER} ]
 then
   if [ ${CCUIO_UPDATE} != true ]
   then
+    root_abfrage
     # CCU.IO kopieren
+    mkdir -p ${CCUIO_PATH}
+    if [ ${?} != 0 ]
+    then
+      echo "Fehler beim erstellen des Verzeichnisses ${CCUIO_PATH}" | tee -a ${LOG}
+      echo "Programm beendet sich"
+      copy_log_debug
+      exit 1
+    fi
     echo "Es wird mit der Installation von ccu.io begonnen" | tee -a ${LOG}
     echo "Kopiere die Dateien nach ${CCUIO_PATH}" | tee -a ${LOG}
     cp -Ra ../../ccu.io/* ${CCUIO_PATH}
@@ -305,10 +328,6 @@ then
       copy_log_debug
       exit 1
     fi
-    
-    # Rechte anpassen
-    echo "Es werden die Rechte der Installation angepasst" | tee -a ${LOG}
-    chown -R ${CCUIO_USER} ${CCUIO_PATH}
     
     # Init Scripte anlegen
     echo "Startscripte von ccu.io kopieren" | tee -a ${LOG}
@@ -351,6 +370,10 @@ then
       echo "Wired soll verwendet werden" >> ${LOG}
       sed -i "s/.*io_wired.*/            \{ id\: \"io_wired\"\,    port\: 2000 \}\,/g" ${CCUIO_PATH}/settings.js
     fi
+    
+    # Rechte anpassen
+    echo "Es werden die Rechte der Installation angepasst" | tee -a ${LOG}
+    chown -R ${CCUIO_USER} ${CCUIO_PATH} 
   fi  
 fi  
   
@@ -358,6 +381,7 @@ fi
 # CCU.IO aktualisieren
 if [ ${CCUIO_UPDATE} = true ]
 then
+  root_abfrage
   ADDON=ccu.io
   ADDON_PATH=${ADDON}
   LINK="https://github.com/hobbyquaker/${ADDON}/archive/master.zip"
@@ -404,14 +428,12 @@ then
   LINK="https://github.com/GermanBluefox/${ADDON}/archive/master.zip"
   install CCU-IO.Eventlist
 fi
-#
-## Rechte auf ${CCUIO_USER} setzen
-#chown -R ${CCUIO_USER} ${CCUIO_PATH}
-#
+
 ## CCU.IO starten
-${CCUIO_CMD} start
+if [ ${CCUIO} = true -o ${CCUIO_UPDATE} = true ]
+then
+  ${CCUIO_CMD} start
+fi
 echo "Programmsende ${SCRIPT_NAME} $( date +%Y%m%d%H%M%S )" >> ${LOG}
 
 copy_log_debug
-
-
