@@ -226,7 +226,7 @@ then
   root_abfrage
   echo "Sichern der alten ccu.io Umgebung" | tee -a ${LOG}
   echo "Das Sicher kann einen Moment dauern"
-#  tar cfz ${TMP}/ccu.io.${TS}.tar.gz ${CCUIO_PATH} #1>/dev/null
+  tar cfz ${TMP}/ccu.io.${TS}.tar.gz ${CCUIO_PATH} #1>/dev/null
   if [ ${?} != 0 ]
   then
     echo "Fehler beim erstellen der Sicherung unter ${TMP}/ccu.io.${TS}.tar.gz" | tee -a ${LOG}
