@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.56";
+settings.version = "0.9.57";
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -642,7 +642,7 @@ function initWebserver() {
         app.use('/log', express.static(__dirname + '/log'));
 
         // File Uploads
-        app.use(express.bodyParser());
+        app.use(express.bodyParser({uploadDir:__dirname+'/tmp'}));
         app.post('/upload', uploadParser);
 
         app.get('/api/*', restApi);
@@ -722,6 +722,7 @@ function setState(id,val,ts,ack, callback) {
     // If ReGa id (0-65534)
     if (id < 65535) {
         // Bidcos or Rega?
+        /*
         if (regaIndex.HSSDP.indexOf(id) != -1) {
             // Set State via xmlrpc_bin
             var name = regaObjects[id].Name;
@@ -733,7 +734,7 @@ function setState(id,val,ts,ack, callback) {
             // TODO BINRPC FLOAT....?
             homematic.request(port, "setValue", [channel, dp, val.toString()]);
             logger.info("BINRPC setValue "+channel+dp+" "+val);
-        } else {
+        } else { */
             // Set State via ReGa
             var xval;
             if (typeof val == "string") {
@@ -750,7 +751,7 @@ function setState(id,val,ts,ack, callback) {
                 }
             });
 
-        }
+        //}
 
         // Bei Update von Thermostaten den nächsten Event von SET_TEMPERATURE und CONTROL_MODE ignorieren!
         if (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/)) {

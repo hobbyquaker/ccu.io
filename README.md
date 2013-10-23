@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.56
+aktuelle Version: 0.9.57
 
 CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO den Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis
 /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
@@ -361,6 +361,11 @@ Folgende Werte sind für das Attribut astro verwendbar:
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.57
+* (Hobbyquaker) Bugfix: File Upload funktionierte u.U. nicht
+* (Hobbyquaker) Bugfix: PRESS_SHORT, PRESS_LONG und PRESS_OPEN funktionierte nicht
+* (Stryke) Installer: Laufende ccu.io erkennung verbessert
 
 ### 0.9.56
 * (Hobbyquaker) Bugfix "Hänger" beim Beenden von CCU.IO
