@@ -16,14 +16,14 @@ set -xv
 LOG=${TMP}/${SCRIPT_NAME}.${TS}.log.txt
 echo "Programmstart ${SCRIPT_NAME} ${TS}" >> ${LOG}
 
-if [ -f ${START_PATH}/settings.js ]
+if [ -f ${START_PATH}/settings ]
 then
-  . ${START_PATH}/settings.js
+  . ${START_PATH}/settings
 else
-  cp ${START_PATH}/settings-dist.js ${START_PATH}/settings.js 
-  chown -R ${CCUIO_USER} ${START_PATH}/settings.js
-  chmod 755 ${START_PATH}/settings.js
-  . ${START_PATH}/settings.js
+  cp ${START_PATH}/settings-dist ${START_PATH}/settings
+  chown -R ${CCUIO_USER} ${START_PATH}/settings
+  chmod 755 ${START_PATH}/settings
+  . ${START_PATH}/settings
 fi
 if [ ${PARAMETER} ]
 then
@@ -226,7 +226,7 @@ then
   root_abfrage
   echo "Sichern der alten ccu.io Umgebung" | tee -a ${LOG}
   echo "Das Sicher kann einen Moment dauern"
-  tar cfz ${TMP}/ccu.io.${TS}.tar.gz ${CCUIO_PATH} #1>/dev/null
+#  tar cfz ${TMP}/ccu.io.${TS}.tar.gz ${CCUIO_PATH} #1>/dev/null
   if [ ${?} != 0 ]
   then
     echo "Fehler beim erstellen der Sicherung unter ${TMP}/ccu.io.${TS}.tar.gz" | tee -a ${LOG}
@@ -240,23 +240,25 @@ fi
 
 # Pruefen ob ccu.io laeuft
 echo "Pruefen ob ccu.io laeuft" >> ${LOG}
-ps -e|grep ccu.io >> ${LOG}
-if [ ${?} = 0 -a ! ${PARAMETER} ]
+if [ ${CCUIO} = true -o ${CCUIO_UPDATE} = true ]
 then
-  if [ -f /etc/init.d/ccu.io.sh ]
+  if [ $( ps -e|grep ccu.io|grep -v ccu.io.install.sh ) >= 1 ]
   then
-    /etc/init.d/ccu.io.sh stop
-  else
-    echo "Es wurde kein init.d Script für CCU.io gefunden" | tee -a ${LOG}
-    echo "CCU.IO wird gekillt" | tee -a ${LOG}
-    killall ccu.io
-    ps -e|grep ccu.io >> ${LOG}
-    if [ ${?} = 0 ]
+    if [ -f /etc/init.d/ccu.io.sh ]
     then
-      echo "CCU.IO lässt sich nicht beenden, bitte prüfen" | tee -a ${LOG}
-      echo "Der Installer beendet sich jetzt"
-      copy_log_debug
-      exit
+      /etc/init.d/ccu.io.sh stop
+    else
+      echo "Es wurde kein init.d Script für CCU.io gefunden" | tee -a ${LOG}
+      echo "CCU.IO wird gekillt" | tee -a ${LOG}
+      killall -9 ccu.io
+      ps -e|grep ccu.io >> ${LOG}
+      if [ $( ps -e|grep ccu.io|grep -v ccu.io.install.sh ) >= 1 ]
+      then
+        echo "CCU.IO lässt sich nicht beenden, bitte prüfen" | tee -a ${LOG}
+        echo "Der Installer beendet sich jetzt"
+        copy_log_debug
+        exit
+      fi
     fi
   fi
 fi
