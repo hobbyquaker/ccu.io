@@ -226,7 +226,7 @@ then
   root_abfrage
   echo "Sichern der alten ccu.io Umgebung" | tee -a ${LOG}
   echo "Das Sicher kann einen Moment dauern"
-  tar cfz ${TMP}/ccu.io.${TS}.tar.gz ${CCUIO_PATH} #1>/dev/null
+#  tar cfz ${TMP}/ccu.io.${TS}.tar.gz ${CCUIO_PATH} #1>/dev/null
   if [ ${?} != 0 ]
   then
     echo "Fehler beim erstellen der Sicherung unter ${TMP}/ccu.io.${TS}.tar.gz" | tee -a ${LOG}
@@ -240,23 +240,25 @@ fi
 
 # Pruefen ob ccu.io laeuft
 echo "Pruefen ob ccu.io laeuft" >> ${LOG}
-ps -e|grep ccu.io >> ${LOG}
-if [ ${?} = 0 -a ! ${PARAMETER} ]
+if [ ${CCUIO} = true -o ${CCUIO_UPDATE} = true ]
 then
-  if [ -f /etc/init.d/ccu.io.sh ]
+  if [ $( ps -e|grep ccu.io|grep -v ccu.io.install.sh|wc -l ) -ge 1 ]
   then
-    /etc/init.d/ccu.io.sh stop
-  else
-    echo "Es wurde kein init.d Script für CCU.io gefunden" | tee -a ${LOG}
-    echo "CCU.IO wird gekillt" | tee -a ${LOG}
-    killall ccu.io
-    ps -e|grep ccu.io >> ${LOG}
-    if [ ${?} = 0 ]
+    if [ -f ${CCUIO_CMD} ]
     then
-      echo "CCU.IO lässt sich nicht beenden, bitte prüfen" | tee -a ${LOG}
-      echo "Der Installer beendet sich jetzt"
-      copy_log_debug
-      exit
+      ${CCUIO_CMD} stop
+    else
+      echo "Es wurde kein init.d Script für CCU.io gefunden" | tee -a ${LOG}
+      echo "CCU.IO wird gekillt" | tee -a ${LOG}
+      killall -9 ccu.io
+      ps -e|grep ccu.io >> ${LOG}
+      if [ $( ps -e|grep ccu.io|grep -v ccu.io.install.sh|wc -l ) -ge 1 ]
+      then
+        echo "CCU.IO lässt sich nicht beenden, bitte prüfen" | tee -a ${LOG}
+        echo "Der Installer beendet sich jetzt"
+        copy_log_debug
+        exit
+      fi
     fi
   fi
 fi
