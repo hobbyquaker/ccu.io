@@ -20,9 +20,12 @@ var scriptEngine = {
     logger:         require(__dirname+'/logger.js'),
     //vm:             require('vm'),
     io:             require('socket.io-client'),
+    scheduler:      require('node-schedule'),
+    suncalc:        require('suncalc'),
     fs:             require('fs'),
     socket: {},
     subscribers: [],
+    schedules: [],
     init: function () {
         var that = this;
         if (that.settings.ioListenPort) {
@@ -631,32 +634,33 @@ var scriptEngine = {
                 runScript(path);
             }
         });
+    },
+    stop: function () {
+        scriptEngine.logger.info("script-engine terminating");
+        setTimeout(function () {
+            process.exit();
+        }, 250);
     }
 }
 
 function runScript(path) {
-    scriptEngine.logger.info("script-engine loading "+path);
+    scriptEngine.logger.verbose("script-engine loading "+path);
     var script = scriptEngine.fs.readFileSync(path);
     // Todo use vm.runInContext
     //var context = scriptEngine.vm.createContext(global);
     //scriptEngine.vm.runInContext(script, context, path);
     //scriptEngine.vm.runInThisContext(script, path);
 
-    var length = scriptEngine.subscribers.length;
-
+    var subLength = scriptEngine.subscribers.length;
+    var schLength = scriptEngine.schedules.length;
     try {
         eval(script.toString());
-        scriptEngine.logger.info("script-engine registered "+(scriptEngine.subscribers.length-length)+" subscribers");
-        scriptEngine.logger.info("script-engine finished "+path);
+        scriptEngine.logger.info("script-engine registered "+(scriptEngine.subscribers.length-subLength)+" subscribers and "+(scriptEngine.schedules.length-schLength)+" schedules in "+path);
     } catch (e) {
         scriptEngine.logger.info("script-engine "+path+" "+e);
     }
 
-
-
 }
-
-
 
 // Global Stuff for use in Scripts
 function log(msg) {
@@ -669,6 +673,47 @@ function subscribe(pattern, callback) {
         callback: callback
     });
 }
+
+
+function schedule(pattern, callback) {
+    var sch;
+    if (pattern.astro) {
+        var date = new Date();
+        var ts = scriptEngine.suncalc.getTimes(date, scriptEngine.settings.latitude, scriptEngine.settings.longitude)[pattern.astro];
+
+        if (pattern.shift) {
+            ts = new Date(ts.getTime() + (pattern.shift * 60000));
+        }
+
+        if (ts < date) {
+            date = new Date(date.getTime() + 86400000);
+            ts = scriptEngine.suncalc.getTimes(date, scriptEngine.settings.latitude, scriptEngine.settings.longitude)[pattern.astro];
+            if (pattern.shift) {
+                ts = new Date(ts.getTime() + (pattern.shift * 60000));
+            }
+
+        }
+
+        log("ASTRO "+JSON.stringify(pattern)+" "+ts.getFullYear()+"-"+(ts.getMonth()+1)+"-"+ts.getDate()+" "+ts.getHours()+":"+ts.getMinutes()+":"+ts.getSeconds());
+        sch = scriptEngine.scheduler.scheduleJob(ts, function () {
+            setTimeout(function () {
+                sch = schedule(pattern, callback);
+            }, 1000);
+            callback();
+        });
+
+
+        scriptEngine.schedules.push(sch);
+        return sch;
+    } else {
+        sch = scriptEngine.scheduler.scheduleJob(pattern, callback);
+        scriptEngine.schedules.push(sch);
+        return sch;
+    }
+}
+
+
+
 
 function setState(id, val, callback) {
     scriptEngine.socket.emit("setState", [id, val], function () {
@@ -685,6 +730,25 @@ function executeProgram(id, callback) {
         }
     });
 }
+
+function setObject(id, obj, callback) {
+    scriptEngine.socket.emit("setObject", obj, function () {
+        if (callback) {
+            callback();
+        }
+    });
+}
+
+
+
+process.on('SIGINT', function () {
+    scriptEngine.stop();
+});
+
+process.on('SIGTERM', function () {
+    scriptEngine.stop();
+});
+
 
 scriptEngine.init();
 

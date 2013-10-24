@@ -1,7 +1,7 @@
 /**
  *      HomeMatic ReGaHss Schnittstelle für Node.js
  *
- *      Version 0.2
+ *      Version 0.3
  *
  *      Copyright (c) 2013 http://hobbyquaker.github.io
  *
@@ -15,9 +15,9 @@
 var logger = require(__dirname+'/logger.js'),
     http = require("http"),
     fs = require('fs'),
-    xml2js = require('xml2js');
-var iconv = require('iconv-lite');
-var request = require('request');
+    xml2js = require('xml2js'),
+    iconv = require('iconv-lite'),
+    request = require('request');
 
 
 var parser = new xml2js.Parser({explicitArray:false});
@@ -26,8 +26,18 @@ var parser = new xml2js.Parser({explicitArray:false});
 var rega = function(options) {
 
     this.options = options;
-    /* TODO checkrega */
-    this.options.ready();
+
+    request('http://'+options.ccuIp+'/ise/checkrega.cgi', function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            if (body == "OK") {
+                options.ready();
+            } else {
+                options.ready("ReGaHSS down");
+            }
+        } else {
+            options.ready("CCU unreachable");
+        }
+    });
 
 };
 

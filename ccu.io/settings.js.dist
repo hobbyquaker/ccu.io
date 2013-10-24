@@ -63,16 +63,34 @@ var settings = {
     stats: true,
     statsIntervalMinutes: 15,
 
-    adaptersEnabled: false,
+    adaptersEnabled: true,
     adapters: {
         yr: {
+            enabled: false,
             mode: "periodical",
-            period: 120,     // Minuten
-            location: "Germany/Baden-W%C3%BCrttemberg/Stuttgart"
+            period: 120,     // Minutes
+            settings: {
+                location: "Germany/Baden-W%C3%BCrttemberg/Stuttgart"
+            }
+        },
+        mysql: {
+            enabled: false,
+            settings: {
+                host: "127.0.0.1",
+                user: "root",
+                pass: "root",
+                db: "ccu_io",
+                enableEventLog: true,
+                logChangesOnly: false
+            }
         }
     },
 
-    scriptEngineEnabled: false
+    scriptEngineEnabled: false,
+
+    // Längen- und Breitengrad für Astro-Funktion der Script-Engine
+    longitude: 9.1833,
+    latitude: 48.7667
 
 };
 

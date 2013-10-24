@@ -28,8 +28,8 @@ fi
 if [ ${PARAMETER} ]
 then
   DASHUI=false
-  CHARTS=false   
-  YAHUI=false    
+  CHARTS=false
+  YAHUI=false
   EVENTLIST=false
   CCUIO=false
   CCUIO_UPDATE=false
@@ -242,7 +242,11 @@ fi
 echo "Pruefen ob ccu.io laeuft" >> ${LOG}
 if [ ${CCUIO} = true -o ${CCUIO_UPDATE} = true ]
 then
+<<<<<<< HEAD
   if [ $( ps -e|grep ccu.io|grep -v ccu.io.install|wc -l ) -ge 1 ]
+=======
+  if [ $( ps -e|grep ccu.io|grep -v ccu.io.install.sh|wc -l ) -ge 1 ]
+>>>>>>> upstream/master
   then
     if [ -f ${CCUIO_CMD} ]
     then
@@ -250,10 +254,16 @@ then
     else
       echo "Es wurde kein init.d Script für CCU.io gefunden" | tee -a ${LOG}
       echo "CCU.IO wird gekillt" | tee -a ${LOG}
+<<<<<<< HEAD
       sleep 100
       killall -9 ccu.io
       ps -e|grep ccu.io >> ${LOG}
       if [ $( ps -e|grep ccu.io|grep -v ccu.io.install|wc -l ) -ge 1 ]
+=======
+      killall -9 ccu.io
+      ps -e|grep ccu.io >> ${LOG}
+      if [ $( ps -e|grep ccu.io|grep -v ccu.io.install.sh|wc -l ) -ge 1 ]
+>>>>>>> upstream/master
       then
         echo "CCU.IO lässt sich nicht beenden, bitte prüfen" | tee -a ${LOG}
         echo "Der Installer beendet sich jetzt"
@@ -288,7 +298,7 @@ then
     echo "Programm beendet sich"
     copy_log_debug
     exit 1
-  fi                     
+  fi
   mv nodejs-master ${TMP}
   echo "Installiere das im NODEJS.zip enthaltene node\*.deb" | tee -a ${LOG}
   dpkg -i ${TMP}/nodejs-master/nodejs_0.10.20-1_armhf.deb
@@ -300,7 +310,7 @@ then
     exit 1
   fi
   echo "Verlinke /usr/local/bin/node mit /usr/local/bin/nodejs" | tee -a ${LOG}
-  ln -s /usr/local/bin/node /usr/local/bin/nodejs   
+  ln -s /usr/local/bin/node /usr/local/bin/nodejs
   echo "Es werden die temprären Dateien der node Installation aufgeraeumt" | tee -a ${LOG}
   rm ${TMP}/NODEJS.zip
   rm -r ${TMP}/nodejs-master/
@@ -331,13 +341,13 @@ then
       copy_log_debug
       exit 1
     fi
-    
+
     # Init Scripte anlegen
     echo "Startscripte von ccu.io kopieren" | tee -a ${LOG}
     echo "ccu.io nach /etc/init.d/ kopieren" >> ${LOG}
     cp ccu.io.sh /etc/init.d/
     echo "Rechte von ccu.io anpassen" >> ${LOG}
-    chmod 755 /etc/init.d/ccu.io.sh 
+    chmod 755 /etc/init.d/ccu.io.sh
     echo "Init Scripte verlinken" >> ${LOG}
     update-rc.d ccu.io.sh defaults
     # settings.js anpassen
@@ -373,14 +383,14 @@ then
       echo "Wired soll verwendet werden" >> ${LOG}
       sed -i "s/.*io_wired.*/            \{ id\: \"io_wired\"\,    port\: 2000 \}\,/g" ${CCUIO_PATH}/settings.js
     fi
-    
+
     # Rechte anpassen
     echo "Es werden die Rechte der Installation angepasst" | tee -a ${LOG}
-    chown -R ${CCUIO_USER} ${CCUIO_PATH} 
-  fi  
-fi  
-  
-  
+    chown -R ${CCUIO_USER} ${CCUIO_PATH}
+  fi
+fi
+
+
 # CCU.IO aktualisieren
 if [ ${CCUIO_UPDATE} = true ]
 then

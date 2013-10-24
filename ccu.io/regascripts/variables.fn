@@ -1,4 +1,4 @@
-!# variables.fn 1.2 CCU.IO
+!# variables.fn 1.4 CCU.IO
 !#
 !# Dieses Script gibt die Systemvariablen als JSON String aus
 !#
@@ -13,13 +13,13 @@ boolean bFirst = true;
 
 Write('{');
 
+WriteLine('"40":{"Name":"Alarmmeldungen","TypeName":"VARDP","DPInfo":"Anzahl%20Alarmmeldungen","ValueMin":0,"ValueMax":65000,"ValueUnit":"","ValueType":16,"ValueSubType":0,"ValueList":""},');
+Write('"41":{"Name":"Servicemeldungen","TypeName":"VARDP","DPInfo":"Anzahl%20Servicemeldungen","ValueMin":0,"ValueMax":65000,"ValueUnit":"","ValueType":16,"ValueSubType":0,"ValueList":""}');
+
 foreach (sSysVarId, dom.GetObject(ID_SYSTEM_VARIABLES).EnumUsedIDs()) {
-  
-  if (bFirst) {
-  	bFirst = false;
-  } else {
-  	WriteLine(',');
-  }
+
+  WriteLine(',');
+
   
   oSysVar     = dom.GetObject(sSysVarId); 
   sValueType  = oSysVar.ValueType();

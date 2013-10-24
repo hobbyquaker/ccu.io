@@ -19,7 +19,7 @@
         <li><a href="#mainTab1"><span>CCU.IO</span></a></li>
         <li><a href="#mainTab2"><span>Addons</span></a></li>
         <li><a href="#mainTab3"><span>Adapter</span></a></li>
-        <li><a href="#mainTab4"><span>Scripts</span></a></li>
+       <!-- <li><a href="#mainTab4"><span>Scripts</span></a></li> -->
         <li><a href="#mainTab5"><span>Data</span></a></li>
     </ul>
     <div id="mainTab1">
@@ -27,8 +27,8 @@
             <ul>
                 <li><a href="#subTab11">Info</a></li>
                 <li><a href="#subTab12">Control</a></li>
-                <li><a href="#subTab13">Setup</a></li>
-                <li><a href="#subTab14">Log</a></li>
+                <!--<li><a href="#subTab13">Setup</a></li>
+                <li><a href="#subTab14">Log</a></li>-->
             </ul>
             <div id="subTab11">
 
@@ -38,11 +38,26 @@
                     CCU Firmware: <span class="ccu-version"></span>,
                     CCU Uptime: <span class="ccu-version"></span>-->
 
+
                 </p>
+                <p>
+            <table style="font-size:12px">
+                <tr>
+                    <td style="width: 160px">script-engine enabled:</td><td class="ccu-io-scriptengine"></td>
+                </tr>
+                <tr>
+                    <td>adapters enabled:</td><td class="ccu-io-adapters"></td>
+                </tr>
+                <tr>
+                    <td>logging enabled:</td><td class="ccu-io-logging"></td>
+                </tr>
+            </table>
+               </p>
 
             </div>
             <div id="subTab12">
-                <input type="button" id="refreshCCU" value="reload CCU data"/>
+                <input type="button" id="refreshCCU" value="reload CCU data"/><br/><br/>
+                <input type="button" id="reloadScriptEngine" value="restart script-engine"/>
             </div>
             <div id="subTab13">
                 <!--<table>
@@ -68,14 +83,16 @@
         </div>
     </div>
     <div id="mainTab2">
-
+        <table class="gridMain" id="grid_addons"></table>
+        <div id="pager_addons"></div>
     </div>
     <div id="mainTab3">
-        <table id="grid_adapter"></table>
+        <table class="gridMain" id="grid_adapter"></table>
         <div id="pager_adapter"></div>
     </div>
     <div id="mainTab4">
-
+        <table class="gridMain" id="grid_scripts"></table>
+        <div id="pager_scripts"></div>
     </div>
     <div id="mainTab5">
         <div class="jqui-tabs" id="subTabs5">
@@ -103,7 +120,7 @@
                 <!--<input id="dataRefresh" type="button" value="refresh"/>
                 <input id="dataSave" type="button" value="apply changes"/><br/>
                 <textarea class="data-area ui-widget ui-state-default ui-corner-all" id="data"></textarea>-->
-                <table id="grid_datapoints"></table>
+                <table class="gridSub" id="grid_datapoints"></table>
                 <div id="pager_datapoints"></div>
             </div>
             <div id="subTab54">
@@ -112,7 +129,7 @@
                 <textarea readonly class="data-area ui-widget ui-state-default ui-corner-all" id="stringtable"></textarea>
             </div>
             <div id="subTab55">
-                <table id="grid_events"></table>
+                <table class="gridSub" id="grid_events"></table>
                 <div id="pager_events"></div>
             </div>
             <div id="subTab56">

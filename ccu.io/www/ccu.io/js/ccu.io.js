@@ -1,13 +1,21 @@
 $(document).ready(function () {
 
     var regaObjects,
-        regaIndex;
+        regaIndex,
+        ccuIoSettings;
 
     $(".jqui-tabs").tabs();
 
     var eventCounter = 0;
     var $mainTabs = $("#mainTabs");
     var $subTabs5 = $("#subTabs5");
+
+    $mainTabs.tabs({
+        activate: function (e, ui) {
+            resizeGrids();
+        }
+    });
+
     var $datapointGrid = $("#grid_datapoints");
     var $eventGrid = $("#grid_events");
 
@@ -17,14 +25,67 @@ $(document).ready(function () {
         $("#stringtable").html(JSON.stringify(obj, null, "  "));
     });
 
+    socket.emit("getSettings", function (settings) {
+        ccuIoSettings = settings;
+        $(".ccu-io-version").html(settings.version);
+        $(".ccu-io-scriptengine").html(settings.scriptEngineEnabled);
+        $(".ccu-io-adapters").html(settings.adaptersEnabled);
+        $(".ccu-io-logging").html(settings.logging.enabled);
+        socket.emit("readdir", ["adapter"], function (data) {
+            for (var i = 0; i < data.length; i++) {
+                var adapter = data[i];
+                if (adapter == "skeleton.js") { continue; }
+                var adapterData = {
+                    name:   data[i],
+                    confed:     (settings.adapters[data[i]]?"true":"false"),
+                    enabled:    (settings.adapters[data[i]]?settings.adapters[data[i]].enabled:""),
+                    mode:       (settings.adapters[data[i]]?settings.adapters[data[i]].mode:""),
+                    period:     (settings.adapters[data[i]]?settings.adapters[data[i]].period:"")
+                }
+                $("#grid_adapter").jqGrid("addRowData", i, adapterData);
+            }
+        });
 
-
-    socket.on('reload', function() {
-        window.location.reload();
     });
 
-    socket.emit("getVersion", function (version) {
-        $(".ccu-io-version").html(version);
+
+    socket.emit("readdir", ["www"], function (data) {
+        //console.log(data);
+        for (var i = 0; i < data.length; i++) {
+            var addon = data[i];
+            if (addon == "lib" || addon == "ccu.io") { continue; }
+            socket.emit("readJsonFile", "www/"+addon+"/io-addon.json", function(meta) {
+                if (meta) {
+                    var hp = meta.urlHomepage.match(/[http|https]:\/\/(.*)/);
+                    var dl = meta.urlDownload.match(/\/([^/]+)$/);
+
+                    var addonData = {
+                        name:               meta.name,
+                        installedVersion:   meta.version,
+                        availableVersion:   "<input data-update-name='"+meta.name+"' class='updateCheck' data-update-url='"+meta.urlMeta+"' type='button' value='check'/>",
+                        homepage:           "<a href='"+meta.urlHomepage+"' target='_blank'>"+hp[1]+"</a>",
+                        download:           "<a href='"+meta.urlDownload+"' target='_blank'>"+dl[1]+"</a>"
+                    }
+                    $("#grid_addons").jqGrid('addRowData', i, addonData);
+
+
+                }
+            });
+        }
+        setTimeout(function() {
+            $("input.updateCheck").click(function () {
+                $(this).attr("disabled", true);
+                var $this = $(this);
+                var url = $(this).attr("data-update-url");
+                var name = $(this).attr("data-update-name");
+                var id = $(this).attr("id");
+                socket.emit("getUrl", url, function(res) {
+                    obj = JSON.parse(res);
+                    $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
+                    $("input.updateCheck[data-update-name='"+obj.name+"']").hide();
+                });
+            });
+        }, 2500);
     });
 
     socket.emit("readdir", ["datastore"], function (data) {
@@ -75,9 +136,20 @@ $(document).ready(function () {
         }
     });
 
+    socket.on('reload', function() {
+        window.location.reload();
+    });
+
+
     $("#refreshCCU").button().click(function () {
         socket.emit('reloadData');
         $("#reloading").show();
+    });
+    $("#reloadScriptEngine").button().click(function () {
+        $("#reloadScriptEngine").button("disable");
+        socket.emit('reloadScriptEngine', function () {
+            $("#reloadScriptEngine").button("enable");
+        });
     });
 
     $("#dataRefresh").button().click(function() {
@@ -165,6 +237,8 @@ $(document).ready(function () {
 
 */
 
+    var datapointsLastSel;
+    var datapointsEditing = false;
 
     $("#grid_datapoints").jqGrid({
         datatype: "local",
@@ -175,7 +249,7 @@ $(document).ready(function () {
             {name:'type',index:'type', width:80},
             {name:'name',index:'name', width:240},
             {name:'parent',index:'parent', width:240},
-            {name:'val',index:'val', width:160},
+            {name:'val',index:'val', width:160, editable:true},
             {name:'timestamp',index:'timestamp', width:140},
             {name:'ack',index:'ack', width:50},
             {name:'lastChange',index:'lastChange', width:140}
@@ -190,7 +264,24 @@ $(document).ready(function () {
         viewrecords: true,
         sortname: "id",
         sortorder: "asc",
-        caption:"datapoints"
+        caption:"datapoints",
+        onSelectRow: function(id){
+            if(id && id!==datapointsLastSel){
+                $('#grid_datapoints').restoreRow(datapointsLastSel);
+                datapointsLastSel=id;
+            }
+            $('#grid_datapoints').editRow(id, true, function () {
+                // onEdit
+                datapointsEditing = true;
+            }, function (obj) {
+                // success
+            }, "clientArray", null, function () {
+                // afterSave
+                datapointsEditing = false;
+                //console.log(datapointsLastSel+ " "+$("#grid_datapoints").jqGrid("getCell", datapointsLastSel, "val"));
+                socket.emit('setState', [datapointsLastSel, $("#grid_datapoints").jqGrid("getCell", datapointsLastSel, "val")]);
+            });
+        }
     }).jqGrid('filterToolbar',{
         autosearch: true,
         searchOnEnter: false,
@@ -224,8 +315,10 @@ $(document).ready(function () {
                     ack: obj[3],
                     lastChange: (obj[4] == "1970-01-01 01:00:00" ? "" : obj[4])
                 };
-                $datapointGrid.jqGrid('setRowData', obj[0], data);
-                if ($mainTabs.tabs("option", "active") == 4 && $subTabs5.tabs("option", "active") == 2) {
+                if (!datapointsEditing || datapointsLastSel != obj[0]) {
+                    $datapointGrid.jqGrid('setRowData', obj[0], data);
+                }
+                if ($mainTabs.tabs("option", "active") == 4 && $subTabs5.tabs("option", "active") == 2 && !datapointsEditing) {
                     $datapointGrid.trigger("reloadGrid");
                 }
 
@@ -274,7 +367,49 @@ $(document).ready(function () {
         });
     }
 
+    $("#grid_addons").jqGrid({
+        datatype: "local",
+        colNames:['id', 'name', 'installed version', 'available version', 'homepage', 'download'],
+        colModel:[
+            {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
+            {name:'name',index:'name', width:340, sorttype: "int"},
+            {name:'installedVersion',index:'installedVersion', width:120},
+            {name:'availableVersion',index:'availableVersion', width:120, align: "center"},
+            {name:'homepage',index:'homepage', width:440},
+            {name:'download',index:'download', width:120}
+        ],
+        autowidth: true,
+        width: 1200,
+        height: 440,
+        rowList:[20],
+        //pager: $('#pager_addons'),
+        sortname: "id",
+        sortorder: "asc",
+        viewrecords: true,
+        caption: "Addons"
+    });
 
+    $("#grid_adapter").jqGrid({
+        datatype: "local",
+        colNames:['id', 'name', 'confed', 'enabled', 'mode', 'period'],
+        colModel:[
+            {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
+            {name:'name',index:'name', width:340, sorttype: "int"},
+            {name:'confed',index:'confed', width:120},
+            {name:'enabled',index:'enabled', width:120},
+            {name:'mode',index:'mode', width:120},
+            {name:'period',index:'period', width:120}
+        ],
+        autowidth: true,
+        width: 1200,
+        height: 440,
+        rowList:[20],
+        //pager: $('#pager_addons'),
+        sortname: "id",
+        sortorder: "asc",
+        viewrecords: true,
+        caption: "Adapter"
+    });
 
     $("#grid_events").jqGrid({
         datatype: "local",
@@ -311,6 +446,17 @@ $(document).ready(function () {
         eventCounter = 0;
     }});
 
+    function resizeGrids() {
+        var x = $(window).width();
+        var y = $(window).height();
+        if (x < 720) { x = 720; }
+        if (y < 480) { y = 480; }
+        $(".gridSub").setGridHeight(y - 250).setGridWidth(x - 100);
+        $(".gridMain").setGridHeight(y - 150).setGridWidth(x - 60);
+    }
+    $(window).resize(function() {
+        resizeGrids();
+    });
 
 
 });
