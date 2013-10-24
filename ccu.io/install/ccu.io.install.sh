@@ -242,24 +242,9 @@ fi
 echo "Pruefen ob ccu.io laeuft" >> ${LOG}
 if [ ${CCUIO} = true -o ${CCUIO_UPDATE} = true ]
 then
-  if [ $( ps -e|grep ccu.io|grep -v ccu.io.install.sh|wc -l ) -ge 1 ]
+  if [ -f ${CCUIO_CMD} ]
   then
-    if [ -f ${CCUIO_CMD} ]
-    then
-      ${CCUIO_CMD} stop
-    else
-      echo "Es wurde kein init.d Script für CCU.io gefunden" | tee -a ${LOG}
-      echo "CCU.IO wird gekillt" | tee -a ${LOG}
-      killall -9 ccu.io
-      ps -e|grep ccu.io >> ${LOG}
-      if [ $( ps -e|grep ccu.io|grep -v ccu.io.install.sh|wc -l ) -ge 1 ]
-      then
-        echo "CCU.IO lässt sich nicht beenden, bitte prüfen" | tee -a ${LOG}
-        echo "Der Installer beendet sich jetzt"
-        copy_log_debug
-        exit
-      fi
-    fi
+    ${CCUIO_CMD} stop
   fi
 fi
 
