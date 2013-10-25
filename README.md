@@ -408,7 +408,6 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 
 ## Todo/Roadmap
 
-* Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist und sinnvoll damit umgehen
 * Hue Adapter
 * Plugwise Adapter
 * LIRC Adapter
@@ -425,6 +424,12 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.60
+* (Hobbyquaker) Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist
+
+### 0.9.59
+* (Hobbyquaker) Bugfixes
 
 ### 0.9.58
 * (Stryke) Installer: Laufende ccu.io Erkennung endgültig gefixt

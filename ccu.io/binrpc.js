@@ -1,7 +1,7 @@
 /**
  *      HomeMatic BIN-RPC Schnittstelle für Node.js
  *
- *      Version 0.3
+ *      Version 0.4
  *
  *      Copyright (c) 2013 http://hobbyquaker.github.io
  *
@@ -37,7 +37,7 @@ binrpc.prototype = {
     options: {
 
     },
-    server: {},
+    server: undefined,
     serverRunning: false,
     request: function (port, method, data, callback) {
         logger.verbose("binrpc    --> "+this.options.ccuIp+":"+port+" request " + method + " " + JSON.stringify(data));
@@ -471,10 +471,7 @@ binrpc.prototype = {
         if (this.inits.length < 1) {
             return false;
         }
-
         if (!this.serverRunning) {
-            this.serverRunning = true;
-
             this.server = net.createServer(function(c) {
                 var receiver = new Buffer(0);
                 var chunk = 0;
@@ -546,12 +543,12 @@ binrpc.prototype = {
                 }, 1450);
 
             });
-
             this.server.listen(this.options.listenPort, function() { //'listening' listener
+                that.serverRunning = true;
+
                 logger.info('binrpc        server listening on port '+that.options.listenPort);
                 // RPC Init anmelden
                 for (var i = 0; i < that.inits.length; i++) {
-                    var thisInit = that.inits[i];
                     that.request(that.inits[i].port, "init", ["xmlrpc_bin://"+that.options.listenIp+":"+that.options.listenPort, that.inits[i].id], function(data, name) {
                         if (data === "") {
                             logger.info("binrpc    <-- init on "+name+" successful");
@@ -564,15 +561,27 @@ binrpc.prototype = {
         } else {
             // RPC Init anmelden
             for (var i = 0; i < that.inits.length; i++) {
-                var text = that.inits[i].id+" ("+that.options.ccuIp+":"+that.inits[i].port+")";
-                that.request(that.inits[i].port, "init", ["xmlrpc_bin://"+that.options.listenIp+":"+that.options.listenPort, that.inits[i].id], function(data) {
-                    logger.info("binrpc    <-- init on "+text+" successful");
+                that.request(that.inits[i].port, "init", ["xmlrpc_bin://"+that.options.listenIp+":"+that.options.listenPort, that.inits[i].id], function(data, name) {
+                    if (data === "") {
+                        logger.info("binrpc    <-- init on "+name+" successful");
+                    } else {
+                        logger.error("binrpc    <-- init on "+name+" failure");
+                    }
                 });
             }
         }
 
 
 
+    },
+    stopInits: function () {
+        // RPC Init abmelden
+        var that = this;
+        for (var i = 0; i < that.inits.length; i++) {
+            var text = that.inits[i].id+" ("+that.options.ccuIp+":"+that.inits[i].port+")";
+            that.request(that.inits[i].port, "init", ["xmlrpc_bin://" + that.options.listenIp+":" + that.options.listenPort, ""]);
+            logger.info("binrpc    --> stopping init on "+text+"");
+        }
     }
 };
 
