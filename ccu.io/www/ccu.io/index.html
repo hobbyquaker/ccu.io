@@ -19,7 +19,7 @@
         <li><a href="#mainTab1"><span>CCU.IO</span></a></li>
         <li><a href="#mainTab2"><span>Addons</span></a></li>
         <li><a href="#mainTab3"><span>Adapter</span></a></li>
-       <!-- <li><a href="#mainTab4"><span>Scripts</span></a></li> -->
+        <!-- <li><a href="#mainTab4"><span>Scripts</span></a></li> -->
         <li><a href="#mainTab5"><span>Data</span></a></li>
     </ul>
     <div id="mainTab1">
@@ -41,22 +41,41 @@
 
                 </p>
                 <p>
-            <table style="font-size:12px">
+                <table style="font-size:12px">
+                    <tr>
+                        <td style="width: 160px">script-engine enabled:</td><td style="width:100px; text-align:right;" class="ccu-io-scriptengine"></td>
+                    </tr>
+                    <tr>
+                        <td>adapters enabled:</td><td style="width:100px; text-align:right;" class="ccu-io-adapters"></td>
+                    </tr>
+                    <tr>
+                        <td>logging enabled:</td><td style="width:100px; text-align:right;" class="ccu-io-logging"></td>
+                    </tr>
+                </table>
+                </p>
+
+
+                <p>
+                <table style="font-size:12px">
                 <tr>
-                    <td style="width: 160px">script-engine enabled:</td><td class="ccu-io-scriptengine"></td>
+                    <td style="width: 160px">Last ReGa poll:</td><td style="width:100px; text-align:right;" class="ccu-io-lastrega"></td>
                 </tr>
                 <tr>
-                    <td>adapters enabled:</td><td class="ccu-io-adapters"></td>
+                    <td style="width: 160px">Last rf event:</td><td style="width:100px; text-align:right;" class="ccu-io-lastrf"></td>
                 </tr>
                 <tr>
-                    <td>logging enabled:</td><td class="ccu-io-logging"></td>
-                </tr>
-            </table>
-               </p>
+                        <td>Last hs485 event:</td><td style="width:100px; text-align:right;" class="ccu-io-lasths485"></td>
+                    </tr>
+                    <tr>
+                        <td>Last CUx event:</td><td style="width:100px; text-align:right;" class="ccu-io-lastcux"></td>
+                    </tr>
+                </table>
+                </p>
 
             </div>
             <div id="subTab12">
-                <input type="button" id="refreshCCU" value="reload CCU data"/><br/><br/>
+                <input type="button" id="refreshCCU" value="reload ReGa data"/><br/><br/>
+                <input type="button" id="restartRPC" value="restart RPC inits"/><br/><br/>
                 <input type="button" id="reloadScriptEngine" value="restart script-engine"/>
             </div>
             <div id="subTab13">

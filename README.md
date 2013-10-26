@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 0.9.58*
+*aktuelle Version: 0.9.61*
 
 CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
@@ -189,6 +189,10 @@ Ein Homematic-Script ausführen
 #### reloadScriptEngine()
 
 Lädt die Script-Engine neu. Notwendig wenn Änderungen an einem Script vorgenommen wurden.
+
+### execCmd(cmd, callback)
+
+Führt ein Shell-Commando aus. Callback wird mit 3 Parametern aufgerufen: error, stdout, stderr
 
 #### readdir(path, callback)
 
@@ -424,6 +428,12 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.61
+* (Hobbyquaker) diverse kleine Verbesserungen und Bugfixes
+* (Hobbyquaker) Update-Button in der Addon-Tabelle (falls neue Version zur Verfügung steht). Ruft install/ccu.io.install.sh auf
+* (Hobbyquaker) neuer Button unter CCU.IO->Control um RPC Inits zu erneuern
+* (Hobbyquaker) neue Anzeige unter CCU.IO->Info: Zeit seit letztem Event
 
 ### 0.9.60
 * (Hobbyquaker) Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist

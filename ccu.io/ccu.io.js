@@ -13,7 +13,8 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.60";
+settings.version = "0.9.61";
+settings.basedir = __dirname;
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -304,7 +305,6 @@ function reconnect() {
 }
 
 function pollRega() {
-    logger.info("polling...");
     regahss.runScriptFile("polling", function (data) {
         if (!data) {
             ccuRegaUp = false;
@@ -878,6 +878,11 @@ function initSocketIO(_io) {
         var address = socket.handshake.address;
         logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
 
+        socket.on('execCmd', function (cmd, callback) {
+            logger.info("ccu.io        exec "+cmd);
+             childProcess.exec(cmd, callback);
+        });
+
         socket.on('reloadData', function () {
             regaReady = false;
             regaObjects = {};
@@ -886,6 +891,10 @@ function initSocketIO(_io) {
                 Address: {}
             };
             loadRegaData(0, null, true);
+        });
+
+        socket.on('restartRPC', function () {
+             initRpc();
         });
 
         socket.on('reloadScriptEngine', function (callback) {
