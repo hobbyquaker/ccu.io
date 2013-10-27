@@ -1,0 +1,97 @@
+var settings = {
+
+    //  Port auf dem der Webserver und Socket.IO lauscht
+    ioListenPort: 8080,
+    // Port auf dem der https Webserver lauscht - falls nicht benötigt auskommentiert belassen
+    //ioListenPortSsl: 8443,
+
+    // Passwort-Schutz (HTTP Basic Authentication) - Achtung! Wirkt nur auf http(s), Websockets bleiben ungeschützt!
+    authentication: {
+        enabled: false,
+        enabledSsl: false,
+        user: "admin",
+        password: "password"
+    },
+
+    // IP-Adresse der Homematic CCU
+    ccuIp: "192.168.1.100",
+    binrpc: {
+
+        // IP-Adresse des CCU.IO-Servers (wird der CCU mitgeteilt für RPC Init)
+        listenIp: "192.168.1.200",
+
+        // Port auf dem der xmlrpc_bin:// Server lauscht
+        listenPort: 2101,
+        inits: [
+
+            // CUxD Init durchführen
+            //{ id: "io_cuxd",    port: 8701 },
+            // BidCos-Wired Init durchführen
+            //{ id: "io_wired",   port: 2000 },
+            // BidCos-RF Init durchführen
+            { id: "io_rf",      port: 2001 }
+        ]
+    },
+    logging: {
+        enabled: true,
+        file: "devices-variables.log",
+        move: true,
+        varChangeOnly: true,
+        writeInterval: 60
+    },
+    regahss: {
+        // Variablen-Werte von der CCU Pollen
+        pollData: true,
+        // Interval für Polling in milli-Sekunden
+        pollDataInterval: 15000,
+
+        // Todo Implement Polling Trigger
+        pollDataTrigger: "BidCos-RF.BidCoS-RF:50.PRESS_LONG",
+
+        metaScripts: [
+            "favorites",
+            "variables",
+            "programs",
+            "rooms",
+            "functions",
+            "devices",
+            "channels",
+            "datapoints"
+        ]
+    },
+    datastorePath: __dirname+"/datastore/",
+    stats: true,
+    statsIntervalMinutes: 15,
+
+    adaptersEnabled: true,
+    adapters: {
+        yr: {
+            enabled: false,
+            mode: "periodical",
+            period: 120,     // Minutes
+            settings: {
+                location: "Germany/Baden-W%C3%BCrttemberg/Stuttgart"
+            }
+        },
+        mysql: {
+            enabled: false,
+            settings: {
+                host: "127.0.0.1",
+                user: "root",
+                pass: "root",
+                db: "ccu_io",
+                enableEventLog: true,
+                logChangesOnly: false
+            }
+        }
+    },
+
+    scriptEngineEnabled: false,
+
+    // Längen- und Breitengrad für Astro-Funktion der Script-Engine
+    longitude: 9.1833,
+    latitude: 48.7667
+
+};
+
+module.exports = settings;
