@@ -13,7 +13,8 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.57";
+settings.version = "0.9.61";
+settings.basedir = __dirname;
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -22,6 +23,7 @@ var fs = require('fs'),
     express =   require('express'),
     http =      require('http'),
     https =     require('https'),
+    request = require('request'),
     app,
     appSsl,
     url = require('url'),
@@ -36,7 +38,9 @@ var fs = require('fs'),
     childScriptEngine,
     pollTimer,
     ccuReachable = false,
-    ccuRegaUp = false;
+    ccuRegaUp = false,
+    webserverUp = false,
+    initsDone = false;
 
 var childProcess = require('child_process');
 
@@ -74,7 +78,7 @@ if (settings.ioListenPortSsl) {
 }
 
 var socketlist = [],
-    homematic = {},
+    homematic,
     stringtable = {},
     datapoints = {},
     regaObjects = {},
@@ -98,10 +102,24 @@ var regahss = new rega({
             logger.error("rega          ReGaHSS down");
             ccuReachable = true;
             ccuRegaUp = false;
+            if (io) {
+                io.sockets.emit("regaDown");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("regaDown");
+            }
+            tryReconnect();
         } else if (err == "CCU unreachable") {
             logger.error("ccu.io        CCU unreachable");
             ccuReachable = false;
             ccuRegaUp = false;
+            if (io) {
+                io.sockets.emit("ccuDown");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ccuDown");
+            }
+            tryReconnect();
         } else {
             logger.info("rega          ReGaHSS up");
             ccuReachable = true;
@@ -187,9 +205,11 @@ function setDatapoint(id, val, ts, ack, lc) {
     logger.verbose("setDatapoint "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
 
 
-    if (!oldval && !regaObjects[id]) {
+    if (!oldval) {
         // Neu
-        logger.warn("rega      <-- unknown variable "+id);
+        if (!regaObjects[id]) {
+            logger.warn("rega      <-- unknown variable "+id);
+        }
         sendEvent(obj);
 
 
@@ -237,8 +257,60 @@ function setDatapoint(id, val, ts, ack, lc) {
     }
 }
 
+function tryReconnect() {
+    logger.info("ccu.io        trying to reconnect to CCU");
+    request('http://'+regahss.options.ccuIp+'/ise/checkrega.cgi', function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            if (body == "OK") {
+                logger.info("ccu.io        ReGaHSS up");
+                ccuReachable = true;
+                ccuRegaUp = true;
+                reconnect();
+            } else {
+                logger.warn("ccu.io        ReGaHSS down");
+                ccuRegaUp = false;
+                setTimeout(tryReconnect, 5000);
+            }
+        } else {
+            logger.error("ccu.io        CCU unreachable");
+            ccuRegaUp = false;
+            ccuReachable = false;
+            setTimeout(tryReconnect, 5000);
+        }
+    });
+}
+
+function reconnect() {
+
+    regahss.loadStringTable(function (data) {
+        stringtable = data;
+    });
+
+    if (initsDone) {
+        homematic.stopInits();
+    }
+
+    regaReady = false;
+    regaObjects = {};
+    regaIndex = {
+        Name: {},
+        Address: {}
+    };
+    setTimeout(function () {
+        regahss.checkTime(function () {
+            loadRegaData(0, null, null, true);
+        });
+    }, 2500);
+
+}
+
 function pollRega() {
     regahss.runScriptFile("polling", function (data) {
+        if (!data) {
+            ccuRegaUp = false;
+            tryReconnect();
+            return false;
+        }
         var data = JSON.parse(data);
         var val;
         for (id in data) {
@@ -265,11 +337,13 @@ function pollRega() {
 }
 
 
-function loadRegaData(index, err, rebuild) {
+function loadRegaData(index, err, rebuild, triggerReload) {
     if (!index) { index = 0; }
     if (err && debugMode) {
         // Just start webServer for debug
-        initWebserver();
+        if (!webserverUp) {
+            initWebserver();
+        }
         return;
     }
     var type = settings.regahss.metaScripts[index];
@@ -345,7 +419,21 @@ function loadRegaData(index, err, rebuild) {
                     pollRega();
                 }
                 initRpc();
-                initWebserver();
+                if (!webserverUp) {
+                    initWebserver();
+                }
+                if (triggerReload) {
+                    logger.info("socket.io --> broadcast reload")
+                    if (io) {
+                        io.sockets.emit("regaUp");
+                        io.sockets.emit("reload");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("regaUp");
+                        ioSsl.sockets.emit("reload");
+                    }
+                }
+
             }
         }
 
@@ -353,103 +441,106 @@ function loadRegaData(index, err, rebuild) {
 
 }
 
-
-
 function initRpc() {
-    homematic = new binrpc({
-        ccuIp: settings.ccuIp,
-        listenIp: settings.binrpc.listenIp,
-        listenPort: settings.binrpc.listenPort,
-        inits: settings.binrpc.inits,
-        methods: {
-            event: function (obj) {
+    initsDone = true;
+    if (!homematic) {
+        homematic = new binrpc({
+            ccuIp: settings.ccuIp,
+            listenIp: settings.binrpc.listenIp,
+            listenPort: settings.binrpc.listenPort,
+            inits: settings.binrpc.inits,
+            methods: {
+                event: function (obj) {
 
-                if (!regaReady) { return; }
+                    if (!regaReady) { return; }
 
+                    var timestamp = formatTimestamp();
 
-                var timestamp = formatTimestamp();
-
-                var bidcos;
-                switch (obj[0]) {
-                    case "io_cuxd":
-                    case "CUxD":
-                        stats.cuxd += 1;
-                        bidcos = "CUxD." + obj[1] + "." + obj[2];
-                        break;
-                    case "io_rf":
-                        stats.rf += 1;
-                        bidcos = "BidCos-RF." + obj[1] + "." + obj[2];
-                        break;
-                    case "io_wired":
-                        stats.wired += 1;
-                        bidcos = "BidCos-Wired." + obj[1] + "." + obj[2];
-                        break;
-                    default:
-                    //
-                }
-
-                if (bidcos == settings.pollDataTrigger) {
-                    clearTimeout(pollTimer);
-                    pollRega();
-                }
-
-                // STATE korrigieren
-                if (obj[2] == "STATE") {
-                    if (obj[3] === "1" || obj[3] === 1) {
-                        obj[3] = true;
-                    } else if (obj[3] === "0" || obj[3] === 0) {
-                        obj[3] = false;
+                    var bidcos;
+                    switch (obj[0]) {
+                        case "io_cuxd":
+                        case "CUxD":
+                            stats.cuxd += 1;
+                            bidcos = "CUxD." + obj[1] + "." + obj[2];
+                            break;
+                        case "io_rf":
+                            stats.rf += 1;
+                            bidcos = "BidCos-RF." + obj[1] + "." + obj[2];
+                            break;
+                        case "io_wired":
+                            stats.wired += 1;
+                            bidcos = "BidCos-Wired." + obj[1] + "." + obj[2];
+                            break;
+                        default:
+                        //
                     }
-                }
 
-                // Get ReGa id
-                var regaObj = regaIndex.Name[bidcos];
-
-                if (regaObj && regaObj[0] && ignoreNextUpdate.indexOf(regaObj[0]) != -1) {
-                    logger.verbose("ccu.io        ignoring event dp "+regaObj[0]);
-                    ignoreNextUpdate.splice(ignoreNextUpdate.indexOf(regaObj[0]), 1);
-                    return;
-                }
-
-                // Logging
-                if (regaObj && regaObj[0] && settings.logging.enabled) {
-                    if (!regaObjects[regaObj] || !regaObjects[regaObj].dontLog) {
-                        var ts = Math.round((new Date()).getTime() / 1000);
-                        cacheLog(ts+" "+regaObj[0]+" "+obj[3]+"\n");
+                    if (bidcos == settings.pollDataTrigger) {
+                        clearTimeout(pollTimer);
+                        pollRega();
                     }
-                }
 
-                if (regaObj && regaObj[0]) {
-                    var id = regaObj[0];
-                    var val = obj[3];
-                    logger.verbose("socket.io --> broadcast event "+JSON.stringify([id, val, timestamp, true]))
-                    var event = [id, val, timestamp, true, timestamp];
-
-                    if (datapoints[id]) {
-                        if (datapoints[id][0] != val) {
-                            // value changed
-                            datapoints[id] = [val, timestamp, true, timestamp];
-                        } else {
-                            // no change - keep LastChange
-                            datapoints[id] = [val, timestamp, true, datapoints[id][3]];
-                            event = [id, val, timestamp, true, datapoints[id][3]];
+                    // STATE korrigieren
+                    if (obj[2] == "STATE") {
+                        if (obj[3] === "1" || obj[3] === 1) {
+                            obj[3] = true;
+                        } else if (obj[3] === "0" || obj[3] === 0) {
+                            obj[3] = false;
                         }
-                    } else {
-                        datapoints[id] = [val, timestamp, true, timestamp];
-                    }
-                    if (io) {
-                        io.sockets.emit("event", event);
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("event", event);
                     }
 
+                    // Get ReGa id
+                    var regaObj = regaIndex.Name[bidcos];
+
+                    if (regaObj && regaObj[0] && ignoreNextUpdate.indexOf(regaObj[0]) != -1) {
+                        logger.verbose("ccu.io        ignoring event dp "+regaObj[0]);
+                        ignoreNextUpdate.splice(ignoreNextUpdate.indexOf(regaObj[0]), 1);
+                        return;
+                    }
+
+                    // Logging
+                    if (regaObj && regaObj[0] && settings.logging.enabled) {
+                        if (!regaObjects[regaObj] || !regaObjects[regaObj].dontLog) {
+                            var ts = Math.round((new Date()).getTime() / 1000);
+                            cacheLog(ts+" "+regaObj[0]+" "+obj[3]+"\n");
+                        }
+                    }
+
+                    if (regaObj && regaObj[0]) {
+                        var id = regaObj[0];
+                        var val = obj[3];
+                        logger.verbose("socket.io --> broadcast event "+JSON.stringify([id, val, timestamp, true]))
+                        var event = [id, val, timestamp, true, timestamp];
+
+                        if (datapoints[id]) {
+                            if (datapoints[id][0] != val) {
+                                // value changed
+                                datapoints[id] = [val, timestamp, true, timestamp];
+                            } else {
+                                // no change - keep LastChange
+                                datapoints[id] = [val, timestamp, true, datapoints[id][3]];
+                                event = [id, val, timestamp, true, datapoints[id][3]];
+                            }
+                        } else {
+                            datapoints[id] = [val, timestamp, true, timestamp];
+                        }
+                        if (io) {
+                            io.sockets.emit("event", event);
+                        }
+                        if (ioSsl) {
+                            ioSsl.sockets.emit("event", event);
+                        }
+
+                    }
+
+                    return "";
                 }
-
-                return "";
             }
-        }
-    });
+        });
+    } else {
+        homematic.init();
+    }
+
 }
 
 function uploadParser(req, res, next) {
@@ -677,7 +768,7 @@ function initWebserver() {
         initSocketIO(ioSsl);
 
     }
-
+    webserverUp = true;
     logger.info("ccu.io        ready");
 
     if (settings.adaptersEnabled) {
@@ -787,6 +878,11 @@ function initSocketIO(_io) {
         var address = socket.handshake.address;
         logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
 
+        socket.on('execCmd', function (cmd, callback) {
+            logger.info("ccu.io        exec "+cmd);
+             childProcess.exec(cmd, callback);
+        });
+
         socket.on('reloadData', function () {
             regaReady = false;
             regaObjects = {};
@@ -795,6 +891,10 @@ function initSocketIO(_io) {
                 Address: {}
             };
             loadRegaData(0, null, true);
+        });
+
+        socket.on('restartRPC', function () {
+             initRpc();
         });
 
         socket.on('reloadScriptEngine', function (callback) {
@@ -1063,10 +1163,12 @@ function stop() {
         if (io && io.server) {
             logger.info("ccu.io        closing http server");
             io.server.close();
+            io.server = undefined;
         }
         if (ioSsl && ioSsl.server) {
             logger.info("ccu.io        closing https server");
             ioSsl.server.close();
+            ioSsl.server = undefined;
         }
 
         if (childScriptEngine) {
@@ -1080,7 +1182,7 @@ function stop() {
             children[i].kill();
         }
     } catch (e) {
-        logger.error("ccu.io       something went wrong "+e)
+        logger.error("ccu.io        something went wrong "+e)
     }
 
 
@@ -1090,7 +1192,7 @@ function stop() {
 var quitCounter = 0;
 
 function quit() {
-    logger.info("ccu.io          quit");
+    logger.verbose("ccu.io        quit");
     if (regahss.pendingRequests > 0) {
         quitCounter += 1;
         if (quitCounter > 20) {
@@ -1099,7 +1201,7 @@ function quit() {
                 process.exit(0);
             }, 250);
         }
-        logger.verbose("rega          waiting for pending request...");
+        logger.verbose("rega          waiting for pending ReGa request...");
         setTimeout(quit, 500);
 
     } else {

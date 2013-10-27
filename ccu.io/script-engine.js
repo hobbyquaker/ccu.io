@@ -629,6 +629,7 @@ var scriptEngine = {
         var that = this;
         that.logger.info("script-engine starting");
         that.fs.readdir(__dirname+"/scripts", function (err, data) {
+            data.sort();
             for (var i = 0; i < data.length; i++) {
                 var path = __dirname+"/scripts/"+data[i];
                 runScript(path);
@@ -657,7 +658,7 @@ function runScript(path) {
         eval(script.toString());
         scriptEngine.logger.info("script-engine registered "+(scriptEngine.subscribers.length-subLength)+" subscribers and "+(scriptEngine.schedules.length-schLength)+" schedules in "+path);
     } catch (e) {
-        scriptEngine.logger.info("script-engine "+path+" "+e);
+        scriptEngine.logger.error("script-engine "+path+" "+e);
     }
 
 }

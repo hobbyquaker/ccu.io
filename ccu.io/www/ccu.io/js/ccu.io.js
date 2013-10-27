@@ -4,6 +4,47 @@ $(document).ready(function () {
         regaIndex,
         ccuIoSettings;
 
+    var lastRegaPoll,
+        lastRfEvent,
+        lastHs485Event,
+        lastCuxEvent;
+
+    setInterval(function () {
+        if (lastRegaPoll !== undefined) {
+            lastRegaPoll += 1;
+            $(".ccu-io-lastrega").html(formatLastEvent(lastRegaPoll));
+        }
+        if (lastRfEvent !== undefined) {
+            lastRfEvent += 1;
+            $(".ccu-io-lastrf").html(formatLastEvent(lastRfEvent));
+        }
+        if (lastHs485Event !== undefined) {
+            lastHs485Event += 1;
+            $(".ccu-io-lasths485").html(formatLastEvent(lastHs485Event));
+        }
+        if (lastCuxEvent !== undefined) {
+            lastCuxEvent += 1;
+            $(".ccu-io-lastcux").html(formatLastEvent(lastCuxEvent));
+        }
+    }, 1000);
+
+    function formatLastEvent(sec) {
+        if (sec > 3599) {
+            var hours = Math.floor(sec / 3600);
+            var rest = sec - (hours * 3600);
+            var minutes = Math.floor(rest / 60);
+            rest = rest - (minutes * 60);
+            return hours+"h "+("0"+minutes).slice(-2)+"m "+("0"+rest).slice(-2)+"s";
+        } else if (sec > 59) {
+            var minutes = Math.floor(sec / 60);
+            var rest = sec - (minutes * 60);
+            return "0h "+("0"+minutes).slice(-2)+"m "+("0"+rest).slice(-2)+"s";
+        } else {
+            return "0h 00m "+("0"+sec).slice(-2)+"s";
+        }
+
+    }
+
     $(".jqui-tabs").tabs();
 
     var eventCounter = 0;
@@ -60,7 +101,7 @@ $(document).ready(function () {
                     var dl = meta.urlDownload.match(/\/([^/]+)$/);
 
                     var addonData = {
-                        name:               meta.name,
+                        name:               "<a href='/"+meta.dirname+"' target='_blank'>"+meta.name+"</a>",
                         installedVersion:   meta.version,
                         availableVersion:   "<input data-update-name='"+meta.name+"' class='updateCheck' data-update-url='"+meta.urlMeta+"' type='button' value='check'/>",
                         homepage:           "<a href='"+meta.urlHomepage+"' target='_blank'>"+hp[1]+"</a>",
@@ -82,6 +123,26 @@ $(document).ready(function () {
                 socket.emit("getUrl", url, function(res) {
                     obj = JSON.parse(res);
                     $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
+                    if (obj.version > $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html()) {
+                        $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' value='update'/>&nbsp;");
+                        $("input#update_"+obj.ident).click(function () {
+                            $(this).attr("disabled", true);
+                            socket.emit("execCmd", ccuIoSettings.basedir+"/install/ccu.io.install.sh "+obj.ident, function (err, stdout, stderr) {
+
+                                alert(stdout);
+                                if (stderr) {
+                                    alert(stderr);
+
+                                }
+
+                                //$(this).remove();
+
+                            });
+
+
+                        });
+                    }
+
                     $("input.updateCheck[data-update-name='"+obj.name+"']").hide();
                 });
             });
@@ -144,6 +205,9 @@ $(document).ready(function () {
     $("#refreshCCU").button().click(function () {
         socket.emit('reloadData');
         $("#reloading").show();
+    });
+    $("#restartRPC").button().click(function () {
+        socket.emit('restartRPC');
     });
     $("#reloadScriptEngine").button().click(function () {
         $("#reloadScriptEngine").button("disable");
@@ -301,6 +365,22 @@ $(document).ready(function () {
             regaObjects = obj;
 
             socket.on('event', function(obj) {
+
+                if (obj[3] && regaObjects[obj[0]]) {
+                    if (regaObjects[obj[0]].Name) {
+                        if (regaObjects[obj[0]].Name.match(/^BidCos-RF\./)) {
+                            lastRfEvent = 0;
+                        } else if (regaObjects[obj[0]].Name.match(/^BidCos-Wired\./)) {
+                            lastHs485Event = 0;
+                        } else if (regaObjects[obj[0]].Name.match(/^CUxD\./)) {
+                            lastCuxEvent = 0;
+                        } else {
+                            lastRegaPoll = 0;
+                        }
+                    }
+
+                }
+
                 obj[1] = $('<div/>').text(obj[1]).html();
 
                 // Update Datapoint Grid
@@ -374,7 +454,7 @@ $(document).ready(function () {
             {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
             {name:'name',index:'name', width:340, sorttype: "int"},
             {name:'installedVersion',index:'installedVersion', width:120},
-            {name:'availableVersion',index:'availableVersion', width:120, align: "center"},
+            {name:'availableVersion',index:'availableVersion', width:120},
             {name:'homepage',index:'homepage', width:440},
             {name:'download',index:'download', width:120}
         ],

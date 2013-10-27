@@ -8,4 +8,7 @@ export DASHUI=true                           # DashUI installieren = 1
 export CHARTS=true                           # CCU-IO-Highcharts installieren = 1
 export YAHUI=true                            # yahui installieren = 1
 export EVENTLIST=true                        # CCU-IO Eventlist installieren = 1
+<<<<<<< HEAD
 export CCUIO=true
+=======
+>>>>>>> upstream/master

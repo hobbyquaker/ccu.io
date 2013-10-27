@@ -1,7 +1,7 @@
 /**
  *      HomeMatic ReGaHss Schnittstelle für Node.js
  *
- *      Version 0.3
+ *      Version 0.4
  *
  *      Copyright (c) 2013 http://hobbyquaker.github.io
  *
@@ -133,7 +133,7 @@ rega.prototype = {
         var that = this;
         fs.readFile(__dirname+'/regascripts/'+script+'.fn', 'utf8', function (err, data) {
             if (err) {
-                logger.error("rega          readFile "+err);
+                logger.error("rega          runScriptFile "+err);
                 return false;
             }
             that.script(data, function (stdout, xml) {

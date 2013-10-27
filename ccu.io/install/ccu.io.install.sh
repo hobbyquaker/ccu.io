@@ -28,8 +28,8 @@ fi
 if [ ${PARAMETER} ]
 then
   DASHUI=false
-  CHARTS=false
-  YAHUI=false
+  CHARTS=false   
+  YAHUI=false    
   EVENTLIST=false
   CCUIO=false
   CCUIO_UPDATE=false
@@ -242,11 +242,7 @@ fi
 echo "Pruefen ob ccu.io laeuft" >> ${LOG}
 if [ ${CCUIO} = true -o ${CCUIO_UPDATE} = true ]
 then
-<<<<<<< HEAD
   if [ $( ps -e|grep ccu.io|grep -v ccu.io.install|wc -l ) -ge 1 ]
-=======
-  if [ $( ps -e|grep ccu.io|grep -v ccu.io.install.sh|wc -l ) -ge 1 ]
->>>>>>> upstream/master
   then
     if [ -f ${CCUIO_CMD} ]
     then
@@ -254,16 +250,10 @@ then
     else
       echo "Es wurde kein init.d Script für CCU.io gefunden" | tee -a ${LOG}
       echo "CCU.IO wird gekillt" | tee -a ${LOG}
-<<<<<<< HEAD
       sleep 100
       killall -9 ccu.io
       ps -e|grep ccu.io >> ${LOG}
       if [ $( ps -e|grep ccu.io|grep -v ccu.io.install|wc -l ) -ge 1 ]
-=======
-      killall -9 ccu.io
-      ps -e|grep ccu.io >> ${LOG}
-      if [ $( ps -e|grep ccu.io|grep -v ccu.io.install.sh|wc -l ) -ge 1 ]
->>>>>>> upstream/master
       then
         echo "CCU.IO lässt sich nicht beenden, bitte prüfen" | tee -a ${LOG}
         echo "Der Installer beendet sich jetzt"

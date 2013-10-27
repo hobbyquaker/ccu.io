@@ -1,10 +1,9 @@
 CCU.IO
 ======
 
-aktuelle Version: 0.9.57
+*aktuelle Version: 0.9.61*
 
-CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO den Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis
-/www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
+CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
 Die enthaltene BIN RPC Bibliothek binrpc.js und die ReGa-Schnittstelle rega.js kann auch losgelöst von CCU.IO in anderen Node basierten Projekten als Schnittstelle zur CCU eingesetzt werden.
 
@@ -50,8 +49,25 @@ der CCU2 selbst kann hier an beiden stellen 127.0.0.1 eingetragen werden.)
     
 In der Datei install/settings kann konfiguriert werden welche Addons installiert werden sollen, unter welchem User CCU.IO laufen soll und in welchem Pfad es installiert werden soll.
 
-
 Siehe auch [http://homematic-forum.de/forum/viewtopic.php?f=48&t=14556](http://homematic-forum.de/forum/viewtopic.php?f=48&t=14556)
+
+
+### getestete Plattformen
+
+CCU.IO wurde bisher erfolgreich auf folgenden Plattformen installiert:
+
+* Raspbian (RaspberryPi)
+* RCU (CCU2 Firmware auf RaspberryPi)
+* Homematic CCU2
+* Mac OS X
+* Windows
+* x86 und amd64 Linux 
+* QNAP TS-469 Pro (vermutlich auch auf allen anderen x86-basierten QNAP NAS)
+
+## Support
+
+Bei Problemen bitte sicherstellen dass die neueste Version installiert ist und das Logfile log/ccu.io.log bereithalten. Im [Homematic-Forum](http://homematic-forum.de/forum/viewforum.php?f=48) und im [Chat](http://webchat.quakenet.org/?channels=homematic&uio=d4) wird gerne geholfen.
+
 
 ## Dokumentation
 
@@ -136,47 +152,88 @@ Ein Programm ausführen. Kann über ID oder Name angesprochen werden
 
 [Socket.IO](http://socket.io) ist nicht nur für die Kommunikation mit Web-Browsern der beste Weg mit CCU.IO zu kommunizieren. Es gibt Socket.IO Implementierungen für viele Sprachen, siehe [https://github.com/learnboost/socket.io/wiki#in-other-languages](https://github.com/learnboost/socket.io/wiki#in-other-languages)
 
-CCU.IO ruft bei jedem Event (Änderung oder Aktualisierung eines Datenpunkts oder einer Variable) die Methode "event" auf allen verbundenen Clients auf. Als Parameter wird ein Array mit folgender Struktur übergeben [id, val, timestamp, ack, lastchange]
 
-Folgende Methoden können via Socket.IO aufgerufen werden:
+### Methoden die von CCU.IO auf allen Clients aufgerufen werden
 
-### reloadScriptEngine()
+#### event
+
+CCU.IO ruft bei jedem Event (Änderung oder Aktualisierung eines Datenpunkts oder einer Variable) die Methode "event" auf allen verbundenen Clients auf. Als Parameter wird ein Array mit folgender Struktur übergeben `[id, val, timestamp, ack, lastchange]`
+
+### Methoden die von Clients auf CCU.IO werden können
+
+#### getDatapoints(callback)
+
+Das Datenpunkt-Objekt von CCU.IO abfragen
+
+#### getObjects(callback)
+
+Die Meta-Daten (regaObjects) von CCU.IO abfragen
+
+### getIndex(callback)
+
+Den Objekt-Index von CCU.IO abfragen
+
+#### setState(arr, callback)
+
+Einen Datenpunkt setzen.
+Als Parameter wird ein Array mit folgender Struktur erwartet `[id, val, timestamp, ack, lastchange]`
+
+#### programExecute(id, callback)
+
+Ein Homematic-Programm ausführen
+
+#### runScript(script, callback)
+
+Ein Homematic-Script ausführen
+
+#### reloadScriptEngine()
 
 Lädt die Script-Engine neu. Notwendig wenn Änderungen an einem Script vorgenommen wurden.
 
-### readdir(path, callback)
+### execCmd(cmd, callback)
+
+Führt ein Shell-Commando aus. Callback wird mit 3 Parametern aufgerufen: error, stdout, stderr
+
+#### readdir(path, callback)
 
 Gibt den Inhalt eines bestimmten Verzeichnisses zurück.
 Die Methode callback wird mit einem Array des Verzeichnisinhalts zurückgerufen
 
-### writeFile(name, object, callback)
+#### writeFile(name, object, callback)
 
 Wandelt object in JSON um und schreibt es in die Datei name im datastore-Verzeichnis
 
-### readFile(name, callback)
+#### readFile(name, callback)
 
 List eine JSON Datei im datastore-Verzeichnis und gibt das geparste Objekt als Parameter an die callback Funktion zurück
 
-### readRawFile(name, callback)
+#### readRawFile(name, callback)
 
 Liest eine beliebige Datei (name kann auch einen Pfad beinhalten) und gibt das Ergebnis als String an die callback Funktion zurück. Der Pfad ist relativ zum ccu.io-Verzeichnis
 
-### readJsonFile(name, callback)
+#### readJsonFile(name, callback)
 
 List eine JSON Datei und gibt das geparste Objekt als Parameter an die callback Funktion zurück. Der Pfad ist relativ zum ccu.io-Verzeichnis
 
-### getUrl(url, callback)
-### getSettings(callback)
-### getDatapoints(callback)
-### getObjects(callback)
-### getIndex(callback)
-### getStringtable(callback)
-### addStringVariable(name, desc, str, callback)
-### setObject(id, obj, callback)
-### setState(arr, callback)
-### programExecute(id, callback)
-### runScript(script, callback)
+#### getUrl(url, callback)
 
+Eine URL via HTTP-GET aufrufen. Callback erhält den Body den Antwort. Geschickter Weg um die Same-Origin-Policy in Webanwendungen zu umgehen.
+
+#### getSettings(callback)
+
+Liefert das CCU.IO Settings Objekt zurück
+
+#### getStringtable(callback)
+
+Liefert eine Objekt mit dem Inhalt der stringtable_de.txt von der CCU
+
+#### addStringVariable(name, desc, str, callback)
+
+Fügt eine Stringvariable auf der CCU hinzu. Liefert die neue ID an den Callback.
+
+#### setObject(id, obj, callback)
+
+Ein Objekt zu regaObjects und regaIndex hinzufügen
 
 ## Script-Engine
 
@@ -340,11 +397,21 @@ Folgende Werte sind für das Attribut astro verwendbar:
 * dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
 * nadir: nadir (darkest moment of the night, sun is in the lowest position)
 
-### Adapter
+## Adapter
+
+Zur Entwicklung von eigenen Adaptern steht ein Grundgerüst bereit (Datei ccu.io/adapter/skeleton.js
+
+### yr
+
+Fragt Wetterdaten von yr.no ab und schreibt Sie in die Variablen 70000-70006
+
+### MySQL
+
+Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Queries liegen im Adapter-Verzeichnis bereit
+
 
 ## Todo/Roadmap
 
-* Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist und sinnvoll damit umgehen
 * Hue Adapter
 * Plugwise Adapter
 * LIRC Adapter
@@ -361,6 +428,21 @@ Folgende Werte sind für das Attribut astro verwendbar:
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.61
+* (Hobbyquaker) diverse kleine Verbesserungen und Bugfixes
+* (Hobbyquaker) Update-Button in der Addon-Tabelle (falls neue Version zur Verfügung steht). Ruft install/ccu.io.install.sh auf
+* (Hobbyquaker) neuer Button unter CCU.IO->Control um RPC Inits zu erneuern
+* (Hobbyquaker) neue Anzeige unter CCU.IO->Info: Zeit seit letztem Event
+
+### 0.9.60
+* (Hobbyquaker) Erkennen ob CCU erreichbar/nicht erreichbar/wieder erreichbar ist
+
+### 0.9.59
+* (Hobbyquaker) Bugfixes
+
+### 0.9.58
+* (Stryke) Installer: Laufende ccu.io Erkennung endgültig gefixt
 
 ### 0.9.57
 * (Hobbyquaker) Bugfix: File Upload funktionierte u.U. nicht
@@ -484,12 +566,13 @@ Folgende Werte sind für das Attribut astro verwendbar:
 
 ## Lizenz
 
-Copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io
+Copyright (c) 2013 hobbyquaker [http://hobbyquaker.github.io](http://hobbyquaker.github.io)
 
 Lizenz: [CC BY-NC 3.0](http://creativecommons.org/licenses/by-nc/3.0/de/)
 
 Sie dürfen das Werk bzw. den Inhalt vervielfältigen, verbreiten und öffentlich zugänglich machen,
 Abwandlungen und Bearbeitungen des Werkes bzw. Inhaltes anfertigen zu den folgenden Bedingungen:
+
   * **Namensnennung** - Sie müssen den Namen des Autors/Rechteinhabers in der von ihm festgelegten Weise nennen.
   * **Keine kommerzielle Nutzung** - Dieses Werk bzw. dieser Inhalt darf nicht für kommerzielle Zwecke verwendet werden.
 
