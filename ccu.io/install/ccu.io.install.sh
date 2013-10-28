@@ -11,10 +11,10 @@ SCRIPT_NAME=$( basename $0 )
 START_PATH=$( dirname $0 )
 PARAMETER=$1
 TS=$( date +%Y%m%d%H%M%S )
-TMP=../tmp
-exec 2>${TMP}/${SCRIPT_NAME}.${TS}.debug.txt
+TEMP=../tmp
+exec 2>${TEMP}/${SCRIPT_NAME}.${TS}.debug.txt
 set -xv
-LOG=${TMP}/${SCRIPT_NAME}.${TS}.log.txt
+LOG=${TEMP}/${SCRIPT_NAME}.${TS}.log.txt
 echo "Programmstart ${SCRIPT_NAME} ${TS}" >> ${LOG}
 RC=true
 RUN=true
@@ -60,6 +60,7 @@ fi
 install ()
 {
   echo "Es wird ${ADDON} von ${LINK} geladen und installiert" | tee -a ${LOG}
+  cd ${TEMP}
   wget ${LINK} 2>&1
   if [ ${?} != 0 ]
   then
@@ -104,7 +105,7 @@ install ()
     else
       echo " "
       echo "Bisher war ${ADDON} nicht installiert" | tee -a ${LOG}
-      echo "${ADDON} wird installiert und ist unter <IP>:8080/${ADDON_PATH} erreichbar"
+      echo "${ADDON} wird installiert und ist unter http://${CCUIOIP}:8080/${ADDON_PATH} erreichbar"
       echo " "
       mkdir ${CCUIO_PATH}/www/${ADDON_PATH}
       if [ ${?} != 0 ]
@@ -131,7 +132,7 @@ install ()
 copy_log_debug ()
 {
   # Kopieren der Log und Debugdateien in das LOG Verzeichnis von ccu.io"
-  mv ${LOG} ${TMP}/${SCRIPT_NAME}.${TS}.debug.txt ${CCUIO_PATH}/log/ 2>&1
+  mv ${LOG} ${TEMP}/${SCRIPT_NAME}.${TS}.debug.txt ${CCUIO_PATH}/log/ 2>&1
   chown -R ${CCUIO_USER} ${CCUIO_PATH}/log/
   set +xv
 }
@@ -154,11 +155,11 @@ ja_nein_abfrage ()
 ########################################################################
 
 # Pruefen ob es noch ein altes master.zip gibt und dieses gegebenenfalls sichern
-if [ -f ${TMP}/master.zip ]
+if [ -f ${TEMP}/master.zip ]
 then
   echo "Altes master.zip gefunden" | tee -a ${LOG}
   echo "sichere altes master.zip als master.zip.${TS}"
-  sudo mv ${TMP}/master.zip ${TMP}/master.zip.${TS}
+  sudo mv ${TEMP}/master.zip ${TEMP}/master.zip.${TS}
 fi
 
 # Pruefen ob es eine ccu.io Installation gibt
@@ -238,10 +239,10 @@ then
       RC=false
       return 1
     fi
-    echo "Verschiebe das master.zip nach ${TMP}/NODEJS.zip" >> ${LOG}
-    mv master.zip ${TMP}/NODEJS.zip
-    echo "Entpacke ${TMP}/NODEJS.zip" tee -a ${LOG}
-    unzip ${TMP}/NODEJS.zip 1>/dev/null
+    echo "Verschiebe das master.zip nach ${TEMP}/NODEJS.zip" >> ${LOG}
+    mv master.zip ${TEMP}/NODEJS.zip
+    echo "Entpacke ${TEMP}/NODEJS.zip" tee -a ${LOG}
+    unzip ${TEMP}/NODEJS.zip 1>/dev/null
     if [ ${?} != 0 ]
     then
       echo "Fehler beim unzip von ${ADDON}" | tee -a ${LOG}
@@ -249,9 +250,9 @@ then
       RC=false
       return 1
     fi
-    mv nodejs-master ${TMP}
+    mv nodejs-master ${TEMP}
     echo "Installiere das im NODEJS.zip enthaltene node\*.deb" | tee -a ${LOG}
-    dpkg -i ${TMP}/nodejs-master/nodejs_0.10.20-1_armhf.deb
+    dpkg -i ${TEMP}/nodejs-master/nodejs_0.10.20-1_armhf.deb
     if [ ${?} != 0 ]
     then
       echo "Fehler beim installieren von NODEJS" | tee -a ${LOG}
@@ -262,8 +263,8 @@ then
     echo "Verlinke /usr/local/bin/node mit /usr/local/bin/nodejs" | tee -a ${LOG}
     ln -s /usr/local/bin/node /usr/local/bin/nodejs
     echo "Es werden die temprären Dateien der node Installation aufgeraeumt" | tee -a ${LOG}
-    rm ${TMP}/NODEJS.zip
-    rm -r ${TMP}/nodejs-master/
+    rm ${TEMP}/NODEJS.zip
+    rm -r ${TEMP}/nodejs-master/
   fi
   
   #################################
@@ -273,16 +274,17 @@ then
   then
     # Backup der alten CCU.IO Umgebung
     echo "Sichern der alten ccu.io Umgebung" | tee -a ${LOG}
-    echo "Das Sicher kann einen Moment dauern"
-    tar cfz ${TMP}/ccu.io.${TS}.tar.gz ${CCUIO_PATH} #1>/dev/null
+    echo "Das Sichern kann einen Moment dauern"
+    tar cfz /tmp/ccu.io.${TS}.tar.gz ${CCUIO_PATH} #1>/dev/null
     if [ ${?} != 0 ]
     then
-      echo "Fehler beim erstellen der Sicherung unter ${TMP}/ccu.io.${TS}.tar.gz" | tee -a ${LOG}
+      echo "Fehler beim erstellen der Sicherung unter ${CCUIO_PATH}/tmp/ccu.io.${TS}.tar.gz" | tee -a ${LOG}
       echo "Programm beendet sich"
       RC=false
       return 1
     else
-      echo " Der alte Versionsstand von ccu.io wurde unter ${TMP}/ccu.io.${TS}.tar.gz gesichert" | tee -a ${LOG}
+      mv /tmp/ccu.io.${TS}.tar.gz ${CCUIO_PATH}/tmp 
+      echo " Der alte Versionsstand von ccu.io wurde unter ${CCUIO_PATH}/tmp/ccu.io.${TS}.tar.gz gesichert" | tee -a ${LOG}
       # Aktualisieren von CCU.IO
       ${CCUIO_CMD} stop
       ADDON=ccu.io
@@ -330,13 +332,15 @@ then
         echo " "
         echo "Bitte die IP Adresse der CCU eingeben" | tee -a ${LOG}
         read CCUIP
-        echo ${CCUIP} >> ${LOG}
+        echo "CCUIP ${CCUIP}" >> ${LOG}
         sed -i "s/.*ccuIp.*/    ccuIp:\ \"${CCUIP}\"\,/g" ${CCUIO_PATH}/settings.js
+        echo "export CCUIP=\"${CCUIP}\"" >> settings
         echo " "
         echo "Bitte die IP Adresse des Computers eingeben auf dem CCU.IO laufen soll" | tee -a ${LOG}
         read CCUIOIP
-        echo ${CCUIOIP} >> ${LOG}
+        echo "CCUIOIP ${CCUIOIP}" >> ${LOG}
         sed -i "s/.*listenIp.*/        listenIp:\ \"${CCUIOIP}\"\,/g" ${CCUIO_PATH}/settings.js
+        echo "export CCUIOIP=\"${CCUIOIP}\"" >> settings
         echo " "
         echo "Wird CUXd verwendet?" | tee -a ${LOG}
         echo "YyJj/Nn"
@@ -361,6 +365,7 @@ then
         # Rechte anpassen
         echo "Es werden die Rechte der Installation angepasst" | tee -a ${LOG}
         echo " "
+        echo "ccu.io ist unter http://${CCUIOIP}:8080/ccu.io erreichbar"
         chown -R ${CCUIO_USER} ${CCUIO_PATH}
         CCUIO=true
         PARAMETER=all
