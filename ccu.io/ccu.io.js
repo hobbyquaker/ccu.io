@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.62";
+settings.version = "0.9.63";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
@@ -321,12 +321,17 @@ function pollRega() {
                 } else {
                     val = data[id][0];
                 }
+
                 if (settings.logging.varChangeOnly && notFirstVarUpdate) {
                     if (datapoints[id][0] != val) {
                         cacheLog(ts+" "+id+" "+val+"\n");
                     }
                 } else {
                     cacheLog(ts+" "+id+" "+val+"\n");
+                }
+                // Hat sich die Anzahl der Servicemeldungen geändert?
+                if (id == 41 && datapoints[id][0] != val) {
+                    pollServiceMsgs();
                 }
             }
             setDatapoint(id, data[id][0], formatTimestamp(), true, data[id][1]);
@@ -336,6 +341,23 @@ function pollRega() {
     });
 }
 
+function pollServiceMsgs() {
+    logger.info("ccu.io        polling service messages");
+    regahss.runScriptFile("alarms", function (data) {
+        if (!data) {
+            ccuRegaUp = false;
+            tryReconnect();
+            return false;
+        }
+        var data = JSON.parse(data);
+        var val;
+        for (id in data) {
+            var ts = Math.round((new Date()).getTime() / 1000);
+            cacheLog(ts+" "+id+" "+data[id].AlState);
+            setDatapoint(id, data[id].AlState, data[id].LastTriggerTime, true, data[id].AlOccurrenceTime);
+        }
+    });
+}
 
 function loadRegaData(index, err, rebuild, triggerReload) {
     if (!index) { index = 0; }
@@ -347,6 +369,7 @@ function loadRegaData(index, err, rebuild, triggerReload) {
         return;
     }
     var type = settings.regahss.metaScripts[index];
+    logger.info("ccu.io        fetching "+type);
     regahss.runScriptFile(type, function (data) {
         var data = JSON.parse(data);
         logger.info("ccu.io        indexing "+type);
@@ -363,7 +386,11 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             }
 
             // Index erzeugen
-            var TypeName = data[id].TypeName;
+            if (type == "alarms") {
+                var TypeName = "ALDP";
+            } else {
+                var TypeName = data[id].TypeName;
+            }
             // Typen-Index (einfach ein Array der IDs)
             if (!regaIndex[TypeName]) {
                 regaIndex[TypeName] = [];
@@ -381,13 +408,30 @@ function loadRegaData(index, err, rebuild, triggerReload) {
                 datapoints[id] = [data[id].Value, data[id].Timestamp, true, data[id].Timestamp];
                 // Werte aus data Objekt entfernen
                 delete data[id].Value;
-                delete data[id].Timestamp
+                delete data[id].Timestamp;
             }
             if (type == "datapoints") {
                 datapoints[id] = [data[id].Value, timestamp, true, data[id].Timestamp];
                 // Werte aus data Objekt entfernen
                 delete data[id].Value;
-                delete data[id].Timestamp
+                delete data[id].Timestamp;
+            }
+            if (type == "alarms") {
+
+                // Kanal ergänzen
+                if (!regaObjects[data[id].Parent].ALDPs) {
+                    regaObjects[data[id].Parent].ALDPs = {};
+                }
+                var tmpType = data[id].Name.split(".");
+                tmpType = tmpType[1];
+                regaObjects[data[id].Parent].ALDPs[tmpType] = parseInt(id, 10);
+
+                // Wert setzen
+                datapoints[id] = [data[id].AlState, data[id].LastTriggerTime, true, data[id].AlOccurrenceTime];
+                // Werte aus data Objekt entfernen
+                delete data[id].AlState;
+                delete data[id].LastTriggerTime;
+                delete data[id].AlOccurrenceTime;
             }
 
             // Meta-Daten setzen

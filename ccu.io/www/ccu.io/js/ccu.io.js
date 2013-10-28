@@ -94,7 +94,7 @@ $(document).ready(function () {
         //console.log(data);
         for (var i = 0; i < data.length; i++) {
             var addon = data[i];
-            if (addon == "lib" || addon == "ccu.io") { continue; }
+            if (addon == "lib" || addon == "ccu.io" || addon == "index.html") { continue; }
             socket.emit("readJsonFile", "www/"+addon+"/io-addon.json", function(meta) {
                 if (meta) {
                     var hp = meta.urlHomepage.match(/[http|https]:\/\/(.*)/);
@@ -128,21 +128,15 @@ $(document).ready(function () {
                         $("input#update_"+obj.ident).click(function () {
                             $(this).attr("disabled", true);
                             socket.emit("execCmd", ccuIoSettings.basedir+"/install/ccu.io.install.sh "+obj.ident, function (err, stdout, stderr) {
-
                                 alert(stdout);
                                 if (stderr) {
                                     alert(stderr);
 
                                 }
-
                                 //$(this).remove();
-
                             });
-
-
                         });
                     }
-
                     $("input.updateCheck[data-update-name='"+obj.name+"']").hide();
                 });
             });
