@@ -1,4 +1,4 @@
-!# datapoints.fn 1.5 CCU.IO
+!# datapoints.fn 1.6 CCU.IO
 !#
 !# Dieses Homematic-Script gibt eine Liste aller Datenpunkte als JSON String aus
 !#
@@ -61,6 +61,39 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                     Write('"ValueType":16,"ValueList":"' # oDir.ValueList() # '","Timestamp":"' # oDir.Timestamp());
                     Write('","Value":null,"Parent":' # sChnId # '}');
                 }
+
+            }
+
+            if (oChannel.HssType() == "SMOKE_DETECTOR") {
+                if (dpFirst) {
+                    dpFirst = false;
+                } else {
+                    WriteLine(',');
+                }
+                object oDP = oChannel.DPByHssDP('STATE');
+                sDPId = oDP.ID();
+
+                string sValueType = oDP.ValueType();
+                Write('"' # sDPId # '":{');
+                Write('"Name":"');
+                WriteURL(oDP.Name());
+                Write('","TypeName":"HSSDP');
+                Write('","Operations":5');
+                Write(',"ValueType":2');
+                Write(',"ValueUnit":"');
+                Write('","Timestamp":"' # oDP.Timestamp());
+                Write('","Value":');
+
+                sValue = oDP.Value();
+
+                if (sValue) {
+                    Write("true");
+                } else {
+                    Write("false");
+                }
+
+                Write(',"Parent":' # sChnId);
+                Write('}');
 
             }
 
