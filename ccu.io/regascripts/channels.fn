@@ -1,4 +1,4 @@
-!# channels.fn 1.5 CCU.IO
+!# channels.fn 1.6 CCU.IO
 !#
 !# Dieses Homematic-Script gibt alle Kanaele als JSON String aus
 !#
@@ -31,6 +31,7 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
 
         foreach(sChnId, oDevice.Channels()) {
             object oChannel = dom.GetObject(sChnId);
+            string sChnHssType = oChannel.HssType();
                 if (cFirst) {
                   cFirst = false;
                 } else {
@@ -41,7 +42,7 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                 Write('"' # sChnId # '":{"Name":"');
                 WriteURL(oChannel.Name());
                 Write('","TypeName":"' # oChannel.TypeName());
-                Write('","HssType":"' # oChannel.HssType());
+                Write('","HssType":"' # sChnHssType);
                 Write('","ChnDirection":' # iChnDir # ',"ChannelType":');
                 Write(oChannel.ChannelType());
                 Write(',"Address":"' # oChannel.Address());
@@ -68,6 +69,15 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                         string oDirId = oDir.ID();
                         Write('"DIRECTION":'#oDirId);
                     }
+                }
+
+                if (sChnHssType == "SMOKE_DETECTOR") {
+                    if (dpFirst) {
+                        dpFirst = false;
+                    } else {
+                        WriteLine(',');
+                    }
+                    Write('"STATE":'#oChannel.DPByHssDP('STATE').ID());
                 }
 
                 foreach(sDPId, oChannel.DPs().EnumUsedIDs()) {

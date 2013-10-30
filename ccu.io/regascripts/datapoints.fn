@@ -1,4 +1,4 @@
-!# datapoints.fn 1.6 CCU.IO
+!# datapoints.fn 1.7 CCU.IO
 !#
 !# Dieses Homematic-Script gibt eine Liste aller Datenpunkte als JSON String aus
 !#
@@ -22,7 +22,7 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
 
     object oDevice   = dom.GetObject(sDevId);
     boolean bDevReady = oDevice.ReadyConfig();
-    
+
     if (bDevReady) {
 
 
@@ -71,10 +71,9 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                     WriteLine(',');
                 }
                 object oDP = oChannel.DPByHssDP('STATE');
-                sDPId = oDP.ID();
 
-                string sValueType = oDP.ValueType();
-                Write('"' # sDPId # '":{');
+
+                Write('"' # oDP.ID() # '":{');
                 Write('"Name":"');
                 WriteURL(oDP.Name());
                 Write('","TypeName":"HSSDP');
@@ -85,7 +84,6 @@ foreach (sDevId, root.Devices().EnumUsedIDs()) {
                 Write('","Value":');
 
                 sValue = oDP.Value();
-
                 if (sValue) {
                     Write("true");
                 } else {
