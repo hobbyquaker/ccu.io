@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.65";
+settings.version = "0.9.66";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
@@ -997,6 +997,19 @@ function initSocketIO(_io) {
                     callback(undefined);
                 } else {
                     callback("\""+data+"\"");
+                }
+            });
+        });
+
+        socket.on('delRawFile', function (name, callback) {
+            logger.info("socket.io <-- delRawFile "+name);
+
+            fs.unlink(__dirname+"/"+name, function (err, data) {
+                if (err) {
+                    logger.error("ccu.io        failed deleting file "+__dirname+"/"+name);
+                    callback(false);
+                } else {
+                    callback(true);
                 }
             });
         });
