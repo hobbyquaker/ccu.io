@@ -2,6 +2,9 @@
 export CCUIO_PATH="/opt/ccu.io"              # Hier den Pfad angeben in dem sich ccu.io befindet
 export CCUIO_CMD="/etc/init.d/ccu.io.sh"     # Hier den Aufruf von ccu.io angeben
 export CCUIO_USER=pi                         # Hier den User angeben unter dem ccu.io laufen soll
+#export CCUIP=                               # IP der CCU
+#export CCUIOIP=                             # IP des Rechners auf dem ccu.io läuft
+#export NODE_CMD=                             # Wie heisst node auf dem Rechner
 
 # Addons und ccu.io
 export DASHUI=true                           # DashUI installieren = 1
@@ -9,3 +12,5 @@ export CHARTS=true                           # CCU-IO-Highcharts installieren = 
 export YAHUI=true                            # yahui installieren = 1
 export EVENTLIST=true                        # CCU-IO Eventlist installieren = 1
 
+#Spezielle Variable fuer QNAP
+export UN_ZIP="unzip"

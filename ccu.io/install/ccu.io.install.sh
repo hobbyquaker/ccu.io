@@ -11,7 +11,7 @@ SCRIPT_NAME=$( basename $0 )
 START_PATH=$( dirname $0 )
 PARAMETER=$1
 TS=$( date +%Y%m%d%H%M%S )
-TEMP=../tmp
+TEMP=${START_PATH}/../tmp
 exec 2>${TEMP}/${SCRIPT_NAME}.${TS}.debug.txt
 set -xv
 LOG=${TEMP}/${SCRIPT_NAME}.${TS}.log.txt
@@ -28,6 +28,12 @@ else
   chmod 755 ${START_PATH}/settings
   . ${START_PATH}/settings
 fi
+if [ -z ${UN_ZIP} ]
+then
+  echo "export UN_ZIP=\"unzip\“" >> ${START_PATH}/settings
+  UN_ZIP=unzip
+fi
+  
 if [ ${PARAMETER} ]
 then
   DASHUI=false
@@ -61,7 +67,7 @@ install ()
 {
   echo "Es wird ${ADDON} von ${LINK} geladen und installiert" | tee -a ${LOG}
   cd ${TEMP}
-  wget ${LINK} 2>&1
+  wget --no-check-certificate ${LINK} --output-document=master.zip 2>&1
   if [ ${?} != 0 ]
   then
     echo "Fehler beim Download von ${ADDON}" | tee -a ${LOG}
@@ -70,7 +76,7 @@ install ()
     return 1
   fi
   mv master.zip ${ADDON}.zip
-  unzip ${ADDON}.zip 1>/dev/null
+  ${UN_ZIP} -d "${TEMP}" "${TEMP}/${ADDON}.zip" 1>/dev/null
   if [ ${?} != 0 ]
   then
     echo "Fehler beim unzip von ${ADDON}" | tee -a ${LOG}
@@ -242,7 +248,7 @@ then
     echo "Verschiebe das master.zip nach ${TEMP}/NODEJS.zip" >> ${LOG}
     mv master.zip ${TEMP}/NODEJS.zip
     echo "Entpacke ${TEMP}/NODEJS.zip" tee -a ${LOG}
-    unzip ${TEMP}/NODEJS.zip 1>/dev/null
+    ${UN_ZIP} ${TEMP}/NODEJS.zip 1>/dev/null
     if [ ${?} != 0 ]
     then
       echo "Fehler beim unzip von ${ADDON}" | tee -a ${LOG}
