@@ -30,7 +30,7 @@ else
 fi
 if [ -z ${UN_ZIP} ]
 then
-  echo "export UN_ZIP=\"unzip\" >> ${START_PATH}/settings
+  echo "export UN_ZIP=\"unzip\"" >> ${START_PATH}/settings
   UN_ZIP=unzip
 fi
   
