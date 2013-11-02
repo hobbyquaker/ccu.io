@@ -59,43 +59,63 @@ rega.prototype = {
         });
     },
     loadStringTable: function (callback) {
-            request.get({ url: 'http://' + this.options.ccuIp + '/config/stringtable_de.txt', encoding: null }, function(err, res, body) {
-            var data = body;
-            var str = iconv.decode(data, 'ISO-8859-1');
-            var dataArr = str.split("\n");
-            var lang = {};
-            for (var i = 0; i < dataArr.length; i++) {
-                var line = dataArr[i];
-                if (line && line != "") {
-                    var resultArr = line.match(/^([A-Z0-9_-]+)\|?([A-Z0-9_-]+)?=?([A-Z0-9_-]+)?[ \t]+(.+)$/);
-                    if (resultArr) {
-                        if (!lang[resultArr[1]]) {
-                            lang[resultArr[1]] = {};
+        var that = this;
+        request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.stringtable.js', encoding: null }, function(err, res, body) {
+            try {
+                var str = iconv.decode(body, 'ISO-8859-1');
+                var jscode = str.replace(/^jQuery\.extend\(true,langJSON, /, "").replace(/\);/,"");
+                logger.verbose(jscode);
+                var translation = JSON.parse(jscode);
+            } catch (e) {
+
+            }
+
+
+
+            request.get({ url: 'http://' + that.options.ccuIp + '/config/stringtable_de.txt', encoding: null }, function(err, res, body) {
+                var data = body;
+                var str = iconv.decode(data, 'ISO-8859-1');
+                var dataArr = str.split("\n");
+                var lang = {};
+                for (var i = 0; i < dataArr.length; i++) {
+                    var line = dataArr[i];
+                    if (line && line != "") {
+                        var resultArr = line.match(/^([A-Z0-9_-]+)\|?([A-Z0-9_-]+)?=?([A-Z0-9_-]+)?[ \t]+(.+)$/);
+
+                        if (resultArr) {
+                            var text = resultArr[4];
+                            if (translation) {
+                                text = translation.de[text.replace(/\${([^}]*)}/,"$1")];
+                            }
+                            if (!lang[resultArr[1]]) {
+                                lang[resultArr[1]] = {};
+                            }
+                            if (resultArr[3]) {
+                                if (!lang[resultArr[1]][resultArr[2]]) {
+                                    lang[resultArr[1]][resultArr[2]] = {};
+                                }
+                                if (!lang[resultArr[1]][resultArr[2]][resultArr[3]]) {
+                                    lang[resultArr[1]][resultArr[2]][resultArr[3]] = {};
+                                }
+                                lang[resultArr[1]][resultArr[2]][resultArr[3]].text = text;
+                            } else if (resultArr[2]) {
+                                if (!lang[resultArr[1]][resultArr[2]]) {
+                                    lang[resultArr[1]][resultArr[2]] = {};
+                                }
+                                lang[resultArr[1]][resultArr[2]].text = text;
+                            } else {
+                                lang[resultArr[1]].text = text;
+                            }
                         }
-                        if (resultArr[3]) {
-                            if (!lang[resultArr[1]][resultArr[2]]) {
-                                lang[resultArr[1]][resultArr[2]] = {};
-                            }
-                            if (!lang[resultArr[1]][resultArr[2]][resultArr[3]]) {
-                                lang[resultArr[1]][resultArr[2]][resultArr[3]] = {};
-                            }
-                            lang[resultArr[1]][resultArr[2]][resultArr[3]].text = resultArr[4];
-                        } else if (resultArr[2]) {
-                            if (!lang[resultArr[1]][resultArr[2]]) {
-                                lang[resultArr[1]][resultArr[2]] = {};
-                            }
-                            lang[resultArr[1]][resultArr[2]].text = resultArr[4];
-                        } else {
-                            lang[resultArr[1]].text = resultArr[4];
-                        }
+
                     }
 
                 }
-
-            }
-            logger.info("ccu.io        stringtable loaded");
-            callback(lang);
+                logger.info("ccu.io        stringtable loaded");
+                callback(lang);
+            });
         });
+
     },
     addStringVariable: function (name, desc, str, callback) {
         var script = "object test = dom.GetObject('"+name+"');\n" +
