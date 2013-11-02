@@ -723,6 +723,23 @@ function restApi(req, res) {
                 response = {id:dp,value:value};
             }
             break;
+        case "setBulk":
+            response = [];
+            status = 200;
+            for (var item in req.query) {
+                var parts = item.split("/");
+                var dp = findDatapoint(parts[0], parts[1]);
+                if (dp == false) {
+                    sres = {error: "datapoint "+item+" not found"};
+                } else if (req.query[item] === undefined) {
+                    sres = {error: "no value given for "+item};
+                } else {
+                    sres = {id:dp,value:req.query[item]};
+                    setState(dp,req.query[item]);
+                }
+                response.push(sres);
+            }
+            break;
         case "programExecute":
             if (!tmpArr[1]) {
                 response = {error: "no program given"};

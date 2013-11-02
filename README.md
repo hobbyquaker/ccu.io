@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 0.9.66*
+*aktuelle Version: 0.9.67*
 
 CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
@@ -122,6 +122,18 @@ Eine Variable oder einen Datenpunkt setzen. Bietet die gleichen Möglichkeiten e
     http://ccu-io-host:ccu.io-port/api/set/Licht-Küche/LEVEL/?value=0.7
     http://ccu-io-host:ccu.io-port/api/set/Anwesenheit/?value=0
     http://ccu-io-host:ccu.io-port/api/set/950/?value=1
+
+
+### setBulk
+
+Mehrere Datenpunkte auf einmal setzen
+
+#### Beispiele
+
+Dieses Beispiel vereint alle 4 Beispiele aus der Methode `set` in einem Aufruf:
+
+    http://ccu-io-host:ccu.io-port/api/setBulk/?BidCos-RF.FEQ1234567:1.LEVEL=0.7&Licht-Küche/LEVEL=0.7&Anwesenheit=0&950=1
+
 
 ### programExecute
 
@@ -340,6 +352,42 @@ Einen Event abbonieren. Das pattern-Objekt bietet folgende Attribute:
     deviceType  string          Geräte HssType ist gleich
                 RegExp          Geräte HssType matched Regulären Ausdruck
 
+
+Der Callback-Funktion wird ein Objekt mit folgendem Inhalt als Parameter übergeben:
+
+            {
+                id,
+                name,
+                newState: {
+                    value,
+                    timestamp,
+                    ack,
+                    lastchange
+                },
+                oldState: {
+                    value,
+                    timestamp,
+                    ack,
+                    lastchange
+                },
+                channel: {
+                    id,
+                    name,
+                    type,
+                    funcIds,
+                    roomIds,
+                    funcNames,
+                    roomNames
+                },
+                device: {
+                    id,
+                    name,
+                    type
+                }
+            }
+
+funcIds, roomIds, funcNames und roomNames sind Arrays (func = Gewerke)
+
 ### schedule(pattern, callback)
 
 Zeitmodul mit Astrofunktion.
@@ -397,6 +445,11 @@ Folgende Werte sind für das Attribut astro verwendbar:
 * dawn: dawn (morning nautical twilight ends, morning civil twilight starts)
 * nadir: nadir (darkest moment of the night, sun is in the lowest position)
 
+### Standardmäßig bereits vorhandene Node-Module
+
+* fs - Das Filesystem Modul "fs"
+
+
 ## Adapter
 
 Zur Entwicklung von eigenen Adaptern steht ein Grundgerüst bereit (Datei ccu.io/adapter/skeleton.js
@@ -428,6 +481,12 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.67
+* (Hobbyquaker) Simple API: neue Methode setBulk (setzen mehrerer Datenpunkte auf einmal)
+* (Hobbyquaker) Script-Engine: neue Datei _global.js für Funktionen die in mehreren Scripts genutzt werden
+* (Hobbyquaker) Script-Engine: Beispiel-Scripts hinzugefügt
+* (Hobbyquaker) diverse Bibliotheken zu www/lib hinzugefügt
 
 ### 0.9.66
 * (Hobbyquaker) neue Methode delRawFile

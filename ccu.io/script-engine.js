@@ -14,6 +14,9 @@ var regaObjects = {},
     regaIndex = {},
     datapoints = {};
 
+var fs = require('fs');
+
+
 var scriptEngine = {
     util:           require('util'),
     settings:       require(__dirname+'/settings.js'),
@@ -22,7 +25,7 @@ var scriptEngine = {
     io:             require('socket.io-client'),
     scheduler:      require('node-schedule'),
     suncalc:        require('suncalc'),
-    fs:             require('fs'),
+    fs:             fs,
     socket: {},
     subscribers: [],
     schedules: [],
@@ -631,6 +634,7 @@ var scriptEngine = {
         that.fs.readdir(__dirname+"/scripts", function (err, data) {
             data.sort();
             for (var i = 0; i < data.length; i++) {
+                if (data[i] == "_global.js") { continue; }
                 var path = __dirname+"/scripts/"+data[i];
                 runScript(path);
             }
@@ -695,7 +699,6 @@ function schedule(pattern, callback) {
 
         }
 
-        log("ASTRO "+JSON.stringify(pattern)+" "+ts.getFullYear()+"-"+(ts.getMonth()+1)+"-"+ts.getDate()+" "+ts.getHours()+":"+ts.getMinutes()+":"+ts.getSeconds());
         sch = scriptEngine.scheduler.scheduleJob(ts, function () {
             setTimeout(function () {
                 sch = schedule(pattern, callback);
@@ -733,7 +736,7 @@ function executeProgram(id, callback) {
 }
 
 function setObject(id, obj, callback) {
-    scriptEngine.socket.emit("setObject", obj, function () {
+    scriptEngine.socket.emit("setObject", id, obj, function () {
         if (callback) {
             callback();
         }
@@ -750,6 +753,13 @@ process.on('SIGTERM', function () {
     scriptEngine.stop();
 });
 
+try {
+    scriptEngine.logger.info("script-engine executing _global.js");
+    var script = scriptEngine.fs.readFileSync(__dirname+"/scripts/_global.js");
+    eval(script.toString());
+} catch (e) {
+    scriptEngine.logger.error("script-engine _global.js: "+e);
+}
 
 scriptEngine.init();
 
