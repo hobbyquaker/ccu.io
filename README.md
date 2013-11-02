@@ -63,6 +63,8 @@ CCU.IO wurde bisher erfolgreich auf folgenden Plattformen installiert:
 * Windows
 * x86 und amd64 Linux 
 * QNAP TS-469 Pro (vermutlich auch auf allen anderen x86-basierten QNAP NAS)
+* Synology DS212
+
 
 ## Support
 
