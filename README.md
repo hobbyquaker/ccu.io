@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 0.9.68*
+*aktuelle Version: 0.9.69*
 
 CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
@@ -293,6 +293,7 @@ Einen Event abbonieren. Das pattern-Objekt bietet folgende Attribute:
                                     "le"    Wert muss kleiner geworden oder gleich geblieben sein (val <= oldval)
 
     val         mixed           Wert ist gleich
+    valNe       mixed           Wert ist ungleich
     valGt       mixed           Wert ist größer
     valGe       mixed           Wert ist größer oder gleich
     valLt       mixed           Wert ist kleiner
@@ -301,6 +302,7 @@ Einen Event abbonieren. Das pattern-Objekt bietet folgende Attribute:
     ack         bool            Wert ist bestätigt
 
     oldVal      mixed           vorheriger Wert ist gleich
+    oldValNe    mixed           vorheriger Wert ist ungleich
     oldValGt    mixed           vorheriger Wert ist größer
     oldValGe    mixed           vorheriger Wert ist größer oder gleich
     oldValLt    mixed           vorheriger Wert ist kleiner
@@ -483,6 +485,12 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.69
+
+* (Stryke) Installer: Non root ccu.io update and CCUIO_UPDATE parameter
+* (Hobbyquaker) neuer Adapter: Philips Hue
+* (Hobbyquaker) Bugfix: Fehler beim Laden der Stringtable (betrifft nur CCU1)
 
 ### 0.9.68
 

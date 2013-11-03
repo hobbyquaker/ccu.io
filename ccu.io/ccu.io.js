@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.68";
+settings.version = "0.9.69";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
@@ -1140,6 +1140,9 @@ function initSocketIO(_io) {
 
             if (obj.Address) {
                 regaIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
+            }
+            if (obj.TypeName == "HSSDP" && obj.Value !== undefined) {
+                datapoints[id] = [obj.Value];
             }
             if (callback) {
                 callback();

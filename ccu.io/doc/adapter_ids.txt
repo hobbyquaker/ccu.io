@@ -6,6 +6,9 @@
 70005                           yr - max Temp 24h
 70006                           yr - max Temp 48h
 
+90000-90549                     hue
+
+100000-299999                   reserviert für eigene Scripte
 
 
 268435456 bis 268500991         reserviert für zweite CCU

@@ -83,6 +83,15 @@ var settings = {
                 enableEventLog: true,
                 logChangesOnly: false
             }
+        },
+        hue: {
+            enabled: false,
+            settings: {
+                // IP Adresse der Hue Bridge
+                bridge: "172.16.23.149",
+                // Benutzername (Siehe http://developers.meethue.com/gettingstarted.html für das Anlegen eines Benutzers)
+                user: "newdeveloper"
+            }
         }
     },
 

@@ -281,6 +281,12 @@ var scriptEngine = {
         } else if (pattern.valLe) {
             if (pattern.logic == "and") { return false; }
         }
+        if (pattern.valNe && event.newState.value != pattern.valNe) {
+            if (pattern.logic == "or") { return true; }
+            matched = true;
+        } else if (pattern.valNe) {
+            if (pattern.logic == "and") { return false; }
+        }
 
         // Old-Value matching
         if (pattern.oldVal && pattern.oldVal == event.oldState.value) {
@@ -311,6 +317,12 @@ var scriptEngine = {
             if (pattern.logic == "or") { return true; }
             matched = true;
         } else if (pattern.oldValLe) {
+            if (pattern.logic == "and") { return false; }
+        }
+        if (pattern.oldValNe && event.oldState.value != pattern.oldValNe) {
+            if (pattern.logic == "or") { return true; }
+            matched = true;
+        } else if (pattern.oldValNe) {
             if (pattern.logic == "and") { return false; }
         }
 

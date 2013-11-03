@@ -1,7 +1,7 @@
 /**
  *      HomeMatic ReGaHss Schnittstelle für Node.js
  *
- *      Version 0.5
+ *      Version 0.6
  *
  *      Copyright (c) 2013 http://hobbyquaker.github.io
  *
@@ -71,28 +71,45 @@ rega.prototype = {
                     eval(jscode);
 
                     logger.verbose(langJSON);
-                    logger.info("ccu.io        translate.lang.js loaded");
+                    logger.info("ccu.io        loaded translate.lang.js");
 
-                    request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.extensionV.js', encoding: null }, function(err, res, body) {
-                        var str = iconv.decode(body, 'ISO-8859-1');
-                        var jscode = str.replace(/^jQuery\./, "");
-
-                        eval(jscode);
-
-                        logger.verbose(langJSON);
-                        logger.info("ccu.io        translate.lang.extensionV.js loaded");
-
-                        request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.stringtable.js', encoding: null }, function(err, res, body) {
+                    request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.stringtable.js', encoding: null }, function(err, res, body) {
+                        if (res.statusCode == 200) {
                             var str = iconv.decode(body, 'ISO-8859-1');
                             var jscode = str.replace(/^jQuery\./, "");
 
-                            eval(jscode);
-                            logger.verbose(langJSON);
-                            logger.info("ccu.io        translate.lang.stringtable.js loaded");
+                            try {
+                                eval(jscode);
+                            } catch (e) {
+                                callback(langJSON);
+                            }
 
+                            logger.verbose(langJSON);
+                            logger.info("ccu.io        loaded translate.lang.stringtable.js");
+                        } else {
+                            callback(langJSON);
+                            return;
+                        }
+
+
+                        request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.extensionV.js', encoding: null }, function(err, res, body) {
+                            if (res.statusCode == 200) {
+                                var str = iconv.decode(body, 'ISO-8859-1');
+                                var jscode = str.replace(/^jQuery\./, "");
+
+                                try {
+                                    eval(jscode);
+                                } catch (e) {
+                                    callback(langJSON);
+                                    return;
+                                }
+
+                                logger.verbose(langJSON);
+                                logger.info("ccu.io        loaded translate.lang.extensionV.js");
+
+                            }
                             callback(langJSON);
                         });
-
                     });
 
                 } catch (e) {
@@ -150,14 +167,11 @@ rega.prototype = {
                         }
 
                     }
-
                 }
                 logger.info("ccu.io        stringtable loaded");
                 callback(lang);
             });
-  });
-
-
+        });
     },
     addStringVariable: function (name, desc, str, callback) {
         var script = "object test = dom.GetObject('"+name+"');\n" +
