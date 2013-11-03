@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.67";
+settings.version = "0.9.68";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
@@ -125,11 +125,13 @@ var regahss = new rega({
             ccuReachable = true;
             ccuRegaUp = true;
 
-            regahss.loadStringTable(function (data) {
+            regahss.loadStringTable(settings.stringTableLanguage, function (data) {
                 stringtable = data;
+                regahss.checkTime(loadRegaData);
+
             });
 
-            regahss.checkTime(loadRegaData);
+
 
         }
     }
@@ -282,7 +284,7 @@ function tryReconnect() {
 
 function reconnect() {
 
-    regahss.loadStringTable(function (data) {
+    regahss.loadStringTable(settings.stringTableLanguage, function (data) {
         stringtable = data;
     });
 

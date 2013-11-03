@@ -1,7 +1,7 @@
 /**
  *      HomeMatic ReGaHss Schnittstelle für Node.js
  *
- *      Version 0.4
+ *      Version 0.5
  *
  *      Copyright (c) 2013 http://hobbyquaker.github.io
  *
@@ -17,7 +17,8 @@ var logger = require(__dirname+'/logger.js'),
     fs = require('fs'),
     xml2js = require('xml2js'),
     iconv = require('iconv-lite'),
-    request = require('request');
+    request = require('request'),
+    extend = require('extend');
 
 
 var parser = new xml2js.Parser({explicitArray:false});
@@ -58,20 +59,58 @@ rega.prototype = {
             callback(0, err);
         });
     },
-    loadStringTable: function (callback) {
+    loadTranslation: function (callback) {
         var that = this;
-        request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.stringtable.js', encoding: null }, function(err, res, body) {
-            try {
-                var str = iconv.decode(body, 'ISO-8859-1');
-                var jscode = str.replace(/^jQuery\.extend\(true,langJSON, /, "").replace(/\);/,"");
-                logger.verbose(jscode);
-                var translation = JSON.parse(jscode);
-            } catch (e) {
 
+        request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.js', encoding: null }, function(err, res, body) {
+            if (res.statusCode == 200) {
+                try {
+                    var HMidentifier, langJSON;
+                    var jscode = iconv.decode(body, 'ISO-8859-1');
+
+                    eval(jscode);
+
+                    logger.verbose(langJSON);
+                    logger.info("ccu.io        translate.lang.js loaded");
+
+                    request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.extensionV.js', encoding: null }, function(err, res, body) {
+                        var str = iconv.decode(body, 'ISO-8859-1');
+                        var jscode = str.replace(/^jQuery\./, "");
+
+                        eval(jscode);
+
+                        logger.verbose(langJSON);
+                        logger.info("ccu.io        translate.lang.extensionV.js loaded");
+
+                        request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.stringtable.js', encoding: null }, function(err, res, body) {
+                            var str = iconv.decode(body, 'ISO-8859-1');
+                            var jscode = str.replace(/^jQuery\./, "");
+
+                            eval(jscode);
+                            logger.verbose(langJSON);
+                            logger.info("ccu.io        translate.lang.stringtable.js loaded");
+
+                            callback(langJSON);
+                        });
+
+                    });
+
+                } catch (e) {
+                    logger.error("ccu.io        loadTranslation "+e);
+                    callback(null);
+                }
+
+            } else {
+                callback(null);
             }
+        });
 
+    },
+    loadStringTable: function (language, callback) {
+        var that = this;
+        language = language || "de";
 
-
+        that.loadTranslation(function (translation) {
             request.get({ url: 'http://' + that.options.ccuIp + '/config/stringtable_de.txt', encoding: null }, function(err, res, body) {
                 var data = body;
                 var str = iconv.decode(data, 'ISO-8859-1');
@@ -84,9 +123,11 @@ rega.prototype = {
 
                         if (resultArr) {
                             var text = resultArr[4];
-                            if (translation) {
-                                text = translation.de[text.replace(/\${([^}]*)}/,"$1")];
+
+                            if (translation && translation[language]) {
+                                text = translation[language][text.replace(/\${([^}]*)}/,"$1")] || text;
                             }
+
                             if (!lang[resultArr[1]]) {
                                 lang[resultArr[1]] = {};
                             }
@@ -114,7 +155,8 @@ rega.prototype = {
                 logger.info("ccu.io        stringtable loaded");
                 callback(lang);
             });
-        });
+  });
+
 
     },
     addStringVariable: function (name, desc, str, callback) {

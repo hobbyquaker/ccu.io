@@ -32,6 +32,7 @@ var settings = {
             { id: "io_rf",      port: 2001 }
         ]
     },
+    stringTableLanguage: "de",
     logging: {
         enabled: true,
         file: "devices-variables.log",
@@ -45,7 +46,6 @@ var settings = {
         // Interval für Polling in milli-Sekunden
         pollDataInterval: 15000,
 
-        // Todo Implement Polling Trigger
         pollDataTrigger: "BidCos-RF.BidCoS-RF:50.PRESS_LONG",
 
         metaScripts: [
