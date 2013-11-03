@@ -6,7 +6,7 @@ DEBUG=false
 # Konfiguration der Umgebung
 ########################################################################
 
-Version=0.5.2
+Version=0.5.3
 SCRIPT_NAME=$( basename $0 )
 START_PATH=$( dirname $0 )
 if [ ${START_PATH} = . ]
@@ -359,7 +359,7 @@ then
     # Backup der alten CCU.IO Umgebung
     echo "Sichern der alten ccu.io Umgebung" | tee -a ${LOG}
     echo "Das Sichern kann einen Moment dauern"
-    tar cfz ${TEMP}/ccu.io.${TS}.tar.gz ${CCUIO_PATH} #1>/dev/null
+    tar cfz /tmp/ccu.io.${TS}.tar.gz --exclude='*.tar.gz' --exclude=${CCUIO_PATH}/log --exclude=${CCUIO_PATH}/tmp ${CCUIO_PATH} #1>/dev/null
     if [ ${?} != 0 ]
     then
       echo "Fehler beim erstellen der Sicherung unter ${CCUIO_PATH}/tmp/ccu.io.${TS}.tar.gz" | tee -a ${LOG}
@@ -367,14 +367,14 @@ then
       RC=false
       return 1
     else
-      mv ${TEMP}/ccu.io.${TS}.tar.gz ${CCUIO_PATH}/tmp 
+      mv /tmp/ccu.io.${TS}.tar.gz ${CCUIO_PATH}/tmp 
       echo " Der alte Versionsstand von ccu.io wurde unter ${CCUIO_PATH}/tmp/ccu.io.${TS}.tar.gz gesichert" | tee -a ${LOG}
       # Aktualisieren von CCU.IO
-      ${NODE_CMD} ${CCUIO_PATH}/ccu.io-server.js stop
       ADDON=ccu.io
       ADDON_PATH=${ADDON}
       LINK="https://github.com/hobbyquaker/${ADDON}/archive/master.zip"
       install ccu.io
+      ${NODE_CMD} ${CCUIO_PATH}/ccu.io-server.js restart
       PARAMETER=all
     fi
   fi
@@ -466,7 +466,7 @@ then
         chown -R ${CCUIO_USER} ${CCUIO_PATH}
         CCUIO=true
         PARAMETER=all
-        CCUIONEW=true
+        ${CCUIO_CMD} start
       fi
     fi
   fi
@@ -536,20 +536,6 @@ then
       echo "Es soll ccu.io installiert/aktualisiert werden, dazu bitte das Script als root aufrufen"
       echo "sudo ./ccu.io.install.sh"      
       RC=false
-    fi
-  fi
-  
-  #################################
-  # CCU.IO starten
-  #################################
-  echo "CCUIO = true" 1>&2
-  if [ ${CCUIO} = true -a ${PARAMETER} = all ]
-  then
-    if [ ${ROOT} = true ]
-    then
-      ${CCUIO_CMD} start
-    else 
-      ${NODE_CMD} ${CCUIO_PATH}/ccu.io-server.js start
     fi
   fi
 fi
