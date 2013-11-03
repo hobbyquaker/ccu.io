@@ -3,8 +3,8 @@ export CCUIO_PATH="/opt/ccu.io"              # Hier den Pfad angeben in dem sich
 export CCUIO_CMD="/etc/init.d/ccu.io.sh"     # Hier den Aufruf von ccu.io angeben
 export CCUIO_USER=pi                         # Hier den User angeben unter dem ccu.io laufen soll
 #export CCUIP=                               # IP der CCU
-#export CCUIOIP=                             # IP des Rechners auf dem ccu.io läuft
-#export NODE_CMD=                             # Wie heisst node auf dem Rechner
+#export CCUIOIP=                             # IP des Rechners auf dem ccu.io laeuft
+#export NODE_CMD=                            # Wie heisst node auf dem Rechner
 
 # Addons und ccu.io
 export DASHUI=true                           # DashUI installieren = 1
