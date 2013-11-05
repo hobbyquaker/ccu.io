@@ -27,12 +27,12 @@ function beleuchteteRaeumeFinden() {
         for (var j = 0; j < arrRaumKanaele.length; j++) {
             var idKanal = arrRaumKanaele[j]
             if (arrLicht.indexOf(idKanal) != -1) {
-                if (regaObjects[idKanal].DPs.STATE && datapoints[regaObjects[idKanal].DPs.STATE][0] > 0) {
+                if (regaObjects[idKanal].DPs.STATE && (datapoints[regaObjects[idKanal].DPs.STATE][0] > 0 || datapoints[regaObjects[idKanal].DPs.STATE][0] === "true")) {
                     if (arrBeleuchteteRaeume.indexOf(nameRaum) == -1) {
                         arrBeleuchteteRaeume.push(nameRaum);
                     }
                 }
-                if (regaObjects[idKanal].DPs.LEVEL && datapoints[regaObjects[idKanal].DPs.LEVEL][0] > 0) {
+                if (!regaObjects[idKanal].DPs.STATE && regaObjects[idKanal].DPs.LEVEL && datapoints[regaObjects[idKanal].DPs.LEVEL][0] > 0) {
                     if (arrBeleuchteteRaeume.indexOf(nameRaum) == -1) {
                         arrBeleuchteteRaeume.push(nameRaum);
                     }

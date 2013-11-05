@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.70";
+settings.version = "0.9.71";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
@@ -1086,6 +1086,7 @@ function initSocketIO(_io) {
 
         socket.on('getDatapoints', function(callback) {
             logger.verbose("socket.io <-- getData");
+
             callback(datapoints);
         });
 
@@ -1196,6 +1197,7 @@ function initSocketIO(_io) {
                 if (!obj.ValueUnit) {
                     obj.ValueUnit = "";
                 }
+                logger.info("adding dp "+id);
                 datapoints[id] = [obj.Value, formatTimestamp(), true];
             }
 
@@ -1225,6 +1227,7 @@ function initSocketIO(_io) {
                 }
             }
 
+            //logger.info("setState"+JSON.stringify(arr));
 
             setState(id,val,ts,ack, callback);
 
