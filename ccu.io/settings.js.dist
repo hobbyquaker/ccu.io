@@ -85,7 +85,7 @@ var settings = {
             }
         },
         hue: {
-            enabled: true,
+            enabled: false,
             settings: {
                 bridge: "172.16.23.149",
                 user: "newdeveloper",
