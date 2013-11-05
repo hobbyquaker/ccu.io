@@ -263,7 +263,7 @@ Etwas in ccu.io/log/ccu.io.log schreiben
 
 ### setState(id, val)
 
-Den Wert eines Datenpunktes ändern
+Den Wert eines Datenpunktes ändern. ID kann eine ID, ein Name oder eine Adresse sein.
 
 ### executeProgram(id)
 
@@ -469,8 +469,7 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 
 ## Todo/Roadmap
 
-* Hue Adapter
-* Plugwise Adapter
+* CCU.IO Update in Weboberfläche anstoßen
 * LIRC Adapter
 * ArtNet (DMX) Adapter
 * Email Adapter
@@ -479,17 +478,26 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * Oberfläche vervollständigen
 * Doku für Adapter-Entwickler
 * BIN-RPC Implementierung vervollständigen
-* CCU.IO-Pseudo-Gerät in CCU? Könnte sinnvoll sein z.B: für Polling-Trigger u.v.m. ...
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 * CCU2-Paket für einfache Installation
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
 
+### 0.9.70
+
+* (Hobbyquaker) Bugfix Steuerung HM-CC-TC
+* (Hobbyquaker) setState Methode akzeptiert nun auch Namen oder Adressen statt IDs
+* (Hobbyquaker) setObject Methode können Räume, Gewerke und Favoriten mitgegeben werden
+* (Hobbyquaker) Hue Adapter: Lampen können nun Räumen, Gewerken und Favoriten zugeordnet werden
+* (Hobbyquaker) Hue Adapter: Fallunterscheidung "Color Light" (LivingColors) und "Extended Color Light" (Hue) - nur verfügbare Datenpunkte werden angelegt
+* (Hobbyquaker) Hue Adapter: Status Polling
+
+
 ### 0.9.69
 
 * (Stryke) Installer: Non root ccu.io update and CCUIO_UPDATE parameter
-* (Hobbyquaker) neuer Adapter: Philips Hue
+* (Hobbyquaker) neuer Adapter: Hue
 * (Hobbyquaker) Bugfix: Fehler beim Laden der Stringtable (betrifft nur CCU1)
 
 ### 0.9.68

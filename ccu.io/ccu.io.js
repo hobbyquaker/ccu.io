@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.69";
+settings.version = "0.9.70";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
@@ -908,7 +908,7 @@ function setState(id,val,ts,ack, callback) {
         //}
 
         // Bei Update von Thermostaten den nächsten Event von SET_TEMPERATURE und CONTROL_MODE ignorieren!
-        if (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/)) {
+        if (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/) || regaObjects[id].Name.match(/SETPOINT$/)) {
             var parent = regaObjects[regaObjects[id].Parent];
             var setTemp = parent.DPs.SET_TEMPERATURE;
             var ctrlMode = parent.DPs.CONTROL_MODE;
@@ -1123,7 +1123,58 @@ function initSocketIO(_io) {
             if (!obj) {
                 return;
             }
-            regaObjects[id] = obj;
+            if (obj.rooms) {
+                for (var i = 0; i < obj.rooms.length; i++) {
+                    var roomId;
+                    if (regaIndex.ENUM_ROOMS.indexOf(obj.rooms[i]) != -1) {
+                        roomId = obj.rooms[i];
+                    } else if (regaIndex.Name[obj.rooms[i]] && regaIndex.Name[obj.rooms[i]][1] == "ENUM_ROOMS") {
+                        roomId = regaIndex.Name[obj.rooms[i]][0];
+
+                    } else {
+                        logger.warn("ccu.io        setObject "+id+" room "+obj.rooms[i]+" not found");
+                    }
+                    if (roomId) {
+                        regaObjects[roomId].Channels.push(id);
+                    }
+                }
+                delete obj.rooms
+            }
+            if (obj.funcs) {
+                for (var i = 0; i < obj.funcs.length; i++) {
+                    var funcId;
+                    if (regaIndex.ENUM_FUNCTIONS.indexOf(obj.funcs[i]) != -1) {
+                        funcId = obj.funcs[i];
+                    } else if (regaIndex.Name[obj.funcs[i]] && regaIndex.Name[obj.funcs[i]][1] == "ENUM_FUNCTIONS") {
+                        funcId = regaIndex.Name[obj.funcs[i]][0];
+                    } else {
+                        logger.warn("ccu.io        setObject "+id+" function "+obj.funcs[i]+" not found");
+                    }
+                    if (funcId) {
+                        regaObjects[funcId].Channels.push(id);
+                    }
+                }
+                delete obj.funcs;
+            }
+            if (obj.favs) {
+                for (var i = 0; i < obj.favs.length; i++) {
+                    var favId;
+                    if (regaIndex.FAVORITE.indexOf(obj.favs[i]) != -1) {
+                        favId = obj.favs[i];
+                    } else if (regaIndex.Name[obj.favs[i]] && regaIndex.Name[obj.favs[i]][1] == "FAVORITE") {
+                        favId = regaIndex.Name[obj.favs[i]][0];
+                    } else {
+                        logger.warn("ccu.io        setObject "+id+" favorite "+obj.favs[i]+" not found");
+                    }
+                    if (favId) {
+                        regaObjects[favId].Channels.push(id);
+                    }
+                }
+                delete obj.favs;
+            }
+
+
+
 
             if (obj.TypeName) {
                 if (!regaIndex[obj.TypeName]) {
@@ -1141,9 +1192,15 @@ function initSocketIO(_io) {
             if (obj.Address) {
                 regaIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
             }
-            if (obj.TypeName == "HSSDP" && obj.Value !== undefined) {
-                datapoints[id] = [obj.Value];
+            if (obj.TypeName.match(/DP$/)) {
+                if (!obj.ValueUnit) {
+                    obj.ValueUnit = "";
+                }
+                datapoints[id] = [obj.Value, formatTimestamp(), true];
             }
+
+            regaObjects[id] = obj;
+
             if (callback) {
                 callback();
             }
@@ -1153,10 +1210,21 @@ function initSocketIO(_io) {
         socket.on('setState', function(arr, callback) {
             // Todo Delay!
 
+            //logger.info("setState"+JSON.stringify(arr));
+
             var id =    arr[0],
                 val =   arr[1],
                 ts =    arr[2],
                 ack =   arr[3];
+
+            if (typeof id == "string") {
+                if (regaIndex.Name[id]) {
+                    id = regaIndex.Name[id][0];
+                } else if (regaIndex.Address[id]) {
+                    id = regaIndex.Address[id][0];
+                }
+            }
+
 
             setState(id,val,ts,ack, callback);
 

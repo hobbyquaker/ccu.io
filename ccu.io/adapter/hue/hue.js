@@ -2,28 +2,30 @@
  *      CCU.IO Hue Adapter
  *      11'2013 Hobbyquaker
  *
- *      Version 0.1
+ *      Version 0.3
  *
- *      TODO Status Polling
  *      TODO CMD_WAIT
- *      TODO Group API
+ *      TODO Group APIk
  */
 
 var settings = require(__dirname+'/../../settings.js');
 
 if (!settings.adapters.hue || !settings.adapters.hue.enabled) {
-    process.exit();
+  //  process.exit();
 }
+
+var hueSettings = settings.adapters.hue.settings;
 
 var logger =    require(__dirname+'/../../logger.js'),
     io =        require('socket.io-client'),
-    HueApi = require("node-hue-api").HueApi,
-    host = "172.16.23.149",
-    user = "newdeveloper",
-    hue = new HueApi(settings.adapters.hue.settings.bridge, settings.adapters.hue.settings.user);
+    HueApi =    require("node-hue-api").HueApi,
+    host =      "172.16.23.149",
+    user =      "newdeveloper",
+    hue =       new HueApi(hueSettings.bridge, hueSettings.user);
 
-var objects = {};
-var apiObj = {};
+var objects = {},
+    datapoints = {},
+    apiObj = {};
 
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
@@ -54,8 +56,9 @@ socket.on('event', function (obj) {
     var id = obj[0];
     var val = obj[1];
 
-    if (val == "false") { val = false; }
-    if (val == "true") { val = true; }
+
+    if (val === "false") { val = false; }
+    if (val === "true") { val = true; }
     if (parseInt(val,10) == val) { val = parseInt(val,10); }
 
     if (objects[id] && objects[id].hueType) {
@@ -63,6 +66,8 @@ socket.on('event', function (obj) {
         var lamp = tmpArr[1];
         //console.log("received event lamp="+lamp+" dp="+objects[id].hueType+" val="+val);
         apiObj[lamp][objects[id].hueType] = val;
+        datapoints[objects[id].Name] = [val];
+
         //console.log("apiObj["+lamp+"]="+JSON.stringify(apiObj[lamp]));
 
         // TODO IF NOT WAIT
@@ -92,6 +97,9 @@ process.on('SIGTERM', function () {
 
 function setObject(id, obj) {
     objects[id] = obj;
+    if (obj.Value) {
+        datapoints[obj.Name] = [obj.Value];
+    }
     socket.emit("setObject", id, obj);
 }
 
@@ -101,23 +109,53 @@ hue.getFullState(function(err, config) {
         logger.info("adapter hue   terminating");
         process.exit();
     }
-    logger.info("adapter hue   inserting objects");
 
-    var dp = 90001;
+    var dp = hueSettings.firstId + 1;
     var devChannels = [];
     for (var i in config.lights) {
         apiObj[i] = {};
 
         devChannels.push(dp);
 
-        setObject(dp, {
+        var extended = config.lights[i].type == "Extended color light";
+
+        var chObject = {
             Name: config.lights[i].name,
             TypeName: "CHANNEL",
             Address: "HUE."+i,
-            HssType: "HUE " + config.lights[i].type,
-            DPs: {STATE:dp+1,LEVEL:dp+2,HUE:dp+3,SAT:dp+4,CT:dp+5,COLORMODE:dp+6,"ALERT":dp+7,"RAMP_TIME":dp+8,"CMD_WAIT":dp+9},
-            Parent: 90000
-        });
+            HssType: "HUE_" + config.lights[i].type.replace(/ /g, "_").toUpperCase(),
+            DPs: {
+                STATE:          dp+1,
+                LEVEL:          dp+2,
+                HUE:            dp+3,
+                SAT:            dp+4,
+                ALERT:          dp+5,
+                RAMP_TIME:      dp+6,
+                CMD_WAIT:       dp+7,
+                UNREACH:        dp+8
+
+            },
+            Parent: hueSettings.firstId
+        };
+
+        if (extended) {
+            chObject.DPs.CT = dp + 9;
+            chObject.DPs.COLORMODE = dp + 10;
+        }
+
+        if (hueSettings.lamps[i]) {
+            if (hueSettings.lamps[i].rooms) {
+                chObject.rooms = hueSettings.lamps[i].rooms;
+            }
+            if (hueSettings.lamps[i].funcs) {
+                chObject.funcs = hueSettings.lamps[i].funcs;
+            }
+            if (hueSettings.lamps[i].favs) {
+                chObject.favs = hueSettings.lamps[i].favs;
+            }
+        }
+
+        setObject(dp, chObject);
 
         setObject(dp+1, {
             Name: "HUE."+i+".STATE",
@@ -149,20 +187,6 @@ hue.getFullState(function(err, config) {
             Parent: dp
         });
         setObject(dp+5, {
-            Name: "HUE."+i+".CT",
-            hueType: "ct",
-            TypeName: "HSSDP",
-            Value: config.lights[i].state.ct,
-            Parent: dp
-        });
-        setObject(dp+6, {
-            Name: "HUE."+i+".COLORMODE",
-            hueType: "colormode",
-            TypeName: "HSSDP",
-            Value: config.lights[i].state.colormode,
-            Parent: dp
-        });
-        setObject(dp+7, {
             Name: "HUE."+i+".ALERT",
             ValueType: 2,
             hueType: "alert",
@@ -170,24 +194,50 @@ hue.getFullState(function(err, config) {
             Value: config.lights[i].state["alert"],
             Parent: dp
         });
-        setObject(dp+8, {
+        setObject(dp+6, {
             Name: "HUE."+i+".RAMP_TIME",
             hueType: "transitiontime",
             TypeName: "HSSDP",
-            Value: 10,
+            Value: null,
             Parent: dp
         });
-        setObject(dp+9, {
+        setObject(dp+7, {
             Name: "HUE."+i+".CMD_WAIT",
             ValueType: 2,
             TypeName: "HSSDP",
             Value: false,
             Parent: dp
         });
-        dp += 10;
+        setObject(dp+8, {
+            Name: "HUE."+i+".UNREACH",
+            ValueType: 2,
+            TypeName: "HSSDP",
+            Value: !config.lights[i].state["reachable"],
+            Parent: dp
+        });
+        if (extended) {
+            setObject(dp+9, {
+                Name: "HUE."+i+".CT",
+                hueType: "ct",
+                TypeName: "HSSDP",
+                Value: config.lights[i].state.ct,
+                Parent: dp
+            });
+            setObject(dp+10, {
+                Name: "HUE."+i+".COLORMODE",
+                hueType: "colormode",
+                TypeName: "HSSDP",
+                Value: config.lights[i].state.colormode,
+                Parent: dp
+            });
+            dp += 11;
+        } else {
+            dp += 9;
+        }
+
     }
 
-    setObject(90000, {
+    setObject(hueSettings.firstId, {
         Name: config.name,
         TypeName: "DEVICE",
         HssType: "HUE-BRIDGE",
@@ -196,7 +246,62 @@ hue.getFullState(function(err, config) {
         Channels: devChannels
     });
 
+    logger.info("adapter hue   inserted objects");
+
+    if (hueSettings.pollingEnabled) {
+        logger.info("adapter hue   polling enabled - interval "+hueSettings.pollingInterval+"ms");
+        setInterval(pollAll, hueSettings.pollingInterval);
+    }
+
+    function pollAll() {
+        pollLamp(1);
+
+    }
+
+    function setState(id, val) {
+        datapoints[id] = [val];
+        logger.info("adapter hue   setState "+id+" "+val);
+        socket.emit("setState", [id,val,null,true]);
+    }
+
+    function pollLamp(lamp) {
+        if (lamp > Object.keys(apiObj).length) {
+            return;
+        }
+        logger.verbose("adapter hue   polling lamp "+lamp);
+        hue.lightStatus(lamp, function(err, result) {
+            if (err) {
+                logger.error("adapter hue   pollLamp "+lamp+" error "+JSON.stringify(err));
+                return;
+            }
+
+            logger.verbose("adapter hue   result lamp "+lamp+" of "+Object.keys(apiObj).length+" "+JSON.stringify(result.state));
 
 
-//    console.log(config);
+
+            if ((datapoints["HUE."+lamp+".STATE"] && datapoints["HUE."+lamp+".STATE"][0] != result.state["on"]) || !datapoints["HUE."+lamp+".STATE"]) {
+                setState("HUE."+lamp+".STATE",      result.state["on"]);
+            }
+            if ((datapoints["HUE."+lamp+".LEVEL"] && datapoints["HUE."+lamp+".LEVEL"][0] != result.state["bri"]) || !datapoints["HUE."+lamp+".LEVEL"]) {
+                setState("HUE."+lamp+".LEVEL",      result.state.bri);
+            }
+            if ((datapoints["HUE."+lamp+".HUE"] && datapoints["HUE."+lamp+".HUE"][0] != result.state["hue"]) || !datapoints["HUE."+lamp+".HUE"]) {
+                setState("HUE."+lamp+".HUE",        result.state.hue);
+            }
+            if ((datapoints["HUE."+lamp+".SAT"] && datapoints["HUE."+lamp+".SAT"][0] != result.state["sat"]) || !datapoints["HUE."+lamp+".SAT"]) {
+                setState("HUE."+lamp+".SAT",        result.state.sat);
+            }
+            if ((datapoints["HUE."+lamp+".CT"] && datapoints["HUE."+lamp+".CT"][0] != result.state["ct"]) || !datapoints["HUE."+lamp+".CT"]) {
+                setState("HUE."+lamp+".CT",         result.state.ct);
+            }
+            if ((datapoints["HUE."+lamp+".COLORMODE"] && datapoints["HUE."+lamp+".COLORMODE"][0] != result.state["colormode"]) || !datapoints["HUE."+lamp+".COLORMODE"]) {
+                setState("HUE."+lamp+".COLORMODE",  result.state.colormode);
+            }
+
+            setTimeout(function () {
+                pollLamp(lamp+1);
+            }, 50);
+        });
+    }
+
 });
