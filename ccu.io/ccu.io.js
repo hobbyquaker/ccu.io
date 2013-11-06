@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.71";
+settings.version = "0.9.72";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
@@ -1135,7 +1135,7 @@ function initSocketIO(_io) {
                     } else {
                         logger.warn("ccu.io        setObject "+id+" room "+obj.rooms[i]+" not found");
                     }
-                    if (roomId) {
+                    if (roomId && regaObjects[roomId].Channels.indexOf(id) == -1) {
                         regaObjects[roomId].Channels.push(id);
                     }
                 }
@@ -1151,7 +1151,7 @@ function initSocketIO(_io) {
                     } else {
                         logger.warn("ccu.io        setObject "+id+" function "+obj.funcs[i]+" not found");
                     }
-                    if (funcId) {
+                    if (funcId && regaObjects[funcId].Channels.indexOf(id) == -1) {
                         regaObjects[funcId].Channels.push(id);
                     }
                 }
@@ -1167,7 +1167,7 @@ function initSocketIO(_io) {
                     } else {
                         logger.warn("ccu.io        setObject "+id+" favorite "+obj.favs[i]+" not found");
                     }
-                    if (favId) {
+                    if (favId && regaObjects[favId].Channels.indexOf(id) == -1) {
                         regaObjects[favId].Channels.push(id);
                     }
                 }
