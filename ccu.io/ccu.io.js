@@ -1277,23 +1277,27 @@ function startAdapters () {
 
         var path = __dirname + "/adapter/"+adapter+"/"+adapter+".js";
 
-        logger.info("ccu.io        starting adapter "+path);
-        children.push(childProcess.fork(path));
 
         switch (mode) {
             case "periodical":
-                setInterval(function () {
-                    logger.info("ccu.io        starting adapter "+path+" (interval="+period+"ms");
-                    childProcess.fork(path);
-                }, period);
+                startAdapterPeriod(path, period);
                 break;
 
             default:
-
+                logger.info("ccu.io        starting adapter "+path);
+                children.push(childProcess.fork(path));
         }
     }
 }
 
+function startAdapterPeriod (adapter, interval) {
+   setInterval(function () {
+        logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms");
+        childProcess.fork(adapter);
+    }, interval);
+    logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms");
+    childProcess.fork(adapter);
+}
 
 process.on('SIGINT', function () {
     stop();
