@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.72";
+settings.version = "0.9.73";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
