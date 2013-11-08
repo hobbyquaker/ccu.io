@@ -117,6 +117,23 @@ var settings = {
                     }
                 }
             }
+        },
+		ping: {
+            enabled: false,
+            settings: {
+                firstId: 70100,
+                pollingInterval: 60000, // Interval must be greater than 5 seconds * number of IPs
+                IPs: {
+                    "192.168.1.1": {
+						name:  "PC 1",
+						rooms: ["Hobbyraum"],
+                    },
+                    "192.168.1.2": {
+                        rooms: ["Wohnzimmer"],
+						name:  "My mobile device",
+                    }
+                }
+            }
         }
     },
 

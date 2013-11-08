@@ -278,6 +278,13 @@ function tryReconnect() {
             ccuRegaUp = false;
             ccuReachable = false;
             setTimeout(tryReconnect, 5000);
+			
+			if (debugMode) {
+				// Just start webServer for debug
+				if (!webserverUp) {
+					initWebserver();
+				}
+			}
         }
     });
 }
