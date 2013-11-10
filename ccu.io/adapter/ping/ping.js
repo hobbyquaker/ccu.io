@@ -36,15 +36,15 @@ if (settings.ioListenPort) {
 
 
 socket.on('connect', function () {
-    logger.info("adapter ping    connected to ccu.io");
+    logger.info("adapter ping  connected to ccu.io");
 });
 
 socket.on('disconnect', function () {
-    logger.info("adapter ping    disconnected from ccu.io");
+    logger.info("adapter ping  disconnected from ccu.io");
 });
 
 function stop() {
-    logger.info("adapter ping   terminating");
+    logger.info("adapter ping  terminating");
     setTimeout(function () {
         process.exit();
     }, 250);
@@ -72,12 +72,14 @@ function pingInit () {
 	var i = 0;
 	
     for (var ip in pingSettings.IPs) {
+        var ip_ = ip.replace(/\./g,"_");
+
         devChannels.push(dp);
 		
         var chObject = {
             Name: (pingSettings.IPs[ip]['name']) ? pingSettings.IPs[ip]['name'] : ip,
             TypeName: "CHANNEL",
-            Address: "PING."+ip,
+            Address: "PING."+ip_,
             HssType: "PING",
             DPs: {
                 STATE: dp+1
@@ -96,9 +98,9 @@ function pingInit () {
 		}
 		
 		setObject(dp, chObject);
-		
+
 		setObject(dp+1, {
-            Name: "PING."+ip+".STATE",
+            Name: "PING."+ip_+".STATE",
             ValueType: 2,
             TypeName: "HSSDP",
             Value: "false",
@@ -116,17 +118,17 @@ function pingInit () {
         Channels: devChannels
     });
 
-    logger.info("adapter ping   inserted objects");
+    logger.info("adapter ping  inserted objects");
 
-    logger.info("adapter ping   polling enabled - interval "+pingSettings.pollingInterval+"ms");
+    logger.info("adapter ping  polling enabled - interval "+pingSettings.pollingInterval+"ms");
 
-    setInterval(pollIp, pingSettings.pollingInterval, undefined);
+    setInterval(pollIp, pingSettings.pollingInterval);
     pollIp (undefined);
 }
 
 function setState(id, val) {
 	datapoints[id] = [val];
-	logger.info("adapter ping   setState "+id+" "+val);
+	logger.info("adapter ping  setState "+id+" "+val);
 	socket.emit("setState", [id,val,null,true]);
 }
 
@@ -149,14 +151,14 @@ function pollIp(ip) {
         }
     }
     if (curIP != null) {
-        logger.verbose("adapter ping   polling ip "+curIP);
+        logger.verbose("adapter ping  polling ip "+curIP);
         ping.sys.probe(curIP, function(isAlive){
             if (!isAlive) {
-                logger.verbose("adapter ping   result for "+curIP+" is UNRECHABLE");
-                setState("PING."+curIP+".STATE",  "false");
+                logger.verbose("adapter ping  result for "+curIP+" is UNRECHABLE");
+                setState("PING."+curIP.replace(/\./g,"_")+".STATE",  "false");
             } else {
-                logger.verbose("adapter ping   result for "+curIP+" is ALIVE");
-                setState("PING."+curIP+".STATE",  "true");
+                logger.verbose("adapter ping  result for "+curIP+" is ALIVE");
+                setState("PING."+curIP.replace(/\./g,"_")+".STATE",  "true");
             }
         });
         setTimeout (pollIp, 5000, curIP);
