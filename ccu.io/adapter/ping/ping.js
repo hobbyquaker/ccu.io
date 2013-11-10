@@ -28,7 +28,7 @@ if (settings.ioListenPort) {
 } else if (settings.ioListenPortSsl) {
 	var socket = io.connect("127.0.0.1", {
 		port: settings.ioListenPortSsl,
-		secure: true,
+		secure: true
 	});
 } else {
 	process.exit();
@@ -103,7 +103,7 @@ function pingInit () {
             Name: "PING."+ip_+".STATE",
             ValueType: 2,
             TypeName: "HSSDP",
-            Value: "false",
+            Value: false,
             Parent: dp
         });
 		dp += 2;
@@ -128,7 +128,7 @@ function pingInit () {
 
 function setState(id, val) {
 	datapoints[id] = [val];
-	logger.info("adapter ping  setState "+id+" "+val);
+	logger.verbose("adapter ping  setState "+id+" "+val);
 	socket.emit("setState", [id,val,null,true]);
 }
 
@@ -155,10 +155,10 @@ function pollIp(ip) {
         ping.sys.probe(curIP, function(isAlive){
             if (!isAlive) {
                 logger.verbose("adapter ping  result for "+curIP+" is UNRECHABLE");
-                setState("PING."+curIP.replace(/\./g,"_")+".STATE",  "false");
+                setState("PING."+curIP.replace(/\./g,"_")+".STATE",  false);
             } else {
                 logger.verbose("adapter ping  result for "+curIP+" is ALIVE");
-                setState("PING."+curIP.replace(/\./g,"_")+".STATE",  "true");
+                setState("PING."+curIP.replace(/\./g,"_")+".STATE",  true);
             }
         });
         setTimeout (pollIp, 5000, curIP);
