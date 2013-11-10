@@ -1204,7 +1204,7 @@ function initSocketIO(_io) {
                 if (!obj.ValueUnit) {
                     obj.ValueUnit = "";
                 }
-                logger.info("adding dp "+id);
+                logger.verbose("adding dp "+id);
                 datapoints[id] = [obj.Value, formatTimestamp(), true];
             }
 
