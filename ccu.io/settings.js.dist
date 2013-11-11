@@ -134,6 +134,12 @@ var settings = {
                     }
                 }
             }
+        },
+        rego: {
+            enabled: false,
+            settings: {
+                firstId: 100000
+            }
         }
     },
 
