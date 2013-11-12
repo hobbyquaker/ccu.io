@@ -374,7 +374,7 @@ binrpc.prototype = {
 
                         break;
                     case "system.listMethods":
-                        logger.verbose("binrpc    <-- "+name+" request " + method + " " + JSON.stringify(res));
+                        logger.info("binrpc    <-- "+name+" request " + method + " " + JSON.stringify(res));
                         response = ["system.multicall", "system.listMethods"];
                         for (var name in this.methods) {
                             response.push(name);
@@ -412,8 +412,9 @@ binrpc.prototype = {
             });
 
         client.on('error', function (e) {
+            logger.error("binrpc        sendRequest port="+port+" buf="+buf.toString());
             logger.error("binrpc        "+JSON.stringify(e));
-        })
+        });
 
         client.on('data', function(data) {
             logger.silly("binrpc    --> receiving chunk "+chunk+" data.length="+data.length);
@@ -481,7 +482,7 @@ binrpc.prototype = {
                logger.verbose('binrpc    <-- '+name+' connected');
 
                 c.on('error', function(e) {
-                    logger.error('binrpc        '+JSON.stringify(e));
+                    logger.error('binrpc        '+name+' '+JSON.stringify(e));
                 });
 
                 c.on('end', function() {

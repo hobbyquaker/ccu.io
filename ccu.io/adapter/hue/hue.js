@@ -2,7 +2,7 @@
  *      CCU.IO Hue Adapter
  *      11'2013 Hobbyquaker
  *
- *      Version 0.6
+ *      Version 0.7
  *
  *      TODO CMD_WAIT
  *      TODO Group API
@@ -99,11 +99,10 @@ process.on('SIGTERM', function () {
 
 function setObject(id, obj) {
     objects[id] = obj;
-    if (obj.Value) {
+    if (obj.Value !== undefined) {
         datapoints[obj.Name] = [obj.Value];
         nameIndex[obj.Name] = id;
     }
-
     socket.emit("setObject", id, obj);
 }
 
@@ -224,7 +223,7 @@ hue.getFullState(function(err, config) {
             Name: "HUE."+i+".UNREACH",
             ValueType: 2,
             TypeName: "HSSDP",
-            Value: !config.lights[i].state["reachable"],
+            Value: (config.lights[i].state["reachable"] ? false : true),
             Parent: dp
         });
         if (extended) {
@@ -267,14 +266,16 @@ hue.getFullState(function(err, config) {
 
     function pollAll() {
         pollLamp(1);
-
     }
 
     function setState(id, val) {
         datapoints[id] = [val];
         //logger.info("adapter hue   setState "+id+" "+val);
+        //console.log("setState "+id+" "+val);
+
         if (nameIndex[id]) {
             id = nameIndex[id];
+            //console.log("emitting setState "+id+" "+val);
             socket.emit("setState", [id,val,null,true]);
         }
 
@@ -292,11 +293,12 @@ hue.getFullState(function(err, config) {
             }
 
             logger.verbose("adapter hue   result lamp "+lamp+" of "+Object.keys(apiObj).length+" "+JSON.stringify(result.state));
+            //console.log("adapter hue   result lamp "+lamp+" of "+Object.keys(apiObj).length+" "+JSON.stringify(result.state));
 
-
-
-            if ((datapoints["HUE."+lamp+".STATE"] && datapoints["HUE."+lamp+".STATE"][0] != result.state["on"]) || !datapoints["HUE."+lamp+".STATE"]) {
-                setState("HUE."+lamp+".STATE",      result.state["on"] && result.state["reachable"]);
+            var state = result.state["on"] && result.state["reachable"];
+            //console.log("lamp "+lamp+" state="+state);
+            if ((datapoints["HUE."+lamp+".STATE"] && datapoints["HUE."+lamp+".STATE"][0] != state) || !datapoints["HUE."+lamp+".STATE"]) {
+                setState("HUE."+lamp+".STATE",      state);
             }
             if ((datapoints["HUE."+lamp+".LEVEL"] && datapoints["HUE."+lamp+".LEVEL"][0] != result.state["bri"]) || !datapoints["HUE."+lamp+".LEVEL"]) {
                 setState("HUE."+lamp+".LEVEL",      result.state.bri);
@@ -312,6 +314,9 @@ hue.getFullState(function(err, config) {
             }
             if ((datapoints["HUE."+lamp+".CT"] && datapoints["HUE."+lamp+".CT"][0] != result.state["ct"]) || !datapoints["HUE."+lamp+".CT"]) {
                 setState("HUE."+lamp+".CT",         result.state.ct);
+            }
+            if ((datapoints["HUE."+lamp+".UNREACH"] && datapoints["HUE."+lamp+".UNREACH"][0] == result.state["reachable"]) || !datapoints["HUE."+lamp+".UNREACH"]) {
+                setState("HUE."+lamp+".UNREACH",    !result.state.reachable);
             }
 
             setTimeout(function () {

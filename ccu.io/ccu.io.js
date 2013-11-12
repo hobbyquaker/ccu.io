@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.75";
+settings.version = "0.9.76";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
@@ -333,10 +333,10 @@ function pollRega() {
 
                 if (settings.logging.varChangeOnly && notFirstVarUpdate) {
                     if (datapoints[id][0] != val) {
-                        cacheLog(ts+" "+id+" "+val+"\n");
+                        devLog(ts, id, val);
                     }
                 } else {
-                    cacheLog(ts+" "+id+" "+val+"\n");
+                    devLog(ts, id, val);
                 }
                 // Hat sich die Anzahl der Servicemeldungen geändert?
                 if (id == 41 && datapoints[id][0] != val) {
@@ -362,7 +362,7 @@ function pollServiceMsgs() {
         var val;
         for (id in data) {
             var ts = Math.round((new Date()).getTime() / 1000);
-            cacheLog(ts+" "+id+" "+data[id].AlState);
+            devLog(ts, id, data[id].AlState);
             setDatapoint(id, data[id].AlState, data[id].LastTriggerTime, true, data[id].AlOccurrenceTime);
         }
     });
@@ -555,7 +555,7 @@ function initRpc() {
                     if (regaObj && regaObj[0] && settings.logging.enabled) {
                         if (!regaObjects[regaObj] || !regaObjects[regaObj].dontLog) {
                             var ts = Math.round((new Date()).getTime() / 1000);
-                            cacheLog(ts+" "+regaObj[0]+" "+obj[3]+"\n");
+                            devLog(ts, regaObj[0], obj[3]);
                         }
                     }
 
@@ -935,6 +935,9 @@ function setState(id,val,ts,ack, callback) {
 
     // Virtual Datapoint
     if (id > 65535) {
+        var uxTime = Math.round((new Date()).getTime() / 1000);
+       // cacheLog(uxTime+" "+id+" "+JSON.stringify(val)+"\n");
+        devLog(uxTime, id, val);
         if (callback) {
             callback();
         }
@@ -1419,4 +1422,16 @@ function moveLog() {
         logMoving = false;
     });
 
+}
+
+function devLog(ts, id, val) {
+
+    if (typeof val === "string") {
+        if (val === "true") { val = true; }
+        if (val === "false") { val = false; }
+        if (!isNaN(val)) {
+            val = parseFloat(val);
+        }
+    }
+    cacheLog(ts+" "+id+" "+JSON.stringify(val)+"\n");
 }
