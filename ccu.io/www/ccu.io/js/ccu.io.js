@@ -60,7 +60,7 @@ $(document).ready(function () {
     var $datapointGrid = $("#grid_datapoints");
     var $eventGrid = $("#grid_events");
 
-    var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host'));
+    var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host') + "?key="+socketSession);
 
     socket.emit('getStringtable', function(obj) {
         $("#stringtable").html(JSON.stringify(obj, null, "  "));
