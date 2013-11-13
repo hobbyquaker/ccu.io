@@ -59,6 +59,7 @@ if (settings.ioListenPort) {
 
 // Create md5 hash of user and password
 if (settings.authentication.user && settings.authentication.password) {
+    // We can add the client IP address, so the key will be different for every client, but the server should calculate hash on the fly
     authHash = crypto.createHash('md5').update(settings.authentication.user+settings.authentication.password).digest("hex");
 }
 
@@ -972,8 +973,7 @@ function setState(id,val,ts,ack, callback) {
 function initSocketIO(_io) {
 	_io.configure(function (){
 	  this.set('authorization', function (handshakeData, callback) {
-        // How get the server: http or https ?? handshakeData.secure does not work
-        var isHttps = (handshakeData.headers.referer.substring(0,5) == "https");
+        var isHttps = (serverSsl !== undefined && this.server == serverSsl);
         if ((!isHttps && settings.authentication.enabled) ||
             ( isHttps && settings.authentication.enabledSsl)) {
             if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
