@@ -2,7 +2,7 @@
  *      CCU.IO Hue Adapter
  *      11'2013 Hobbyquaker
  *
- *      Version 0.7
+ *      Version 0.8
  *
  *      TODO CMD_WAIT
  *      TODO Group API
@@ -18,10 +18,50 @@ var hueSettings = settings.adapters.hue.settings;
 
 var logger =    require(__dirname+'/../../logger.js'),
     io =        require('socket.io-client'),
-    HueApi =    require("node-hue-api").HueApi,
-    host =      "172.16.23.149",
-    user =      "newdeveloper",
-    hue =       new HueApi(hueSettings.bridge, hueSettings.user);
+    request =   require("request"),
+    hueUrl =    "http://"+hueSettings.bridge+"/api/"+hueSettings.user+"/";
+
+function hueLights(lamp, callback) {
+    request(hueUrl+"lights/"+lamp, function (err, res) {
+         if (err) {
+            logger.error("adapter hue   hueLights error "+JSON.stringify(err));
+         } else if (res.statusCode != 200) {
+             logger.error("adapter hue   hueLights http "+res.statusCode);
+         } else {
+             callback(JSON.parse(res.body));
+         }
+    });
+}
+
+function hueGetFullState(callback) {
+    request(hueUrl, function (err, res) {
+        if (err) {
+            logger.error("adapter hue   hueGetFullState error "+JSON.stringify(err));
+        } else if (res.statusCode != 200) {
+            logger.error("adapter hue   hueGetFullState http "+res.statusCode);
+        } else {
+            callback(JSON.parse(res.body));
+        }
+    });
+}
+
+function hueSetLightsState(lamp, obj, callback) {
+    request({
+        method: "PUT",
+        uri: hueUrl+"lights/"+lamp+"/state",
+        body: JSON.stringify(obj)
+    }, function (err, res) {
+        if (err) {
+            logger.error("adapter hue   hueSetLightsState error "+JSON.stringify(err));
+        } else if (res.statusCode != 200) {
+            logger.error("adapter hue   hueSetLightsState http "+res.statusCode);
+        } else {
+            if (callback) {
+                callback(JSON.parse(res.body));
+            }
+        }
+    });
+}
 
 var objects = {},
     nameIndex = {},
@@ -56,6 +96,7 @@ socket.on('event', function (obj) {
     }
     var id = obj[0];
     var val = obj[1];
+    var ts = obj[2];
     var ack = obj[3];
 
 
@@ -68,13 +109,13 @@ socket.on('event', function (obj) {
         var lamp = tmpArr[1];
         //console.log("received event lamp="+lamp+" dp="+objects[id].hueType+" val="+val);
         apiObj[lamp][objects[id].hueType] = val;
-        datapoints[objects[id].Name] = [val];
+        datapoints[objects[id].Name] = [val, ts, ack];
 
         //console.log("apiObj["+lamp+"]="+JSON.stringify(apiObj[lamp]));
 
         // TODO IF NOT WAIT
         if (tmpArr[2] !== "RAMP_TIME" && !ack) {
-            hue.setLightState(lamp, apiObj[lamp]);
+            hueSetLightsState(lamp, apiObj[lamp]);
             apiObj[lamp] = {};
         }
     }
@@ -106,12 +147,7 @@ function setObject(id, obj) {
     socket.emit("setObject", id, obj);
 }
 
-hue.getFullState(function(err, config) {
-    if (err) {
-        logger.error("adapter hue   "+JSON.stringify(err));
-        logger.info("adapter hue   terminating");
-        process.exit();
-    }
+hueGetFullState(function (config) {
 
     var dp = hueSettings.firstId + 1;
     var devChannels = [];
@@ -123,7 +159,7 @@ hue.getFullState(function(err, config) {
         config.lights[i].type = config.lights[i].type.replace(/ /g, "_").toUpperCase();
 
         var extended = config.lights[i].type == "EXTENDED_COLOR_LIGHT";
-        var plug = config.lights[i].type == "DIMMABLE_PLUG-IN_UNIT";
+        var plug = config.lights[i].type == "DIMMABLE_PLUG-IN_UNIT" || config.lights[i].type == "DIMMABLE_LIGHT";
 
         var chObject = {
             Name: config.lights[i].name,
@@ -286,43 +322,40 @@ hue.getFullState(function(err, config) {
             return;
         }
         logger.verbose("adapter hue   polling lamp "+lamp);
-        hue.lightStatus(lamp, function(err, result) {
-            if (err) {
-                logger.error("adapter hue   pollLamp "+lamp+" error "+JSON.stringify(err));
-                return;
-            }
-
+        hueLights(lamp, function (result) {
             logger.verbose("adapter hue   result lamp "+lamp+" of "+Object.keys(apiObj).length+" "+JSON.stringify(result.state));
             //console.log("adapter hue   result lamp "+lamp+" of "+Object.keys(apiObj).length+" "+JSON.stringify(result.state));
 
             var state = result.state["on"] && result.state["reachable"];
             //console.log("lamp "+lamp+" state="+state);
-            if ((datapoints["HUE."+lamp+".STATE"] && datapoints["HUE."+lamp+".STATE"][0] != state) || !datapoints["HUE."+lamp+".STATE"]) {
+            //if ((datapoints["HUE."+lamp+".STATE"] && (datapoints["HUE."+lamp+".STATE"][0] != state || !datapoints["HUE."+lamp+".STATE"]  || datapoints["HUE."+lamp+".STATE"][2] != true))) {
                 setState("HUE."+lamp+".STATE",      state);
-            }
-            if ((datapoints["HUE."+lamp+".LEVEL"] && datapoints["HUE."+lamp+".LEVEL"][0] != result.state["bri"]) || !datapoints["HUE."+lamp+".LEVEL"]) {
+            //}
+            //if ((datapoints["HUE."+lamp+".LEVEL"] && (datapoints["HUE."+lamp+".LEVEL"][0] != result.state["bri"]) || !datapoints["HUE."+lamp+".LEVEL"] || (datapoints["HUE."+lamp+".LEVEL"][2] != true))) {
                 setState("HUE."+lamp+".LEVEL",      result.state.bri);
-            }
-            if ((datapoints["HUE."+lamp+".COLORMODE"] && datapoints["HUE."+lamp+".COLORMODE"][0] != result.state["colormode"]) || !datapoints["HUE."+lamp+".COLORMODE"]) {
-                setState("HUE."+lamp+".COLORMODE",  result.state.colormode);
-            }
-            if ((datapoints["HUE."+lamp+".HUE"] && datapoints["HUE."+lamp+".HUE"][0] != result.state["hue"]) || !datapoints["HUE."+lamp+".HUE"]) {
+            //}
+            //if ((datapoints["HUE."+lamp+".COLORMODE"] && (datapoints["HUE."+lamp+".COLORMODE"][0] != result.state["colormode"]) || datapoints["HUE."+lamp+".COLORMODE"][2] != true) || !datapoints["HUE."+lamp+".COLORMODE"]) {
+                setState("HUE."+lamp+".COLORMODE",  (result.state.colormode == "xy" ? "hs" : result.state.colormode));
+            //}
+            //if ((datapoints["HUE."+lamp+".HUE"] && (datapoints["HUE."+lamp+".HUE"][0] != result.state["hue"]) || datapoints["HUE."+lamp+".HUE"][2] != true) || !datapoints["HUE."+lamp+".HUE"]) {
                 setState("HUE."+lamp+".HUE",        result.state.hue);
-            }
-            if ((datapoints["HUE."+lamp+".SAT"] && datapoints["HUE."+lamp+".SAT"][0] != result.state["sat"]) || !datapoints["HUE."+lamp+".SAT"]) {
+            //}
+            //if ((datapoints["HUE."+lamp+".SAT"] && (datapoints["HUE."+lamp+".SAT"][0] != result.state["sat"]) || datapoints["HUE."+lamp+".SAT"][2] != true) || !datapoints["HUE."+lamp+".SAT"]) {
                 setState("HUE."+lamp+".SAT",        result.state.sat);
-            }
-            if ((datapoints["HUE."+lamp+".CT"] && datapoints["HUE."+lamp+".CT"][0] != result.state["ct"]) || !datapoints["HUE."+lamp+".CT"]) {
+            //}
+            //if ((datapoints["HUE."+lamp+".CT"] && (datapoints["HUE."+lamp+".CT"][0] != result.state["ct"]) || datapoints["HUE."+lamp+".CT"][2] != true) || !datapoints["HUE."+lamp+".CT"]) {
                 setState("HUE."+lamp+".CT",         result.state.ct);
-            }
-            if ((datapoints["HUE."+lamp+".UNREACH"] && datapoints["HUE."+lamp+".UNREACH"][0] == result.state["reachable"]) || !datapoints["HUE."+lamp+".UNREACH"]) {
+            //}
+            //if ((datapoints["HUE."+lamp+".UNREACH"] && datapoints["HUE."+lamp+".UNREACH"][0] == result.state["reachable"]) || !datapoints["HUE."+lamp+".UNREACH"]) {
                 setState("HUE."+lamp+".UNREACH",    !result.state.reachable);
-            }
+            //}
+
 
             setTimeout(function () {
                 pollLamp(lamp+1);
             }, 50);
         });
+
     }
 
 });
