@@ -343,11 +343,7 @@ function reconnect() {
     }
 
     regaReady = false;
-    regaObjects = {};
-    regaIndex = {
-        Name: {},
-        Address: {}
-    };
+    clearRegaData();
     setTimeout(function () {
         regahss.checkTime(function () {
             loadRegaData(0, null, null, true);
@@ -998,6 +994,104 @@ function setState(id,val,ts,ack, callback) {
     }
 }
 
+function clearRegaData() {
+    for (var obj in regaObjects) {
+        if (parseInt(obj, 10) < 65535) {
+            delete regaObjects[obj];
+        }
+    }
+    for (var item in regaIndex.Name) {
+        if (regaIndex.Name[item][0] < 65535) {
+            delete regaIndex.Name[item];
+        }
+    }
+    for (var item in regaIndex.Address) {
+        if (regaIndex.Name[item][0] < 65535) {
+            delete regaIndex.Name[item];
+        }
+    }
+
+    var tmpArr = [];
+    for (var i = 0; i < regaIndex.HSSDP.length; i++) {
+        if (regaIndex.HSSDP[i] > 65535) {
+            tmpArr.push(regaIndex.HSSDP[i]);
+        }
+    }
+    regaIndex.HSSDP = tmpArr;
+
+    var tmpArr = [];
+    for (var i = 0; i < regaIndex.ALDP.length; i++) {
+        if (regaIndex.ALDP[i] > 65535) {
+            tmpArr.push(regaIndex.ALDP[i]);
+        }
+    }
+    regaIndex.ALDP = tmpArr;
+
+    var tmpArr = [];
+    for (var i = 0; i < regaIndex.ALARMDP.length; i++) {
+        if (regaIndex.ALARMDP[i] > 65535) {
+            tmpArr.push(regaIndex.ALARMDP[i]);
+        }
+    }
+    regaIndex.ALARMDP = tmpArr;
+
+    var tmpArr = [];
+    for (var i = 0; i < regaIndex.VARDP.length; i++) {
+        if (regaIndex.VARDP[i] > 65535) {
+            tmpArr.push(regaIndex.VARDP[i]);
+        }
+    }
+    regaIndex.VARDP = tmpArr;
+
+    var tmpArr = [];
+    for (var i = 0; i < regaIndex.FAVORITE.length; i++) {
+        if (regaIndex.FAVORITE[i] > 65535) {
+            tmpArr.push(regaIndex.FAVORITE[i]);
+        }
+    }
+    regaIndex.FAVORITE = tmpArr;
+
+    var tmpArr = [];
+    for (var i = 0; i < regaIndex.ENUM_ROOMS.length; i++) {
+        if (regaIndex.ENUM_ROOMS[i] > 65535) {
+            tmpArr.push(regaIndex.ENUM_ROOMS[i]);
+        }
+    }
+    regaIndex.ENUM_ROOMS = tmpArr;
+
+    var tmpArr = [];
+    for (var i = 0; i < regaIndex.ENUM_FUNCTIONS.length; i++) {
+        if (regaIndex.ENUM_FUNCTIONS[i] > 65535) {
+            tmpArr.push(regaIndex.ENUM_FUNCTIONS[i]);
+        }
+    }
+    regaIndex.ENUM_FUNCTIONS = tmpArr;
+
+    var tmpArr = [];
+    for (var i = 0; i < regaIndex.DEVICE.length; i++) {
+        if (regaIndex.DEVICE[i] > 65535) {
+            tmpArr.push(regaIndex.DEVICE[i]);
+        }
+    }
+    regaIndex.DEVICE = tmpArr;
+
+    var tmpArr = [];
+    for (var i = 0; i < regaIndex.CHANNEL.length; i++) {
+        if (regaIndex.CHANNEL[i] > 65535) {
+            tmpArr.push(regaIndex.CHANNEL[i]);
+        }
+    }
+    regaIndex.CHANNEL = tmpArr;
+
+    var tmpArr = [];
+    for (var i = 0; i < regaIndex.PROGRAM.length; i++) {
+        if (regaIndex.PROGRAM[i] > 65535) {
+            tmpArr.push(regaIndex.PROGRAM[i]);
+        }
+    }
+    regaIndex.PROGRAM = tmpArr;
+}
+
 
 function initSocketIO(_io) {
     _io.sockets.on('connection', function (socket) {
@@ -1012,11 +1106,7 @@ function initSocketIO(_io) {
 
         socket.on('reloadData', function () {
             regaReady = false;
-            regaObjects = {};
-            regaIndex = {
-                Name: {},
-                Address: {}
-            };
+            clearRegaData();
             loadRegaData(0, null, true);
         });
 
