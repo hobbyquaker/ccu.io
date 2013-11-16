@@ -1,10 +1,11 @@
 <script src="/lib/js/jquery-1.10.2.min.js"></script>
+<script src="/auth/auth.js" type="text/javascript"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
 
     $(document).ready(function () {
         var output = $("#output");
-        var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host'));
+        var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host')+"?key="+socketSession);
 
         $("input#go").click(function () {
             socket.emit('readdir', "www/yahui", function(obj) {

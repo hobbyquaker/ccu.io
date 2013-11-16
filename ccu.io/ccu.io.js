@@ -23,7 +23,8 @@ var fs = require('fs'),
     express =   require('express'),
     http =      require('http'),
     https =     require('https'),
-    request = require('request'),
+    crypto =    require('crypto'),
+    request =   require('request'),
     app,
     appSsl,
     url = require('url'),
@@ -41,7 +42,7 @@ var fs = require('fs'),
     ccuRegaUp = false,
     webserverUp = false,
     initsDone = false,
-    lastEvents = {};
+    authHash = "";
 
 var childProcess = require('child_process');
 
@@ -56,6 +57,11 @@ if (settings.ioListenPort) {
 
 }
 
+// Create md5 hash of user and password
+if (settings.authentication.user && settings.authentication.password) {
+    // We can add the client IP address, so the key will be different for every client, but the server should calculate hash on the fly
+    authHash = crypto.createHash('md5').update(settings.authentication.user+settings.authentication.password).digest("hex");
+}
 
 if (settings.ioListenPortSsl) {
     var options = null;
@@ -854,6 +860,14 @@ function initWebserver() {
         app.post('/upload', uploadParser);
 
         app.get('/api/*', restApi);
+        app.get('/auth/*', function (req, res) {
+            res.set('Content-Type', 'text/javascript');
+            if (settings.authentication.enabled) {
+                res.send("var socketSession='"+ authHash+"';");
+            } else {
+                res.send("var socketSession='nokey';");
+            }
+        });
     }
 
     if (appSsl) {
@@ -863,6 +877,16 @@ function initWebserver() {
         // File Uploads
         appSsl.use(express.bodyParser());
         appSsl.post('/upload', uploadParser);
+
+        appSsl.get('/api/*', restApi);
+        appSsl.get('/auth/*', function (req, res) {
+            res.set('Content-Type', 'text/javascript');
+            if (settings.authentication.enabledSsl) {
+                res.send("var socketSession='"+ authHash+"';");
+            } else {
+                res.send("var socketSession='nokey';");
+            }
+        });
     }
 
     if (settings.authentication && settings.authentication.enabled) {
@@ -1094,6 +1118,25 @@ function clearRegaData() {
 
 
 function initSocketIO(_io) {
+	_io.configure(function (){
+	  this.set('authorization', function (handshakeData, callback) {
+        var isHttps = (serverSsl !== undefined && this.server == serverSsl);
+        if ((!isHttps && settings.authentication.enabled) ||
+            ( isHttps && settings.authentication.enabledSsl)) {
+            if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
+                logger.info("ccu.io        authetication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                callback ("Invalid session key", false)
+            } else{
+                logger.info("ccu.io        authetication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                callback(null, true);
+            }
+        }
+        else {
+           callback(null, true);
+        }
+	  });
+	});
+
     _io.sockets.on('connection', function (socket) {
         socketlist.push(socket);
         var address = socket.handshake.address;
