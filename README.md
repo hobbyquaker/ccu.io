@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 0.9.76*
+*aktuelle Version: 0.9.77*
 
 CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
@@ -452,11 +452,13 @@ Folgende Werte sind für das Attribut astro verwendbar:
 ### Standardmäßig bereits vorhandene Node-Module
 
 * fs - Das Filesystem Modul "fs"
+* request - https://github.com/mikeal/request
+* wol - https://github.com/agnat/node_wake_on_lan
 
 
 ## Adapter
 
-Zur Entwicklung von eigenen Adaptern steht ein Grundgerüst bereit (Datei ccu.io/adapter/skeleton.js
+Zur Entwicklung von eigenen Adaptern steht ein Grundgerüst bereit (Datei ccu.io/adapter/skeleton.js)
 
 ### yr
 
@@ -483,6 +485,11 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.77
+* (Hobbyquaker) Default id des rego-Adapter geändert
+* (Hobbyquaker) Funktion hinzugefügt die prüft ob noch Events empfangen werden und ggf erneuten RPC Init durchführt
+* (Hobbyquaker) diverse Bugfixes
 
 ### 0.9.76
 * (Anli) rego-Adapter added (adapter for ivt rego 600series heating controller)
