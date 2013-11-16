@@ -42,6 +42,7 @@ var fs = require('fs'),
     ccuRegaUp = false,
     webserverUp = false,
     initsDone = false,
+    lastEvents = {},
     authHash = "";
 
 var childProcess = require('child_process');
