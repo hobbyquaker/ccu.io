@@ -14,8 +14,9 @@ var regaObjects = {},
     regaIndex = {},
     datapoints = {};
 
-var fs = require('fs');
-
+var fs =        require('fs'),
+    request =   require("request"),
+    wol = require('wake_on_lan');
 
 var scriptEngine = {
     util:           require('util'),
@@ -251,78 +252,78 @@ var scriptEngine = {
         }
 
         // Value Matching
-        if (pattern.val && pattern.val == event.newState.value) {
+        if (pattern.val !== undefined && pattern.val == event.newState.value) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.val) {
+        } else if (pattern.val !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
-        if (pattern.valGt && event.newState.value > pattern.valGt) {
+        if (pattern.valGt !== undefined && event.newState.value > pattern.valGt) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.valGt) {
+        } else if (pattern.valGt !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
-        if (pattern.valGe && event.newState.value >= pattern.valGe) {
+        if (pattern.valGe !== undefined && event.newState.value >= pattern.valGe) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.valGe) {
+        } else if (pattern.valGe !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
-        if (pattern.valLt && event.newState.value < pattern.valLt) {
+        if (pattern.valLt !== undefined && event.newState.value < pattern.valLt) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.valLt) {
+        } else if (pattern.valLt !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
-        if (pattern.valLe && event.newState.value <= pattern.valLe) {
+        if (pattern.valLe !== undefined && event.newState.value <= pattern.valLe) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.valLe) {
+        } else if (pattern.valLe !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
-        if (pattern.valNe && event.newState.value != pattern.valNe) {
+        if (pattern.valNe !== undefined && event.newState.value != pattern.valNe) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.valNe) {
+        } else if (pattern.valNe !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
 
         // Old-Value matching
-        if (pattern.oldVal && pattern.oldVal == event.oldState.value) {
+        if (pattern.oldVal !== undefined && pattern.oldVal == event.oldState.value) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.oldVal) {
+        } else if (pattern.oldVal !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
-        if (pattern.oldValGt && event.oldState.value > pattern.oldValGt) {
+        if (pattern.oldValGt !== undefined && event.oldState.value > pattern.oldValGt) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.oldValGt) {
+        } else if (pattern.oldValGt !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
-        if (pattern.oldValGe && event.oldState.value >= pattern.oldValGe) {
+        if (pattern.oldValGe !== undefined && event.oldState.value >= pattern.oldValGe) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.oldValGe) {
+        } else if (pattern.oldValGe !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
-        if (pattern.oldValLt && event.oldState.value < pattern.oldValLt) {
+        if (pattern.oldValLt !== undefined && event.oldState.value < pattern.oldValLt) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.oldValLt) {
+        } else if (pattern.oldValLt !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
-        if (pattern.oldValLe && event.oldState.value <= pattern.oldValLe) {
+        if (pattern.oldValLe !== undefined && event.oldState.value <= pattern.oldValLe) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.oldValLe) {
+        } else if (pattern.oldValLe !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
-        if (pattern.oldValNe && event.oldState.value != pattern.oldValNe) {
+        if (pattern.oldValNe !== undefined && event.oldState.value != pattern.oldValNe) {
             if (pattern.logic == "or") { return true; }
             matched = true;
-        } else if (pattern.oldValNe) {
+        } else if (pattern.oldValNe !== undefined) {
             if (pattern.logic == "and") { return false; }
         }
 
@@ -454,8 +455,6 @@ var scriptEngine = {
         } else if (pattern.oldLcLe) {
             if (pattern.logic == "and") { return false; }
         }
-
-
 
         // Datapoint Name matching
         if (pattern.name) {
@@ -691,7 +690,6 @@ function subscribe(pattern, callback) {
     });
 }
 
-
 function schedule(pattern, callback) {
     var sch;
     if (pattern.astro) {
@@ -718,7 +716,6 @@ function schedule(pattern, callback) {
             callback();
         });
 
-
         scriptEngine.schedules.push(sch);
         return sch;
     } else {
@@ -727,9 +724,6 @@ function schedule(pattern, callback) {
         return sch;
     }
 }
-
-
-
 
 function setState(id, val, callback) {
     scriptEngine.socket.emit("setState", [id, val], function () {
@@ -766,13 +760,11 @@ process.on('SIGTERM', function () {
 });
 
 try {
-    scriptEngine.logger.info("script-engine executing _global.js");
     var script = scriptEngine.fs.readFileSync(__dirname+"/scripts/_global.js");
+    scriptEngine.logger.info("script-engine executing _global.js");
     eval(script.toString());
 } catch (e) {
     scriptEngine.logger.error("script-engine _global.js: "+e);
 }
 
 scriptEngine.init();
-
-
