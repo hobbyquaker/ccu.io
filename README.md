@@ -273,6 +273,20 @@ Ein Homematic Programm ausführen
 
 Ein Objekt in die regaObjects einfügen
 
+### wol.wake(mac);
+
+Weckt einen Rechner per Wake on Lan auf
+
+Beispiele:
+    wol.wake('20:DE:20:DE:20:DE');
+    wol.wake('20-DE-20-DE-20-DE');
+    wol.wake('20DE20DE20DE');
+
+### request(url)
+
+Führt einen HTTP Request durch. Doku siehe https://github.com/mikeal/request
+
+
 ### subscribe(pattern, callback)
 
 Einen Event abbonieren. Das pattern-Objekt bietet folgende Attribute:
@@ -464,6 +478,13 @@ Zur Entwicklung von eigenen Adaptern steht ein Grundgerüst bereit (Datei ccu.io
 
 Fragt Wetterdaten von yr.no ab und schreibt Sie in die Variablen 70000-70006
 
+### hue
+
+Bindet Philips Hue / LivingColors / LivingWhites Lampen ein.
+In settings.js muss die IP der Hue Bridge sowie ein Username konfiguriert werden. Zum Anlegen eines Users auf der Bridge siehe:
+http://developers.meethue.com/gettingstarted.html
+
+
 ### MySQL
 
 Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Queries liegen im Adapter-Verzeichnis bereit
@@ -476,7 +497,8 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * ArtNet (DMX) Adapter
 * Email Adapter
 * Growl/Prowl Adapter (?)
-* iCal Adapter
+* Pushover Adapter (?)
+* iCal, VCALENDAR, Google Calendar Adapter (?)
 * Oberfläche vervollständigen
 * Doku für Adapter-Entwickler
 * BIN-RPC Implementierung vervollständigen
