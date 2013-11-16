@@ -245,7 +245,9 @@ rega.prototype = {
                 var xml = (data.substring(pos));
                 parser.parseString(xml, function (err, result) {
                     logger.verbose('rega      <-- ' + stdout);
-                    callback(stdout, result.xml);
+                    if (callback) {
+                        callback(stdout, result.xml);
+                    }
                 });
 
             });
