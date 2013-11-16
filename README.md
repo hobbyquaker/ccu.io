@@ -490,6 +490,7 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * (Hobbyquaker) Default id des rego-Adapter geändert
 * (Hobbyquaker) Funktion hinzugefügt die prüft ob noch Events empfangen werden und ggf erneuten RPC Init durchführt
 * (Hobbyquaker) diverse Bugfixes
+* (Hobbyquaker) Hue Adapter umgebaut, nutzt nun nicht mehr das Modul node-hue-api
 
 ### 0.9.76
 * (Anli) rego-Adapter added (adapter for ivt rego 600series heating controller)
