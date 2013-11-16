@@ -7,6 +7,7 @@
 70006                           yr adapter - max Temp 48h
 
 70100-70199                     ping adapter
+70200-70255                     rego adapter
 
 90000-90549                     hue adapter
 
