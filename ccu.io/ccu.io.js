@@ -40,7 +40,8 @@ var fs = require('fs'),
     ccuReachable = false,
     ccuRegaUp = false,
     webserverUp = false,
-    initsDone = false;
+    initsDone = false,
+    lastEvents = {};
 
 var childProcess = require('child_process');
 
@@ -75,6 +76,48 @@ if (settings.ioListenPortSsl) {
         }
         serverSsl = require('https').createServer(options, appSsl);
     }
+}
+
+if (settings.binrpc.checkEvents.enabled) {
+    setInterval(function () {
+        if (initsDone) {
+            var now = Math.floor((new Date()).getTime() / 1000);
+            var check = now - settings.binrpc.checkEvents.testAfter;
+            var reinit = now - settings.binrpc.checkEvents.reinitAfter;
+            for (var i = 0; i < settings.binrpc.inits.length; i++) {
+                var init = settings.binrpc.inits[i];
+                if (lastEvents[init.id] < reinit) {
+
+                    if (settings.binrpc.checkEvents.testTrigger[init.id]) {
+                        logger.warn("binrpc    --> re-init "+init.id);
+
+                        binrpc.request(init.port, "init", ["xmlrpc_bin://"+settings.listenIp+":"+settings.listenPort,init.id], function(data, name) {
+                            if (data === "") {
+                                logger.info("binrpc    <-- init on "+name+" successful");
+                            } else {
+                                logger.error("binrpc    <-- init on "+name+" failure");
+                            }
+                        });
+
+                    } else {
+                        logger.warn("binrpc        checkEvent.trigger undefined for "+init.id);
+                    }
+
+                } else if (lastEvents[init.id] < check) {
+                    logger.verbose("binrpc        checking init "+init.id);
+                    if (settings.binrpc.checkEvents.testTrigger[init.id]) {
+                        var id = regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]][0];
+                        regahss.script("dom.GetObject("+id+").State(true);");
+                    } else {
+                        logger.warn("binrpc        checkEvent.trigger undefined for "+init.id);
+                    }
+                } else {
+                    logger.verbose("binrpc        init "+init.id+" ok - last event "+(now-lastEvents[init.id])+"s ago");
+                }
+            }
+        }
+
+    }, (settings.binrpc.checkEvents.interval * 1000));
 }
 
 var socketlist = [],
@@ -269,15 +312,15 @@ function tryReconnect() {
                 ccuRegaUp = true;
                 reconnect();
             } else {
-                logger.warn("ccu.io        ReGaHSS down");
+                logger.error("ccu.io        ReGaHSS down");
                 ccuRegaUp = false;
-                setTimeout(tryReconnect, 5000);
+                setTimeout(tryReconnect, 10000);
             }
         } else {
             logger.error("ccu.io        CCU unreachable");
             ccuRegaUp = false;
             ccuReachable = false;
-            setTimeout(tryReconnect, 5000);
+            setTimeout(tryReconnect, 10000);
 			
 			if (debugMode) {
 				// Just start webServer for debug
@@ -496,6 +539,11 @@ function loadRegaData(index, err, rebuild, triggerReload) {
 
 function initRpc() {
     initsDone = true;
+
+    for (var i = 0; i < settings.binrpc.inits.length; i++) {
+        lastEvents[settings.binrpc.inits[i].id] = Math.floor((new Date()).getTime() / 1000);
+    }
+
     if (!homematic) {
         homematic = new binrpc({
             ccuIp: settings.ccuIp,
@@ -513,14 +561,17 @@ function initRpc() {
                     switch (obj[0]) {
                         case "io_cuxd":
                         case "CUxD":
+                            lastEvents.io_cuxd = Math.floor((new Date()).getTime() / 1000);
                             stats.cuxd += 1;
                             bidcos = "CUxD." + obj[1] + "." + obj[2];
                             break;
                         case "io_rf":
+                            lastEvents.io_rf = Math.floor((new Date()).getTime() / 1000);
                             stats.rf += 1;
                             bidcos = "BidCos-RF." + obj[1] + "." + obj[2];
                             break;
                         case "io_wired":
+                            lastEvents.io_wired = Math.floor((new Date()).getTime() / 1000);
                             stats.wired += 1;
                             bidcos = "BidCos-Wired." + obj[1] + "." + obj[2];
                             break;
@@ -843,10 +894,10 @@ function initWebserver() {
 
     if (settings.adaptersEnabled) {
         logger.info("ccu.io        adapters enabled");
-        setTimeout(startAdapters, 2000);
+        setTimeout(startAdapters, 5000);
     }
     if (settings.scriptEngineEnabled) {
-        startScriptEngine();
+        setTimeout(startScriptEngine, 3000);
     }
 
 }
@@ -915,17 +966,20 @@ function setState(id,val,ts,ack, callback) {
         //}
 
         // Bei Update von Thermostaten den nächsten Event von SET_TEMPERATURE und CONTROL_MODE ignorieren!
-        if (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/) || regaObjects[id].Name.match(/SETPOINT$/)) {
-            var parent = regaObjects[regaObjects[id].Parent];
-            var setTemp = parent.DPs.SET_TEMPERATURE;
-            var ctrlMode = parent.DPs.CONTROL_MODE;
-            if (ignoreNextUpdate.indexOf(setTemp) == -1) {
-                ignoreNextUpdate.push(setTemp);
+        if (regaObjects[id] && regaObjects[id].Name) {
+
+            if (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/) || regaObjects[id].Name.match(/SETPOINT$/)) {
+                var parent = regaObjects[regaObjects[id].Parent];
+                var setTemp = parent.DPs.SET_TEMPERATURE;
+                var ctrlMode = parent.DPs.CONTROL_MODE;
+                if (ignoreNextUpdate.indexOf(setTemp) == -1) {
+                    ignoreNextUpdate.push(setTemp);
+                }
+                if (ignoreNextUpdate.indexOf(ctrlMode) == -1) {
+                    ignoreNextUpdate.push(ctrlMode);
+                }
+                logger.verbose("ccu.io        ignoring next update for "+JSON.stringify(ignoreNextUpdate));
             }
-            if (ignoreNextUpdate.indexOf(ctrlMode) == -1) {
-                ignoreNextUpdate.push(ctrlMode);
-            }
-            logger.verbose("ccu.io        ignoring next update for "+JSON.stringify(ignoreNextUpdate));
         }
 
     }
@@ -1203,7 +1257,7 @@ function initSocketIO(_io) {
             if (obj.Address) {
                 regaIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
             }
-            if (obj.TypeName.match(/DP$/)) {
+            if (obj.TypeName && obj.TypeName.match(/DP$/)) {
                 if (!obj.ValueUnit) {
                     obj.ValueUnit = "";
                 }
@@ -1302,10 +1356,10 @@ function startAdapters () {
 
 function startAdapterPeriod (adapter, interval) {
    setInterval(function () {
-        logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms");
+        logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
         childProcess.fork(adapter);
     }, interval);
-    logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms");
+    logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
     childProcess.fork(adapter);
 }
 

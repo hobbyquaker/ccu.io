@@ -30,7 +30,17 @@ var settings = {
             //{ id: "io_wired",   port: 2000 },
             // BidCos-RF Init durchführen
             { id: "io_rf",      port: 2001 }
-        ]
+        ],
+        checkEvents: {
+            enabled: false,
+            interval: 60,
+            testAfter: 180,
+            reinitAfter: 300,
+            testTrigger: {
+                "io_rf": "BidCos-RF.BidCoS-RF:45.PRESS_SHORT",
+                "io_wired": "BidCos-Wired.BidCoS-Wir:45.PRESS_SHORT"
+            }
+        }
     },
     stringTableLanguage: "de",
     logging: {
