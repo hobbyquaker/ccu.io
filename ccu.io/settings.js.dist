@@ -5,7 +5,7 @@ var settings = {
     // Port auf dem der https Webserver lauscht - falls nicht benötigt auskommentiert belassen
     //ioListenPortSsl: 8443,
 
-    // Passwort-Schutz (HTTP Basic Authentication) - Achtung! Wirkt nur auf http(s), Websockets bleiben ungeschützt!
+    // Passwort-Schutz (HTTP Basic Authentication)
     authentication: {
         enabled: false,
         enabledSsl: false,
