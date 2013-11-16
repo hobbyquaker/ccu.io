@@ -8,7 +8,7 @@
  *
  */
 
-function commaSepeartedList(arr) {
+function commaSeparatedList(arr) {
     var text = "";
     var length = arr.length;
     if (length == 0) {

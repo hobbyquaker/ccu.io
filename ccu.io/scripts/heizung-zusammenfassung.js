@@ -8,6 +8,12 @@
 
 var nameGewerkHeizung = "Heizung";
 
+setObject(100000, {
+    Name: "Heizung Zusammenfassung",
+    TypeName: "VARDP"
+});
+
+
 beheizteRaeumeFinden();
 
 subscribe({func:"Heizung", name:/VALVE_STATE$/, change: "ne"}, function (obj) {
@@ -39,7 +45,7 @@ function beheizteRaeumeFinden() {
 
     }
 
-    var text = commaSepeartedList(arrBeheizteRaeume);
+    var text = commaSeparatedList(arrBeheizteRaeume);
 
     setState(100000, text);
 

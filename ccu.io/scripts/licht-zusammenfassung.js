@@ -7,6 +7,11 @@
 
 var nameGewerkLicht = "Licht";
 
+setObject(100001, {
+    Name: "Licht Zusammenfassung",
+    TypeName: "VARDP"
+});
+
 beleuchteteRaeumeFinden();
 
 subscribe({func:"Licht", name:/STATE$|LEVEL$/, change: "ne"}, function (obj) {
@@ -42,7 +47,7 @@ function beleuchteteRaeumeFinden() {
 
     }
 
-    var text = commaSepeartedList(arrBeleuchteteRaeume);
+    var text = commaSeparatedList(arrBeleuchteteRaeume);
 
     setState(100001, text);
 
