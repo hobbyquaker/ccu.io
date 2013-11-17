@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.78";
+settings.version = "0.9.79";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
@@ -85,9 +85,9 @@ if (settings.ioListenPortSsl) {
     }
 }
 
-if (settings.binrpc.checkEvents.enabled) {
+if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
     setInterval(function () {
-        if (initsDone) {
+        if (initsDone && ccuRegaUp) {
             var now = Math.floor((new Date()).getTime() / 1000);
             var check = now - settings.binrpc.checkEvents.testAfter;
             var reinit = now - settings.binrpc.checkEvents.reinitAfter;
@@ -98,7 +98,7 @@ if (settings.binrpc.checkEvents.enabled) {
                     if (settings.binrpc.checkEvents.testTrigger[init.id]) {
                         logger.warn("binrpc    --> re-init "+init.id);
 
-                        binrpc.request(init.port, "init", ["xmlrpc_bin://"+settings.listenIp+":"+settings.listenPort,init.id], function(data, name) {
+                        homematic.request(init.port, "init", ["xmlrpc_bin://"+settings.listenIp+":"+settings.listenPort,init.id], function(data, name) {
                             if (data === "") {
                                 logger.info("binrpc    <-- init on "+name+" successful");
                             } else {
@@ -781,6 +781,13 @@ function restApi(req, res) {
             if (!value) {
                 response = {error: "no value given"};
             } else {
+                if (value === "true") {
+                    value = true;
+                } else if (value === "false") {
+                    value = false;
+                } else if (!isNaN(value)) {
+                    value = parseFloat(value);
+                }
                 setState(dp, value);
                 status = 200;
                 response = {id:dp,value:value};

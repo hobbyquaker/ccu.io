@@ -374,7 +374,7 @@ binrpc.prototype = {
 
                         break;
                     case "system.listMethods":
-                        logger.info("binrpc    <-- "+name+" request " + method + " " + JSON.stringify(res));
+                        logger.verbose("binrpc    <-- "+name+" request " + method + " " + JSON.stringify(res));
                         response = ["system.multicall", "system.listMethods"];
                         for (var name in this.methods) {
                             response.push(name);
