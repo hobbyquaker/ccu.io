@@ -1,0 +1,1 @@
+/* Nur ein Dummy - der Pushover Adapter ist in der Script-Engine integriert */

@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 0.9.79*
+*aktuelle Version: 0.9.80*
 
 CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
@@ -285,8 +285,29 @@ Beispiele:
 
 ### request(url)
 
-Führt einen HTTP Request durch. Doku siehe https://github.com/mikeal/request
+Führt einen HTTP GET Request durch.
 
+### email(obj)
+
+Versendet eine Email
+
+Beispiel:
+
+   email({
+        to: "ernie@sesamestreet.com",
+        subject: "ccu.io",
+        text: "alarm!!!"
+   });
+
+### pushover(obj)
+
+Versendet eine Pushover Benachrichtigung
+
+Beispiel:
+
+   pushover({
+        message:"Das Fenster im Bad sollte geschlossen werden."
+   });
 
 ### subscribe(pattern, callback)
 
@@ -508,6 +529,13 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.80
+* (Hobbyquaker) Methode setObject legt nicht vorhandene Räume/Gewerke/Favoriten an
+* (Hobbyquaker) Neuer Adapter: Pushover (keine Datenpunkte - steht in Script-Engine zur Verfügung)
+* (Hobbyquaker) Neuer Adapter: Email (keine Datenpunkte - steht in Script-Engine zur Verfügung)
+* (Hobbyquaker) Bugfix in clearRegaData Methode
+* (Hobbyquaker) Bugfixes Script-Engine
 
 ### 0.9.79
 * (Hobbyquaker) Bugfix re-init

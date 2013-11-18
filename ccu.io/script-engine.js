@@ -30,6 +30,8 @@ var scriptEngine = {
     socket: {},
     subscribers: [],
     schedules: [],
+    poSettings: {},
+    emailTransport: {},
     init: function () {
         var that = this;
         if (that.settings.ioListenPort) {
@@ -69,6 +71,25 @@ var scriptEngine = {
             });
         });
 
+        // Pushover Adapter
+        if (scriptEngine.settings.adapters.pushover && scriptEngine.settings.adapters.pushover.enabled) {
+            var pushover   = require( 'pushover-notifications');
+
+            scriptEngine.poSettings = scriptEngine.settings.adapters.pushover.settings;
+
+            scriptEngine.pushover = new pushover( {
+                user: scriptEngine.poSettings.user,
+                token: scriptEngine.poSettings.token
+            });
+        }
+
+        // Email Adapter
+        if (scriptEngine.settings.adapters.email && scriptEngine.settings.adapters.email.enabled) {
+            var nodemailer = require("nodemailer");
+            scriptEngine.emailTransport = nodemailer.createTransport(scriptEngine.settings.adapters.email.settings.transport,
+                scriptEngine.settings.adapters.email.settings.transportOptions
+            );
+        }
 
     },
     initEventHandler: function () {
@@ -121,8 +142,8 @@ var scriptEngine = {
 
                 // Gerät
                 var device = regaObjects[parent].Parent;
-                deviceName = regaObjects[device].Name;
-                deviceType = regaObjects[device].HssType;
+                deviceName = (regaObjects[device] ? regaObjects[device].Name : undefined);
+                deviceType = (regaObjects[device] ? regaObjects[device].HssType : undefined);
 
 
             }
@@ -646,6 +667,7 @@ var scriptEngine = {
             data.sort();
             for (var i = 0; i < data.length; i++) {
                 if (data[i] == "_global.js") { continue; }
+                if (!data[i].match(/js$/)) { continue; }
                 var path = __dirname+"/scripts/"+data[i];
                 runScript(path);
             }
@@ -749,7 +771,46 @@ function setObject(id, obj, callback) {
     });
 }
 
+function pushover(obj) {
+    if (scriptEngine.settings.adapters.pushover && scriptEngine.settings.adapters.pushover.enabled) {
+        var msg = {};
+        msg.message = obj.message || scriptEngine.poSettings.message;
+        msg.title = obj.title || scriptEngine.poSettings.title;
+        msg.sound = obj.sound || scriptEngine.poSettings.sound;
+        msg.priority = obj.priority || scriptEngine.poSettings.priority;
+        scriptEngine.pushover.send( msg, function( err, result ) {
+            if (err) {
+                scriptEngine.logger.error("script-engine pushover error "+JSON.stringify(err));
+                return false;
+            } else {
+                return true;
+            }
+        });
+    } else {
+        scriptEngine.logger.error("script-engine pushover adapter not enabled");
+    }
+}
 
+function email(obj) {
+    if (scriptEngine.settings.adapters.email && scriptEngine.settings.adapters.email.enabled) {
+
+        var msg = {};
+        msg.from = obj.from || scriptEngine.settings.adapters.email.settings.defaults.from;
+        msg.to = obj.to || scriptEngine.settings.adapters.email.settings.defaults.to;
+        msg.subject = obj.subject || scriptEngine.settings.adapters.email.settings.defaults.subject;
+        msg.text = obj.text || scriptEngine.settings.adapters.email.settings.defaults.text;
+
+        scriptEngine.emailTransport.sendMail(msg, function(error, response){
+            if (error) {
+                scriptEngine.logger.error("script-engine email error "+JSON.stringify(error))
+            } else {
+                scriptEngine.logger.info("script-engine email sent to "+msg.to);
+            }
+        });
+    } else {
+        scriptEngine.logger.error("script-engine email adapter not enabled");
+    }
+}
 
 process.on('SIGINT', function () {
     scriptEngine.stop();

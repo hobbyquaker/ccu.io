@@ -11,9 +11,7 @@
 function commaSeparatedList(arr) {
     var text = "";
     var length = arr.length;
-    if (length == 0) {
-        text = "";
-    } else {
+    if (length > 0) {
         var first = true;
         for (var i=0; i<length; i++) {
             if (!first) {

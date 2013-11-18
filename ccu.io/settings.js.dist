@@ -151,6 +151,33 @@ var settings = {
             settings: {
                 firstId: 70200
             }
+        },
+        pushover: {
+            enabled: false,
+            settings: {
+                user: "xxxxx",
+                token: "xxxxx",
+                title: "CCU.IO"
+            }
+        },
+        email: {
+            enabled: false,
+            settings: {
+                // Basiert auf dem Modul "nodemailer", verfügbare Optionen siehe https://github.com/andris9/Nodemailer
+                transport: "SMTP",
+                transportOptions: {
+                    service: "Gmail",
+                    auth: {
+                        user: "xyz@googlemail.com",
+                        pass: "xxxxxx"
+                    }
+                },
+                defaults: {
+                    from: "test <test@test.com>",
+                    to: "abcdef@googlemail.com",
+                    subject: "CCU.IO"
+                }
+            }
         }
     },
 

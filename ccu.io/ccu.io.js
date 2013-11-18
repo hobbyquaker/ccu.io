@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.79";
+settings.version = "0.9.80";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
@@ -424,7 +424,7 @@ function loadRegaData(index, err, rebuild, triggerReload) {
         return;
     }
     var type = settings.regahss.metaScripts[index];
-    logger.info("ccu.io        fetching "+type);
+    logger.info("rega          fetching "+type);
     regahss.runScriptFile(type, function (data) {
         var data = JSON.parse(data);
         logger.info("ccu.io        indexing "+type);
@@ -1038,8 +1038,8 @@ function clearRegaData() {
         }
     }
     for (var item in regaIndex.Address) {
-        if (regaIndex.Name[item][0] < 65535) {
-            delete regaIndex.Name[item];
+        if (regaIndex.Address[item][0] < 65535) {
+            delete regaIndex.Address[item];
         }
     }
 
@@ -1325,6 +1325,14 @@ function initSocketIO(_io) {
             });
         });
 
+        function nextEnumId() {
+            var id = 66000;
+            while (regaObjects[id]) {
+                id += 1;
+            }
+            return id;
+        }
+
         socket.on('setObject', function(id, obj, callback) {
             if (!obj) {
                 return;
@@ -1336,9 +1344,21 @@ function initSocketIO(_io) {
                         roomId = obj.rooms[i];
                     } else if (regaIndex.Name[obj.rooms[i]] && regaIndex.Name[obj.rooms[i]][1] == "ENUM_ROOMS") {
                         roomId = regaIndex.Name[obj.rooms[i]][0];
-
                     } else {
-                        logger.warn("ccu.io        setObject "+id+" room "+obj.rooms[i]+" not found");
+                        roomId = nextEnumId();
+                        regaIndex.ENUM_ROOMS.push(roomId);
+                        if (!regaIndex.Name[obj.rooms[i]]) {
+                            regaIndex.Name[obj.rooms[i]] = [
+                                roomId, "ENUM_ROOMS", null
+                            ];
+                        }
+                        regaObjects[roomId] = {
+                            "Name": obj.rooms[i],
+                            "TypeName": "ENUM_ROOMS",
+                            "EnumInfo": "",
+                            "Channels": []
+                        };
+                        logger.info("ccu.io        setObject room "+obj.rooms[i]+" created");
                     }
                     if (roomId && regaObjects[roomId].Channels.indexOf(id) == -1) {
                         regaObjects[roomId].Channels.push(id);
@@ -1354,7 +1374,20 @@ function initSocketIO(_io) {
                     } else if (regaIndex.Name[obj.funcs[i]] && regaIndex.Name[obj.funcs[i]][1] == "ENUM_FUNCTIONS") {
                         funcId = regaIndex.Name[obj.funcs[i]][0];
                     } else {
-                        logger.warn("ccu.io        setObject "+id+" function "+obj.funcs[i]+" not found");
+                        funcId = nextEnumId();
+                        regaIndex.ENUM_FUNCTIONS.push(funcId);
+                        if (!regaIndex.Name[obj.funcs[i]]) {
+                            regaIndex.Name[obj.funcs[i]] = [
+                                funcId, "ENUM_FUNCTIONS", null
+                            ];
+                        }
+                        regaObjects[funcId] = {
+                            "Name": obj.funcs[i],
+                            "TypeName": "ENUM_FUNCTIONS",
+                            "EnumInfo": "",
+                            "Channels": []
+                        };
+                        logger.info("ccu.io        setObject function "+obj.funcs[i]+" created");
                     }
                     if (funcId && regaObjects[funcId].Channels.indexOf(id) == -1) {
                         regaObjects[funcId].Channels.push(id);
@@ -1370,7 +1403,20 @@ function initSocketIO(_io) {
                     } else if (regaIndex.Name[obj.favs[i]] && regaIndex.Name[obj.favs[i]][1] == "FAVORITE") {
                         favId = regaIndex.Name[obj.favs[i]][0];
                     } else {
-                        logger.warn("ccu.io        setObject "+id+" favorite "+obj.favs[i]+" not found");
+                        favId = nextEnumId();
+                        regaIndex.FAVORITE.push(favId);
+                        if (!regaIndex.Name[obj.favs[i]]) {
+                            regaIndex.Name[obj.favs[i]] = [
+                                favId, "ENUM_FUNCTIONS", null
+                            ];
+                        }
+                        regaObjects[favId] = {
+                            "Name": obj.favs[i],
+                            "TypeName": "FAVORITE",
+                            "EnumInfo": "",
+                            "Channels": []
+                        };
+                        logger.info("ccu.io        setObject favorite "+obj.favs[i]+" created");
                     }
                     if (favId && regaObjects[favId].Channels.indexOf(id) == -1) {
                         regaObjects[favId].Channels.push(id);
