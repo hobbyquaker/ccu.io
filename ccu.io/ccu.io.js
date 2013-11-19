@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.80";
+settings.version = "0.9.81";
 settings.basedir = __dirname;
 
 var fs = require('fs'),
@@ -1194,6 +1194,13 @@ function initSocketIO(_io) {
             var content = JSON.stringify(obj);
             logger.verbose("socket.io <-- writeFile "+name+" "+content);
             fs.writeFile(settings.datastorePath+name, content);
+            // Todo Fehler abfangen
+            if (callback) { callback(); }
+        });
+
+        socket.on('writeRawFile', function (path, content, callback) {
+            logger.verbose("socket.io <-- writeFile "+name);
+            fs.writeFile(__dirname+"/"+path, content);
             // Todo Fehler abfangen
             if (callback) { callback(); }
         });

@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 0.9.80*
+*aktuelle Version: 0.9.81*
 
 CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
@@ -529,6 +529,9 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.81
+* (Hobbyquaker) neue Methode writeRawFile(path, content, callback) - path relativ zum ccu.io Verzeichnis
 
 ### 0.9.80
 * (Hobbyquaker) Methode setObject legt nicht vorhandene Räume/Gewerke/Favoriten an
