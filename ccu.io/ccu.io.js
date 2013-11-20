@@ -1199,7 +1199,7 @@ function initSocketIO(_io) {
         });
 
         socket.on('writeRawFile', function (path, content, callback) {
-            logger.verbose("socket.io <-- writeFile "+name);
+            logger.verbose("socket.io <-- writeRawFile "+path);
             fs.writeFile(__dirname+"/"+path, content);
             // Todo Fehler abfangen
             if (callback) { callback(); }
