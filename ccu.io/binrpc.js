@@ -550,6 +550,8 @@ binrpc.prototype = {
                 logger.info('binrpc        server listening on port '+that.options.listenPort);
                 // RPC Init anmelden
                 for (var i = 0; i < that.inits.length; i++) {
+                    logger.info("binrpc    --> init "+that.inits[i].id);
+
                     that.request(that.inits[i].port, "init", ["xmlrpc_bin://"+that.options.listenIp+":"+that.options.listenPort, that.inits[i].id], function(data, name) {
                         if (data === "") {
                             logger.info("binrpc    <-- init on "+name+" successful");

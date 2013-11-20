@@ -16,7 +16,7 @@ var settings = require(__dirname+'/settings.js');
 settings.version = "0.9.82";
 settings.basedir = __dirname;
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
-settings.metaScripts = [
+settings.regahss.metaScripts = [
     "favorites",
     "variables",
     "programs",
@@ -924,6 +924,7 @@ function initWebserver() {
         app.post('/upload', uploadParser);
 
         app.get('/api/*', restApi);
+
         app.post('/api/*', restApiPost);
         app.get('/auth/*', function (req, res) {
             res.set('Content-Type', 'text/javascript');
@@ -944,6 +945,7 @@ function initWebserver() {
         appSsl.post('/upload', uploadParser);
 
         appSsl.get('/api/*', restApi);
+        appSsl.post('/api/*', restApiPost);
         appSsl.get('/auth/*', function (req, res) {
             res.set('Content-Type', 'text/javascript');
             if (settings.authentication.enabledSsl) {

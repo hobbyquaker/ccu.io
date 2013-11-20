@@ -130,6 +130,8 @@ Eine Variable oder einen Datenpunkt setzen. Bietet die gleichen Möglichkeiten e
 
 Mehrere Datenpunkte auf einmal setzen
 
+Diese Methode kann auch per POST aufgerufen werden, je nach Content-Type Header können die Daten als JSON oder form-encoded geliefert werden
+
 #### Beispiele
 
 Dieses Beispiel vereint alle 4 Beispiele aus der Methode `set` in einem Aufruf:
