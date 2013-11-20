@@ -53,22 +53,15 @@ var settings = {
     regahss: {
         // Variablen-Werte von der CCU Pollen
         pollData: true,
+
+        // Virtueller Taster - löst sofortiges Pollen der ReGa Variablen aus
+        //pollDataTrigger: "BidCos-RF.BidCoS-RF:50.PRESS_LONG",
+
         // Interval für Polling in milli-Sekunden
-        pollDataInterval: 15000,
+        pollDataInterval: 15000
 
-        pollDataTrigger: "BidCos-RF.BidCoS-RF:50.PRESS_LONG",
 
-        metaScripts: [
-            "favorites",
-            "variables",
-            "programs",
-            "rooms",
-            "functions",
-            "devices",
-            "channels",
-            "datapoints",
-            "alarms"
-        ]
+
     },
     datastorePath: __dirname+"/datastore/",
     stats: true,

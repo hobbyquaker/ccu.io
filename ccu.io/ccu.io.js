@@ -13,8 +13,20 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.81";
+settings.version = "0.9.82";
 settings.basedir = __dirname;
+settings.stringTableLanguage = settings.stringTableLanguage || "de";
+settings.metaScripts = [
+    "favorites",
+    "variables",
+    "programs",
+    "rooms",
+    "functions",
+    "devices",
+    "channels",
+    "datapoints",
+    "alarms"
+];
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -582,7 +594,7 @@ function initRpc() {
                         //
                     }
 
-                    if (bidcos == settings.pollDataTrigger) {
+                    if (settings.pollDataTrigger && bidcos == settings.pollDataTrigger) {
                         clearTimeout(pollTimer);
                         pollRega();
                     }
@@ -717,6 +729,50 @@ function findDatapoint(needle, hssdp) {
     }
     return needle;
 
+}
+
+function restApiPost(req, res) {
+    var path = req.params[0];
+    var tmpArr = path.split("/");
+    var command = tmpArr[0];
+    var response;
+
+    var responseType = "json";
+    var status = 500;
+
+    res.set("Access-Control-Allow-Origin", "*");
+
+    switch(command) {
+        case "setBulk":
+            response = [];
+            status = 200;
+            for (var item in req.body) {
+                var parts = item.split("/");
+                var dp = findDatapoint(parts[0], parts[1]);
+                if (dp == false) {
+                    sres = {error: "datapoint "+item+" not found"};
+                } else if (req.body[item] === undefined) {
+                    sres = {error: "no value given for "+item};
+                } else {
+                    sres = {id:dp,value:req.body[item]};
+                    setState(dp,req.body[item]);
+                }
+                response.push(sres);
+            }
+            break;
+        default:
+            response = {error: "command "+command+" unknown"};
+    }
+    switch (responseType) {
+        case "json":
+            res.json(response);
+            break;
+        case "plain":
+            res.set('Content-Type', 'text/plain');
+            res.send(response);
+            break;
+
+    }
 }
 
 function restApi(req, res) {
@@ -868,6 +924,7 @@ function initWebserver() {
         app.post('/upload', uploadParser);
 
         app.get('/api/*', restApi);
+        app.post('/api/*', restApiPost);
         app.get('/auth/*', function (req, res) {
             res.set('Content-Type', 'text/javascript');
             if (settings.authentication.enabled) {
