@@ -485,13 +485,15 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             }
             if (type == "alarms") {
 
-                // Kanal ergänzen
-                if (!regaObjects[data[id].Parent].ALDPs) {
-                    regaObjects[data[id].Parent].ALDPs = {};
+                if (regaObjects[data[id].Parent]) {
+                    // ggf Kanal ergänzen
+                    if (!regaObjects[data[id].Parent].ALDPs) {
+                        regaObjects[data[id].Parent].ALDPs = {};
+                    }
+                    var tmpType = data[id].Name.split(".");
+                    tmpType = tmpType[1];
+                    regaObjects[data[id].Parent].ALDPs[tmpType] = parseInt(id, 10);
                 }
-                var tmpType = data[id].Name.split(".");
-                tmpType = tmpType[1];
-                regaObjects[data[id].Parent].ALDPs[tmpType] = parseInt(id, 10);
 
                 // Wert setzen
                 datapoints[id] = [data[id].AlState, data[id].LastTriggerTime, true, data[id].AlOccurrenceTime];
@@ -523,7 +525,6 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             } else {
                 logger.info("rega          data succesfully loaded");
             }
-
 
             if (!rebuild) {
                 if (settings.regahss.pollData) {
