@@ -8,16 +8,19 @@
 70005                           yr adapter - max Temp 24h
 70006                           yr adapter - max Temp 48h
 
-70050-70060                     DWD Wetterwarnungen
+70050-70059                     DWD Adapter Wetterwarnungen
 
-70100-70199                     ping adapter
-70200-70255                     rego adapter
+70060-70099                     Geofency Adapter
+
+70100-70999                     ping adapter
+
+71000-71255                     rego adapter
 
 90000-90549                     hue adapter
 
 100000-299999                   reserviert für eigene Scripte
 
-268435456 bis 268500991         reserviert für zweite CCU
-536870912 bis 536936447         reserviert für dritte CCU
-805306368 bis 805371903         reserviert für vierte CCU
+268435456 - 268500991           reserviert für zweite CCU (0x10000000 - 0x1000FFFF)
+536870912 - 536936447           reserviert für dritte CCU (0x20000000 - 0x2000FFFF)
+805306368 - 805371903           reserviert für vierte CCU (0x30000000 - 0x3000FFFF)
 

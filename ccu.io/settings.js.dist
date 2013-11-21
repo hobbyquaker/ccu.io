@@ -140,7 +140,7 @@ var settings = {
         rego: {
             enabled: false,
             settings: {
-                firstId: 70200
+                firstId: 71000
             }
         },
         pushover: {
@@ -181,6 +181,20 @@ var settings = {
                 pass: "xxxx",
                 dienststelle: "SU", // siehe ftp://ftp-outgoing2.dwd.de/gds/specials/warnings/legend_warnings.pdf
                 kreis: "SXXX"       // KFZ-Kennzeichen - auf 4 Stellen mit X auffüllen
+            }
+        },
+        geofency: {
+            enabled: false,
+            settings: {
+                port: 7999,  // der Geofency-Adapter startet einen eigenen Webserver auf diesem Port
+                user: "geo",
+                pass: "geo",
+                devices: {
+                    // Zuordnung von Geofency-IDs zu Datenpunkt-IDs. Jedes Gerät benötigt 5 Datenpunkte
+                    "AB12CD34EF-BEEF-DEAD-1234-1234567890AB": 70060
+                    //"id-geraet-2": 70065,
+                    //"id-getaet-3": 70070
+                }
             }
         }
     },
