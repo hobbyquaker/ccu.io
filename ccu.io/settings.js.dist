@@ -169,6 +169,19 @@ var settings = {
                     subject: "CCU.IO"
                 }
             }
+        },
+        dwd: {
+            enabled: false,
+            mode: "periodical",
+            period: 60,     // Minutes
+            firstId: 70050,
+            settings: {
+                host: "ftp-outgoing2.dwd.de",
+                user: "gds12345",   // http://kunden.dwd.de/gdsRegistration/gdsRegistrationStart.do
+                pass: "xxxx",
+                dienststelle: "SU", // siehe ftp://ftp-outgoing2.dwd.de/gds/specials/warnings/legend_warnings.pdf
+                kreis: "SXXX"       // KFZ-Kennzeichen - auf 4 Stellen mit X auffüllen
+            }
         }
     },
 

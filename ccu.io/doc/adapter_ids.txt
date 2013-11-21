@@ -8,6 +8,8 @@
 70005                           yr adapter - max Temp 24h
 70006                           yr adapter - max Temp 48h
 
+70050-70060                     DWD Wetterwarnungen
+
 70100-70199                     ping adapter
 70200-70255                     rego adapter
 
