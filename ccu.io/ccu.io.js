@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.82";
+settings.version = "0.9.83";
 settings.basedir = __dirname;
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
 settings.regahss.metaScripts = [
