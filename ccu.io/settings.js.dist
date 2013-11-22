@@ -173,7 +173,7 @@ var settings = {
         dwd: {
             enabled: false,
             mode: "periodical",
-            period: 60,     // Minutes
+            period: 120,     // Minutes
             firstId: 70050,
             settings: {
                 host: "ftp-outgoing2.dwd.de",
@@ -185,16 +185,15 @@ var settings = {
         },
         geofency: {
             enabled: false,
+            firstId: 70060,
             settings: {
-                port: 7999,  // der Geofency-Adapter startet einen eigenen Webserver auf diesem Port
-                user: "geo",
-                pass: "geo",
-                devices: {
-                    // Zuordnung von Geofency-IDs zu Datenpunkt-IDs. Jedes Gerät benötigt 5 Datenpunkte
-                    "AB12CD34EF-BEEF-DEAD-1234-1234567890AB": 70060
-                    //"id-geraet-2": 70065,
-                    //"id-getaet-3": 70070
-                }
+               port: 7999,  // der Geofency-Adapter startet einen eigenen Webserver auf diesem Port
+               user: "geo",
+               pass: "geo",
+               devices: [   // Jedes Device muss eine individuelle URL aufrufen (/0, /1, /2, ...)
+                   "iPhone 0",
+                   "iPhone 1"
+               ]
             }
         }
     },
