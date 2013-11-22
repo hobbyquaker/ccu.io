@@ -1251,9 +1251,9 @@ function initSocketIO(_io) {
             });
         });
         
-        socket.on('readdir_stat', function (path, callback) {
+        socket.on('readdirStat', function (path, callback) {
             path = __dirname + "/" + path;
-            logger.info("socket.io <-- readdir_stat " + path);
+            logger.info("socket.io <-- readdirStat " + path);
 
             fs.readdir(path, function(err, files) {
                 var data = [];
