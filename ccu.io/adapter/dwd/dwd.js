@@ -1,6 +1,6 @@
 var JSFtp = require("jsftp");
 var parseString = require('xml2js').parseString;
-//ftp://gds10502:mWSnwYMD@ftp-outgoing2.dwd.de
+
 
 var settings = require(__dirname+'/../../settings.js');
 
