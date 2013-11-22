@@ -1189,6 +1189,30 @@ function initSocketIO(_io) {
                 }
             });
         });
+        
+        socket.on('readdir_stat', function (path, callback) {
+            path = __dirname + "/" + path;
+            logger.info("socket.io <-- readdir_stat " + path);
+
+            fs.readdir(path, function(err, files) {
+                var data = [];
+                if (err) {
+                    callback(undefined);
+                }
+                files.forEach(function(file) {
+                    fs.stat(path + file, function(err, stats) {
+                        data.push({
+                            "file": file,
+                            "stats": stats
+                        });
+                        if (data.length == files.length) {
+                            callback(data);
+                            logger.info(data);
+                        }
+                    });
+                });
+            });
+        });
 
         socket.on('writeFile', function (name, obj, callback) {
             var content = JSON.stringify(obj);
