@@ -110,9 +110,10 @@ if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
                     if (settings.binrpc.checkEvents.testTrigger[init.id]) {
                         logger.warn("binrpc    --> re-init "+init.id);
 
-                        homematic.request(init.port, "init", ["xmlrpc_bin://"+settings.listenIp+":"+settings.listenPort,init.id], function(data, name) {
+                        homematic.request(init.port, "init", ["xmlrpc_bin://"+settings.binrpc.listenIp+":"+settings.binrpc.listenPort,init.id], function(data, name) {
                             if (data === "") {
                                 logger.info("binrpc    <-- init on "+name+" successful");
+                                lastEvents[init.id] = Math.floor((new Date()).getTime() / 1000);
                             } else {
                                 logger.error("binrpc    <-- init on "+name+" failure");
                             }
