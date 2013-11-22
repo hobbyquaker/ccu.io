@@ -7,7 +7,6 @@
  *
  */
 
-
 var settings = require(__dirname+'/../../settings.js');
 
 if (!settings.adapters.geofency || !settings.adapters.geofency.enabled) {
