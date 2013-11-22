@@ -1,6 +1,11 @@
-var JSFtp = require("jsftp");
-var parseString = require('xml2js').parseString;
-//ftp://gds10502:mWSnwYMD@ftp-outgoing2.dwd.de
+/**
+ *      CCU.IO Adapter DWD Wetterwarnungen
+ *      11'2013 Hobbyquaker
+ *
+ *      Version 0.3
+ *
+ *
+ */
 
 var settings = require(__dirname+'/../../settings.js');
 
@@ -8,9 +13,16 @@ if (!settings.adapters.dwd || !settings.adapters.dwd.enabled) {
     process.exit();
 }
 
-var logger =    require(__dirname+'/../../logger.js'),
+var severity = {
+        "Minor":    1,
+        "Moderate": 2,
+        "Severe":   3,
+        "Extreme":  4
+    },
+    JSFtp = require("jsftp"),
+    parseString = require('xml2js').parseString,
+    logger =    require(__dirname+'/../../logger.js'),
     io =        require('socket.io-client');
-
 
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
@@ -25,21 +37,12 @@ if (settings.ioListenPort) {
     process.exit();
 }
 
-
-
-
 socket.on('connect', function () {
     logger.info("adapter dwd   connected to ccu.io");
 });
 
 socket.on('disconnect', function () {
     logger.info("adapter dwd   disconnected from ccu.io");
-});
-
-socket.on('event', function (obj) {
-    if (!obj || !obj[0]) {
-        return;
-    }
 });
 
 function stop() {
@@ -72,14 +75,15 @@ var xml = [];
 ftp.ls("gds/specials/warnings/xml/"+dwdSettings.dienststelle, function(err, res) {
     if (err) {
         logger.info("adapter dwd   ftp ls error");
-    }
-    for (var i = 0; i < res.length; i++) {
-        if (res[i].name.match(new RegExp(dwdSettings.kreis+"\.xml$"))) {
-            files.push(res[i].name);
+        stop();
+    } else {
+        for (var i = 0; i < res.length; i++) {
+            if (res[i].name.match(new RegExp(dwdSettings.kreis+"\.xml$"))) {
+                files.push(res[i].name);
+            }
         }
+        getFile(0);
     }
-    getFile(0);
-
 });
 
 function getFile(i) {
@@ -114,17 +118,21 @@ function received() {
     ftp.raw.quit();
 
     var warnungen = {};
+    var now = formatTimestamp(new Date());
 
     for (var i = 0; i < xml.length; i++) {
         parseString(xml[i], {explicitArray: false}, function(err, res) {
             //console.log(res.alert.msgType+" "+res.alert.info.eventCode.value+" "+res.alert.info.event+" "+res.alert.info.severity+" "+res.alert.info.effective+" "+res.alert.info.expires);
-            if (res.alert.msgType == "Alert") {
+            var effective = formatTimestamp(res.alert.info.effective),
+                expires =   formatTimestamp(res.alert.info.expires);
+
+            if (res.alert.msgType == "Alert" && expires > now && effective < now) {
                 warnungen[res.alert.info.eventCode.value] = {
                     text:       res.alert.info.event,
                     desc:       res.alert.info.description,
                     head:       res.alert.info.headline,
-                    start:      res.alert.info.effective,
-                    expires:    res.alert.info.expires,
+                    start:      effective,
+                    expires:    expires,
                     severity:   res.alert.info.severity
                 };
             }
@@ -142,10 +150,14 @@ function received() {
         desc: "",
         head: "",
         start: "2037-01-01",
-        expires: "0000-00-00"
+        expires: "0000-00-00",
+        severity: 0
     };
+
     var first = true;
     for (item in warnungen) {
+        console.log(item);
+        console.log(warnungen[item]);
         if (!first) {
             warnung.text += ", ";
             warnung.desc += ", ";
@@ -153,13 +165,15 @@ function received() {
         } else {
             first = false;
         }
-        if (warnung.start > warnungen[item].start) { warnung.start = warnungen[item].start; }
+        now = "2013-11-21 06:00:00";
         if (warnung.expires < warnungen[item].expires) { warnung.expires = warnungen[item].expires; }
         warnung.text += warnungen[item].text;
         warnung.desc += warnungen[item].desc;
         warnung.head += warnungen[item].head;
-        // TODO checken ob severity größer ist
-        warnung.severity = warnungen[item].severity;
+
+        if (severity[warnungen[item].severity] > warnung.severity) {
+            warnung.severity = severity[warnungen[item].severity];
+        }
     }
 
     if (warnung.start == "2037-01-01") { warnung.start = ""; }
@@ -185,7 +199,7 @@ function received() {
 
     socket.emit("setObject", firstId+2, {
         Name: "DWD Warnung Severity",
-        DPInfo: "",
+        DPInfo: "0=None, 1=Minor, 2=Moderate, 3=Severe, 4=Extreme",
         TypeName: "VARDP",
     }, function() {
         socket.emit("setState", [firstId+2, warnung.severity || ""]);
@@ -216,4 +230,15 @@ function received() {
         setTimeout(stop, 10000);
     });
 
+}
+
+function formatTimestamp(str) {
+    var timestamp = new Date(str);
+    var ts = timestamp.getFullYear() + '-' +
+        ("0" + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
+        ("0" + (timestamp.getDate()).toString(10)).slice(-2) + ' ' +
+        ("0" + (timestamp.getHours()).toString(10)).slice(-2) + ':' +
+        ("0" + (timestamp.getMinutes()).toString(10)).slice(-2) + ':' +
+        ("0" + (timestamp.getSeconds()).toString(10)).slice(-2);
+    return ts;
 }
