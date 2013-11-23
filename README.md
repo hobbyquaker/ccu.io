@@ -206,7 +206,7 @@ Ein Homematic-Script ausführen
 
 Lädt die Script-Engine neu. Notwendig wenn Änderungen an einem Script vorgenommen wurden.
 
-### execCmd(cmd, callback)
+#### execCmd(cmd, callback)
 
 Führt ein Shell-Commando aus. Callback wird mit 3 Parametern aufgerufen: error, stdout, stderr
 
@@ -513,21 +513,28 @@ http://developers.meethue.com/gettingstarted.html
 
 Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Queries liegen im Adapter-Verzeichnis bereit
 
+### geofency
+
+### pushover
+
+### email
+
+### dwd
+
+### ping
+
 
 ## Todo/Roadmap
 
+* Umbau settings.js, Konfiguration in Weboberfläche, für CCU.IO selbst und für die Adapter
+* Doku, Doku, Doku (-> CCU.IO-Homepage)
 * CCU.IO Update in Weboberfläche anstoßen
 * LIRC Adapter
 * ArtNet (DMX) Adapter
-* Email Adapter
-* Growl/Prowl Adapter (?)
-* Pushover Adapter (?)
 * iCal, VCALENDAR, Google Calendar Adapter (?)
-* Oberfläche vervollständigen
-* Doku für Adapter-Entwickler
+* CCU2-Paket für einfache Installation
 * BIN-RPC Implementierung vervollständigen
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
-* CCU2-Paket für einfache Installation
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
