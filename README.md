@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 0.9.81*
+*aktuelle Version: 0.9.86*
 
 CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
@@ -130,6 +130,8 @@ Eine Variable oder einen Datenpunkt setzen. Bietet die gleichen Möglichkeiten e
 
 Mehrere Datenpunkte auf einmal setzen
 
+Diese Methode kann auch per POST aufgerufen werden, je nach Content-Type Header können die Daten als JSON oder form-encoded geliefert werden
+
 #### Beispiele
 
 Dieses Beispiel vereint alle 4 Beispiele aus der Methode `set` in einem Aufruf:
@@ -204,7 +206,7 @@ Ein Homematic-Script ausführen
 
 Lädt die Script-Engine neu. Notwendig wenn Änderungen an einem Script vorgenommen wurden.
 
-### execCmd(cmd, callback)
+#### execCmd(cmd, callback)
 
 Führt ein Shell-Commando aus. Callback wird mit 3 Parametern aufgerufen: error, stdout, stderr
 
@@ -511,24 +513,52 @@ http://developers.meethue.com/gettingstarted.html
 
 Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Queries liegen im Adapter-Verzeichnis bereit
 
+### geofency
+
+### pushover
+
+### email
+
+### dwd
+
+### ping
+
 
 ## Todo/Roadmap
 
+* Umbau settings.js, Konfiguration in Weboberfläche, für CCU.IO selbst und für die Adapter
+* Doku, Doku, Doku (-> CCU.IO-Homepage)
 * CCU.IO Update in Weboberfläche anstoßen
 * LIRC Adapter
 * ArtNet (DMX) Adapter
-* Email Adapter
-* Growl/Prowl Adapter (?)
-* Pushover Adapter (?)
 * iCal, VCALENDAR, Google Calendar Adapter (?)
-* Oberfläche vervollständigen
-* Doku für Adapter-Entwickler
+* CCU2-Paket für einfache Installation
 * BIN-RPC Implementierung vervollständigen
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
-* CCU2-Paket für einfache Installation
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.86
+* (Hobbyquaker) Hue-Adapter: Colormode-Wechsel verbessert, Bugfixes
+
+### 0.9.85
+* (Hobbyquaker) Bugfixs re-init
+* (Hobbyquaker) Adapter Geofency Geräte-Definition geändert, Datum formatiert
+* (Hobbyquaker) Adapter DWD, Bugfixes, Datum formatiert
+* (Smiling-Jack) neue Methode readdirStat
+
+### 0.9.84
+* (Hobbyquaker) Neuer Adapter Geofency
+
+### 0.9.83
+* (Hobbyquaker) Neuer Adapter DWD Wetterwarnungen
+* (Hobbyquaker) Bugfix ALDPs
+
+### 0.9.82
+* (Hobbyquaker) Simple-API Methode setBulk nun auch via POST nutzbar
+* (Hobbyquaker) metaScripts Variable von settings.js nach ccu.io.js verlagert
+* (Hobbyquaker) abfangen fehlender Optionen in settings.js
 
 ### 0.9.81
 * (Hobbyquaker) neue Methode writeRawFile(path, content, callback) - path relativ zum ccu.io Verzeichnis

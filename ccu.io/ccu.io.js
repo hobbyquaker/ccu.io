@@ -13,8 +13,20 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.81";
+settings.version = "0.9.86";
 settings.basedir = __dirname;
+settings.stringTableLanguage = settings.stringTableLanguage || "de";
+settings.regahss.metaScripts = [
+    "favorites",
+    "variables",
+    "programs",
+    "rooms",
+    "functions",
+    "devices",
+    "channels",
+    "datapoints",
+    "alarms"
+];
 
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
@@ -98,9 +110,10 @@ if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
                     if (settings.binrpc.checkEvents.testTrigger[init.id]) {
                         logger.warn("binrpc    --> re-init "+init.id);
 
-                        homematic.request(init.port, "init", ["xmlrpc_bin://"+settings.listenIp+":"+settings.listenPort,init.id], function(data, name) {
+                        homematic.request(init.port, "init", ["xmlrpc_bin://"+settings.binrpc.listenIp+":"+settings.binrpc.listenPort,init.id], function(data, name) {
                             if (data === "") {
                                 logger.info("binrpc    <-- init on "+name+" successful");
+                                lastEvents[init.id] = Math.floor((new Date()).getTime() / 1000);
                             } else {
                                 logger.error("binrpc    <-- init on "+name+" failure");
                             }
@@ -473,13 +486,15 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             }
             if (type == "alarms") {
 
-                // Kanal ergänzen
-                if (!regaObjects[data[id].Parent].ALDPs) {
-                    regaObjects[data[id].Parent].ALDPs = {};
+                if (regaObjects[data[id].Parent]) {
+                    // ggf Kanal ergänzen
+                    if (!regaObjects[data[id].Parent].ALDPs) {
+                        regaObjects[data[id].Parent].ALDPs = {};
+                    }
+                    var tmpType = data[id].Name.split(".");
+                    tmpType = tmpType[1];
+                    regaObjects[data[id].Parent].ALDPs[tmpType] = parseInt(id, 10);
                 }
-                var tmpType = data[id].Name.split(".");
-                tmpType = tmpType[1];
-                regaObjects[data[id].Parent].ALDPs[tmpType] = parseInt(id, 10);
 
                 // Wert setzen
                 datapoints[id] = [data[id].AlState, data[id].LastTriggerTime, true, data[id].AlOccurrenceTime];
@@ -511,7 +526,6 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             } else {
                 logger.info("rega          data succesfully loaded");
             }
-
 
             if (!rebuild) {
                 if (settings.regahss.pollData) {
@@ -582,7 +596,7 @@ function initRpc() {
                         //
                     }
 
-                    if (bidcos == settings.pollDataTrigger) {
+                    if (settings.pollDataTrigger && bidcos == settings.pollDataTrigger) {
                         clearTimeout(pollTimer);
                         pollRega();
                     }
@@ -717,6 +731,50 @@ function findDatapoint(needle, hssdp) {
     }
     return needle;
 
+}
+
+function restApiPost(req, res) {
+    var path = req.params[0];
+    var tmpArr = path.split("/");
+    var command = tmpArr[0];
+    var response;
+
+    var responseType = "json";
+    var status = 500;
+
+    res.set("Access-Control-Allow-Origin", "*");
+
+    switch(command) {
+        case "setBulk":
+            response = [];
+            status = 200;
+            for (var item in req.body) {
+                var parts = item.split("/");
+                var dp = findDatapoint(parts[0], parts[1]);
+                if (dp == false) {
+                    sres = {error: "datapoint "+item+" not found"};
+                } else if (req.body[item] === undefined) {
+                    sres = {error: "no value given for "+item};
+                } else {
+                    sres = {id:dp,value:req.body[item]};
+                    setState(dp,req.body[item]);
+                }
+                response.push(sres);
+            }
+            break;
+        default:
+            response = {error: "command "+command+" unknown"};
+    }
+    switch (responseType) {
+        case "json":
+            res.json(response);
+            break;
+        case "plain":
+            res.set('Content-Type', 'text/plain');
+            res.send(response);
+            break;
+
+    }
 }
 
 function restApi(req, res) {
@@ -868,6 +926,8 @@ function initWebserver() {
         app.post('/upload', uploadParser);
 
         app.get('/api/*', restApi);
+
+        app.post('/api/*', restApiPost);
         app.get('/auth/*', function (req, res) {
             res.set('Content-Type', 'text/javascript');
             if (settings.authentication.enabled) {
@@ -887,6 +947,7 @@ function initWebserver() {
         appSsl.post('/upload', uploadParser);
 
         appSsl.get('/api/*', restApi);
+        appSsl.post('/api/*', restApiPost);
         appSsl.get('/auth/*', function (req, res) {
             res.set('Content-Type', 'text/javascript');
             if (settings.authentication.enabledSsl) {
@@ -1190,9 +1251,9 @@ function initSocketIO(_io) {
             });
         });
         
-        socket.on('readdir_stat', function (path, callback) {
+        socket.on('readdirStat', function (path, callback) {
             path = __dirname + "/" + path;
-            logger.info("socket.io <-- readdir_stat " + path);
+            logger.info("socket.io <-- readdirStat " + path);
 
             fs.readdir(path, function(err, files) {
                 var data = [];

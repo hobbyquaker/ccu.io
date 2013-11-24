@@ -2,7 +2,7 @@
  *      CCU.IO Hue Adapter
  *      11'2013 Hobbyquaker
  *
- *      Version 0.8
+ *      Version 0.9
  *
  *      TODO CMD_WAIT
  *      TODO Group API
@@ -11,7 +11,7 @@
 var settings = require(__dirname+'/../../settings.js');
 
 if (!settings.adapters.hue || !settings.adapters.hue.enabled) {
-  //  process.exit();
+   process.exit();
 }
 
 var hueSettings = settings.adapters.hue.settings;
@@ -111,8 +111,17 @@ socket.on('event', function (obj) {
         apiObj[lamp][objects[id].hueType] = val;
         datapoints[objects[id].Name] = [val, ts, ack];
 
-        //console.log("apiObj["+lamp+"]="+JSON.stringify(apiObj[lamp]));
+        if (objects[id].hueType == "colormode") {
+            if (val == "ct") {
+                apiObj[lamp].ct = datapoints["HUE."+lamp+".CT"][0];
+            } else if (val == "hs") {
+                apiObj[lamp].hue = datapoints["HUE."+lamp+".HUE"][0];
+                apiObj[lamp].sat = datapoints["HUE."+lamp+".SAT"][0];
 
+            }
+        }
+
+        //console.log("apiObj["+lamp+"]="+JSON.stringify(apiObj[lamp]));
         // TODO IF NOT WAIT
         if (tmpArr[2] !== "RAMP_TIME" && !ack) {
             hueSetLightsState(lamp, apiObj[lamp]);
@@ -328,27 +337,27 @@ hueGetFullState(function (config) {
 
             var state = result.state["on"] && result.state["reachable"];
             //console.log("lamp "+lamp+" state="+state);
-            //if ((datapoints["HUE."+lamp+".STATE"] && (datapoints["HUE."+lamp+".STATE"][0] != state || !datapoints["HUE."+lamp+".STATE"]  || datapoints["HUE."+lamp+".STATE"][2] != true))) {
+            if (datapoints["HUE."+lamp+".STATE"] && (datapoints["HUE."+lamp+".STATE"][0] != state )) {
                 setState("HUE."+lamp+".STATE",      state);
-            //}
-            //if ((datapoints["HUE."+lamp+".LEVEL"] && (datapoints["HUE."+lamp+".LEVEL"][0] != result.state["bri"]) || !datapoints["HUE."+lamp+".LEVEL"] || (datapoints["HUE."+lamp+".LEVEL"][2] != true))) {
+            }
+            if (datapoints["HUE."+lamp+".LEVEL"] && (datapoints["HUE."+lamp+".LEVEL"][0] != result.state["bri"])) {
                 setState("HUE."+lamp+".LEVEL",      result.state.bri);
-            //}
-            //if ((datapoints["HUE."+lamp+".COLORMODE"] && (datapoints["HUE."+lamp+".COLORMODE"][0] != result.state["colormode"]) || datapoints["HUE."+lamp+".COLORMODE"][2] != true) || !datapoints["HUE."+lamp+".COLORMODE"]) {
+            }
+            if (datapoints["HUE."+lamp+".COLORMODE"] && (datapoints["HUE."+lamp+".COLORMODE"][0] != result.state["colormode"])) {
                 setState("HUE."+lamp+".COLORMODE",  (result.state.colormode == "xy" ? "hs" : result.state.colormode));
-            //}
-            //if ((datapoints["HUE."+lamp+".HUE"] && (datapoints["HUE."+lamp+".HUE"][0] != result.state["hue"]) || datapoints["HUE."+lamp+".HUE"][2] != true) || !datapoints["HUE."+lamp+".HUE"]) {
+            }
+            if (datapoints["HUE."+lamp+".HUE"] && (datapoints["HUE."+lamp+".HUE"][0] != result.state["hue"])) {
                 setState("HUE."+lamp+".HUE",        result.state.hue);
-            //}
-            //if ((datapoints["HUE."+lamp+".SAT"] && (datapoints["HUE."+lamp+".SAT"][0] != result.state["sat"]) || datapoints["HUE."+lamp+".SAT"][2] != true) || !datapoints["HUE."+lamp+".SAT"]) {
+            }
+            if (datapoints["HUE."+lamp+".SAT"] && (datapoints["HUE."+lamp+".SAT"][0] != result.state["sat"])) {
                 setState("HUE."+lamp+".SAT",        result.state.sat);
-            //}
-            //if ((datapoints["HUE."+lamp+".CT"] && (datapoints["HUE."+lamp+".CT"][0] != result.state["ct"]) || datapoints["HUE."+lamp+".CT"][2] != true) || !datapoints["HUE."+lamp+".CT"]) {
+            }
+            if (datapoints["HUE."+lamp+".CT"] && (datapoints["HUE."+lamp+".CT"][0] != result.state["ct"])) {
                 setState("HUE."+lamp+".CT",         result.state.ct);
-            //}
-            //if ((datapoints["HUE."+lamp+".UNREACH"] && datapoints["HUE."+lamp+".UNREACH"][0] == result.state["reachable"]) || !datapoints["HUE."+lamp+".UNREACH"]) {
+            }
+            if (datapoints["HUE."+lamp+".UNREACH"] && datapoints["HUE."+lamp+".UNREACH"][0] == result.state["reachable"]) {
                 setState("HUE."+lamp+".UNREACH",    !result.state.reachable);
-            //}
+            }
 
 
             setTimeout(function () {
