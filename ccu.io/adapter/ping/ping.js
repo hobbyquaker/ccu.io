@@ -2,7 +2,7 @@
  *      CCU.IO Ping Adapter
  *      11'2013 Bluefox
  *
- *      Version 0.1
+ *      Version 0.2
  *
  */
 var settings = require(__dirname+'/../../settings.js');
@@ -107,6 +107,7 @@ function pingInit () {
             Parent: dp
         });
 		dp += 2;
+		i++;
     }
 		
     setObject(pingSettings.firstId, {
@@ -119,6 +120,10 @@ function pingInit () {
     });
 
     logger.info("adapter ping  inserted objects");
+	// Fix polling interval if too short
+	if (pingSettings.pollingInterval <= 5000 * (i + 1) {
+		pingSettings.pollingInterval = 5000 * (i + 1);
+	}
 
     logger.info("adapter ping  polling enabled - interval "+pingSettings.pollingInterval+"ms");
 
