@@ -121,7 +121,7 @@ function pingInit () {
 
     logger.info("adapter ping  inserted objects");
 	// Fix polling interval if too short
-	if (pingSettings.pollingInterval <= 5000 * (i + 1) {
+	if (pingSettings.pollingInterval <= 5000 * (i + 1)) {
 		pingSettings.pollingInterval = 5000 * (i + 1);
 	}
 
