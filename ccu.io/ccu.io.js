@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.86";
+settings.version = "0.9.87";
 settings.basedir = __dirname;
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
 settings.regahss.metaScripts = [
@@ -1190,8 +1190,7 @@ function initSocketIO(_io) {
 	_io.configure(function (){
 	  this.set('authorization', function (handshakeData, callback) {
         var isHttps = (serverSsl !== undefined && this.server == serverSsl);
-        if ((!isHttps && settings.authentication.enabled) ||
-            ( isHttps && settings.authentication.enabledSsl)) {
+        if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
             if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
                 logger.info("ccu.io        authetication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
                 callback ("Invalid session key", false)
@@ -1250,28 +1249,32 @@ function initSocketIO(_io) {
                 }
             });
         });
-        
-        socket.on('readdirStat', function (path, callback) {
+
+        socket.on('readdirStat', function(path, callback) {
             path = __dirname + "/" + path;
-            logger.info("socket.io <-- readdirStat " + path);
+            logger.info("socket.io <-- readdir_stat " + path);
 
             fs.readdir(path, function(err, files) {
                 var data = [];
                 if (err) {
                     callback(undefined);
                 }
-                files.forEach(function(file) {
-                    fs.stat(path + file, function(err, stats) {
-                        data.push({
-                            "file": file,
-                            "stats": stats
+                if (files.length == 0) {
+                    callback(undefined);
+                } else {
+                    files.forEach(function(file) {
+                        fs.stat(path + file, function(err, stats) {
+                            data.push({
+                                "file": file,
+                                "stats": stats
+                            });
+                            if (data.length == files.length) {
+                                callback(data);
+                                logger.info(data);
+                            }
                         });
-                        if (data.length == files.length) {
-                            callback(data);
-                            logger.info(data);
-                        }
                     });
-                });
+                }
             });
         });
 

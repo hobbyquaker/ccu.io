@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 0.9.86*
+*aktuelle Version: 0.9.87*
 
 CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
@@ -538,6 +538,11 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 0.9.87
+* (Hobbyquaker) fehlende jQuery UI Themes hinzugefügt (hat dazu geführt dass DashUI >= 0.9beta39 nicht mehr funktioniert hat)
+* (Bluefox) Ping Adapter: minimal-Intervall wird geprüft
+* (Smiling-Jack) readdirStat Methode: fängt leere Verzeichnisse ab
 
 ### 0.9.86
 * (Hobbyquaker) Hue-Adapter: Colormode-Wechsel verbessert, Bugfixes
