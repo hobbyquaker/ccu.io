@@ -1251,27 +1251,31 @@ function initSocketIO(_io) {
             });
         });
         
-        socket.on('readdirStat', function (path, callback) {
+       socket.on('readdirStat', function(path, callback) {
             path = __dirname + "/" + path;
-            logger.info("socket.io <-- readdirStat " + path);
+            logger.info("socket.io <-- readdir_stat " + path);
 
             fs.readdir(path, function(err, files) {
                 var data = [];
                 if (err) {
                     callback(undefined);
                 }
-                files.forEach(function(file) {
-                    fs.stat(path + file, function(err, stats) {
-                        data.push({
-                            "file": file,
-                            "stats": stats
+                if (files.length == 0) {
+                    callback(undefined);
+                } else {
+                    files.forEach(function(file) {
+                        fs.stat(path + file, function(err, stats) {
+                            data.push({
+                                "file": file,
+                                "stats": stats
+                            });
+                            if (data.length == files.length) {
+                                callback(data);
+                                logger.info(data);
+                            }
                         });
-                        if (data.length == files.length) {
-                            callback(data);
-                            logger.info(data);
-                        }
                     });
-                });
+                }
             });
         });
 
