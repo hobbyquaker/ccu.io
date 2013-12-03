@@ -16,6 +16,8 @@
 
 71000-71255                     rego adapter
 
+72000-72499                     sonos adapter
+
 90000-90549                     hue adapter
 
 100000-299999                   reserviert für eigene Scripte

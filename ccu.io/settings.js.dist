@@ -195,8 +195,26 @@ var settings = {
                    "iPhone 1"
                ]
             }
-        }
-    },
+        },
+        sonos: {
+            enabled: false,
+            settings: {
+                webserver: {
+                    enabled: true, // Enabled web server of sonos 
+                    port:    8083
+                },
+
+                firstId:    72000,
+				devices:    {
+                    "192.168.1.55": { // Use only IP addresses and not DNS names
+                        name: "Wohnzimmer",
+                        rooms: ["Wohnzimmer"],
+                        funcs: ["Media"]
+                    }
+                }
+			}
+		}
+	},
 
     scriptEngineEnabled: false,
 
