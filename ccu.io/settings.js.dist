@@ -205,6 +205,7 @@ var settings = {
                 },
 
                 firstId:    72000,
+                elapsedInterval: 2000, // interval the elapsed time is updated if playing
 				devices:    {
                     "192.168.1.55": { // Use only IP addresses and not DNS names
                         name: "Wohnzimmer",

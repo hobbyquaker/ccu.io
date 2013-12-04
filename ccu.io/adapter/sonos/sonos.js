@@ -185,8 +185,30 @@ function toFormattedTime(time) {
 
 function takeSonosState (ip, ids, sonosState) {
     setState (ids.DPs.ALIVE, true);
-    if (sonosState.playerState!= "TRANSITIONING")
+    if (sonosState.playerState!= "TRANSITIONING") {
         setState (ids.DPs.STATE, (sonosState.playerState == "PAUSED_PLAYBACK") ? 0 : ((sonosState.playerState == "PLAYING") ? 1 : 2));
+        if (sonosState.playerState == "PLAYING") {
+            if (!ids.elapsedTimer) {
+                ids.elapsedTimer = setInterval (function (ip_) {
+                    devices[ip_].elapsed += ((sonosSettings.elapsedInterval || 5000) / 1000);
+
+                    if (devices[ip_].elapsed > devices[ip_].duration) {
+                        devices[ip_].elapsed = devices[ip_].duration;
+                    }
+
+                    setState (devices[ip_].DPs.ELAPSED_TIME,    devices[ip_].elapsed);
+                    setState (devices[ip_].DPs.ELAPSED_TIME_S,  toFormattedTime(devices[ip_].elapsed));
+
+                }, sonosSettings.elapsedInterval || 5000, ip);
+            }
+        }
+        else {
+            if (ids.elapsedTimer) {
+                clearInterval (ids.elapsedTimer);
+                ids.elapsedTimer = null;
+            }
+        }
+    }
     // elapsed time
     setState (ids.DPs.CURRENT_ALBUM,   sonosState.currentTrack.album);
     setState (ids.DPs.CURRENT_TITLE,   sonosState.currentTrack.title);
@@ -195,6 +217,8 @@ function takeSonosState (ip, ids, sonosState) {
     setState (ids.DPs.CURRENT_DURATION_S, toFormattedTime(sonosState.currentTrack.duration));
     setState (ids.DPs.CURRENT_COVER,   "http://"+settings.binrpc.listenIp+":"+sonosSettings.webserver.port + sonosState.currentTrack.albumArtURI);
     setState (ids.DPs.ELAPSED_TIME,    sonosState.elapsedTime);
+    ids.elapsed  = sonosState.elapsedTime;
+    ids.duration = sonosState.currentTrack.duration;
     setState (ids.DPs.ELAPSED_TIME_S,  sonosState.elapsedTimeFormatted);
     setState (ids.DPs.VOLUME,          sonosState.volume);
     if (sonosState.groupState)
@@ -250,8 +274,10 @@ function sonosInit () {
         devChannels.push(chnDp);
 
         devices[ip] = {
-            uuid:   "",
-            player: null,
+            uuid:     "",
+            player:   null,
+            duration: 0,
+            elapsed:  0,
             DPs: {
                 STATE:             dp+0,
                 VOLUME:            dp+1,
