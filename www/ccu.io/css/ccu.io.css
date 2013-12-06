@@ -1,0 +1,107 @@
+body {
+    font-size: 0.7em;
+    font-family: sans-serif;
+    min-width: 720px;
+    min-height: 480px;
+}
+
+ul.ui-tabs-nav li.ui-state-focus a {
+    outline: none !important;
+}
+
+textarea.data-area {
+    width: 100%;
+    min-height: 440px;
+}
+
+button.ui-multiselect {
+    height: 26px;
+    vertical-align: -1px;
+}
+
+input.ui-pg-input {
+    height: 22px !important;
+}
+
+table.ui-jqgrid-btable tr td {
+    font-size: 11px;
+}
+
+.ui-search-table tr td {
+    font-size: 11px;
+}
+
+.ui-jqgrid-htable tr th {
+    font-size: 12px;
+}
+
+.ui-pg-table tr td {
+    font-size: 11px;
+}
+
+a.ui-jqgrid-titlebar-close {
+    display: none;
+}
+
+div.settings-box {
+    border: 1px solid grey;
+    width: 1100px;
+    padding-left: 6px;
+    margin-bottom: 12px;
+}
+
+table.settings-table {
+    font-size: 12px;
+}
+
+.settings-td1 {
+    width: 150px;
+}
+
+.settings-td2 {
+    width: 90px;
+
+}
+.settings-td3 {
+    width: 160px;
+
+}
+.settings-td4 {
+    width: 120px;
+    padding-left: 20px;
+}
+.settings-td5 {
+    width: 160px;
+
+}
+.settings-td6 {
+    width: 120px;
+    padding-left: 20px;
+}
+
+.settings-td7 {
+    width: 160px;
+
+}
+
+#adapter_config_container {
+    border: 1px solid darkgrey;
+    overflow-y: scroll;
+    padding-bottom: 20px;
+}
+
+.indicator-true {
+    font-weight: bold;
+    color: green;
+}
+
+
+.indicator-false {
+    font-weight: bold;
+
+}
+
+.indicator-false-warning {
+    font-weight: bold;
+    color:red;
+}

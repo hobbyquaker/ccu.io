@@ -1,0 +1,32 @@
+{
+  "name": "pullstream",
+  "version": "0.4.0",
+  "description": "A stream you can pull data from.",
+  "main": "pullstream.js",
+  "scripts": {
+    "test": "./node_modules/.bin/nodeunit ./test/"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nearinfinity/node-pullstream/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nearinfinity/node-pullstream.git"
+  },
+  "keywords": [
+    "stream",
+    "pull"
+  ],
+  "devDependencies": {
+    "nodeunit": "~0.7.4",
+    "stream-buffers": "~0.2.3",
+    "async": "~0.1.22"
+  },
+  "dependencies": {
+    "over": "~0.0.5",
+    "readable-stream": "~1.0.0",
+    "setimmediate": "~1.0.1",
+    "slice-stream": "0.0.0"
+  }
+}

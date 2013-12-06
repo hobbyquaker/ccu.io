@@ -1,0 +1,157 @@
+!# datapoints.fn 1.7 CCU.IO
+!#
+!# Dieses Homematic-Script gibt eine Liste aller Datenpunkte als JSON String aus
+!#
+!# 3'2013-7'2013 hobbyquaker https://github.com/hobbyquaker
+!#
+
+string sDevId;
+string sChnId;
+string sDPId;
+string sValue;
+string sChnId;
+string sDPId;
+string oWId;
+string oDirId;
+
+boolean dpFirst = true;
+
+Write('{');
+
+foreach (sDevId, root.Devices().EnumUsedIDs()) {
+
+    object oDevice   = dom.GetObject(sDevId);
+    boolean bDevReady = oDevice.ReadyConfig();
+
+    if (bDevReady) {
+
+
+        foreach(sChnId, oDevice.Channels()) {
+            object oChannel = dom.GetObject(sChnId);
+
+            integer iChnDir     = oChannel.ChnDirection();
+
+            if (iChnDir == 2) {
+                object oWork = oChannel.DPByHssDP('WORKING');
+                if (oWork) {
+                    if (dpFirst) {
+                      dpFirst = false;
+                    } else {
+                      WriteLine(',');
+                    }
+                    oWId = oWork.ID();
+                    Write('"' # oWId # '":{"Name":"');
+                    WriteURL(oWork.Name());
+                    Write('","TypeName":"HSSDP","Operations":"5",');
+                    Write('"ValueType":2,"ValueUnit":"","Timestamp":"' # oWork.Timestamp());
+                    Write('","Value":null,"Parent":' # sChnId # '}');
+                }
+
+                object oDir = oChannel.DPByHssDP('DIRECTION');
+                if (oDir) {
+                    if (dpFirst) {
+                      dpFirst = false;
+                    } else {
+                      WriteLine(',');
+                    }
+                    oDirId = oDir.ID();
+                    Write('"' # oDirId # '":{"Name":"');
+                    WriteURL(oDir.Name());
+                    Write('","TypeName":"HSSDP","Operations":"5",');
+                    Write('"ValueType":16,"ValueList":"' # oDir.ValueList() # '","Timestamp":"' # oDir.Timestamp());
+                    Write('","Value":null,"Parent":' # sChnId # '}');
+                }
+
+            }
+
+            if (oChannel.HssType() == "SMOKE_DETECTOR") {
+                if (dpFirst) {
+                    dpFirst = false;
+                } else {
+                    WriteLine(',');
+                }
+                object oDP = oChannel.DPByHssDP('STATE');
+
+
+                Write('"' # oDP.ID() # '":{');
+                Write('"Name":"');
+                WriteURL(oDP.Name());
+                Write('","TypeName":"HSSDP');
+                Write('","Operations":5');
+                Write(',"ValueType":2');
+                Write(',"ValueUnit":"');
+                Write('","Timestamp":"' # oDP.Timestamp());
+                Write('","Value":');
+
+                sValue = oDP.Value();
+                if (sValue) {
+                    Write("true");
+                } else {
+                    Write("false");
+                }
+
+                Write(',"Parent":' # sChnId);
+                Write('}');
+
+            }
+
+            foreach(sDPId, oChannel.DPs().EnumUsedIDs()) {
+                object oDP = dom.GetObject(sDPId);
+                if (oDP) {
+                    if (oDP.TypeName() != "VARDP") {
+
+                        if (dpFirst) {
+                          dpFirst = false;
+                        } else {
+                          WriteLine(',');
+                        }
+
+                        string sValueType = oDP.ValueType();
+                        Write('"' # sDPId # '":{');
+                        Write('"Name":"');
+                        WriteURL(oDP.Name());
+                        Write('","TypeName":"' # oDP.TypeName());
+                        Write('","Operations":' # oDP.Operations());
+                        Write(',"ValueType":' # sValueType);
+
+                        if (sValueType == 16) {
+                            Write(',"ValueList":"');
+                            WriteURL(oDP.ValueList());
+                            Write('"');
+                        }
+
+                        Write(',"ValueUnit":"' # oDP.ValueUnit());
+                        Write('","Timestamp":"' # oDP.Timestamp());
+                        Write('","Value":');
+
+                        if (sValueType == 20) {
+                            Write('"');
+                            WriteURL(oDP.Value());
+                            Write('"');
+                        } else {
+                            sValue = oDP.Value();
+                            if (sValueType == 2) {
+                                if (sValue) {
+                                    Write("true");
+                                } else {
+                                    Write("false");
+                                }
+                            } else {
+                               if (sValue == "") {
+                                    Write("0");
+                               } else {
+                                    Write(sValue);
+                               }
+                            }
+                        }
+
+                        Write(',"Parent":' # sChnId);
+                        Write('}');
+                    }
+                }
+            }
+        }
+
+    }
+}
+Write('}');

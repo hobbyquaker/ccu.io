@@ -1,0 +1,32 @@
+!# programs.fn 1.2 CCU.IO
+!#
+!# Dieses Script gibt eine Liste der Programme als JSON String aus
+!#
+!# 3'2013-7'2013 hobbyquaker https://github.com/hobbyquaker
+!#
+
+string oPrgID;
+object oProgram;
+boolean first = true;
+Write('{');
+foreach (oPrgID, dom.GetObject(ID_PROGRAMS).EnumUsedIDs()) {
+  oProgram = dom.GetObject(oPrgID);
+  if(oProgram != null) {
+    if (first == false) {
+      WriteLine(',');
+    } else {
+      first = false;
+    }
+    Write('"' # oPrgID # '":{"Name":"');
+    WriteURL(oProgram.Name());
+    Write('","TypeName":"' # oProgram.TypeName());
+
+    Write('","PrgInfo":"');
+    WriteURL(oProgram.PrgInfo());
+    Write('", "Active":"' # oProgram.Active());
+    Write('","Timestamp":"' # oProgram.ProgramLastExecuteTime());
+    Write('"}');
+
+  }
+}
+Write('}');
