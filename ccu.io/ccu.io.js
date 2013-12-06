@@ -13,9 +13,11 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "0.9.87";
+settings.version = "1.0beta1";
 settings.basedir = __dirname;
+settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
+
 settings.regahss.metaScripts = [
     "favorites",
     "variables",
@@ -28,6 +30,8 @@ settings.regahss.metaScripts = [
     "alarms"
 ];
 
+
+
 var fs = require('fs'),
     logger =    require(__dirname+'/logger.js'),
     binrpc =    require(__dirname+"/binrpc.js"),
@@ -37,6 +41,7 @@ var fs = require('fs'),
     https =     require('https'),
     crypto =    require('crypto'),
     request =   require('request'),
+    childProcess = require('child_process'),
     app,
     appSsl,
     url = require('url'),
@@ -54,10 +59,10 @@ var fs = require('fs'),
     ccuRegaUp = false,
     webserverUp = false,
     initsDone = false,
+    extDone = false,
     lastEvents = {},
     authHash = "";
 
-var childProcess = require('child_process');
 
 if (settings.ioListenPort) {
     app =  express();
@@ -137,6 +142,8 @@ if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
             }
         }
 
+        updateStatus();
+
     }, (settings.binrpc.checkEvents.interval * 1000));
 }
 
@@ -144,19 +151,30 @@ var socketlist = [],
     homematic,
     stringtable = {},
     datapoints = {},
-    regaObjects = {},
+    regaObjectsPersistent = loadPersistentObjects(),
+    regaObjects = regaObjectsPersistent,
     regaIndex = {
         Name: {},
-        Address: {}
+        Address: {},
+        ENUM_ROOMS: [],
+        ENUM_FUNCTIONS: [],
+        FAVORITE: [],
+        DEVICE: [],
+        CHANNEL: [],
+        HSSDP: [],
+        ALDP: [],
+        ALARMDP: [],
+        PROGRAM: []
+
     },
-    regaReady;
+    regaReady = false;
 
 var ignoreNextUpdate = [];
 
 logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
 logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
 
-var debugMode = (process.argv.indexOf("--debug") != -1 ? true : false);
+initWebserver();
 
 var regahss = new rega({
     ccuIp: settings.ccuIp,
@@ -171,6 +189,8 @@ var regahss = new rega({
             if (ioSsl) {
                 ioSsl.sockets.emit("regaDown");
             }
+            initExtensions();
+            updateStatus();
             tryReconnect();
         } else if (err == "CCU unreachable") {
             logger.error("ccu.io        CCU unreachable");
@@ -182,6 +202,8 @@ var regahss = new rega({
             if (ioSsl) {
                 ioSsl.sockets.emit("ccuDown");
             }
+            initExtensions();
+            updateStatus();
             tryReconnect();
         } else {
             logger.info("rega          ReGaHSS up");
@@ -194,11 +216,28 @@ var regahss = new rega({
 
             });
 
+            updateStatus();
 
 
         }
     }
 });
+
+function updateStatus () {
+    var status = {
+        ccuReachable: ccuReachable,
+        ccuRegaUp: ccuRegaUp,
+        ccuRegaData: regaReady,
+        initsDone: initsDone
+    }
+    if (io) {
+        io.sockets.emit("updateStatus", status);
+    }
+    if (ioSsl) {
+        ioSsl.sockets.emit("updateStatus", status);
+    }
+
+}
 
 if (settings.logging.enabled) {
     //devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
@@ -323,33 +362,33 @@ function setDatapoint(id, val, ts, ack, lc) {
 }
 
 function tryReconnect() {
-    logger.info("ccu.io        trying to reconnect to CCU");
-    request('http://'+regahss.options.ccuIp+'/ise/checkrega.cgi', function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            if (body == "OK") {
-                logger.info("ccu.io        ReGaHSS up");
-                ccuReachable = true;
-                ccuRegaUp = true;
-                reconnect();
+    if (regahss && regahss.options && regahss.options.ccuIp) {
+        logger.info("ccu.io        trying to reconnect to CCU");
+        request('http://'+regahss.options.ccuIp+'/ise/checkrega.cgi', function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                if (body == "OK") {
+                    logger.info("ccu.io        ReGaHSS up");
+                    ccuReachable = true;
+                    ccuRegaUp = true;
+                    updateStatus();
+                    reconnect();
+                } else {
+                    logger.error("ccu.io        ReGaHSS down");
+                    ccuRegaUp = false;
+                    updateStatus();
+                    setTimeout(tryReconnect, 10000);
+                }
             } else {
-                logger.error("ccu.io        ReGaHSS down");
+                logger.error("ccu.io        CCU unreachable");
                 ccuRegaUp = false;
+                ccuReachable = false;
+                updateStatus();
                 setTimeout(tryReconnect, 10000);
+
             }
-        } else {
-            logger.error("ccu.io        CCU unreachable");
-            ccuRegaUp = false;
-            ccuReachable = false;
-            setTimeout(tryReconnect, 10000);
-			
-			if (debugMode) {
-				// Just start webServer for debug
-				if (!webserverUp) {
-					initWebserver();
-				}
-			}
-        }
-    });
+        });
+    }
+
 }
 
 function reconnect() {
@@ -359,10 +398,15 @@ function reconnect() {
     });
 
     if (initsDone) {
+        initsDone = false;
         homematic.stopInits();
+        updateStatus();
+
     }
 
     regaReady = false;
+
+    updateStatus();
     clearRegaData();
     setTimeout(function () {
         regahss.checkTime(function () {
@@ -429,13 +473,7 @@ function pollServiceMsgs() {
 
 function loadRegaData(index, err, rebuild, triggerReload) {
     if (!index) { index = 0; }
-    if (err && debugMode) {
-        // Just start webServer for debug
-        if (!webserverUp) {
-            initWebserver();
-        }
-        return;
-    }
+
     var type = settings.regahss.metaScripts[index];
     logger.info("rega          fetching "+type);
     regahss.runScriptFile(type, function (data) {
@@ -513,6 +551,8 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             loadRegaData(index, null, rebuild);
         } else {
             regaReady = true;
+            initExtensions();
+            updateStatus();
             if (rebuild) {
                 logger.info("rega          data succesfully reloaded");
                 logger.info("socket.io --> broadcast reload")
@@ -555,7 +595,6 @@ function loadRegaData(index, err, rebuild, triggerReload) {
 }
 
 function initRpc() {
-    initsDone = true;
 
     for (var i = 0; i < settings.binrpc.inits.length; i++) {
         lastEvents[settings.binrpc.inits[i].id] = Math.floor((new Date()).getTime() / 1000);
@@ -596,7 +635,7 @@ function initRpc() {
                         //
                     }
 
-                    if (settings.pollDataTrigger && bidcos == settings.pollDataTrigger) {
+                    if (settings.regahss.pollDataTriggerEnabled && bidcos == settings.regahss.pollDataTrigger) {
                         clearTimeout(pollTimer);
                         pollRega();
                     }
@@ -661,6 +700,8 @@ function initRpc() {
     } else {
         homematic.init();
     }
+    initsDone = true;
+    updateStatus();
 
 }
 
@@ -916,6 +957,17 @@ function restApi(req, res) {
 
 }
 
+function initExtensions() {
+    if (!extDone) {
+        extDone = true;
+        setTimeout(startAdapters, 10);
+        if (settings.scriptEngineEnabled) {
+            setTimeout(startScriptEngine, 10000);
+        }
+    }
+
+}
+
 function initWebserver() {
     if (app) {
         app.use('/', express.static(__dirname + '/www'));
@@ -979,15 +1031,8 @@ function initWebserver() {
 
     }
     webserverUp = true;
-    logger.info("ccu.io        ready");
 
-    if (settings.adaptersEnabled) {
-        logger.info("ccu.io        adapters enabled");
-        setTimeout(startAdapters, 5000);
-    }
-    if (settings.scriptEngineEnabled) {
-        setTimeout(startScriptEngine, 3000);
-    }
+
 
 }
 
@@ -1212,13 +1257,35 @@ function initSocketIO(_io) {
 
         socket.on('execCmd', function (cmd, callback) {
             logger.info("ccu.io        exec "+cmd);
-             childProcess.exec(cmd, callback);
+            childProcess.exec(cmd, callback);
+        });
+
+        socket.on('updateAddon', function (url, name) {
+            var path = __dirname + "/update-addon.js";
+            logger.info("ccu.io        starting "+path);
+            childProcess.fork(path, [url, name]);
+        });
+
+        socket.on('refreshAddons', function () {
+            if (io) {
+                io.sockets.emit("refreshAddons");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("refreshAddons");
+            }
         });
 
         socket.on('reloadData', function () {
             regaReady = false;
+
+            updateStatus();
             clearRegaData();
             loadRegaData(0, null, true);
+        });
+
+        socket.on('restart', function () {
+            logger.info("ccu.io        received restart command");
+            childProcess.fork(__dirname+"/ccu.io-server.js", ["restart"]);
         });
 
         socket.on('restartRPC', function () {
@@ -1315,7 +1382,7 @@ function initSocketIO(_io) {
                     logger.error("ccu.io        failed loading file "+__dirname+"/"+name);
                     callback(undefined);
                 } else {
-                    callback("\""+data+"\"");
+                    callback(data.toString());
                 }
             });
         });
@@ -1374,6 +1441,25 @@ function initSocketIO(_io) {
                         logger.error("ccu.io        GET "+url+" "+ e.message);
                     });
             }
+        });
+
+        socket.on('getStatus', function (callback) {
+            var status = {
+                ccuReachable: ccuReachable,
+                ccuRegaUp: ccuRegaUp,
+                ccuRegaData: regaReady,
+                initsDone: initsDone
+            }
+            callback(status);
+        });
+
+
+
+        socket.on('getNextId', function (start, callback) {
+            while (regaObjects[start]) {
+                start++;
+            }
+            callback(start);
         });
 
         socket.on('getSettings', function (callback) {
@@ -1549,10 +1635,17 @@ function initSocketIO(_io) {
 
             regaObjects[id] = obj;
 
+            if (obj._persistent) {
+                regaObjectsPersistent[id] = obj;
+                savePersistentObjects();
+            }
+
             if (callback) {
                 callback();
             }
         });
+
+
 
 
         socket.on('setState', function(arr, callback) {
@@ -1654,6 +1747,9 @@ process.on('SIGTERM', function () {
 });
 
 function stop() {
+    if (homematic) {
+        homematic.stopInits();
+    }
     try {
         socketlist.forEach(function(socket) {
             logger.info("socket.io --> disconnecting socket");
@@ -1770,4 +1866,21 @@ function devLog(ts, id, val) {
         }
     }
     cacheLog(ts+" "+id+" "+JSON.stringify(val)+"\n");
+}
+
+function savePersistentObjects() {
+    var name = "io-persistent.json";
+    var content = JSON.stringify(regaObjectsPersistent);
+    logger.verbose("socket.io <-- writeFile "+name+" "+content);
+    fs.writeFile(settings.datastorePath+name, content);
+}
+function loadPersistentObjects() {
+    var objects;
+    try {
+        var x = fs.readFileSync(settings.datastorePath+"io-persistent.json");
+        objects = JSON.parse(x);
+    } catch (e) {
+        objects = {};
+    }
+    return objects;
 }
