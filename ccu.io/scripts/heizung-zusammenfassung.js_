@@ -45,7 +45,7 @@ function beheizteRaeumeFinden() {
 
     }
 
-    var text = commaSeparatedList(arrBeheizteRaeume);
+    var text = arrBeheizteRaeume.join(", ");
 
     setState(100000, text);
 

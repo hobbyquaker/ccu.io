@@ -47,7 +47,7 @@ function beleuchteteRaeumeFinden() {
 
     }
 
-    var text = commaSeparatedList(arrBeleuchteteRaeume);
+    var text = arrBeleuchteteRaeume.join(", ");
 
     setState(100001, text);
 
