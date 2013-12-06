@@ -1,0 +1,19 @@
+{
+    "enabled": false,
+    "settings": {
+        "webserver": {
+            "enabled": true,
+            "port":    8083
+        },
+
+        "firstId":    72000,
+        "elapsedInterval": 2000,
+        "devices":    {
+            "192.168.1.55": {
+                "name": "Wohnzimmer",
+                "rooms": ["Wohnzimmer"],
+                "funcs": ["Media"]
+            }
+        }
+    }
+}
