@@ -1,0 +1,119 @@
+<table style="font-size: 12px">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td>
+            <select id="mysql_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Hostname:</td>
+        <td><input id="mysql_settings_host" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Username:</td>
+        <td><input id="mysql_settings_user" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Password:</td>
+        <td><input id="mysql_settings_pass" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Database:</td>
+        <td><input id="mysql_settings_db" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Enable event log:</td>
+        <td>
+            <select id="mysql_settings_enableEventLog">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Log changes only:</td>
+        <td>
+            <select id="mysql_settings_logChangesOnly">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+
+    if (currentAdapterSettings.enabled) {
+        $("#mysql_enabled option[value='false']").removeAttr("selected");
+        $("#mysql_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#mysql_enabled option[value='true']").removeAttr("selected");
+        $("#mysql_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#mysql_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#mysql_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+
+    $("#mysql_settings_host").val(currentAdapterSettings.settings.host);
+
+    $("#mysql_settings_host").change(function () {
+        currentAdapterSettings.settings.host = $("#mysql_settings_host").val();
+        updateAdapterSettings();
+    });
+
+    $("#mysql_settings_user").val(currentAdapterSettings.settings.user);
+
+    $("#mysql_settings_user").change(function () {
+        currentAdapterSettings.settings.user = $("#mysql_settings_user").val();
+        updateAdapterSettings();
+    });
+
+    $("#mysql_settings_pass").val(currentAdapterSettings.settings.pass);
+
+    $("#mysql_settings_pass").change(function () {
+        currentAdapterSettings.settings.pass = $("#mysql_settings_pass").val();
+        updateAdapterSettings();
+    });
+
+    $("#mysql_settings_db").val(currentAdapterSettings.settings.db);
+
+    $("#mysql_settings_db").change(function () {
+        currentAdapterSettings.settings.db = $("#mysql_settings_db").val();
+        updateAdapterSettings();
+    });
+
+    if (currentAdapterSettings.settings.enableEventLog) {
+        $("#mysql_settings_enableEventLog option[value='false']").removeAttr("selected");
+        $("#mysql_settings_enableEventLog option[value='true']").attr("selected", true);
+    } else {
+        $("#mysql_settings_enableEventLog option[value='true']").removeAttr("selected");
+        $("#mysql_settings_enableEventLog option[value='false']").attr("selected", true);
+    }
+
+    $("#mysql_settings_enableEventLog").change(function () {
+        currentAdapterSettings.settings.enableEventLog = ($("#mysql_settings_enableEventLog option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+    if (currentAdapterSettings.settings.logChangesOnly) {
+        $("#mysql_settings_logChangesOnly option[value='false']").removeAttr("selected");
+        $("#mysql_settings_logChangesOnly option[value='true']").attr("selected", true);
+    } else {
+        $("#mysql_settings_logChangesOnly option[value='true']").removeAttr("selected");
+        $("#mysql_settings_logChangesOnly option[value='false']").attr("selected", true);
+    }
+
+    $("#mysql_settings_logChangesOnly").change(function () {
+        currentAdapterSettings.settings.logChangesOnly = ($("#mysql_settings_logChangesOnly option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+</script>

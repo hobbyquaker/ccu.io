@@ -1,0 +1,96 @@
+<table style="font-size: 12px">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td>
+            <select id="dwd_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Period (minutes):</td>
+        <td><input id="dwd_period" type="number"/></td>
+    </tr>
+    <tr>
+        <td>Hostname:</td>
+        <td><input id="dwd_settings_host" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Username:</td>
+        <td><input id="dwd_settings_user" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Password:</td>
+        <td><input id="dwd_settings_pass" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Dienststelle:</td>
+        <td><input id="dwd_settings_dienststelle" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Kreis:</td>
+        <td><input id="dwd_settings_kreis" type="text"/></td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+
+    if (currentAdapterSettings.enabled) {
+        $("#dwd_enabled option[value='false']").removeAttr("selected");
+        $("#dwd_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#dwd_enabled option[value='true']").removeAttr("selected");
+        $("#dwd_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#dwd_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#dwd_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+    $("#dwd_period").val(currentAdapterSettings.period);
+
+    $("#dwd_period").change(function () {
+        currentAdapterSettings.period = $("#dwd_period").val();
+        updateAdapterSettings();
+    });
+
+    $("#dwd_settings_host").val(currentAdapterSettings.settings.host);
+
+    $("#dwd_settings_host").change(function () {
+        currentAdapterSettings.settings.host = $("#dwd_settings_host").val();
+        updateAdapterSettings();
+    });
+
+    $("#dwd_settings_user").val(currentAdapterSettings.settings.user);
+
+    $("#dwd_settings_user").change(function () {
+        currentAdapterSettings.settings.user = $("#dwd_settings_user").val();
+        updateAdapterSettings();
+    });
+
+    $("#dwd_settings_pass").val(currentAdapterSettings.settings.pass);
+
+    $("#dwd_settings_pass").change(function () {
+        currentAdapterSettings.settings.pass = $("#dwd_settings_pass").val();
+        updateAdapterSettings();
+    });
+
+    $("#dwd_settings_dienststelle").val(currentAdapterSettings.settings.dienststelle);
+
+    $("#dwd_settings_dienststelle").change(function () {
+        currentAdapterSettings.settings.dienststelle = $("#dwd_settings_dienststelle").val();
+        updateAdapterSettings();
+    });
+
+    $("#dwd_settings_kreis").val(currentAdapterSettings.settings.kreis);
+
+    $("#dwd_settings_kreis").change(function () {
+        currentAdapterSettings.settings.kreis = $("#dwd_settings_kreis").val();
+        updateAdapterSettings();
+    });
+
+</script>

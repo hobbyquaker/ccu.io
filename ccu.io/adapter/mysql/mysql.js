@@ -25,7 +25,7 @@ if (settings.ioListenPort) {
 } else if (settings.ioListenPortSsl) {
     var socket = io.connect("127.0.0.1", {
         port: settings.ioListenPortSsl,
-        secure: true,
+        secure: true
     });
 } else {
     process.exit();

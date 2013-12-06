@@ -1,0 +1,54 @@
+<table style="font-size: 12px">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td>
+            <select id="yr_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+
+    <tr>
+        <td>Period (minutes):</td>
+        <td><input id="yr_period" type="number"/></td>
+    </tr>
+    <tr>
+        <td>Location:</td>
+        <td><input size="72" id="yr_settings_location" type="text"/></td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+
+    if (currentAdapterSettings.enabled) {
+        $("#yr_enabled option[value='false']").removeAttr("selected");
+        $("#yr_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#yr_enabled option[value='true']").removeAttr("selected");
+        $("#yr_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#yr_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#yr_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+
+    $("#yr_period").val(currentAdapterSettings.period);
+
+    $("#yr_period").change(function () {
+        currentAdapterSettings.period = $("#yr_period").val();
+        updateAdapterSettings();
+    });
+
+    $("#yr_settings_location").val(currentAdapterSettings.settings.location);
+
+    $("#yr_settings_location").change(function () {
+        currentAdapterSettings.settings.location = $("#yr_settings_location").val();
+        updateAdapterSettings();
+    });
+
+</script>

@@ -7,11 +7,15 @@
  *
  */
 
+
+
 var settings = require(__dirname+'/../../settings.js');
 
 if (!settings.adapters.dwd || !settings.adapters.dwd.enabled) {
     process.exit();
 }
+
+setTimeout(stop, 1800000);
 
 var severity = {
         "Minor":    1,
@@ -102,6 +106,7 @@ function getFile(i) {
         socket.on("close", function(hadErr) {
             if (hadErr) {
                 logger.error("adapter dwd   error retrieving file");
+                stop();
             } else {
                 logger.info("adapter dwd   got weather warning");
             }
@@ -160,7 +165,7 @@ function received() {
         console.log(warnungen[item]);
         if (!first) {
             warnung.text += ", ";
-            warnung.desc += ", ";
+            warnung.desc += " ";
             warnung.head += ", ";
         } else {
             first = false;

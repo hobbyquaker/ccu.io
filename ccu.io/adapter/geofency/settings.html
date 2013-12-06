@@ -1,0 +1,120 @@
+<table style="font-size: 12px" id="geofency_table">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td>
+            <select id="geofency_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Port:</td>
+        <td><input id="geofency_settings_port" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Username:</td>
+        <td><input id="geofency_settings_user" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Password:</td>
+        <td><input id="geofency_settings_pass" type="text"/></td>
+    </tr>
+
+
+</table>
+<input type="button" id="add_device" value="add device"/>
+
+<script type="text/javascript">
+
+    var geofencyDevices = currentAdapterSettings.settings.devices;
+
+    function geofencyRefreshDevices() {
+        for (var i = 0; i < geofencyDevices.length; i++) {
+            if (i > 0) {
+                $("#geofency_table").append('<tr class="geofency-optdevice"><td>Device <span class="device-number">'+i+'</span> name</td><td><input class="geofency-device" type="text" value="'+geofencyDevices[i]+'"/><input data-geofency-device="'+i+'" type="button" value="remove device" class="geofency-remove"/></td></tr>');
+            } else {
+                $("#geofency_table").append('<tr class="geofency-optdevice"><td>Device <span class="device-number">'+i+'</span> name</td><td><input class="geofency-device" type="text" value="'+geofencyDevices[i]+'"/></td></tr>');
+            }
+        }
+        $(".geofency-remove").button().click(function () {
+            var j = $(this).attr("data-geofency-device");
+            geofencyRemoveDevice(j);
+        });
+        $(".geofency-device").change(function () {
+            geofencyUpdateDevices();
+            updateAdapterSettings();
+        });
+    }
+    geofencyRefreshDevices();
+
+    if (currentAdapterSettings.enabled) {
+        $("#geofency_enabled option[value='false']").removeAttr("selected");
+        $("#geofency_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#geofency_enabled option[value='true']").removeAttr("selected");
+        $("#geofency_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#geofency_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#geofency_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+
+    $("#geofency_settings_port").val(currentAdapterSettings.settings.port);
+
+    $("#geofency_settings_port").change(function () {
+        currentAdapterSettings.settings.port = $("#geofency_settings_port").val();
+        updateAdapterSettings();
+    });
+
+    $("#geofency_settings_user").val(currentAdapterSettings.settings.user);
+
+    $("#geofency_settings_user").change(function () {
+        currentAdapterSettings.settings.user = $("#geofency_settings_user").val();
+        updateAdapterSettings();
+    });
+
+    $("#geofency_settings_pass").val(currentAdapterSettings.settings.pass);
+
+    $("#geofency_settings_pass").change(function () {
+        currentAdapterSettings.settings.pass = $("#geofency_settings_pass").val();
+        updateAdapterSettings();
+    });
+
+    $("#add_device").button().click(function () {
+        var i = $(".geofency-device").length;
+        $("#geofency_table").append('<tr class="geofency-optdevice"><td>Device <span class="device-number">'+i+'</span> name</td><td><input class="geofency-device" type="text"/><input data-geofency-device="'+i+'" type="button" value="Remove device" class="geofency-remove"/></td></tr>')
+        $(".geofency-remove:last").button().click(function () {
+            var j = $(this).attr("data-geofency-device");
+            geofencyRemoveDevice(j);
+
+        });
+        $(".geofency-device:last").change(function () {
+            geofencyUpdateDevices();
+        });
+    });
+
+    function geofencyUpdateDevices() {
+        currentAdapterSettings.settings.devices = [];
+        $(".geofency-device").each(function () {
+            currentAdapterSettings.settings.devices.push($(this).val());
+
+        });
+        updateAdapterSettings();
+
+    }
+
+    function geofencyRemoveDevice(j) {
+        $("tr.geofency-optdevice").remove();
+        currentAdapterSettings.settings.devices.splice(j, 1);
+        geofencyDevices = currentAdapterSettings.settings.devices;
+        geofencyRefreshDevices();
+        geofencyUpdateDevices();
+        updateAdapterSettings();
+    }
+
+</script>

@@ -1,0 +1,13 @@
+{
+    "enabled": false,
+    "firstId": 70060,
+    "settings": {
+        "port": 7999,
+        "user": "geo",
+        "pass": "geo",
+        "devices": [
+            "iPhone 0",
+            "iPhone 1"
+        ]
+    }
+}
