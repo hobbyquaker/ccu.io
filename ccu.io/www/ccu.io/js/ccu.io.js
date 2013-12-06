@@ -1,3 +1,10 @@
+
+var currentAdapterSettings;
+
+function updateAdapterSettings() {
+    $("#adapter_config_json").html(JSON.stringify(currentAdapterSettings, null, "    "));
+}
+
 $(document).ready(function () {
 
     var regaObjects,
@@ -69,15 +76,19 @@ $(document).ready(function () {
     socket.emit("getSettings", function (settings) {
         ccuIoSettings = settings;
         $(".ccu-io-version").html(settings.version);
-        $(".ccu-io-scriptengine").html(settings.scriptEngineEnabled);
-        $(".ccu-io-adapters").html(settings.adaptersEnabled);
-        $(".ccu-io-logging").html(settings.logging.enabled);
+        $(".ccu-io-scriptengine").html((settings.scriptEngineEnabled ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false'>NO</span>"));
+        $(".ccu-io-adapters").html(settings.adaptersEnabled ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false'>NO</span>");
+        $(".ccu-io-logging").html(settings.logging.enabled ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false'>NO</span>");
+
+        loadSettings();
+
         socket.emit("readdir", ["adapter"], function (data) {
             for (var i = 0; i < data.length; i++) {
                 var adapter = data[i];
-                if (adapter == "skeleton.js") { continue; }
+                if (adapter == "skeleton.js" || adapter == ".DS_Store") { continue; }
                 var adapterData = {
                     name:   data[i],
+                    settings:   '<button class="adapter-settings" data-adapter="'+adapter+'">configure</button>',
                     confed:     (settings.adapters[data[i]]?"true":"false"),
                     enabled:    (settings.adapters[data[i]]?settings.adapters[data[i]].enabled:""),
                     mode:       (settings.adapters[data[i]]?settings.adapters[data[i]].mode:""),
@@ -85,8 +96,25 @@ $(document).ready(function () {
                 }
                 $("#grid_adapter").jqGrid("addRowData", i, adapterData);
             }
+            $(".adapter-settings").click(function () {
+                editAdapterSettings($(this).attr("data-adapter"));
+            });
         });
 
+    });
+
+    socket.emit("getStatus", function (data) {
+        $(".ccu-reachable").html(data.ccuReachable ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
+        $(".ccu-regaup").html(data.ccuRegaUp ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
+        $(".ccu-regadata").html(data.ccuRegaData ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
+        $(".ccu-rpc").html(data.initsDone ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
+    });
+
+    socket.on("updateStatus", function (data) {
+        $(".ccu-reachable").html(data.ccuReachable ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
+        $(".ccu-regaup").html(data.ccuRegaUp ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
+        $(".ccu-regadata").html(data.ccuRegaData ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
+        $(".ccu-rpc").html(data.initsDone ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
     });
 
 
@@ -123,18 +151,45 @@ $(document).ready(function () {
                 socket.emit("getUrl", url, function(res) {
                     obj = JSON.parse(res);
                     $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
-                    if (obj.version > $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html()) {
+                    var instVersion = $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html();
+
+                    var instVersionArr = instVersion.split(".");
+                    var availVersionArr = obj.version.split(".");
+
+                    var updateAvailable = false;
+
+                    for (var k = 0; k<3; k++) {
+                        instVersionArr[k] = parseInt(instVersionArr[k], 10);
+                        if (isNaN(instVersionArr[k])) { instVersionArr[k] = -1; }
+                        availVersionArr[k] = parseInt(availVersionArr[k], 10);
+                        if (isNaN(availVersionArr[k])) { availVersionArr[k] = -1; }
+                    }
+
+                    if (availVersionArr[0] > instVersionArr[0]) {
+                        updateAvailable = true;
+                    } else if (availVersionArr[0] == instVersionArr[0]) {
+                        if (availVersionArr[1] > instVersionArr[1]) {
+                            updateAvailable = true;
+                        } else if (availVersionArr[1] == instVersionArr[1]) {
+                            if (availVersionArr[2] > instVersionArr[2]) {
+                                updateAvailable = true;
+                            }
+                        }
+                    }
+
+                    if (updateAvailable) {
                         $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' value='update'/>&nbsp;");
                         $("input#update_"+obj.ident).click(function () {
                             $(this).attr("disabled", true);
-                            socket.emit("execCmd", ccuIoSettings.basedir+"/install/ccu.io.install.sh "+obj.ident, function (err, stdout, stderr) {
-                                alert(stdout);
-                                if (stderr) {
-                                    alert(stderr);
-
+                            var that = this;
+                            socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
+                                if (err) {
+                                    alert(err);
+                                } else {
+                                    $(that).remove();
                                 }
-                                //$(this).remove();
                             });
+
                         });
                     }
                     $("input.updateCheck[data-update-name='"+obj.name+"']").hide();
@@ -195,22 +250,47 @@ $(document).ready(function () {
         window.location.reload();
     });
 
+    socket.on('disconnect', function() {
+        setTimeout(function () {
+            alert("CCU.IO disconnected");
+            window.location.reload();
+        }, 100);
 
-    $("#refreshCCU").button().click(function () {
-        socket.emit('reloadData');
-        $("#reloading").show();
     });
-    $("#restartRPC").button().click(function () {
+
+
+    socket.on('reconnect', function() {
+        window.location.reload();
+    });
+
+
+    $("#restartCCUIO").button().css("width", 240).click(function () {
+        socket.emit("restart");
+        $("#restarting").show();
+        setTimeout(function () {
+            window.location.reload();
+        }, 30000);
+    });
+
+    $("#refreshAddons").button().css("width", 240).click(function () {
+        socket.emit("refreshAddons");
+    })
+
+    $("#refreshCCU").button().css("width", 240).click(function () {
+        socket.emit('reloadData');
+        //$("#reloading").show();
+    });
+    $("#restartRPC").button().css("width", 240).click(function () {
         socket.emit('restartRPC');
     });
-    $("#reloadScriptEngine").button().click(function () {
+    $("#reloadScriptEngine").button().css("width", 240).click(function () {
         $("#reloadScriptEngine").button("disable");
         socket.emit('reloadScriptEngine', function () {
             $("#reloadScriptEngine").button("enable");
         });
     });
 
-    $("#dataRefresh").button().click(function() {
+    $("#dataRefresh").button().css("width", 240).click(function() {
         $("#data").html("");
         socket.emit('getDatapoints', function(obj) {
             $("#data").html(JSON.stringify(obj, null, "  "));
@@ -465,14 +545,15 @@ $(document).ready(function () {
 
     $("#grid_adapter").jqGrid({
         datatype: "local",
-        colNames:['id', 'name', 'confed', 'enabled', 'mode', 'period'],
+        colNames:['id', 'name', 'settings', 'confed', 'enabled', 'mode', 'period'],
         colModel:[
             {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
             {name:'name',index:'name', width:340, sorttype: "int"},
-            {name:'confed',index:'confed', width:120},
-            {name:'enabled',index:'enabled', width:120},
-            {name:'mode',index:'mode', width:120},
-            {name:'period',index:'period', width:120}
+            {name:'settings',index:'settings', width:80, sorttype: "int"},
+            {name:'confed',index:'confed', width:100, hidden: true},
+            {name:'enabled',index:'enabled', width:100},
+            {name:'mode',index:'mode', width:100},
+            {name:'period',index:'period', width:100}
         ],
         autowidth: true,
         width: 1200,
@@ -527,9 +608,262 @@ $(document).ready(function () {
         if (y < 480) { y = 480; }
         $(".gridSub").setGridHeight(y - 250).setGridWidth(x - 100);
         $(".gridMain").setGridHeight(y - 150).setGridWidth(x - 60);
+        $("#adapter_config_json").css("width", x-60);
+        $("#adapter_config_json").css("height", y-180);
+        $("#adapter_config_container").css("width", x-60);
+        $("#adapter_config_container").css("height", y-200);
+
     }
     $(window).resize(function() {
         resizeGrids();
+    });
+
+    $("#saveSettings").button().click(saveSettings);
+
+
+    function loadSettings() {
+        $("#ccuIp").val(ccuIoSettings.ccuIp);
+        $("#binrpc_listenIp").val(ccuIoSettings.binrpc.listenIp);
+
+        if (ccuIoSettings.stats) {
+            $("#stats").attr("checked", true);
+        } else {
+            $("#stats").removeAttr("checked");
+        }
+        $("#statsInterval").val(ccuIoSettings.statsIntervalMinutes);
+
+        if (ccuIoSettings.logging.enabled) {
+            $("#logging_enabled").attr("checked", true);
+        } else {
+            $("#logging_enabled").removeAttr("checked");
+        }
+        $("#logging_writeInterval").val(ccuIoSettings.logging.writeInterval);
+
+        if (ccuIoSettings.scriptEngineEnabled) {
+            $("#scriptEngineEnabled").attr("checked", true);
+        } else {
+            $("#scriptEngineEnabled").removeAttr("checked");
+        }
+        $("#longitude").val(ccuIoSettings.longitude);
+        $("#latitude").val(ccuIoSettings.latitude);
+
+        if (ccuIoSettings.httpEnabled) {
+            $("#httpEnabled").attr("checked", true);
+        } else {
+            $("#httpEnabled").removeAttr("checked");
+        }
+        $("#ioListenPort").val(ccuIoSettings.ioListenPort  || $("#ioListenPort").attr("data-defaultval"));
+        if (ccuIoSettings.httpsEnabled) {
+            $("#httpsEnabled").attr("checked", true);
+        } else {
+            $("#httpsEnabled").removeAttr("checked");
+        }
+        $("#ioListenPortSsl").val(ccuIoSettings.ioListenPortSsl || $("#ioListenPortSsl").attr("data-defaultval"));
+
+        if (ccuIoSettings.authentication.enabled) {
+            $("#authentication_enabled").attr("checked", true);
+        } else {
+            $("#authentication_enabled").removeAttr("checked");
+        }
+        if (ccuIoSettings.authentication.enabledSsl) {
+            $("#authentication_enabledSsl").attr("checked", true);
+        } else {
+            $("#authentication_enabledSsl").removeAttr("checked");
+        }
+
+        $("#authentication_user").val(ccuIoSettings.authentication.user);
+        $("#authentication_password").val(ccuIoSettings.authentication.password);
+
+        $("#binrpc_listenPort").val(ccuIoSettings.binrpc.listenPort);
+
+        if (ccuIoSettings.binrpc.rfdEnabled) {
+            $("#binrpc_rfdEnabled").attr("checked", true);
+        } else {
+            $("#binrpc_rfdEnabled").removeAttr("checked");
+        }
+        if (ccuIoSettings.binrpc.hs485dEnabled) {
+            $("#binrpc_hs485dEnabled").attr("checked", true);
+        } else {
+            $("#binrpc_hs485dEnabled").removeAttr("checked");
+        }
+        if (ccuIoSettings.binrpc.cuxdEnabled) {
+            $("#binrpc_cuxdEnabled").attr("checked", true);
+        } else {
+            $("#binrpc_cuxdEnabled").removeAttr("checked");
+        }
+        $("#binrpc_cuxdPort").val(ccuIoSettings.binrpc.cuxdPort);
+        if (ccuIoSettings.binrpc.checkEvents.enabled) {
+            $("#binrpc_checkEvents_enabled").attr("checked", true);
+        } else {
+            $("#binrpc_checkEvents_enabled").removeAttr("checked");
+        }
+        $("#binrpc_checkEvents_rfd").val(ccuIoSettings.binrpc.checkEvents.rfd);
+        $("#binrpc_checkEvents_hs485d").val(ccuIoSettings.binrpc.checkEvents.hs485d);
+
+        $("#regahss_pollDataInterval").val(ccuIoSettings.regahss.pollDataInterval);
+        $("#regahss_pollDataTrigger").val(ccuIoSettings.regahss.pollDataTrigger);
+        if (ccuIoSettings.regahss.pollData) {
+            $("#regahss_pollData").attr("checked", true);
+        } else {
+            $("#regahss_pollData").removeAttr("checked");
+        }
+
+
+    }
+
+
+
+    function saveSettings() {
+
+        ccuIoSettings.ccuIp = $("#ccuIp").val();
+        ccuIoSettings.binrpc.listenIp = $("#binrpc_listenIp").val();
+
+        if ($("#stats").is(":checked")) {
+            ccuIoSettings.stats = true;
+        } else {
+            ccuIoSettings.stats = false;
+        }
+
+        ccuIoSettings.statsIntervalMinutes = $("#statsInterval").val();
+
+        if ($("#logging_enabled").is(":checked")) {
+            ccuIoSettings.logging.enabled = true;
+        } else {
+            ccuIoSettings.logging.enabled = false;
+        }
+        ccuIoSettings.logging.writeInterval = $("#logging_writeInterval").val();
+
+        if ($("#scriptEngineEnabled").is(":checked")) {
+            ccuIoSettings.scriptEngineEnabled = true;
+        } else {
+            ccuIoSettings.scriptEngineEnabled = false;
+        }
+        ccuIoSettings.longitude = $("#longitude").val();
+        ccuIoSettings.latitude = $("#latitude").val();
+
+        if ($("#httpEnabled").is(":checked")) {
+            ccuIoSettings.httpEnabled = true;
+        } else if ($("#httpsEnabled").is(":checked")) {
+            ccuIoSettings.httpEnabled = false;
+        } else {
+            ccuIoSettings.httpEnabled = true;
+        }
+        ccuIoSettings.ioListenPort = $("#ioListenPort").val();
+        if ($("#httpsEnabled").is(":checked")) {
+            ccuIoSettings.httpsEnabled = true;
+        } else {
+            ccuIoSettings.httpsEnabled = false;
+        }
+        ccuIoSettings.ioListenPortSsl = $("#ioListenPortSsl").val();
+
+        if ($("#authentication_enabled").is(":checked")) {
+            ccuIoSettings.authentication.enabled = true;
+
+        } else {
+            ccuIoSettings.authentication.enabled = false;
+        }
+        if ($("#authentication_enabledSsl").is(":checked")) {
+            ccuIoSettings.authentication.enabledSsl = true;
+        } else {
+            ccuIoSettings.authentication.enabledSsl = false;
+        }
+
+        ccuIoSettings.authentication.user = $("#authentication_user").val();
+        ccuIoSettings.authentication.password = $("#authentication_password").val();
+
+        ccuIoSettings.binrpc.listenPort = $("#binrpc_listenPort").val();
+
+        if ($("#binrpc_rfdEnabled").is(":checked")) {
+            ccuIoSettings.binrpc.rfdEnabled = true;
+        } else {
+            ccuIoSettings.binrpc.rfdEnabled = false;
+        }
+        if ($("#binrpc_hs485dEnabled").is(":checked")) {
+            ccuIoSettings.binrpc.hs485dEnabled = true;
+        } else {
+            ccuIoSettings.binrpc.hs485dEnabled = false;
+        }
+        if ($("#binrpc_cuxdEnabled").is(":checked")) {
+            ccuIoSettings.binrpc.cuxdEnabled = true;
+        } else {
+            ccuIoSettings.binrpc.cuxdEnabled = false;
+        }
+        ccuIoSettings.binrpc.cuxdPort = $("#binrpc_cuxdPort").val();
+        if ($("#binrpc_checkEvents_enabled").is(":checked")) {
+            ccuIoSettings.binrpc.checkEvents.enabled = true;
+        } else {
+            ccuIoSettings.binrpc.checkEvents.enabled = false;
+        }
+        ccuIoSettings.binrpc.checkEvents.rfd = $("#binrpc_checkEvents_rfd").val();
+        ccuIoSettings.binrpc.checkEvents.hs485d = $("#binrpc_checkEvents_hs485d").val();
+
+        ccuIoSettings.regahss.pollDataInterval = $("#regahss_pollDataInterval").val();
+        ccuIoSettings.regahss.pollDataTrigger = $("#regahss_pollDataTrigger").val();
+        if ($("#regahss_pollData").is(":checked")) {
+            ccuIoSettings.regahss.pollData = true;
+        } else {
+            ccuIoSettings.regahss.pollData = false;
+        }
+        var settingsWithoutAdapters = JSON.parse(JSON.stringify(ccuIoSettings));
+        delete settingsWithoutAdapters.adapters;
+        socket.emit("writeFile", "io-settings.json", ccuIoSettings, function () {
+            alert("CCU.IO settings saved. Please restart CCU.IO");
+        });
+    }
+
+    function editAdapterSettings(adapter) {
+        $("#adapter_name").html(adapter);
+        $("#adapter_loading").show();
+        $("#adapter_overview").hide();
+        $("#adapter_config").hide();
+
+
+        socket.emit("readFile", "adapter-"+adapter+".json", function (data) {
+            $("#adapter_config_json").html(JSON.stringify(data, null, "    "));
+            currentAdapterSettings = data;
+            socket.emit("readRawFile", "adapter/"+adapter+"/settings.html", function (content) {
+                $("#adapter_loading").hide();
+                $("#adapter_config").show();
+                if (content) {
+                    $("#adapter_config_container").html(content);
+                    $("#adapter_config_json").hide();
+                    $("#adapter_config_container").show();
+                } else {
+                    $("#adapter_config_container").hide();
+                    $("#adapter_config_json").show();
+                    resizeGrids();
+                }
+            });
+        });
+
+    }
+
+    function saveAdapterSettings() {
+        var adapter = $("#adapter_name").html();
+        try {
+            var adapterSettings = JSON.parse($("#adapter_config_json").val());
+            socket.emit("writeFile", "adapter-"+adapter+".json", adapterSettings, function () {
+                alert(adapter+" adapter settings saved. Please restart CCU.IO");
+            });
+            return true;
+        } catch (e) {
+            alert("Error: invalid JSON");
+            return false;
+        }
+    }
+
+    $("#adapter_save").button().click(saveAdapterSettings);
+
+    $("#adapter_close").button().click(function () {
+        if (saveAdapterSettings()) {
+            $("#adapter_config").hide();
+            $("#adapter_overview").show();
+        }
+    });
+
+    $("#adapter_cancel").button().click(function () {
+        $("#adapter_config").hide();
+        $("#adapter_overview").show();
     });
 
 

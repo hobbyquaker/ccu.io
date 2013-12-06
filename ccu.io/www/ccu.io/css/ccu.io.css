@@ -42,3 +42,66 @@ table.ui-jqgrid-btable tr td {
 a.ui-jqgrid-titlebar-close {
     display: none;
 }
+
+div.settings-box {
+    border: 1px solid grey;
+    width: 1100px;
+    padding-left: 6px;
+    margin-bottom: 12px;
+}
+
+table.settings-table {
+    font-size: 12px;
+}
+
+.settings-td1 {
+    width: 150px;
+}
+
+.settings-td2 {
+    width: 90px;
+
+}
+.settings-td3 {
+    width: 160px;
+
+}
+.settings-td4 {
+    width: 120px;
+    padding-left: 20px;
+}
+.settings-td5 {
+    width: 160px;
+
+}
+.settings-td6 {
+    width: 120px;
+    padding-left: 20px;
+}
+
+.settings-td7 {
+    width: 160px;
+
+}
+
+#adapter_config_container {
+    border: 1px solid darkgrey;
+    overflow-y: scroll;
+    padding-bottom: 20px;
+}
+
+.indicator-true {
+    font-weight: bold;
+    color: green;
+}
+
+
+.indicator-false {
+    font-weight: bold;
+
+}
+
+.indicator-false-warning {
+    font-weight: bold;
+    color:red;
+}

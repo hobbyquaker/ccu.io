@@ -28,8 +28,8 @@
             <ul>
                 <li><a href="#subTab11">Info</a></li>
                 <li><a href="#subTab12">Control</a></li>
-                <!--<li><a href="#subTab13">Setup</a></li>
-                <li><a href="#subTab14">Log</a></li>-->
+                <li><a href="#subTab13">Settings</a></li>
+                <!--<li><a href="#subTab14">Log</a></li>-->
             </ul>
             <div id="subTab11">
 
@@ -39,16 +39,29 @@
                     CCU Firmware: <span class="ccu-version"></span>,
                     CCU Uptime: <span class="ccu-version"></span>-->
 
-
+                </p>
+                <p>
+                <table style="font-size:12px">
+                    <tr>
+                        <td style="width: 160px">CCU reachable:</td><td style="width:100px; text-align:right;" class="ccu-reachable"></td>
+                    </tr>
+                    <tr>
+                        <td>ReGa Up:</td><td style="width:100px; text-align:right;" class="ccu-regaup"></td>
+                    </tr>
+                    <tr>
+                        <td>ReGa Data loaded:</td><td style="width:100px; text-align:right;" class="ccu-regadata"></td>
+                    </tr>
+                    <tr>
+                        <td>RPC Inits:</td><td style="width:100px; text-align:right;" class="ccu-rpc"></td>
+                    </tr>
+                </table>
                 </p>
                 <p>
                 <table style="font-size:12px">
                     <tr>
                         <td style="width: 160px">script-engine enabled:</td><td style="width:100px; text-align:right;" class="ccu-io-scriptengine"></td>
                     </tr>
-                    <tr>
-                        <td>adapters enabled:</td><td style="width:100px; text-align:right;" class="ccu-io-adapters"></td>
-                    </tr>
+
                     <tr>
                         <td>logging enabled:</td><td style="width:100px; text-align:right;" class="ccu-io-logging"></td>
                     </tr>
@@ -75,26 +88,219 @@
 
             </div>
             <div id="subTab12">
-                <input type="button" id="refreshCCU" value="reload ReGa data"/><br/><br/>
-                <input type="button" id="restartRPC" value="restart RPC inits"/><br/><br/>
-                <input type="button" id="reloadScriptEngine" value="restart script-engine"/>
+                <table>
+                    <tr>
+                        <td>
+                            <input type="button" id="restartCCUIO" value="restart CCU.IO"/>
+                        </td>
+                        <td>
+                            <input type="button" id="refreshAddons" value="refresh Addons"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="refreshCCU" value="reload ReGa data"/>
+                        </td>
+                        <td>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="restartRPC" value="restart RPC inits"/>
+                        </td>
+                        <td>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="reloadScriptEngine" value="restart script-engine"/>
+                        </td>
+                        <td>
+
+                        </td>
+                    </tr>
+                </table>
+
             </div>
             <div id="subTab13">
-                <!--<table>
-                    <tr>
-                        <td>CCU.IO IP-Address</td>
-                        <td><input class="ui-widget ui-state-default ui-corner-all" type="text" id="setup_ccuio_ip"/></td>
-                    </tr>
-                    <tr>
-                        <td>CCU.IO Port</td>
-                        <td><input class="ui-widget ui-state-default ui-corner-all" type="text" id="setup_ccuio_port"/></td>
-                    </tr>
-                    <tr>
-                        <td>CCU IP-Address</td>
-                        <td><input class=" ui-widget ui-state-default ui-corner-all" type="text" id="setup_ccuio_ip"/></td>
-                    </tr>
+                <input type="button" id="saveSettings" value="save changes"/><br/><br/>
+                <div class="settings-box">
+                    <h3>Base</h3>
+                    <table class="settings-table">
+                        <tr>
+                            <td class="settings-td1">CCU IP-Address</td>
+                            <td class="settings-td2">&nbsp;</td>
+                            <td class="settings-td3"><input id="ccuIp" type="text"/></td>
+                            <td class="settings-td4">&nbsp;</td>
+                            <td class="settings-td5">&nbsp;</td>
+                            <td class="settings-td6">&nbsp;</td>
+                            <td class="settings-td7">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">CCU.IO IP-Address</td>
+                            <td class="settings-td2">&nbsp;</td>
+                            <td class="settings-td3"><input id="binrpc_listenIp" type="text"/></td>
+                            <td class="settings-td4">&nbsp;</td>
+                            <td class="settings-td5">&nbsp;</td>
+                            <td class="settings-td6">&nbsp;</td>
+                            <td class="settings-td7">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">Stats</td>
+                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td3"><input id="stats" type="checkbox"/></td>
+                            <td class="settings-td4">Interval (minutes)</td>
+                            <td class="settings-td5"><input id="statsInterval" type="text"/></td>
+                            <td class="settings-td6">&nbsp;</td>
+                            <td class="settings-td7">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">Logging</td>
+                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td3"><input id="logging_enabled" type="checkbox"/></td>
+                            <td class="settings-td4">Write Interval (s)</td>
+                            <td class="settings-td5"><input id="logging_writeInterval" type="text"/></td>
+                            <td class="settings-td6">&nbsp;</td>
+                            <td class="settings-td7">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">Script-Engine</td>
+                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td3"><input id="scriptEngineEnabled" type="checkbox"/></td>
+                            <td class="settings-td4">Longitude</td>
+                            <td class="settings-td5"><input id="longitude" type="text"/></td>
+                            <td class="settings-td6">Latitude</td>
+                            <td class="settings-td7"><input id="latitude" type="text"/></td>
+                        </tr>
 
-                </table>-->
+                    </table>
+                </div>
+                <div class="settings-box">
+                    <h3>Webserver</h3>
+                    <table class="settings-table">
+                        <tr>
+                            <td class="settings-td1">HTTP</td>
+                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td3"><input id="httpEnabled" type="checkbox"/></td>
+                            <td class="settings-td4">Port</td>
+                            <td class="settings-td5"><input id="ioListenPort" data-defaultval="8080" type="text"/></td>
+                            <td class="settings-td6">Authentication</td>
+                            <td class="settings-td7"><input id="authentication_enabled" type="checkbox"/></td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">HTTPS</td>
+                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td3"><input id="httpsEnabled" type="checkbox"/></td>
+                            <td class="settings-td4">Port</td>
+                            <td class="settings-td5"><input id="ioListenPortSsl" data-defaultval="8443" type="text"/></td>
+                            <td class="settings-td6">Authentication</td>
+                            <td class="settings-td7"><input id="authentication_enabledSsl" type="checkbox"/></td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">Authentication</td>
+                            <td class="settings-td2">Username</td>
+                            <td class="settings-td3"><input id="authentication_user" type="text"/></td>
+                            <td class="settings-td4">Password</td>
+                            <td class="settings-td5"><input id="authentication_password" type="text"/></td>
+                            <td class="settings-td6">&nbsp;</td>
+                            <td class="settings-td7">&nbsp;</td>
+
+                        </tr>
+                    </table>
+                </div>
+                <div class="settings-box">
+                    <h3>HomeMatic RPC</h3>
+                    <table class="settings-table">
+                        <tr>
+                            <td class="settings-td1">CCU.IO RPC Server </td>
+                            <td class="settings-td2">&nbsp;</td>
+                            <td class="settings-td3">&nbsp;</td>
+                            <td class="settings-td4">Port</td>
+                            <td class="settings-td5"><input id="binrpc_listenPort" data-defaultval="2100" type="text"/></td>
+                            <td class="settings-td6">&nbsp;</td>
+                            <td class="settings-td7">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">rfd Init</td>
+                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td3"><input id="binrpc_rfdEnabled" type="checkbox"/></td>
+                            <td class="settings-td4"></td>
+                            <td class="settings-td5"></td>
+                            <td class="settings-td6"></td>
+                            <td class="settings-td7"></td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">hs485d Init</td>
+                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td3"><input id="binrpc_hs485dEnabled" type="checkbox"/></td>
+                            <td class="settings-td4"></td>
+                            <td class="settings-td5"></td>
+                            <td class="settings-td6"></td>
+                            <td class="settings-td7"></td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">CUxD Init</td>
+                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td3"><input id="binrpc_cuxdEnabled" type="checkbox"/></td>
+                            <td class="settings-td4">Port</td>
+                            <td class="settings-td5"><input id="binrpc_cuxdPort" type="text"/></td>
+                            <td class="settings-td6"></td>
+                            <td class="settings-td7"></td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">Check RPC Events</td>
+                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td3"><input id="binrpc_checkEvents_enabled" type="checkbox"/></td>
+                            <td class="settings-td4"></td>
+                            <td class="settings-td5"></td>
+                            <td class="settings-td6"></td>
+                            <td class="settings-td7"></td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">Check rfd Events</td>
+                            <td class="settings-td2"></td>
+                            <td class="settings-td3"></td>
+                            <td class="settings-td4">Virtual Key</td>
+                            <td colspan="2"><input size="50" id="binrpc_checkEvents_rfd" type="text"/></td>
+                            <td class="settings-td7"></td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">Check hs485d Events</td>
+                            <td class="settings-td2"></td>
+                            <td class="settings-td3"></td>
+                            <td class="settings-td4">Virtual Key</td>
+                            <td colspan="2"><input size="50" id="binrpc_checkEvents_hs485d" type="text"/></td>
+                            <td class="settings-td7"></td>
+                        </tr>
+
+                    </table>
+                </div>
+                <div class="settings-box">
+                    <h3>HomeMatic ReGaHSS</h3>
+                    <table class="settings-table">
+                        <tr>
+                            <td class="settings-td1">Polling</td>
+                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td3"><input id="regahss_pollData" type="checkbox"/></td>
+                            <td class="settings-td4">Interval (ms)</td>
+                            <td class="settings-td5"><input id="regahss_pollDataInterval" type="text"/></td>
+                            <td class="settings-td6">&nbsp;</td>
+                            <td class="settings-td7">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1">Polling Trigger</td>
+                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td3"><input id="regahss_pollDataTriggerEnabled" type="checkbox"/></td>
+                            <td class="settings-td4">Virtual Key</td>
+                            <td colspan="2"><input id="regahss_pollDataTrigger" size="50" type="text"/></td>
+                            <td class="settings-td7">&nbsp;</td>
+                        </tr>
+
+                    </table>
+                </div>
+
             </div>
             <div id="subTab14">
                 <!--<table id="grid_log"></table>
@@ -107,8 +313,24 @@
         <div id="pager_addons"></div>
     </div>
     <div id="mainTab3">
-        <table class="gridMain" id="grid_adapter"></table>
-        <div id="pager_adapter"></div>
+        <div id="adapter_loading">
+            ...loading
+        </div>
+        <div id="adapter_overview">
+            <table class="gridMain" id="grid_adapter"></table>
+            <div id="pager_adapter"></div>
+        </div>
+        <div id="adapter_config" style="display: none">
+            <h3><span id="adapter_name"></span> adapter configuration</h3>
+            <button id="adapter_save">Save</button>
+            <button id="adapter_close">Save and close</button>
+            <button id="adapter_cancel">Discard changes and close</button>
+            <br/><br/>
+            <textarea id='adapter_config_json'></textarea>
+            <div id="adapter_config_container">
+
+            </div>
+        </div>
     </div>
     <div id="mainTab4">
         <table class="gridMain" id="grid_scripts"></table>
@@ -165,6 +387,10 @@
 </div>
 <div id="reloading" style="display: none; position:absolute; top:0px; left:0px; width:100%; height: 100%; background-color:white;">
     <br/><br/><span style="padding: 50px; font-size: 15px; font-weight: bold;">CCU.IO is reloading all CCU data. Please be patient. This page will be automatically reloaded when finished.</span>
+</div>
+
+<div id="restarting" style="display: none; position:absolute; top:0px; left:0px; width:100%; height: 100%; background-color:white;">
+    <br/><br/><span style="padding: 50px; font-size: 15px; font-weight: bold;">CCU.IO is restarting.</span>
 </div>
 
 </body>
