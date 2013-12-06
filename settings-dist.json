@@ -30,8 +30,8 @@
             "interval": 60,
             "testAfter": 180,
             "reinitAfter": 300,
-            "rfd": "BidCos-RF.BidCoS-RF:45.PRESS_SHORT",
-            "hs485d": "BidCos-Wired.BidCoS-Wir:45.PRESS_SHORT"
+            "rfd": "BidCos-RF.BidCoS-RF:50.PRESS_SHORT",
+            "hs485d": "BidCos-Wired.BidCoS-Wir:50.PRESS_SHORT"
         }
     },
     "stringTableLanguage": "de",

@@ -309,11 +309,12 @@
         </div>
     </div>
     <div id="mainTab2">
-        <table class="gridMain" id="grid_addons"></table>
+        <table class="" id="grid_addons"></table>
         <div id="pager_addons"></div>
+        <input type="button" id="install_addon" value="install addon"/>
     </div>
     <div id="mainTab3">
-        <div id="adapter_loading">
+        <div id="adapter_loading" style="display:none">
             ...loading
         </div>
         <div id="adapter_overview">
@@ -384,6 +385,16 @@
         </div>
     </div>
 
+</div>
+<div id="install_addon_dialog">
+    <br/>
+    <select id="install_addon_select">
+        <option value="dashui">DashUI</option>
+        <option value="yahui">yahui</option>
+        <option value="charts">CCU.IO-Highcharts</option>
+        <option value="eventlist">CCU.IO-Eventlist</option>
+    </select>
+    <input type="button" id="install_addon_button" value="install"/>
 </div>
 <div id="reloading" style="display: none; position:absolute; top:0px; left:0px; width:100%; height: 100%; background-color:white;">
     <br/><br/><span style="padding: 50px; font-size: 15px; font-weight: bold;">CCU.IO is reloading all CCU data. Please be patient. This page will be automatically reloaded when finished.</span>

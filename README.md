@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 0.9.87*
+*aktuelle Version: 1.0.0*
 
 CCU.IO ist eine Node.js Applikation die eine Script-Engine, verschiedene Adapter zum Einbinden von Fremdsystemen und einen Web-Server bereitstellt und via BIN-RPC mit rfd, hs485d und CUxD kommuniziert. Über eine Websocket-Verbindung kann CCU.IO Web-Browser über Events nach dem Push-Prinzip informieren. CCU.IO bringt ausserdem im Verzeichnis /www/lib gängige Bibliotheken für die Entwicklung von Web-Oberflächen mit.
 
@@ -14,6 +14,7 @@ CCU.IO bildet die Schnittstelle zur CCU für folgende Projekte:
 * [CCU.IO-Highcharts](https://github.com/hobbyquaker/CCU-IO-Highcharts)
 * [CCU.IO-Eventlist](https://github.com/GermanBluefox/CCU-IO.Eventlist)
 
+
 ## Voraussetzungen
 
 CCU.IO benötigt Node.js (Version >= 0.8) das für viele Plattformen inklusive der CCU2 zur Verfügung steht:
@@ -25,45 +26,28 @@ CCU.IO benötigt Node.js (Version >= 0.8) das für viele Plattformen inklusive d
 
 ## Installation
 
-### Manuelle Installation
+### Installation
 
 * [Dieses Zip-File](https://github.com/hobbyquaker/ccu.io/archive/master.zip) herunterladen und entpacken
-* Die Datei settings.js.dist in settings.js umbennen
-* in settings.js müssen die IP des Hosts auf dem Node.js läuft sowie die IP der CCU angepasst werden. (Läuft CCU.IO auf
-der CCU2 selbst kann hier an beiden stellen 127.0.0.1 eingetragen werden.)
-* Falls auch Wired-Geräte oder der CUxD vorhanden sind müssen in der settings.js die entsprechenden Kommentar-Zeichen entfernt werden.
 * Den Server starten:
     `node ccu.io-server.js start`
+* Die Weboberfläche aufrufen (http://ccu-io-host:ccu-io-port/ccu.io) und Konfiguration vornehmen
+* CCU.IO neu starten
 
-
-### Script-gesteuerte Installation auf RaspberryPi (Rapsbian)
-
-Über das Installer Script von Stryke werden auch die Addons (yahui, dashui, …) mit installiert werden.
-
-
-    wget https://github.com/hobbyquaker/ccu.io/archive/master.zip
-    unzip master.zip
-    cd ccu.io-master/ccu.io/install/
-    chmod 755 ccu.io.install.sh
-    sudo ./ccu.io.install.sh
-    
-In der Datei install/settings kann konfiguriert werden welche Addons installiert werden sollen, unter welchem User CCU.IO laufen soll und in welchem Pfad es installiert werden soll.
-
-Siehe auch [http://homematic-forum.de/forum/viewtopic.php?f=48&t=14556](http://homematic-forum.de/forum/viewtopic.php?f=48&t=14556)
 
 
 ### getestete Plattformen
 
-CCU.IO wurde bisher erfolgreich auf folgenden Plattformen installiert:
+CCU.IO wurde bisher erfolgreich auf folgenden Plattformen getestet:
 
 * Raspbian (RaspberryPi)
 * RCU (CCU2 Firmware auf RaspberryPi)
 * Homematic CCU2
-* Mac OS X
-* Windows
+* Mac OS X, x86/amd64 Linux, Windows
 * x86 und amd64 Linux 
 * QNAP TS-469 Pro (vermutlich auch auf allen anderen x86-basierten QNAP NAS)
 * Synology DS212
+* WesternDigital MyCloud
 
 
 ## Support
@@ -538,6 +522,23 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 1.0.0
+* (Bluefox) neuer Adapter: Sonos
+* (Hobbyquaker) settings-System umgebaut. Es müssen nun keine Dateien mehr editiert werden. Es gibt keine settings-dist mehr.
+* (Hobbyquaker) neue Methode getNextId - gibt nächste freie ID zurück, Start-Wert kann als Parameter übergeben werden
+* (Hobbyquaker) neues Objekt-Attribut _persistent - sorgt dafür das Objekte auch nach einem CCU.IO Neustart mit der gleichen ID erhalten bleiben
+* (Hobbyquaker) Start-Verhalten geändert. Webserver startet immer sofort, Adapter und Script-Engine erst wenn Rega-Daten geladen sind oder sofort falls CCU nicht erreichbar ist
+* (Hobbyquaker) Addon-Update nun via nodejs - funktioniert nun auf allen Plattformen
+* (Hobbyquaker) Addon-Installation über die Weboberfläche
+* (Hobbyquaker) Möglichkeit CCU.IO über die Oberfläche neu zu starten
+* (Hobbyquaker) Methode readRawFile fügt keine Anführungszeichen mehr hinzu
+* (Hobbyquaker) Anzeige ob CCU erreichbar ist, ob ReGa läuft, ob Daten geladen sind, ob Inits durchgeführt wurden
+* (Hobbyquaker) Unterordner ccu.io entfernt, alles verschoben
+* (Hobbyquaker) _global.js entfernt. Script-Engine ruft nun global.js auf.
+* (Hobbyquaker) Versions-Nummern Check beim Addon-Update verbessert
+* (Hobbyquaker) Toolbar-Filter in Event-Tabelle jetzt case-insensitive und "contains-suche"
+
 
 ### 0.9.87
 * (Hobbyquaker) fehlende jQuery UI Themes hinzugefügt (hat dazu geführt dass DashUI >= 0.9beta39 nicht mehr funktioniert hat)

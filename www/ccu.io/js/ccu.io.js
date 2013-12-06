@@ -119,7 +119,7 @@ $(document).ready(function () {
 
 
     socket.emit("readdir", ["www"], function (data) {
-        //console.log(data);
+
         for (var i = 0; i < data.length; i++) {
             var addon = data[i];
             if (addon == "lib" || addon == "ccu.io" || addon == "index.html") { continue; }
@@ -134,13 +134,14 @@ $(document).ready(function () {
                         availableVersion:   "<input data-update-name='"+meta.name+"' class='updateCheck' data-update-url='"+meta.urlMeta+"' type='button' value='check'/>",
                         homepage:           "<a href='"+meta.urlHomepage+"' target='_blank'>"+hp[1]+"</a>",
                         download:           "<a href='"+meta.urlDownload+"' target='_blank'>"+dl[1]+"</a>"
-                    }
+                    };
                     $("#grid_addons").jqGrid('addRowData', i, addonData);
-
+                    $("#install_addon_select option[value='"+meta.dirname+"']").remove();
 
                 }
             });
         }
+
         setTimeout(function() {
             $("input.updateCheck").click(function () {
                 $(this).attr("disabled", true);
@@ -490,7 +491,7 @@ $(document).ready(function () {
                 };
                 $eventGrid.jqGrid('addRowData', eventCounter++, data, "first");
                 //console.log($mainTabs.tabs("option", "active") + " " + $subTabs5.tabs("option", "active"));
-                if ($mainTabs.tabs("option", "active") == 4 && $subTabs5.tabs("option", "active") == 3) {
+                if ($mainTabs.tabs("option", "active") == 3 && $subTabs5.tabs("option", "active") == 3) {
                     $eventGrid.trigger("reloadGrid");
                 }
             });
@@ -591,8 +592,11 @@ $(document).ready(function () {
         sortorder: "desc",
         viewrecords: true,
         sortorder: "desc",
-        caption: "Events"
+        caption: "Events",
+        ignoreCase:true
     }).jqGrid('filterToolbar',{
+        defaultSearch:'cn',
+
         autosearch: true,
         searchOnEnter: false,
         enableClear: false
@@ -608,6 +612,7 @@ $(document).ready(function () {
         if (y < 480) { y = 480; }
         $(".gridSub").setGridHeight(y - 250).setGridWidth(x - 100);
         $(".gridMain").setGridHeight(y - 150).setGridWidth(x - 60);
+        $("#grid_addons").setGridHeight(y - 180).setGridWidth(x - 60);
         $("#adapter_config_json").css("width", x-60);
         $("#adapter_config_json").css("height", y-180);
         $("#adapter_config_container").css("width", x-60);
@@ -620,6 +625,38 @@ $(document).ready(function () {
 
     $("#saveSettings").button().click(saveSettings);
 
+
+    var addonInstall = {
+        "dashui":       "https://github.com/hobbyquaker/DashUI/archive/master.zip",
+        "yahui":        "https://github.com/hobbyquaker/yahui/archive/master.zip",
+        "eventlist":    "https://github.com/GermanBluefox/CCU-IO.Eventlist/archive/master.zip",
+        "charts":       "https://github.com/hobbyquaker/CCU-IO-Highcharts/archive/master.zip"
+    };
+
+    $("#install_addon").button().click(function () {
+        $("#install_addon_dialog").dialog("open");
+    });
+
+    $("#install_addon_button").button().click(function () {
+        var addon = $("#install_addon_select option:selected").val();
+        if (addon) {
+            $("#install_addon_dialog").dialog("close");
+            socket.emit("updateAddon", addonInstall[addon], addon, function (err) {
+                if (err) {
+                    alert(err);
+                } else {
+                    alert("install started");
+                }
+            });
+        }
+
+    });
+
+    $("#install_addon_dialog").dialog({
+        autoOpen: false,
+        title: "Install Addon",
+        modal: true
+    });
 
     function loadSettings() {
         $("#ccuIp").val(ccuIoSettings.ccuIp);
