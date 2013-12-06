@@ -525,6 +525,7 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 
 ### 1.0.0
 * (Bluefox) neuer Adapter: Sonos
+* (Bluefox) Bugfix Ping-Adapter unter Windows
 * (Hobbyquaker) settings-System umgebaut. Es müssen nun keine Dateien mehr editiert werden. Es gibt keine settings-dist mehr.
 * (Hobbyquaker) neue Methode getNextId - gibt nächste freie ID zurück, Start-Wert kann als Parameter übergeben werden
 * (Hobbyquaker) neues Objekt-Attribut _persistent - sorgt dafür das Objekte auch nach einem CCU.IO Neustart mit der gleichen ID erhalten bleiben
