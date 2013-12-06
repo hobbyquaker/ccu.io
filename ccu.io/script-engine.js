@@ -821,11 +821,11 @@ process.on('SIGTERM', function () {
 });
 
 try {
-    var script = scriptEngine.fs.readFileSync(__dirname+"/scripts/_global.js");
-    scriptEngine.logger.info("script-engine executing _global.js");
+    var script = scriptEngine.fs.readFileSync(__dirname+"/scripts/global.js");
+    scriptEngine.logger.info("script-engine executing global.js");
     eval(script.toString());
 } catch (e) {
-    scriptEngine.logger.error("script-engine _global.js: "+e);
+    scriptEngine.logger.error("script-engine global.js: "+e);
 }
 
 scriptEngine.init();
