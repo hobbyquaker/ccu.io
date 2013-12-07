@@ -533,6 +533,9 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 * (Hobbyquaker) Addon-Update-Funktion: alert-popup wenn Update-Script beendet ist
 * (Hobbyquaker) Addon-Update-Funktion: Bugfix beim Versionsnummern-Vergleich
 * (Hobbyquaker) muell_stuttgart Adapter ausgearbeitet, settings.html angelegt
+* (Bluefox) Neuer Adapter "sayit" (Text-to-Speech)
+* (Bluefox) settings.html für Sonos und Ping Adapter
+* (Bluefox) Mark enabled Adapters with bold green text
 
 ### 1.0.0
 * (Bluefox) neuer Adapter: Sonos
