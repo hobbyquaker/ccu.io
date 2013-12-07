@@ -1,0 +1,6 @@
+{
+    "enabled": false,
+    "settings": {
+        "interval": 60000
+    }
+}

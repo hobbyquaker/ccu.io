@@ -18,6 +18,8 @@
 
 72000-72499                     sonos adapter
 
+72500-72550                     rpi adapter
+
 90000-90549                     hue adapter
 
 100000-299999                   reserviert für eigene Scripte
