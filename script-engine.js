@@ -666,7 +666,7 @@ var scriptEngine = {
         that.fs.readdir(__dirname+"/scripts", function (err, data) {
             data.sort();
             for (var i = 0; i < data.length; i++) {
-                if (data[i] == "_global.js") { continue; }
+                if (data[i] == "global.js") { continue; }
                 if (!data[i].match(/js$/)) { continue; }
                 var path = __dirname+"/scripts/"+data[i];
                 runScript(path);
@@ -825,7 +825,7 @@ try {
     scriptEngine.logger.info("script-engine executing global.js");
     eval(script.toString());
 } catch (e) {
-    scriptEngine.logger.error("script-engine global.js: "+e);
+    scriptEngine.logger.warn("script-engine global.js: "+e);
 }
 
 scriptEngine.init();
