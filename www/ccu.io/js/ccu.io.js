@@ -116,6 +116,9 @@ $(document).ready(function () {
         $(".ccu-regadata").html(data.ccuRegaData ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
         $(".ccu-rpc").html(data.initsDone ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
     });
+    socket.on("ioMessage", function (data) {
+        alert(data);
+    });
 
 
     socket.emit("readdir", ["www"], function (data) {
@@ -152,10 +155,15 @@ $(document).ready(function () {
                 socket.emit("getUrl", url, function(res) {
                     obj = JSON.parse(res);
                     $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
+
                     var instVersion = $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html();
+                    instVersion = instVersion.replace(/beta/,".");
+
+                    var availVersion = obj.version;
+                    availVersion = availVersion.replace(/beta/,".");
 
                     var instVersionArr = instVersion.split(".");
-                    var availVersionArr = obj.version.split(".");
+                    var availVersionArr = availVersion.split(".");
 
                     var updateAvailable = false;
 
