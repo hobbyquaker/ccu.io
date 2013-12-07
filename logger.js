@@ -83,7 +83,12 @@ var log = fs.createWriteStream(logger.logfile, {
 });
 
 process.on("uncaughtException", function(err) {
-    log.write(err.stack);
+    try {
+        log.write(err.stack);
+    } catch (e) {
+        // ...?
+
+    }
 });
 
 module.exports = logger;
