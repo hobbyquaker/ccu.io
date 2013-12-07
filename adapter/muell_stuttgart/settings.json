@@ -1,0 +1,15 @@
+{
+    "enabled": false,
+    "mode": "periodical",
+    "period": 720,
+    "firstId": 70045,
+    "settings": {
+        "street": "",
+        "number": "",
+        "zip": "70xxx",
+        "waste": true,
+        "package": true,
+        "paper": false,
+        "bio": false
+    }
+}

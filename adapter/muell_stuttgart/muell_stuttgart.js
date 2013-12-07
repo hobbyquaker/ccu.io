@@ -1,3 +1,7 @@
+// Todo enable/disable Restmüll, Biomüll, Gelber Sack, Grüne Tonne
+// Todo neuer Datenpunkt "abholung morgen"
+// Todo neuer Datenpunkt "abholung übermorgen"
+
 var request = require('request');
 
 var settings = require(__dirname+'/../../settings.js');
@@ -5,6 +9,8 @@ var settings = require(__dirname+'/../../settings.js');
 if (!settings.adapters.muell || !settings.adapters.muell.enabled) {
     process.exit();
 }
+
+var adapterSettings = settings.adapters.settings;
 
 var logger =    require(__dirname+'/../../logger.js'),
     io =        require('socket.io-client');
@@ -58,7 +64,7 @@ var end = new Date(start.getTime() + 3888000000);
 var from = ("0"+start.getDate()).slice(-2) + "." + ("0"+(start.getMonth()+1)).slice(-2) + "." + start.getFullYear();
 var to = ("0"+end.getDate()).slice(-2) + "." + ("0"+(end.getMonth()+1)).slice(-2) + "." + end.getFullYear();
 
-var url = 'https://service.stuttgart.de/lhs-services/aws_kalender/api/ical.php?strasse=Zedernweg&hausnummer=28&calenderfrom='+from+'&calenderto='+to+'&wastetypes%5Brestmuell%5D=on&wastetypes%5Baltpapier%5D=on';
+var url = 'https://service.stuttgart.de/lhs-services/aws_kalender/api/ical.php?strasse='+adapterSettings.street+'&hausnummer='+adapterSettings.number+'&calenderfrom='+from+'&calenderto='+to+'&wastetypes%5Brestmuell%5D=on&wastetypes%5Baltpapier%5D=on';
 
 request(url, function (error, response, body) {
     if (!error && response.statusCode == 200) {
@@ -158,7 +164,7 @@ function iCalParse(data) {
     }
 
 
-    request("https://www.sita-deutschland.de/loesungen/privathaushalte/abfuhrkalender/stuttgart.html?plz=70597&strasse=Zedernweg", function (err, res, status) {
+    request("https://www.sita-deutschland.de/loesungen/privathaushalte/abfuhrkalender/stuttgart.html?plz="+adapterSettings.zip+"&strasse="+adapterSettings+street, function (err, res, status) {
         res.body = res.body.replace(/(\r\n|\n|\r)/gm,"");
         var parts = res.body.match(/<table class="listing">(.*)<\/table>/);
         var table = parts[1].replace(/[ ]+/, " ");
@@ -182,7 +188,7 @@ function iCalParse(data) {
             str += output[i].slice(9);
         }
 
-        socket.emit("setState", [10010, str], function () {
+        socket.emit("setState", [adapterSettings.firstId, str], function () {
             socket.disconnect();
             logger.info("adapter muell terminating");
             setTimeout(function () {
@@ -190,12 +196,6 @@ function iCalParse(data) {
             }, 1000);
         });
 
-
-
     });
-
-
-
-
 
 }
