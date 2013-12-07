@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.0";
+settings.version = "1.0.1";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -960,12 +960,8 @@ function restApi(req, res) {
 function initExtensions() {
     if (!extDone) {
         extDone = true;
-        setTimeout(startAdapters, 10);
-        if (settings.scriptEngineEnabled) {
-            setTimeout(startScriptEngine, 10000);
-        }
+        setTimeout(startAdapters, 30000);
     }
-
 }
 
 function initWebserver() {
@@ -1706,6 +1702,7 @@ function startAdapters () {
     if (!settings.adapters) {
         return false;
     }
+    var i = 0;
     for (adapter in settings.adapters) {
         if (!settings.adapters[adapter].enabled) {
             continue;
@@ -1719,13 +1716,21 @@ function startAdapters () {
 
         switch (mode) {
             case "periodical":
-                startAdapterPeriod(path, period);
+                setTimeout(function (_path, _period) {
+                    startAdapterPeriod(_path, _period);
+                }, (i*3000), path, period);
                 break;
 
             default:
-                logger.info("ccu.io        starting adapter "+path);
-                children.push(childProcess.fork(path));
+                setTimeout(function (_path) {
+                    logger.info("ccu.io        starting adapter "+_path);
+                    children.push(childProcess.fork(_path));
+                }, (i*3000), path);
         }
+        i += 1;
+    }
+    if (settings.scriptEngineEnabled) {
+        setTimeout(startScriptEngine, (i*3000));
     }
 }
 
@@ -1747,7 +1752,7 @@ process.on('SIGTERM', function () {
 });
 
 function stop() {
-    if (homematic) {
+    if (homematic && initsDone) {
         homematic.stopInits();
     }
     try {
