@@ -960,7 +960,7 @@ function restApi(req, res) {
 function initExtensions() {
     if (!extDone) {
         extDone = true;
-        setTimeout(startAdapters, 30000);
+        setTimeout(startAdapters, 45000);
     }
 }
 
