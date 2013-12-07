@@ -1259,7 +1259,20 @@ function initSocketIO(_io) {
         socket.on('updateAddon', function (url, name) {
             var path = __dirname + "/update-addon.js";
             logger.info("ccu.io        starting "+path);
-            childProcess.fork(path, [url, name]);
+            var updateProcess = childProcess.fork(path, [url, name]);
+            updateProcess.on("close", function (code) {
+                if (code == 0) {
+                    var msg = " done.";
+                } else {
+                    var msg = " failed.";
+                }
+                if (io) {
+                    io.sockets.emit("ioMessage", "Update "+name+msg);
+                }
+                if (ioSsl) {
+                    ioSsl.sockets.emit("ioMessage", "Update "+name+msg);
+                }
+            });
         });
 
         socket.on('refreshAddons', function () {

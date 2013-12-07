@@ -510,18 +510,29 @@ Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Que
 
 ## Todo/Roadmap
 
-* Umbau settings.js, Konfiguration in Weboberfläche, für CCU.IO selbst und für die Adapter
+
 * Doku, Doku, Doku (-> CCU.IO-Homepage)
 * CCU.IO Update in Weboberfläche anstoßen
-* LIRC Adapter
-* ArtNet (DMX) Adapter
-* iCal, VCALENDAR, Google Calendar Adapter (?)
 * CCU2-Paket für einfache Installation
+* .deb
+* iCal, VCALENDAR, Google Calendar Adapter (?)
+* ArtNet (DMX) Adapter
+* LIRC Adapter
 * BIN-RPC Implementierung vervollständigen
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 1.0.1
+* (Hobbyquaker) neuer Adapter: rpi - liest loadavg und Temperatur aus (nur für RaspberryPi) - TODO Freier Speicher und GPIOs
+* (Hobbyquaker) Start-Verhalten geändert, Adapter werden nun mit größeren Pausen aufgerufen, Script-Engine als letztes.
+* (Hobbyquaker) Fehler in logger.js abgefangen. Hat u.U. zu einem CCU.IO Crash geführt
+* (Hobbyquaker) Addon-Update-Funktion mit Pausen ausgestattet, sollte zuverlässiger laufen
+* (Hobbyquaker) Bugfix: global.js wurde u.U. 2x von der Script-Engine geladen
+* (Hobbyquaker) Addon-Update-Funktion: alert-popup wenn Update-Script beendet ist
+* (Hobbyquaker) Addon-Update-Funktion: Bugfix beim Versionsnummern-Vergleich
+* (Hobbyquaker) muell_stuttgart Adapter ausgearbeitet, settings.html angelegt
 
 ### 1.0.0
 * (Bluefox) neuer Adapter: Sonos
