@@ -18,6 +18,9 @@
 
 72000-72499                     sonos adapter
 
+72500                           sayIt trigger
+72501                           sayIt text: Write this variable with text to say
+
 90000-90549                     hue adapter
 
 100000-299999                   reserviert für eigene Scripte
@@ -25,4 +28,3 @@
 268435456 - 268500991           reserviert für zweite CCU (0x10000000 - 0x1000FFFF)
 536870912 - 536936447           reserviert für dritte CCU (0x20000000 - 0x2000FFFF)
 805306368 - 805371903           reserviert für vierte CCU (0x30000000 - 0x3000FFFF)
-
