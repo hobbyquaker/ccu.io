@@ -1,0 +1,47 @@
+<table style="font-size: 12px">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td>
+            <select id="sayit_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Language:</td>
+        <td><select id="sayit_settings_language">
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="ru">Русский</option>
+            <option value="it">Italiano</option>
+            <option value="es">Espaniol</option>
+        </select></td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+
+    if (currentAdapterSettings.enabled) {
+        $("#sayit_enabled option[value='false']").removeAttr("selected");
+        $("#sayit_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#sayit_enabled option[value='true']").removeAttr("selected");
+        $("#sayit_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#sayit_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#sayit_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+    $("#sayit_settings_language [value='"+currentAdapterSettings.settings.language+"']").attr("selected", "selected");
+
+    $("#sayit_settings_language").change(function () {
+        currentAdapterSettings.settings.language = $("#sayit_settings_language").val();
+        updateAdapterSettings();
+    });
+
+</script>

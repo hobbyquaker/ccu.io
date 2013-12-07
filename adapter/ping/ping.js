@@ -67,56 +67,56 @@ function setObject(id, obj) {
 }
 
 function pingInit () {
-	var dp = pingSettings.firstId + 1;
     var devChannels = [];
-	var i = 0;
-	
-    for (var ip in pingSettings.IPs) {
-        var ip_ = ip.replace(/\./g,"_");
+    var i = 0;
 
-        devChannels.push(dp);
+    for (var id_ in pingSettings.IPs) {
+        var id = parseInt (id_.substring(1));
+
+        var ip_ = pingSettings.IPs[id_].ip.replace(/\./g,"_");
+
+        devChannels.push((pingSettings.firstId + 1) + (id * 2));
 		
         var chObject = {
-            Name: (pingSettings.IPs[ip]['name']) ? pingSettings.IPs[ip]['name'] : ip,
+            Name: (pingSettings.IPs[id_]['name']) ? pingSettings.IPs[id_]['name'] : pingSettings.IPs[id_].ip,
             TypeName: "CHANNEL",
-            Address: "PING."+ip_,
-            HssType: "PING",
+            Address:  "PING."+ip_,
+            HssType:  "PING",
             DPs: {
-                STATE: dp+1
+                STATE: (pingSettings.firstId + 1) + (id * 2) + 1
             },
-            Parent: pingSettings.firstId
+            Parent:   pingSettings.firstId
         };
 		
-		if (pingSettings.IPs[ip].rooms) {
-			chObject.rooms = pingSettings.IPs[ip].rooms;
+		if (pingSettings.IPs[id_].rooms) {
+			chObject.rooms = pingSettings.IPs[id_].rooms;
 		}
-		if (pingSettings.IPs[ip].funcs) {
-			chObject.funcs = pingSettings.IPs[ip].funcs;
+		if (pingSettings.IPs[id_].funcs) {
+			chObject.funcs = pingSettings.IPs[id_].funcs;
 		}
-		if (pingSettings.IPs[ip].favs) {
-			chObject.favs = pingSettings.IPs[ip].favs;
+		if (pingSettings.IPs[id_].favs) {
+			chObject.favs = pingSettings.IPs[id_].favs;
 		}
 		
-		setObject(dp, chObject);
+		setObject((pingSettings.firstId + 1) + (id * 2), chObject);
 
-		setObject(dp+1, {
-            Name: "PING."+ip_+".STATE",
+		setObject((pingSettings.firstId + 1) + (id * 2) + 1, {
+            Name:      "PING."+ip_+".STATE",
             ValueType: 2,
-            TypeName: "HSSDP",
-            Value: false,
-            Parent: dp
+            TypeName:  "HSSDP",
+            Value:     false,
+            Parent:    (pingSettings.firstId + 1) + (id * 2)
         });
-		dp += 2;
-		i++;
+        i++;
     }
 		
     setObject(pingSettings.firstId, {
-        Name: "Ping",
-        TypeName: "DEVICE",
-        HssType: "PING",
-        Address: "PING",
+        Name:      "Ping",
+        TypeName:  "DEVICE",
+        HssType:   "PING",
+        Address:   "PING",
         Interface: "CCU.IO",
-        Channels: devChannels
+        Channels:  devChannels
     });
 
     logger.info("adapter ping  inserted objects");
@@ -140,21 +140,23 @@ function setState(id, val) {
 function pollIp(ip) {
     var isFound = false;
     curIP = null;
-    for (var ip_ in pingSettings.IPs) {
+
+    for (var id_ in pingSettings.IPs) {
         if (ip == undefined) {
-            curIP = ip_;
+            curIP = pingSettings.IPs[id_].ip;
             break;
         }
 
         if (isFound) {
-            curIP = ip_;
+            curIP = pingSettings.IPs[id_].ip;
             break;
         }
 
-        if (ip == ip_) {
+        if (ip ==  pingSettings.IPs[id_].ip) {
             isFound = true;
         }
     }
+
     if (curIP != null) {
         logger.verbose("adapter ping  polling ip "+curIP);
         ping.sys.probe(curIP, function(isAlive){
