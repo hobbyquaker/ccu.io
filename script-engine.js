@@ -210,7 +210,7 @@ var scriptEngine = {
 
         // Datapoint id matching
         if (pattern.id && pattern.id == event.id) {
-            console.log("matched id!");
+            //console.log("matched id!");
             if (pattern.logic == "or") { return true; }
             matched = true;
         } else if (pattern.id) {
