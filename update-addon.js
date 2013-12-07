@@ -21,26 +21,33 @@ logger.info("update-addon  download and unzip "+url);
 // Download and Unzip
 request(url).pipe(unzip.Extract({path: __dirname+"/tmp"}));
 
-// Copy Folder to www Dir
+setTimeout(function () {
+    // Copy Folder to www Dir
 //TODO remove name when repositories are restructured
-var source =        __dirname+"/tmp/"+tmpDir+"/"+name,
-    destination =   __dirname+"/www/"+name+"/";
+    var source =        __dirname+"/tmp/"+tmpDir+"/"+name,
+        destination =   __dirname+"/www/"+name+"/";
 
 
-logger.info("update-addon  copying tmp/"+tmpDir+"/"+name+" to www/"+name+"/");
+    logger.info("update-addon  copying tmp/"+tmpDir+"/"+name+" to www/"+name+"/");
 
-ncp(source, destination, function (err) {
-    if (err) {
-        logger.error(err);
-        return
-    }
+    ncp(source, destination, function (err) {
+        if (err) {
+            logger.error(err);
+            return
+        }
 
-    // Ordner im tmp Verzeichnis löschen
-    logger.info('update-addon  delete tmp folder '+__dirname+"/tmp/"+tmpDir);
-    deleteFolderRecursive(__dirname+"/tmp/"+tmpDir);
-    logger.info('update-addon  done');
+        setTimeout(function () {
+            // Ordner im tmp Verzeichnis löschen
+            logger.info('update-addon  delete tmp folder '+__dirname+"/tmp/"+tmpDir);
+            deleteFolderRecursive(__dirname+"/tmp/"+tmpDir);
+            logger.info('update-addon  done');
+        }, 5000);
 
-});
+
+    });
+}, 5000);
+
+
 
 var deleteFolderRecursive = function(path) {
     if( fs.existsSync(path) ) {
