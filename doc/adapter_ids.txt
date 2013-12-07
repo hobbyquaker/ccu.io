@@ -8,7 +8,9 @@
 70005                           yr adapter - max Temp 24h
 70006                           yr adapter - max Temp 48h
 
-70050-70059                     DWD Adapter Wetterwarnungen
+70045-70049                     muell_stuttgart adapter
+
+70050-70059                     dwd adapter
 
 70060-70099                     Geofency Adapter
 
