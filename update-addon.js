@@ -25,10 +25,10 @@ setTimeout(function () {
     // Copy Folder to www Dir
 //TODO remove name when repositories are restructured
     var source =        __dirname+"/tmp/"+tmpDir+"/"+name,
-        destination =   __dirname+"/www/"+name+"/";
+        destination =   __dirname+"/www/"+name;
 
 
-    logger.info("update-addon  copying tmp/"+tmpDir+"/"+name+" to www/"+name+"/");
+    logger.info("update-addon  copying tmp/"+tmpDir+"/"+name+" to www/"+name);
 
     ncp(source, destination, function (err) {
         if (err) {
@@ -41,11 +41,13 @@ setTimeout(function () {
             logger.info('update-addon  delete tmp folder '+__dirname+"/tmp/"+tmpDir);
             deleteFolderRecursive(__dirname+"/tmp/"+tmpDir);
             logger.info('update-addon  done');
-        }, 5000);
+            //process.exit(0);
+        }, 1000);
 
 
     });
-}, 5000);
+}, 1000);
+
 
 
 
