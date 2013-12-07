@@ -263,9 +263,10 @@ function sonosInit () {
     var dp;
     var chnDp;
     var devChannels = [];
-    var i = 0;
 
-    for (var ip in sonosSettings.devices) {
+    for (var id in sonosSettings.devices) {
+        var ip = sonosSettings.devices[id].ip;
+        var i = parseInt(id.substring(1));
         chnDp = sonosSettings.firstId + 20 + i * 20;
         dp    = chnDp + 1;
 
@@ -296,7 +297,7 @@ function sonosInit () {
         };
 
         var chObject = {
-            Name:     (sonosSettings.devices[ip]['name']) ? sonosSettings.devices[ip]['name'] : ip,
+            Name:     (sonosSettings.devices[id]['name']) ? sonosSettings.devices[id]['name'] : ip,
             TypeName: "CHANNEL",
             Address:  "SONOS."+ip_,
             HssType:  "SONOS",
@@ -304,14 +305,14 @@ function sonosInit () {
             Parent:   sonosSettings.firstId
         };
 
-        if (sonosSettings.devices[ip].rooms) {
-            chObject.rooms = sonosSettings.devices[ip].rooms;
+        if (sonosSettings.devices[id].rooms) {
+            chObject.rooms = sonosSettings.devices[id].rooms;
         }
-        if (sonosSettings.devices[ip].funcs) {
-            chObject.funcs = sonosSettings.devices[ip].funcs;
+        if (sonosSettings.devices[id].funcs) {
+            chObject.funcs = sonosSettings.devices[id].funcs;
         }
-        if (sonosSettings.devices[ip].favs) {
-            chObject.favs = sonosSettings.devices[ip].favs;
+        if (sonosSettings.devices[id].favs) {
+            chObject.favs = sonosSettings.devices[id].favs;
         }
 
         setObject(chnDp, chObject);

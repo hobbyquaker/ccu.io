@@ -1,0 +1,200 @@
+<table style="font-size: 12px" id="sonos_table">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td colspan='5'>
+            <select id="sonos_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Web server enabled:
+        </td>
+        <td colspan='5'>
+            <select id="sonos_web_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Web server port:</td>
+        <td colspan='5'><input id="sonos_web_port" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Update elapsed time:</td>
+        <td colspan='5'><input id="sonos_elapsed_update" type="text"/>ms</td>
+    </tr>
+    <tr>
+        <td colspan="6" style="height:20px"></td>
+    </tr>
+
+    <tr>
+        <th>IP Address</th>
+        <th>Name</th>
+        <th>Rooms</th>
+        <th>Functions</th>
+        <th>Favorites</th>
+        <th></th>
+    </tr>
+</table>
+<input type="button" id="add_device" value="add device"/>
+
+<script type="text/javascript">
+
+    function storeSettings () {
+        console.log (JSON.stringify(currentAdapterSettings));
+        updateAdapterSettings();
+    }
+
+	function showDevice (id) {
+		var sText = '<tr class="sonos-optdevice">';
+		sText += '<td><input id="sonos_ip_'  +id+'" data-sonos-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.devices[id].ip   || "")+'"/></td>';
+		sText += '<td><input id="sonos_name_'+id+'" data-sonos-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.devices[id].name || "")+'"/></td>';
+		
+		var t = "";
+        if (currentAdapterSettings.settings.devices[id].rooms) {
+            for (var i = 0; i < currentAdapterSettings.settings.devices[id].rooms.length; i++) {
+                t += ((t == "") ? "":",") + currentAdapterSettings.settings.devices[id].rooms[i];
+            }
+        }
+		sText += '<td><input id="sonos_rooms_'+id+'" data-sonos-device="'+id+'" type="text" value="'+t+'"/></td>';
+		
+		
+		t = "";
+        if (currentAdapterSettings.settings.devices[id].funcs) {
+            for (var i = 0; i < currentAdapterSettings.settings.devices[id].funcs.length; i++) {
+                t += ((t == "") ? "":",") + currentAdapterSettings.settings.devices[id].funcs[i];
+            }
+        }
+		sText += '<td><input id="sonos_funcs_'+id+'" data-sonos-device="'+id+'" type="text" value="'+t+'"/></td>';
+		
+		t = "";
+        if (currentAdapterSettings.settings.devices[id].favs) {
+            for (var i = 0; i < currentAdapterSettings.settings.devices[id].favs.length; i++) {
+                t += ((t == "") ? "":",") + currentAdapterSettings.settings.devices[id].favs[i];
+            }
+        }
+		sText += '<td><input id="sonos_favs_'+id+'" data-sonos-device="'+id+'" type="text" value="'+t+'"/></td>';
+
+        sText += '<td><input data-sonos-device="'+id+'" type="button" value="remove device" class="sonos-remove"/></td>';
+		sText += "</tr>";
+
+		$("#sonos_table").append(sText);
+
+        $(".sonos-remove:last").button().click(function () {
+            sonosRemoveDevice($(this).attr("data-sonos-device"));
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#sonos_name_"+id).change(function () {
+            currentAdapterSettings.settings.devices[$(this).attr('data-sonos-device')].name = $(this).val();
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#sonos_ip_"+id).change(function () {
+            if ($(this).val().match(/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/)) {
+				currentAdapterSettings.settings.devices[$(this).attr('data-sonos-device')].ip = $(this).val();
+				storeSettings();
+				$(this).css({color: "black"});
+			}
+			else {
+				$(this).css({color: "red"});
+			}
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#sonos_rooms_"+id).change(function () {
+            var arr = $(this).val().split(',');
+
+            for (var t = 0; t < arr.length; t++)
+                arr[t] = arr[t].trim();
+
+            currentAdapterSettings.settings.devices[$(this).attr('data-sonos-device')].rooms = arr;
+
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#sonos_funcs_"+id).change(function () {
+            var arr = $(this).val().split(',');
+
+            for (var t = 0; t < arr.length; t++)
+                arr[t] = arr[t].trim();
+
+            currentAdapterSettings.settings.devices[$(this).attr('data-sonos-device')].funcs = arr;
+
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+    }
+	
+    function sonosRefreshDevices() {
+        for (var id in currentAdapterSettings.settings.devices) {
+			showDevice (id);
+        }
+        $(".sonos-remove").button().click(function () {
+            var j = $(this).attr("data-sonos-device");
+            sonosRemoveDevice(j);
+        });
+    }
+    sonosRefreshDevices();
+
+    if (currentAdapterSettings.enabled) {
+        $("#sonos_enabled option[value='false']").removeAttr("selected");
+        $("#sonos_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#sonos_enabled option[value='true']").removeAttr("selected");
+        $("#sonos_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#sonos_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#sonos_enabled option:selected").val() == "false" ? false : true);
+        storeSettings();
+    }).keyup(function() { $(this).trigger("change")});
+
+    if (currentAdapterSettings.settings.webserver.enabled) {
+        $("#sonos_web_enabled option[value='false']").removeAttr("selected");
+        $("#sonos_web_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#sonos_web_enabled option[value='true']").removeAttr("selected");
+        $("#sonos_web_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#sonos_web_enabled").change(function () {
+        currentAdapterSettings.settings.webserver.sonos_web_enabled = ($("#sonos_web_enabled option:selected").val() == "false" ? false : true);
+        storeSettings();
+    }).keyup(function() { $(this).trigger("change")});
+
+    $("#sonos_web_port").val(currentAdapterSettings.settings.webserver.port);
+
+    $("#sonos_web_port").change(function () {
+        currentAdapterSettings.settings.webserver.port = $("#sonos_web_port").val();
+        storeSettings();
+    }).keyup(function() { $(this).trigger("change")});
+
+    $("#sonos_elapsed_update").val(currentAdapterSettings.settings.elapsedInterval);
+
+    $("#sonos_elapsed_update").change(function () {
+        currentAdapterSettings.settings.elapsedInterval = $("#sonos_elapsed_update").val();
+        storeSettings();
+    });
+
+    $("#add_device").button().click(function () {
+        // Find free id
+        var i = 1;
+        while (currentAdapterSettings.settings.devices["_"+i]) i++;
+
+        currentAdapterSettings.settings.devices["_"+i] = {ip: "0.0.0.1", name:"", rooms:[""], funcs:[""]};
+        showDevice ("_"+i);
+    });
+
+    function sonosRemoveDevice(j) {
+        $("tr.sonos-optdevice").remove();
+        delete currentAdapterSettings.settings.devices[j];
+        sonosRefreshDevices();
+        storeSettings();
+    }
+
+</script>

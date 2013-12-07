@@ -90,7 +90,7 @@ $(document).ready(function () {
                     name:   data[i],
                     settings:   '<button class="adapter-settings" data-adapter="'+adapter+'">configure</button>',
                     confed:     (settings.adapters[data[i]]?"true":"false"),
-                    enabled:    (settings.adapters[data[i]]?settings.adapters[data[i]].enabled:""),
+                    enabled:    (settings.adapters[data[i]]? (settings.adapters[data[i]].enabled ? "<span style='color:green'><b>TRUE</b></span>" : "false"):""),
                     mode:       (settings.adapters[data[i]]?settings.adapters[data[i]].mode:""),
                     period:     (settings.adapters[data[i]]?settings.adapters[data[i]].period:"")
                 }

@@ -4,13 +4,11 @@
         "firstId": 70100,
         "pollingInterval": 60000,
         "IPs": {
-            "192.168.1.1": {
-                "name":  "Nexus",
-                "rooms": ["Hobbyraum"]
-            },
-            "192.168.1.2": {
-                "name":  "iPad",
-                "rooms": ["Wohnzimmer"]
+            "_1": {"ip"  :  "0.0.0.0",
+                "name":  "Device1",
+                "rooms": [],
+				"funcs": [],
+				"favs" : []
             }
         }
     }

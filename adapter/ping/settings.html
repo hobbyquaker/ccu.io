@@ -1,0 +1,166 @@
+<table style="font-size: 12px" id="ping_table">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td colspan='5'>
+            <select id="ping_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Polling interval:</td>
+        <td colspan='5'><input id="ping_polling_interval" type="text"/></td>
+    </tr>
+    <tr>
+        <td colspan="6" style="height:20px"></td>
+    </tr>
+
+    <tr>
+        <th>IP Address</th>
+        <th>Name</th>
+        <th>Rooms</th>
+        <th>Functions</th>
+        <th>Favorites</th>
+        <th></th>
+    </tr>
+</table>
+<input type="button" id="add_device" value="add device"/>
+
+<script type="text/javascript">
+
+    function storeSettings () {
+        console.log (JSON.stringify(currentAdapterSettings));
+        updateAdapterSettings();
+    }
+
+	function showDevice (id) {
+		var sText = '<tr class="ping-optdevice">';
+		sText += '<td><input id="ping_ip_'  +id+'" data-ping-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.IPs[id].ip   || "")+'"/></td>';
+		sText += '<td><input id="ping_name_'+id+'" data-ping-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.IPs[id].name || "")+'"/></td>';
+		
+		var t = "";
+        if (currentAdapterSettings.settings.IPs[id].rooms) {
+            for (var i = 0; i < currentAdapterSettings.settings.IPs[id].rooms.length; i++) {
+                t += ((t == "") ? "":", ") + currentAdapterSettings.settings.IPs[id].rooms[i];
+            }
+        }
+		sText += '<td><input id="ping_rooms_'+id+'" data-ping-device="'+id+'" type="text" value="'+t+'"/></td>';
+		
+		
+        t = "";
+        if (currentAdapterSettings.settings.IPs[id].funcs) {
+            for (var i = 0; i < currentAdapterSettings.settings.IPs[id].funcs.length; i++) {
+                t += ((t == "") ? "":", ") + currentAdapterSettings.settings.IPs[id].funcs[i];
+            }
+        }
+        sText += '<td><input id="ping_funcs_'+id+'" data-ping-device="'+id+'" type="text" value="'+t+'"/></td>';
+
+        t = "";
+        if (currentAdapterSettings.settings.IPs[id].favs) {
+            for (var i = 0; i < currentAdapterSettings.settings.IPs[id].favs.length; i++) {
+                t += ((t == "") ? "":", ") + currentAdapterSettings.settings.IPs[id].favs[i];
+            }
+        }
+        sText += '<td><input id="ping_favs_'+id+'" data-ping-device="'+id+'" type="text" value="'+t+'"/></td>';
+
+        sText += '<td><input data-ping-device="'+id+'" type="button" value="remove device" class="ping-remove"/></td>';
+		sText += "</tr>";
+
+		$("#ping_table").append(sText);
+
+        $(".ping-remove:last").button().click(function () {
+            pingRemoveDevice($(this).attr("data-ping-device"));
+            storeSettings();
+        });
+        $("#ping_name_"+id).change(function () {
+            currentAdapterSettings.settings.IPs[$(this).attr('data-ping-device')].name = $(this).val();
+            storeSettings();
+        });
+        $("#ping_ip_"+id).change(function () {
+            currentAdapterSettings.settings.IPs[$(this).attr('data-ping-device')].ip = $(this).val();
+            storeSettings();
+        });
+        $("#ping_rooms_"+id).change(function () {
+            var arr = $(this).val().split(',');
+
+            for (var t = 0; t < arr.length; t++)
+                arr[t] = arr[t].trim();
+
+            currentAdapterSettings.settings.IPs[$(this).attr('data-ping-device')].rooms = arr;
+
+            storeSettings();
+        });
+        $("#ping_funcs_"+id).change(function () {
+            var arr = $(this).val().split(',');
+
+            for (var t = 0; t < arr.length; t++)
+                arr[t] = arr[t].trim();
+
+            currentAdapterSettings.settings.IPs[$(this).attr('data-ping-device')].funcs = arr;
+
+            storeSettings();
+        });
+        $("#ping_favs_"+id).change(function () {
+            var arr = $(this).val().split(',');
+
+            for (var t = 0; t < arr.length; t++)
+                arr[t] = arr[t].trim();
+
+            currentAdapterSettings.settings.IPs[$(this).attr('data-ping-device')].favs = arr;
+
+            storeSettings();
+        });
+    }
+	
+    function pingRefreshDevices() {
+        for (var id in currentAdapterSettings.settings.IPs) {
+			showDevice (id);
+        }
+        $(".ping-remove").button().click(function () {
+            var j = $(this).attr("data-ping-device");
+            pingRemoveDevice(j);
+        });
+    }
+    pingRefreshDevices();
+
+    if (currentAdapterSettings.enabled) {
+        $("#ping_enabled option[value='false']").removeAttr("selected");
+        $("#ping_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#ping_enabled option[value='true']").removeAttr("selected");
+        $("#ping_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#ping_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#ping_enabled option:selected").val() == "false" ? false : true);
+        storeSettings();
+    });
+
+
+    $("#ping_polling_interval").val(currentAdapterSettings.settings.pollingInterval);
+
+    $("#ping_polling_interval").change(function () {
+        currentAdapterSettings.settings.pollingInterval = $("#ping_polling_interval").val();
+        storeSettings();
+    });
+
+    $("#add_device").button().click(function () {
+        // Find free id
+        var i = 1;
+        while (currentAdapterSettings.settings.IPs["_"+i]) i++;
+
+        currentAdapterSettings.settings.IPs["_"+i] = {ip: "0.0.0.1", name:"", rooms:[""], funcs:[""]};
+        showDevice ("_"+i);
+    });
+
+    function pingRemoveDevice(j) {
+        $("tr.ping-optdevice").remove();
+        delete currentAdapterSettings.settings.IPs[j];
+        pingRefreshDevices();
+        storeSettings();
+    }
+
+</script>

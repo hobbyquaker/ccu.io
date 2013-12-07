@@ -9,10 +9,11 @@
         "firstId":    72000,
         "elapsedInterval": 2000,
         "devices":    {
-            "192.168.1.55": {
-                "name": "Wohnzimmer",
-                "rooms": ["Wohnzimmer"],
-                "funcs": ["Media"]
+            "_1": {"ip":    "0.0.0.0",
+                   "name":  "",
+                   "rooms": [],
+                   "funcs": [],
+				   "favs" : []
             }
         }
     }
