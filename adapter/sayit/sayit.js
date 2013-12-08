@@ -20,11 +20,13 @@ if (!settings.adapters.sayit || !settings.adapters.sayit.enabled) {
 }
 
 var sayitSettings = settings.adapters.sayit.settings;
+var sayIndex      = 0;
 
 var logger      = require(__dirname+'/../../logger.js'),
     io          = require('socket.io-client'),
     fs          = require('fs'),
     http        = require('http'),
+    request     = require('request'),
     querystring = require('querystring');
 
 
@@ -47,8 +49,8 @@ socket.on('event', function (obj) {
         return;
     }
 	
-	if (obj[0] == sayitSettings.firstId+1 && obj[1]) {
-		sayIt (obj[1]);
+	if (obj[0] >= sayitSettings.firstId+1 && obj[0] <= sayitSettings.firstId+20 && obj[1]) {
+		sayIt (obj[0], obj[1]);
 	}
 });
 
@@ -84,7 +86,7 @@ function setState(id, val) {
 	socket.emit("setState", [id,val,null,true]);
 }
 
-function sayIt (text, language) {
+function sayIt (objId, text, language) {
     logger.info("adapter sait  Saying: " + text);
 
     // Extract language from "en;Text to say"
@@ -93,57 +95,93 @@ function sayIt (text, language) {
         text = text.substring (3);
     }
 
-	var downloadfile = "http://translate.google.com/translate_tts?q=" + querystring.escape(text) + "&tl="+(language || sayitSettings.language);
+    if (!objId || objId == sayitSettings.firstId+1 || objId == sayitSettings.firstId+2) {
+        var options = {
+            host: 'translate.google.com',
+            //port: 80,
+            path: '/translate_tts?q=' + querystring.escape(text) + '&tl='+(language || sayitSettings.language)
+        };
 
-    var options = {
-        host: 'translate.google.com',
-        //port: 80,
-        path: '/translate_tts?q=' + querystring.escape(text) + '&tl='+(language || sayitSettings.language)
-    };
+        var request_ = http.get(options, function(res){
+            var sounddata = ''
+            res.setEncoding('binary')
 
-    var request = http.get(options, function(res){
-        var sounddata = ''
-        res.setEncoding('binary')
-
-        res.on('data', function(chunk){
-            sounddata += chunk
-        })
-
-        res.on('end', function(){
-            fs.writeFile(__dirname+"/../../www/dashui/say.mp3", sounddata, 'binary', function(err){
-                if (err) throw err
-                console.log('File saved.')
+            res.on('data', function(chunk){
+                sounddata += chunk
             })
-        })
-    });
 
-    /*request(downloadfile, function(error, response, buffer) {
-		if (error)
-			console.log(error);
-			//console.log(response)
-	}).pipe(fs.createWriteStream(__dirname+"/../../www/dashui/say.mp3"));*/
-	
-	// Trigger
-	setState (sayitSettings.firstId, true);
-	setTimeout (function () {
-		setState (sayitSettings.firstId, false);
-	}, 500);
+            res.on('end', function(){
+                fs.exists(__dirname+"/../../www/dashui/"+sayIndex+".mp3", function(exists) {
+                    if (exists) {
+                        fs.unlink(__dirname+"/../../www/dashui/"+sayIndex+".mp3");
+                    }
+
+                    sayIndex++;
+
+                    fs.writeFile(__dirname+"/../../www/dashui/"+sayIndex+".mp3", sounddata, 'binary', function(err){
+                        if (err)
+                            log.error ('File error:' + err);
+                        else {
+                            console.log('File saved.');
+                            // Trigger
+                            setState (sayitSettings.firstId, sayIndex);
+                        }
+                    })
+                });
+            })
+        });
+    }
+
+    if (!objId || objId == sayitSettings.firstId+1 || objId == sayitSettings.firstId+3) {
+        if (sayitSettings.mediaPlayer) {
+            request ("http://"+sayitSettings.mediaPlayer+":50000/tts="+querystring.escape(text),
+                function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        console.log(body) // Print the google web page.
+                    }
+                });
+        }
+    }
 }
 	
 setObject(sayitSettings.firstId, {
     "Name": "SayIt.Trigger",
     "TypeName": "VARDP",
     "DPInfo": "SayIt",
-    "ValueMin": null,
-    "ValueMax": null,
+    "ValueMin": 0,
+    "ValueMax": 4294967295,
     "ValueUnit": "",
-    "ValueType": 2,
-    "ValueSubType": 2,
-    "ValueList": "trigger;untrigger"
+    "ValueType": 16,
+    "ValueSubType": 0,
+    "ValueList": ""
 });
 
 setObject(sayitSettings.firstId+1, {
-    "Name": "SayIt.Text",
+    "Name": "SayIt.Text.AllDevices",
+    "TypeName": "VARDP",
+    "DPInfo": "SayIt",
+    "ValueMin": null,
+    "ValueMax": null,
+    "ValueUnit": "",
+    "ValueType": 16,
+    "ValueSubType": 29,
+    "ValueList": ""
+});
+
+setObject(sayitSettings.firstId+2, {
+    "Name": "SayIt.Text.AllBrowsers",
+    "TypeName": "VARDP",
+    "DPInfo": "SayIt",
+    "ValueMin": null,
+    "ValueMax": null,
+    "ValueUnit": "",
+    "ValueType": 16,
+    "ValueSubType": 29,
+    "ValueList": ""
+});
+
+setObject(sayitSettings.firstId+3, {
+    "Name": "SayIt.Text.AllMediaPlayers",
     "TypeName": "VARDP",
     "DPInfo": "SayIt",
     "ValueMin": null,
