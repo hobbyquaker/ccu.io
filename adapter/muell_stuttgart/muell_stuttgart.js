@@ -167,10 +167,6 @@ function iCalParse(data) {
             }
         }
 
-        //console.log(pointer);
-        //console.log(obj);
-
-
     }
 
     var events = obj.VCALENDAR;
@@ -180,7 +176,6 @@ function iCalParse(data) {
             var ts = obj.VCALENDAR[event].DTSTART.match(/^([0-9]{4})([0-9]{2})([0-9]{2})/);
             var desc = obj.VCALENDAR[event].VALARM.DESCRIPTION;
             var datex = ts[3]+"."+ts[2]+"."+ts[1];
-            console.log(datex+ " "+(date1 == datex)+" "+(date2 == datex));
             if (datex == date1) {
                 output.push(ts[1]+ts[2]+ts[3]+" <span style='color:red; font-weight:bold;'>"+datex+" "+desc+"</span>");
             } else if (datex == date2) {
