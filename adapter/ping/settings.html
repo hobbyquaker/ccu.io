@@ -78,11 +78,13 @@
         $("#ping_name_"+id).change(function () {
             currentAdapterSettings.settings.IPs[$(this).attr('data-ping-device')].name = $(this).val();
             storeSettings();
-        });
+        }).keyup(function() { $(this).trigger("change")});
+
         $("#ping_ip_"+id).change(function () {
             currentAdapterSettings.settings.IPs[$(this).attr('data-ping-device')].ip = $(this).val();
             storeSettings();
-        });
+        }).keyup(function() { $(this).trigger("change")});
+
         $("#ping_rooms_"+id).change(function () {
             var arr = $(this).val().split(',');
 
@@ -92,7 +94,7 @@
             currentAdapterSettings.settings.IPs[$(this).attr('data-ping-device')].rooms = arr;
 
             storeSettings();
-        });
+        }).keyup(function() { $(this).trigger("change")});
         $("#ping_funcs_"+id).change(function () {
             var arr = $(this).val().split(',');
 
@@ -102,7 +104,7 @@
             currentAdapterSettings.settings.IPs[$(this).attr('data-ping-device')].funcs = arr;
 
             storeSettings();
-        });
+        }).keyup(function() { $(this).trigger("change")});
         $("#ping_favs_"+id).change(function () {
             var arr = $(this).val().split(',');
 
@@ -112,7 +114,7 @@
             currentAdapterSettings.settings.IPs[$(this).attr('data-ping-device')].favs = arr;
 
             storeSettings();
-        });
+        }).keyup(function() { $(this).trigger("change")});
     }
 	
     function pingRefreshDevices() {
@@ -145,7 +147,7 @@
     $("#ping_polling_interval").change(function () {
         currentAdapterSettings.settings.pollingInterval = $("#ping_polling_interval").val();
         storeSettings();
-    });
+    }).keyup(function() { $(this).trigger("change")});
 
     $("#add_device").button().click(function () {
         // Find free id
