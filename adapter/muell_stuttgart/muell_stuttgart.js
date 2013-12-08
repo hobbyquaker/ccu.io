@@ -1,6 +1,3 @@
-// Todo enable/disable Restmüll, Biomüll, Gelber Sack, Grüne Tonne
-// Todo neuer Datenpunkt "abholung morgen"
-// Todo neuer Datenpunkt "abholung übermorgen"
 
 var request = require('request');
 
