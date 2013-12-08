@@ -6,11 +6,11 @@ var request = require('request');
 
 var settings = require(__dirname+'/../../settings.js');
 
-if (!settings.adapters.muell || !settings.adapters.muell.enabled) {
+if (!settings.adapters.muell_stuttgart || !settings.adapters.muell_stuttgart.enabled) {
     process.exit();
 }
 
-var adapterSettings = settings.adapters.settings;
+var adapterSettings = settings.adapters.muell_stuttgart.settings;
 
 var logger =    require(__dirname+'/../../logger.js'),
     io =        require('socket.io-client');
@@ -53,10 +53,14 @@ process.on('SIGTERM', function () {
     stop();
 });
 
-socket.emit("setObject", 10010, {
+socket.emit("setObject", settings.adapters.muell_stuttgart.firstId, {
     Name: "Mülltermine",
     TypeName: "VARDP"
 });
+
+
+var output = [];
+var str = "";
 
 var start = new Date();
 var end = new Date(start.getTime() + 3888000000);
@@ -64,7 +68,27 @@ var end = new Date(start.getTime() + 3888000000);
 var from = ("0"+start.getDate()).slice(-2) + "." + ("0"+(start.getMonth()+1)).slice(-2) + "." + start.getFullYear();
 var to = ("0"+end.getDate()).slice(-2) + "." + ("0"+(end.getMonth()+1)).slice(-2) + "." + end.getFullYear();
 
-var url = 'https://service.stuttgart.de/lhs-services/aws_kalender/api/ical.php?strasse='+adapterSettings.street+'&hausnummer='+adapterSettings.number+'&calenderfrom='+from+'&calenderto='+to+'&wastetypes%5Brestmuell%5D=on&wastetypes%5Baltpapier%5D=on';
+var to1 = start.getTime() + 86400000;
+var to2 = start.getTime() + 86400000*2;
+var date1 = new Date(to1);
+date1 = ("0"+date1.getDate()).slice(-2) + "." + ("0"+(date1.getMonth()+1)).slice(-2) + "." + date1.getFullYear();
+var date2 = new Date(to2);
+date2 = ("0"+date2.getDate()).slice(-2) + "." + ("0"+(date2.getMonth()+1)).slice(-2) + "." + date2.getFullYear();
+
+
+var url = 'https://service.stuttgart.de/lhs-services/aws_kalender/api/ical.php?strasse='+adapterSettings.street+'&hausnummer='+adapterSettings["number"]+'&calenderfrom='+from+'&calenderto='+to+'&';
+var wasteTypes = [];
+if (adapterSettings.waste) {
+    wasteTypes.push("wastetypes%5Brestmuell%5D=on");
+}
+if (adapterSettings.paper) {
+    wasteTypes.push("wastetypes%5Baltpapier%5D=on");
+}
+if (adapterSettings.bio) {
+    wasteTypes.push("wastetypes%5Bbiomuell%5D=on");
+}
+url += wasteTypes.join("&");
+
 
 request(url, function (error, response, body) {
     if (!error && response.statusCode == 200) {
@@ -153,31 +177,71 @@ function iCalParse(data) {
     }
 
     var events = obj.VCALENDAR;
-    var output = [];
+
     for (var event in obj.VCALENDAR) {
         if (event.match(/^VEVENT_/)) {
             var ts = obj.VCALENDAR[event].DTSTART.match(/^([0-9]{4})([0-9]{2})([0-9]{2})/);
             var desc = obj.VCALENDAR[event].VALARM.DESCRIPTION;
+            var datex = ts[3]+"."+ts[2]+"."+ts[1];
+            console.log(datex+ " "+(date1 == datex)+" "+(date2 == datex));
+            if (datex == date1) {
+                output.push(ts[1]+ts[2]+ts[3]+" <span style='color:red; font-weight:bold;'>"+datex+" "+desc+"</span>");
+            } else if (datex == date2) {
+                output.push(ts[1]+ts[2]+ts[3]+" <span style='color:orange'>"+datex+" "+desc+"</span>");
+            } else {
+                output.push(ts[1]+ts[2]+ts[3]+" "+datex+" "+desc);
+            }
 
-            output.push(ts[1]+ts[2]+ts[3]+" "+ts[3]+"."+ts[2]+"."+ts[1]+" "+desc);
         }
     }
 
 
-    request("https://www.sita-deutschland.de/loesungen/privathaushalte/abfuhrkalender/stuttgart.html?plz="+adapterSettings.zip+"&strasse="+adapterSettings+street, function (err, res, status) {
-        res.body = res.body.replace(/(\r\n|\n|\r)/gm,"");
-        var parts = res.body.match(/<table class="listing">(.*)<\/table>/);
-        var table = parts[1].replace(/[ ]+/, " ");
-        var parts = table.match(/<td>[A-Za-z]+ [0-9]{2}\.[0-9]{2}\.[0-9]{4}/g);
-        for (var i = 0; i < parts.length; i++) {
-            var termin = parts[i].match(/<td>[A-Za-z]+ ([0-9]{2}\.[0-9]{2}\.[0-9]{4})/);
-            var gparts = termin[1].match(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})/);
-            output.push(gparts[3]+gparts[2]+gparts[1]+" "+termin[1]+" Gelber Sack");
-        }
+    if (adapterSettings.package) {
+        var url = "https://www.sita-deutschland.de/loesungen/privathaushalte/abfuhrkalender/stuttgart.html?plz="+adapterSettings.zip+"&strasse="+adapterSettings.street;
+
+        request(url, function (err, res, status) {
+            res.body = res.body.replace(/(\r\n|\n|\r)/gm,"");
+            var parts = res.body.match(/<table class="listing">(.*)<\/table>/);
+            var table = parts[1].replace(/[ ]+/, " ");
+            var parts = table.match(/<td>[A-Za-z]+ [0-9]{2}\.[0-9]{2}\.[0-9]{4}/g);
+            for (var i = 0; i < parts.length; i++) {
+                var termin = parts[i].match(/<td>[A-Za-z]+ ([0-9]{2}\.[0-9]{2}\.[0-9]{4})/);
+                var gparts = termin[1].match(/([0-9]{2})\.([0-9]{2})\.([0-9]{4})/);
+                if (termin[1] == date1) {
+                    output.push(gparts[3]+gparts[2]+gparts[1]+" <span style='color:red; font-weight:bold;'>"+termin[1]+" Gelber Sack</span>");
+                } else if (termin[1] == date2) {
+                    output.push(gparts[3]+gparts[2]+gparts[1]+" <span style='color:orange'>"+termin[1]+" Gelber Sack</span>");
+                } else {
+                    output.push(gparts[3]+gparts[2]+gparts[1]+" "+termin[1]+" Gelber Sack");
+                }
+
+            }
+            output.sort();
+
+
+
+            var first = true;
+            for (var i = 0; i<4 && i < output.length; i++) {
+                if (!first) {
+                    str += "<br>";
+                } else {
+                    first = false;
+                }
+                str += output[i].slice(9);
+            }
+
+            socket.emit("setState", [settings.adapters.muell_stuttgart.firstId, str], function () {
+                socket.disconnect();
+                logger.info("adapter muell terminating");
+                setTimeout(function () {
+                    process.exit();
+                }, 1000);
+            });
+
+        });
+    } else {
         output.sort();
 
-
-        var str = "";
         var first = true;
         for (var i = 0; i<4 && i < output.length; i++) {
             if (!first) {
@@ -188,7 +252,7 @@ function iCalParse(data) {
             str += output[i].slice(9);
         }
 
-        socket.emit("setState", [adapterSettings.firstId, str], function () {
+        socket.emit("setState", [settings.adapters.muell_stuttgart.firstId, str], function () {
             socket.disconnect();
             logger.info("adapter muell terminating");
             setTimeout(function () {
@@ -196,6 +260,6 @@ function iCalParse(data) {
             }, 1000);
         });
 
-    });
+    }
 
 }
