@@ -20,12 +20,9 @@
 
 72000-72499                     sonos adapter
 
-<<<<<<< HEAD
-72500-72550                     rpi adapter
-=======
-72500                           sayIt trigger
-72501                           sayIt text: Write this variable with text to say
->>>>>>> 81d8ac07b45627d9611dd73875cac4da303f427c
+72900                           sayIt trigger
+72901                           sayIt text: Write this variable with text to say
+72902-72920                     sayIt reserved
 
 90000-90549                     hue adapter
 

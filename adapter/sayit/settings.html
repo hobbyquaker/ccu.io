@@ -20,6 +20,10 @@
             <option value="es">Espaniol</option>
         </select></td>
     </tr>
+    <tr>
+        <td>Home24-Mediaplayer IP:</td>
+        <td><input id="sayit_settings_mediaplayer" type="text" /></td>
+    </tr>
 </table>
 
 <script type="text/javascript">
@@ -43,5 +47,12 @@
         currentAdapterSettings.settings.language = $("#sayit_settings_language").val();
         updateAdapterSettings();
     });
+
+    $("#sayit_settings_mediaplayer").val(currentAdapterSettings.settings.mediaPlayer || "");
+
+    $("#sayit_settings_mediaplayer").change(function () {
+        currentAdapterSettings.settings.mediaPlayer = $("#sayit_settings_mediaplayer").val();
+        updateAdapterSettings();
+    }).keyup(function() { $(this).trigger("change")});
 
 </script>
