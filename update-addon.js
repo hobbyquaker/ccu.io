@@ -23,12 +23,26 @@ request(url).pipe(unzip.Extract({path: __dirname+"/tmp"}));
 
 setTimeout(function () {
     // Copy Folder to www Dir
-//TODO remove name when repositories are restructured
-    var source =        __dirname+"/tmp/"+tmpDir+"/"+name,
+
+    var sourcedir =        __dirname+"/tmp/"+tmpDir,
         destination =   __dirname+"/www/"+name;
 
+    var source = sourcedir;
 
-    logger.info("update-addon  copying tmp/"+tmpDir+"/"+name+" to www/"+name);
+    try {
+        var stats = fs.lstatSync(sourcedir+"/"+name);
+
+        if (stats.isDirectory()) {
+
+            source = sourcedir+"/"+name
+        }
+    }
+    catch (e) {
+
+    }
+
+
+    logger.info("update-addon  copying "+source+" to "+destination);
 
     ncp(source, destination, function (err) {
         if (err) {

@@ -153,55 +153,111 @@ $(document).ready(function () {
                 var name = $(this).attr("data-update-name");
                 var id = $(this).attr("id");
                 socket.emit("getUrl", url, function(res) {
-                    obj = JSON.parse(res);
-                    $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
+                    try {
+                        obj = JSON.parse(res);
+                        $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
 
-                    var instVersion = $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html();
-                    instVersion = instVersion.replace(/beta/,".");
+                        var instVersion = $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html();
+                        instVersion = instVersion.replace(/beta/,".");
 
-                    var availVersion = obj.version;
-                    availVersion = availVersion.replace(/beta/,".");
+                        var availVersion = obj.version;
+                        availVersion = availVersion.replace(/beta/,".");
 
-                    var instVersionArr = instVersion.split(".");
-                    var availVersionArr = availVersion.split(".");
+                        var instVersionArr = instVersion.split(".");
+                        var availVersionArr = availVersion.split(".");
 
-                    var updateAvailable = false;
+                        var updateAvailable = false;
 
-                    for (var k = 0; k<3; k++) {
-                        instVersionArr[k] = parseInt(instVersionArr[k], 10);
-                        if (isNaN(instVersionArr[k])) { instVersionArr[k] = -1; }
-                        availVersionArr[k] = parseInt(availVersionArr[k], 10);
-                        if (isNaN(availVersionArr[k])) { availVersionArr[k] = -1; }
-                    }
+                        for (var k = 0; k<3; k++) {
+                            instVersionArr[k] = parseInt(instVersionArr[k], 10);
+                            if (isNaN(instVersionArr[k])) { instVersionArr[k] = -1; }
+                            availVersionArr[k] = parseInt(availVersionArr[k], 10);
+                            if (isNaN(availVersionArr[k])) { availVersionArr[k] = -1; }
+                        }
 
-                    if (availVersionArr[0] > instVersionArr[0]) {
-                        updateAvailable = true;
-                    } else if (availVersionArr[0] == instVersionArr[0]) {
-                        if (availVersionArr[1] > instVersionArr[1]) {
+                        if (availVersionArr[0] > instVersionArr[0]) {
                             updateAvailable = true;
-                        } else if (availVersionArr[1] == instVersionArr[1]) {
-                            if (availVersionArr[2] > instVersionArr[2]) {
+                        } else if (availVersionArr[0] == instVersionArr[0]) {
+                            if (availVersionArr[1] > instVersionArr[1]) {
                                 updateAvailable = true;
+                            } else if (availVersionArr[1] == instVersionArr[1]) {
+                                if (availVersionArr[2] > instVersionArr[2]) {
+                                    updateAvailable = true;
+                                }
                             }
                         }
-                    }
 
-                    if (updateAvailable) {
-                        $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' value='update'/>&nbsp;");
-                        $("input#update_"+obj.ident).click(function () {
-                            $(this).attr("disabled", true);
-                            var that = this;
-                            socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
-                                if (err) {
-                                    alert(err);
-                                } else {
-                                    $(that).remove();
-                                }
+                        if (updateAvailable) {
+                            $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' value='update'/>&nbsp;");
+                            $("input#update_"+obj.ident).click(function () {
+                                $(this).attr("disabled", true);
+                                var that = this;
+                                socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
+                                    if (err) {
+                                        alert(err);
+                                    } else {
+                                        $(that).remove();
+                                    }
+                                });
+
                             });
+                        }
+                        $("input.updateCheck[data-update-name='"+obj.name+"']").hide();
+                    } catch (e) {
+                        url = url.replace(/[^\/]+\/io-addon.json/,"io-addon.json");
+                        socket.emit("getUrl", url, function(res) {
+                            obj = JSON.parse(res);
+                            $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
 
+                            var instVersion = $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html();
+                            instVersion = instVersion.replace(/beta/,".");
+
+                            var availVersion = obj.version;
+                            availVersion = availVersion.replace(/beta/,".");
+
+                            var instVersionArr = instVersion.split(".");
+                            var availVersionArr = availVersion.split(".");
+
+                            var updateAvailable = false;
+
+                            for (var k = 0; k<3; k++) {
+                                instVersionArr[k] = parseInt(instVersionArr[k], 10);
+                                if (isNaN(instVersionArr[k])) { instVersionArr[k] = -1; }
+                                availVersionArr[k] = parseInt(availVersionArr[k], 10);
+                                if (isNaN(availVersionArr[k])) { availVersionArr[k] = -1; }
+                            }
+
+                            if (availVersionArr[0] > instVersionArr[0]) {
+                                updateAvailable = true;
+                            } else if (availVersionArr[0] == instVersionArr[0]) {
+                                if (availVersionArr[1] > instVersionArr[1]) {
+                                    updateAvailable = true;
+                                } else if (availVersionArr[1] == instVersionArr[1]) {
+                                    if (availVersionArr[2] > instVersionArr[2]) {
+                                        updateAvailable = true;
+                                    }
+                                }
+                            }
+
+                            if (updateAvailable) {
+                                $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' value='update'/>&nbsp;");
+                                $("input#update_"+obj.ident).click(function () {
+                                    $(this).attr("disabled", true);
+                                    var that = this;
+                                    socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
+                                        if (err) {
+                                            alert(err);
+                                        } else {
+                                            $(that).remove();
+                                        }
+                                    });
+
+                                });
+                            }
+                            $("input.updateCheck[data-update-name='"+obj.name+"']").hide();
                         });
                     }
-                    $("input.updateCheck[data-update-name='"+obj.name+"']").hide();
+
                 });
             });
         }, 2500);
