@@ -28,6 +28,8 @@
 
 80000-?                         itrans adapter
 
+80100-?                         iCal adapter
+
 90000-90549                     hue adapter
 
 100000-299999                   reserviert für eigene Scripte
