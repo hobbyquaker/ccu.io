@@ -19,11 +19,8 @@ var arguments = process.argv.slice(2),
 logger.info("update-addon  download and unzip "+url);
 
 // Download and Unzip
-request(url).pipe(unzip.Extract({path: __dirname+"/tmp"}));
-
-setTimeout(function () {
-    // Copy Folder to www Dir
-
+request(url).pipe(unzip.Extract({path: __dirname+"/tmp"})).on("close", function () {
+    logger.info("update-addon  unzip done");
     var sourcedir =        __dirname+"/tmp/"+tmpDir,
         destination =   __dirname+"/www/"+name;
 
@@ -56,14 +53,11 @@ setTimeout(function () {
             deleteFolderRecursive(__dirname+"/tmp/"+tmpDir);
             logger.info('update-addon  done');
             //process.exit(0);
-        }, 1000);
+        }, 2000);
 
 
     });
-}, 1000);
-
-
-
+});
 
 var deleteFolderRecursive = function(path) {
     if( fs.existsSync(path) ) {
