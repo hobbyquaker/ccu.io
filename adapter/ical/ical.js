@@ -117,34 +117,13 @@ function checkiCal(loc) {
 				 } 
 			} 
 			if (arrDates.length>0) {
-				setState(icalSettings.firstId + 1,brSeparatedList(arrDates));
+				setState(icalSettings.firstId + 1, arrDates.join("<br/>"));
 			}
 		 }	
 	    }
 	  }
 	})
 }
-
-function brSeparatedList(arr) {
-    var text = "";
-	arr.sort();
-    var length = arr.length;
-    if (length > 0) {
-        var first = true;
-        for (var i=0; i<length; i++) {
-            if (!first) {
-                text = text + "<br/>";
-            } else {
-                first = false;
-            }
-            text = text + arr[i];
-        }
-    }
-    return text;
-}
-
-
-
 
 function stop() {
     logger.info("adapter ical terminating");
