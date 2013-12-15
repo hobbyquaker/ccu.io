@@ -108,6 +108,15 @@ socket.on('event', function (obj) {
         var tmpArr = objects[id].Name.split(".");
         var lamp = tmpArr[1];
         //console.log("received event lamp="+lamp+" dp="+objects[id].hueType+" val="+val);
+
+        if (objects[id].hueType == "on") {
+            if (val === 0) {
+                val = false;
+            } else if (val === 1) {
+                val = true;
+            }
+        }
+
         apiObj[lamp][objects[id].hueType] = val;
         datapoints[objects[id].Name] = [val, ts, ack];
 
