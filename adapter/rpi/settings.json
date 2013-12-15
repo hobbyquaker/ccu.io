@@ -1,6 +1,20 @@
 {
     "enabled": false,
     "settings": {
-        "interval": 60000
+        "interval": 60000,
+        "gpio": {
+            "22": {
+                "direction": "in"
+            },
+            "23": {
+                "direction": "out"
+            },
+            "24": {
+                "direction": "out"
+            },
+            "25": {
+                "direction": "out"
+            }
+        }
     }
 }
