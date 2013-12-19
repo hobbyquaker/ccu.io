@@ -453,7 +453,7 @@ if (sonosSettings.webserver.enabled) {
 
     fs.mkdir(cacheDir, function (e) {
         if (e && e.code != 'EEXIST')
-            console.log('creating cache dir failed, this is probably normal!', e);
+            console.log('creating cache dir failed.', e);
     });
 
     httpServer = http.createServer(function (req, res) {
@@ -611,6 +611,22 @@ if (sonosSettings.webserver.enabled) {
             player.setVolume(data.volume);
         });
 
+		socket.on('group-mute', function (data) {
+			console.log(data)
+			var player = discovery.getPlayerByUUID(data.uuid);
+			player.groupMute(data.mute);
+		});
+	
+		socket.on('mute', function (data) {
+			var player = discovery.getPlayerByUUID(data.uuid);
+			player.mute(data.mute);
+		});
+
+		socket.on('track-seek', function (data) {
+			var player = discovery.getPlayerByUUID(data.uuid);
+			player.trackSeek(data.elapsed);
+		});
+		
         socket.on("error", function (e) {
             console.log(e);
         })
@@ -652,6 +668,16 @@ discovery.on('queue-changed', function (data) {
     delete queues[data.uuid];
     loadQueue(data.uuid, sonosSocket.sockets);
     processSonosEvents ('queue-changed', data)
+});
+
+discovery.on('group-mute', function (data) {
+    if (sonosSocket)
+        sonosSocket.sockets.emit('group-mute', data);
+});
+ 
+discovery.on('mute', function (data) {
+    if (sonosSocket)
+        sonosSocket.sockets.emit('mute', data);
 });
 
 function loadQueue(uuid, socket) {

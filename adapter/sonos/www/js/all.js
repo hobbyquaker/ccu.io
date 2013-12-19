@@ -34,13 +34,16 @@ var GUI = {
 					// ignore the master volume
 					if (e.target == obj) return;
 					var playerVolumeContainer = document.getElementById('player-volumes');
-					function isChildOf(child, parent) {
-						if (child == parent) return true;
+					function isChildOf(child) {
+						// ignore master volume elements
+						if (child == obj) return true;
+						// ignore player volume container
+						if (child == playerVolumeContainer) return true;
 						if (child == document) return false;
-						return isChildOf(child.parentNode, parent);
+						return isChildOf(child.parentNode);
 					}
 					// and the playerVolume
-					if (isChildOf(e.target, playerVolumeContainer)) return;
+					if (isChildOf(e.target)) return;
 
 					// This is a random click, hide it and remove the container
 					playerVolumesNode.classList.add('hidden');
@@ -52,7 +55,15 @@ var GUI = {
 			}
 			return true;
 		}),
-	playerVolumes: {}
+	playerVolumes: {},
+	progress: new ProgressBar(document.getElementById('position-bar'), function (position) {
+		// calculate new time
+		var player = Sonos.currentZoneCoordinator();
+		console.log(player.state)
+		var desiredElapsed = Math.round(player.state.currentTrack.duration * position);
+		player.state.elapsedTime = desiredElapsed;
+		socket.emit('track-seek', {uuid: player.uuid, elapsed: desiredElapsed});
+	})
 };
 
 ///
@@ -109,6 +120,17 @@ socket.on('group-volume', function (data) {
 	}
 });
 
+socket.on('group-mute', function (data) {
+	Sonos.players[data.uuid].groupState = data.state;
+	updateControllerState();
+});
+
+socket.on('mute', function (data) {
+	var player = Sonos.players[data.uuid];
+	player.state.mute = data.state;
+	document.getElementById("mute-" + player.uuid).src = data.state ? 'svg/mute_on.svg' : 'svg/mute_off.svg';
+});
+
 socket.on('favorites', function (data) {
 	renderFavorites(data);
 });
@@ -149,6 +171,24 @@ document.getElementById('zone-container').addEventListener('click', function (e)
 	socket.emit('queue', {uuid: Sonos.currentState.selectedZone});
 
 }, true);
+
+document.getElementById('master-mute').addEventListener('click', function () {
+
+	var action;
+	// Find state of current player
+	var player = Sonos.currentZoneCoordinator();
+
+	// current state
+	var mute = player.groupState.mute;
+	socket.emit('group-mute', {uuid: player.uuid, mute: !mute});
+
+	// update
+	if (mute)
+		this.src = this.src.replace(/_on\.svg/, '_off.svg');
+	else
+		this.src = this.src.replace(/_off\.svg/, '_on.svg');
+
+});
 
 document.getElementById('play-pause').addEventListener('click', function () {
 
@@ -219,6 +259,26 @@ document.getElementById('position-info').addEventListener('click', function (e) 
 	selectedZone.playMode[action] = state;
 	updateCurrentStatus();
 	socket.emit('playmode', {uuid: Sonos.currentState.selectedZone, state: data});
+
+});
+
+document.getElementById('player-volumes-container').addEventListener('click', function (e) {
+	var muteButton = e.target;
+	if (!muteButton.classList.contains('mute-button')) return;
+
+
+
+	// this is a mute button, go.
+	var player = Sonos.players[muteButton.dataset.id];
+	var state = !player.state.mute;
+	socket.emit('mute', {uuid: player.uuid, mute: state});
+
+	// update GUI
+		// update
+	if (state)
+		muteButton.src = muteButton.src.replace(/_off\.svg/, '_on.svg');
+	else
+		muteButton.src = muteButton.src.replace(/_on\.svg/, '_off.svg');
 
 });
 
@@ -298,8 +358,8 @@ function updatePosition() {
 	document.getElementById("countup").textContent = toFormattedTime(elapsed);
 	var remaining = selectedZone.state.currentTrack.duration - elapsed;
 	document.getElementById("countdown").textContent = "-" + toFormattedTime(remaining);
-	var positionPercent = elapsedMillis / (selectedZone.state.currentTrack.duration*1000)*100;
-	setPositionPercent(positionPercent);
+	var position = elapsedMillis / (selectedZone.state.currentTrack.duration*1000);
+	GUI.progress.setPosition(position);
 }
 
 function updateControllerState() {
@@ -308,13 +368,21 @@ function updateControllerState() {
 	var playPauseButton = document.getElementById('play-pause');
 
 	if (state == "PLAYING") {
-		playPauseButton.src = '/images/pause_normal.png';
+		playPauseButton.src = '/svg/pause.svg';
 	} else {
-		playPauseButton.src = '/images/play_normal.png';
+		playPauseButton.src = '/svg/play.svg';
 	}
 
 	// Fix volume
 	GUI.masterVolume.setVolume(currentZone.groupState.volume);
+
+	// fix mute
+	var masterMute = document.getElementById('master-mute');
+	if (currentZone.groupState.mute) {
+		masterMute.src = "/svg/mute_on.svg";
+	} else {
+		masterMute.src = "/svg/mute_off.svg";
+	}
 
 	// fix volume container
 
@@ -336,27 +404,7 @@ function updateControllerState() {
 
 }
 
-// Update position
-function setPositionPercent(percent) {
-	// 0-100
-	var positionBar = document.getElementById("position-bar");
-	var positionScrubber = document.getElementById("position-bar-scrubber");
-
-	// total width
-	var allowedWidth = positionBar.clientWidth - 5;
-
-	// calculate offset
-	var offset = Math.round(allowedWidth * percent / 100);
-
-	positionScrubber.style.marginLeft = offset + "px";
-
-}
-
-
 function toFormattedTime(seconds) {
-
-
-
 		var chunks = [];
 		var modulus = [60^2, 60];
 		var remainingTime = seconds;
@@ -478,8 +526,6 @@ function VolumeSlider(containerObj, callback, clickCallback) {
 	state.slider = containerObj.querySelector('img');
 	state.currentX = state.slider.offsetLeft;
 
-	console.log(state)
-
 	state.slider.addEventListener('mousedown', function (e) {
 		console.log(state)
 		state.cursorX = e.clientX;
@@ -511,6 +557,126 @@ function VolumeSlider(containerObj, callback, clickCallback) {
 	}
 
 	return this;
+}
+
+function ProgressBar(containerObj, callback) {
+	var state = {
+		cursorX: 0,
+		originalX: 0,
+		maxX: 0,
+		currentX: 0,
+		slider: null,
+		progress: 0,
+		slideInProgress: false
+	};
+
+	// Update position
+	this.setPosition = function (position) {
+		if (state.slideInProgress) return;
+		setPosition(position);
+	}
+
+	function setPosition(position) {
+		// calculate offset
+		var offset = Math.round(state.maxX * position);
+		state.slider.style.marginLeft = offset + "px";
+		state.currentX = offset;
+	}
+
+	function handleVolumeWheel(e) {
+		console.log(e.deltaY)
+		// var newVolume;
+		// if(e.deltaY > 0) {
+		// 	// volume down
+		// 	newVolume = state.volume - 2;
+		// } else {
+		// 	// volume up
+		// 	newVolume = state.volume + 2;
+		// }
+		// if (newVolume < 0) newVolume = 0;
+		// if (newVolume > 100) newVolume = 100;
+
+		// setVolume( newVolume );
+		// clearTimeout(state.disableTimer);
+		// state.disableUpdate = true;
+		// state.disableTimer = setTimeout(function () {state.disableUpdate = false}, 800);
+
+		//socket.emit('group-volume', {uuid: Sonos.currentState.selectedZone, volume: newVolume});
+		//newVolume = Sonos.currentZoneCoordinator().groupState.volume = newVolume;
+
+
+	}
+
+	function handleClick(e) {
+		console.log(e)
+		// Be able to cancel this from a callback if necessary
+		// if (typeof clickCallback == "function" && clickCallback(this) == false) return;
+
+		// if (e.target.tagName == "IMG") return;
+
+		// var newVolume;
+		// if(e.layerX < state.currentX) {
+		// 	// volume down
+		// 	newVolume = state.volume - 2;
+		// } else {
+		// 	// volume up
+		// 	newVolume = state.volume + 2;
+		// }
+
+		// if (newVolume < 0) newVolume = 0;
+		// if (newVolume > 100) newVolume = 100;
+
+		// setVolume(newVolume);
+		// clearTimeout(state.disableTimer);
+		// state.disableUpdate = true;
+		// state.disableTimer = setTimeout(function () {state.disableUpdate = false}, 800);
+	}
+
+	function onDrag(e) {
+		var deltaX = e.clientX - state.cursorX;
+		var nextX = state.originalX + deltaX;
+		// calculate time
+		if (nextX < 1) nextX = 1;
+		if (nextX > state.maxX) nextX = state.maxX;
+		var progress = nextX / state.maxX;
+		setPosition(progress);
+
+	}
+
+
+	var sliderWidth = containerObj.clientWidth;
+	state.maxX = sliderWidth - 5;
+	state.slider = containerObj.querySelector('div');
+	state.currentX = state.slider.offsetLeft;
+
+	console.log(state)
+
+	state.slider.addEventListener('mousedown', function (e) {
+		state.slideInProgress = true;
+		state.cursorX = e.clientX;
+		state.originalX = state.currentX;
+		console.log(e, state)
+		state.slider.classList.add('sliding');
+		document.addEventListener('mousemove', onDrag);
+		e.preventDefault();
+	});
+
+	document.addEventListener('mouseup', function () {
+		if (!state.slideInProgress) return;
+		document.removeEventListener('mousemove', onDrag);
+		if (typeof callback == "function") {
+			callback(state.currentX / state.maxX);
+		}
+		state.slider.classList.remove('sliding');
+		state.slideInProgress = false;
+	});
+
+	// Since Chrome 31 wheel event is also supported
+	console.log(containerObj)
+	containerObj.addEventListener("wheel", handleVolumeWheel);
+
+	// For click-to-adjust
+	//containerObj.addEventListener("click", handleClick);
 }
 
 var zoneManagement = function() {
@@ -568,6 +734,7 @@ function renderVolumes() {
 	var oldWrapper = document.getElementById('player-volumes');
 	var newWrapper = oldWrapper.cloneNode(false);
 	var masterVolume = document.getElementById('master-volume');
+	var masterMute = document.getElementById('master-mute');
 
 	var playerNodes = [];
 
@@ -579,8 +746,14 @@ function renderVolumes() {
 		playerVolumeBar.id = "";
 		playerVolumeBar.dataset.uuid = player.uuid;
 		var playerName = document.createElement('h6');
+		var playerMute = masterMute.cloneNode(true);
+		playerMute.id = "mute-" + player.uuid;
+		playerMute.className = "mute-button";
+		playerMute.src = player.state.mute ? "/svg/mute_on.svg" : "/svg/mute_off.svg";
+		playerMute.dataset.id = player.uuid;
 		playerName.textContent = player.roomName;
 		playerVolumeBarContainer.appendChild(playerName);
+		playerVolumeBarContainer.appendChild(playerMute);
 		playerVolumeBarContainer.appendChild(playerVolumeBar);
 		newWrapper.appendChild(playerVolumeBarContainer);
 		playerNodes.push({uuid: player.uuid, node: playerVolumeBar});
@@ -636,6 +809,8 @@ function renderFavorites(favorites) {
 	var oldContainer = document.getElementById('favorites-container');
 	var newContainer = oldContainer.cloneNode(false);
 
+	var i = 0;
+
 	favorites.forEach(function (favorite) {
 		var li = document.createElement('li');
 		li.dataset.title = favorite.title;
@@ -645,6 +820,7 @@ function renderFavorites(favorites) {
 		albumArt.src = favorite.albumArtURI;
 		li.appendChild(albumArt);
 		li.appendChild(span);
+		li.tabIndex = i++;
 		newContainer.appendChild(li);
 	});
 
@@ -661,6 +837,7 @@ function renderQueue(queue) {
 		var li = document.createElement('li');
 		li.dataset.title = q.uri;
 		li.dataset.trackNo = trackIndex++;
+		li.tabIndex = trackIndex;
 
 		var albumArt = document.createElement('img');
 		//albumArt.src = q.albumArtURI;
