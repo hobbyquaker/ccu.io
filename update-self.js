@@ -8,7 +8,6 @@ ncp.limit = 16;
 
 logger.info("update-ccu.io started");
 
-
 var url = "https://github.com/hobbyquaker/ccu.io/archive/master.zip",
     tmpDir = "ccu.io-master";
 
@@ -36,8 +35,8 @@ request(url).pipe(unzip.Extract({path: __dirname+"/tmp"})).on("close", function 
             //process.exit(0);
         }, 2000);
 
-
     });
+
 });
 
 var deleteFolderRecursive = function(path) {
