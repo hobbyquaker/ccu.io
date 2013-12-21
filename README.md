@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.3*
+*aktuelle Version: 1.0.4*
 
 ## Dokumentation
 
