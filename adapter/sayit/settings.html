@@ -24,6 +24,18 @@
         <td>Home24-Mediaplayer IP:</td>
         <td><input id="sayit_settings_mediaplayer" type="text" /></td>
     </tr>
+    <tr>
+        <td>Use FTP server for Mediaplayer. FTP Port:</td>
+        <td><input id="sayit_settings_ftp_port" size='4' type="text" /></td>
+    </tr>
+    <tr>
+        <td>FTP login:</td>
+        <td><input id="sayit_settings_ftp_login" type="text" /></td>
+    </tr>
+    <tr>
+        <td>FTP password:</td>
+        <td><input id="sayit_settings_ftp_pass" type="text" /></td>
+    </tr>
 </table>
 
 <script type="text/javascript">
@@ -52,6 +64,27 @@
 
     $("#sayit_settings_mediaplayer").change(function () {
         currentAdapterSettings.settings.mediaPlayer = $("#sayit_settings_mediaplayer").val();
+        updateAdapterSettings();
+    }).keyup(function() { $(this).trigger("change")});
+
+    $("#sayit_settings_ftp_port").val(currentAdapterSettings.settings.ftp_port || "");
+
+    $("#sayit_settings_ftp_port").change(function () {
+        currentAdapterSettings.settings.ftp_port = $("#sayit_settings_ftp_port").val();
+        updateAdapterSettings();
+    }).keyup(function() { $(this).trigger("change")});
+
+    $("#sayit_settings_ftp_login").val(currentAdapterSettings.settings.ftp_user || "");
+
+    $("#sayit_settings_ftp_login").change(function () {
+        currentAdapterSettings.settings.ftp_user = $("#sayit_settings_ftp_login").val();
+        updateAdapterSettings();
+    }).keyup(function() { $(this).trigger("change")});
+
+    $("#sayit_settings_ftp_pass").val(currentAdapterSettings.settings.ftp_pass || "");
+
+    $("#sayit_settings_ftp_pass").change(function () {
+        currentAdapterSettings.settings.ftp_pass = $("#sayit_settings_ftp_pass").val();
         updateAdapterSettings();
     }).keyup(function() { $(this).trigger("change")});
 

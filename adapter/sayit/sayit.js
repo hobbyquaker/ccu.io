@@ -6,10 +6,10 @@
  *      
  *      It uses unofficial Google Translate TTS and it can be closed any time.
  *      
- *      Creates mp3 file in DashUI under /dashui/say.mp3 and set variable 72500 to 1 and after second to 0
- *      So DashUI can monitor 72500 object and play say.mp3
+ *      Creates mp3 file in DashUI under /dashui/say.mp3 and set variable 72900 to 1 and after second to 0
+ *      So DashUI can monitor 72900 object and play say.mp3
  *
- *      To make DashUI say some text, set 72501 with desired text.
+ *      To make DashUI say some text, set 72901 with desired text.
  *      You can write "en;Text to say" to say it in specific language
  *
  */
@@ -27,6 +27,7 @@ var logger      = require(__dirname+'/../../logger.js'),
     fs          = require('fs'),
     http        = require('http'),
     request     = require('request'),
+    ftp         = require('jsftp'),
     querystring = require('querystring');
 
 
@@ -95,13 +96,21 @@ function sayIt (objId, text, language) {
         text = text.substring (3);
     }
 
-    if (!objId || objId == sayitSettings.firstId+1 || objId == sayitSettings.firstId+2) {
+    if (!objId || objId == sayitSettings.firstId+1 || objId == sayitSettings.firstId+2 || sayitSettings.ftp_port) {
         var options = {
             host: 'translate.google.com',
             //port: 80,
             path: '/translate_tts?q=' + querystring.escape(text) + '&tl='+(language || sayitSettings.language)
         };
-
+        if (language == "ru") {
+            options.headers = {
+                "User-Agent"     : "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
+                    "Accept"         : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
+                    "Accept-Encoding": "gzip, deflate"
+            };
+        }
+        
         var request_ = http.get(options, function(res){
             var sounddata = ''
             res.setEncoding('binary')
@@ -111,28 +120,66 @@ function sayIt (objId, text, language) {
             })
 
             res.on('end', function(){
-                fs.exists(__dirname+"/../../www/dashui/"+sayIndex+".mp3", function(exists) {
-                    if (exists) {
-                        fs.unlink(__dirname+"/../../www/dashui/"+sayIndex+".mp3");
-                    }
+                //fs.exists(__dirname+"/../../www/dashui/say.mp3", function(exists) {
+                    /*if (exists) {
+                        fs.unlink(__dirname+"/../../www/say.mp3");
+                    }*/
 
                     sayIndex++;
 
-                    fs.writeFile(__dirname+"/../../www/dashui/"+sayIndex+".mp3", sounddata, 'binary', function(err){
+                    fs.writeFile(__dirname+"/../../www/say.mp3", sounddata, 'binary', function(err){
                         if (err)
-                            log.error ('File error:' + err);
+                            logger.error ('File error:' + err);
                         else {
                             console.log('File saved.');
-                            // Trigger
-                            setState (sayitSettings.firstId, sayIndex);
+                            if (!objId || objId == sayitSettings.firstId+1 || objId == sayitSettings.firstId+2) {
+                                // Trigger
+                                setState (sayitSettings.firstId, sayIndex);
+                            }
                         }
-                    })
-                });
+                        // Copy mp3 file to android device to play it later with MediaPlayer
+                        if (sayitSettings.ftp_port &&
+                            sayitSettings.mediaPlayer &&
+                            (!objId || objId == sayitSettings.firstId+1 || objId == sayitSettings.firstId+3)) {
+                            var Ftp = new ftp({
+                                host: sayitSettings.mediaPlayer,
+                                port: parseInt(sayitSettings.ftp_port), // defaults to 21
+                                user: sayitSettings.ftp_user || "anonymous", // defaults to "anonymous"
+                                pass: sayitSettings.ftp_pass || "@anonymous" // defaults to "@anonymous"
+                            });
+                            //Ftp.auth(sayitSettings.ftp_user, sayitSettings.ftp_pass, function (hasError) {
+                            //    if (hasError) {
+                            //        logger.error ('FTP error:' + hasError);
+                            //    } else {
+                                    Ftp.put (__dirname+"/../../www/say.mp3", 'say.mp3', function(hadError) {
+                                        if (!hadError) {
+                                            console.log("File transferred successfully!");
+                                            request ("http://"+sayitSettings.mediaPlayer+":50000/track=say.mp3",
+                                                function (error, response, body) {
+                                                    if (!error && response.statusCode == 200) {
+                                                        console.log(body) // Print the google web page.
+                                                    }
+                                                });
+                                        } else {
+                                            logger.error ('FTP error:' + hasError);
+                                        }
+                                        Ftp.raw.quit(function(err, data) {
+                                            if (err) return console.error(err);
+
+                                            Ftp.destroy();
+                                        });
+                                    });
+                            //
+                            //    }
+                            //})
+                        }
+                    });
+                //});
             })
         });
     }
 
-    if (!objId || objId == sayitSettings.firstId+1 || objId == sayitSettings.firstId+3) {
+    if (!sayitSettings.ftp_port && (!objId || objId == sayitSettings.firstId+1 || objId == sayitSettings.firstId+3)) {
         if (sayitSettings.mediaPlayer) {
             request ("http://"+sayitSettings.mediaPlayer+":50000/tts="+querystring.escape(text),
                 function (error, response, body) {

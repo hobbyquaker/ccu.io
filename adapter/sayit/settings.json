@@ -2,6 +2,9 @@
     "enabled": false,
     "settings": {
 		"firstId":  72900,
-		"language": "de"
+		"language": "de",
+        "ftp_port": "",
+        "ftp_user": "",
+        "ftp_pass": ""
     }
 }
