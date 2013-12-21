@@ -10,9 +10,11 @@ siehe http://ccu.io/
 
 ## Todo/Roadmap
 
-
+* Methode getState für Script-Engine
+* Script-Engine Addins
+* _persistent Attribut - Werte speichern
+* RPI Adapter: 1-Wire Unterstützung
 * Doku, Doku, Doku
-* CCU.IO Update in Weboberfläche anstoßen
 * LIRC Adapter
 * CCU2-Paket für einfache Installation
 * .msi für einfache Installation unter Windows (ccu.io als Service registrieren)
@@ -23,6 +25,15 @@ siehe http://ccu.io/
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 1.0.4
+* (Hobbyquaker) CCU.IO kann sich nun selbst updaten
+* (Hobbyquaker) Neue Script-Methode getState()
+* (Hobbyquaker) Bugfix settings.js
+* (Hobbyquaker) fehlendes gpio Modul für rpi-Adapter hinzugefügt
+* (Hobbyquaker) Bugfix: STATE DP erlaubt nun numerische Werte
+
+
 
 ### 1.0.3
 * (Hobbyquaker) Adapter rpi unterstützt nun GPIOs
