@@ -32,7 +32,10 @@ siehe http://ccu.io/
 * (Hobbyquaker) Bugfix settings.js
 * (Hobbyquaker) fehlendes gpio Modul für rpi-Adapter hinzugefügt
 * (Hobbyquaker) Bugfix: STATE DP erlaubt nun numerische Werte
-
+* (Bluefox) sayit-Adapter: FTP option by sayit.js
+* (Bluefox) sonsos-Adapter: New sonos version. Mute function
+* (Vader722) iCal-Adapter: Adapter kann im Intervall den Kalender einlesen
+* (Vader722) iCal-Adapter: Datum und Uhrzeit der Termine jetzt Bold Font
 
 
 ### 1.0.3
