@@ -7,6 +7,8 @@ function updateAdapterSettings() {
 
 $(document).ready(function () {
 
+    var installedAddons = [];
+
     var regaObjects,
         regaIndex,
         ccuIoSettings;
@@ -139,11 +141,52 @@ $(document).ready(function () {
                         download:           "<a href='"+meta.urlDownload+"' target='_blank'>"+dl[1]+"</a>"
                     };
                     $("#grid_addons").jqGrid('addRowData', i, addonData);
+                    installedAddons.push(meta.dirname+"="+meta.version);
                     $("#install_addon_select option[value='"+meta.dirname+"']").remove();
 
                 }
             });
         }
+
+        function compareVersion(instVersion, availVersion) {
+            var instVersionArr = instVersion.split(".");
+            var availVersionArr = availVersion.split(".");
+
+            var updateAvailable = false;
+
+            for (var k = 0; k<3; k++) {
+                instVersionArr[k] = parseInt(instVersionArr[k], 10);
+                if (isNaN(instVersionArr[k])) { instVersionArr[k] = -1; }
+                availVersionArr[k] = parseInt(availVersionArr[k], 10);
+                if (isNaN(availVersionArr[k])) { availVersionArr[k] = -1; }
+            }
+
+            if (availVersionArr[0] > instVersionArr[0]) {
+                updateAvailable = true;
+            } else if (availVersionArr[0] == instVersionArr[0]) {
+                if (availVersionArr[1] > instVersionArr[1]) {
+                    updateAvailable = true;
+                } else if (availVersionArr[1] == instVersionArr[1]) {
+                    if (availVersionArr[2] > instVersionArr[2]) {
+                        updateAvailable = true;
+                    }
+                }
+            }
+            return updateAvailable;
+        }
+
+        $("input#update_self_check").click(function () {
+            $("#update_self_check").attr("disabled", true);
+            var url = "http://ccu.io/version.php";
+            alert(url);
+            socket.emit("getUrl", url, function(res) {
+                $("#update_self_check").hide();
+                $(".ccu-io-availversion").html(res);
+                if (compareVersion(ccuIoSettings.version, res)) {
+                    $("#update_self").show();
+                }
+            });
+        });
 
         setTimeout(function() {
             $("input.updateCheck").click(function () {
@@ -163,29 +206,7 @@ $(document).ready(function () {
                         var availVersion = obj.version;
                         availVersion = availVersion.replace(/beta/,".");
 
-                        var instVersionArr = instVersion.split(".");
-                        var availVersionArr = availVersion.split(".");
-
-                        var updateAvailable = false;
-
-                        for (var k = 0; k<3; k++) {
-                            instVersionArr[k] = parseInt(instVersionArr[k], 10);
-                            if (isNaN(instVersionArr[k])) { instVersionArr[k] = -1; }
-                            availVersionArr[k] = parseInt(availVersionArr[k], 10);
-                            if (isNaN(availVersionArr[k])) { availVersionArr[k] = -1; }
-                        }
-
-                        if (availVersionArr[0] > instVersionArr[0]) {
-                            updateAvailable = true;
-                        } else if (availVersionArr[0] == instVersionArr[0]) {
-                            if (availVersionArr[1] > instVersionArr[1]) {
-                                updateAvailable = true;
-                            } else if (availVersionArr[1] == instVersionArr[1]) {
-                                if (availVersionArr[2] > instVersionArr[2]) {
-                                    updateAvailable = true;
-                                }
-                            }
-                        }
+                        var updateAvailable = compareVersion(instVersion, availVersion);
 
                         if (updateAvailable) {
                             $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' value='update'/>&nbsp;");
@@ -691,10 +712,12 @@ $(document).ready(function () {
 
 
     var addonInstall = {
-        "dashui":       "https://github.com/hobbyquaker/DashUI/archive/master.zip",
-        "yahui":        "https://github.com/hobbyquaker/yahui/archive/master.zip",
-        "eventlist":    "https://github.com/GermanBluefox/CCU-IO.Eventlist/archive/master.zip",
-        "charts":       "https://github.com/hobbyquaker/CCU-IO-Highcharts/archive/master.zip"
+        "dashui":           "https://github.com/hobbyquaker/DashUI/archive/master.zip",
+        "yahui":            "https://github.com/hobbyquaker/yahui/archive/master.zip",
+        "eventlist":        "https://github.com/GermanBluefox/CCU-IO.Eventlist/archive/master.zip",
+        "charts":           "https://github.com/hobbyquaker/CCU-IO-Highcharts/archive/master.zip",
+        "ScriptGUI":        "https://github.com/smiling-Jack/CCU-IO.ScriptGUI/archive/master.zip",
+        "ScriptEditor":     "https://github.com/smiling-Jack/CCU-IO.ScriptEditor/archive/master.zip"
     };
 
     $("#install_addon").button().click(function () {
@@ -907,7 +930,7 @@ $(document).ready(function () {
         }
         var settingsWithoutAdapters = JSON.parse(JSON.stringify(ccuIoSettings));
         delete settingsWithoutAdapters.adapters;
-        socket.emit("writeFile", "io-settings.json", ccuIoSettings, function () {
+        socket.emit("writeFile", "io-settings.json", settingsWithoutAdapters, function () {
             alert("CCU.IO settings saved. Please restart CCU.IO");
         });
     }
