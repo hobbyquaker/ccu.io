@@ -32,6 +32,7 @@ var scriptEngine = {
     schedules: [],
     poSettings: {},
     emailTransport: {},
+
     init: function () {
         var that = this;
         if (that.settings.ioListenPort) {
@@ -755,6 +756,21 @@ function setState(id, val, callback) {
     });
 }
 
+function getState(id, dpType) {
+    var dp = datapoints[findDatapoint(id, dpType)];
+    if (dp[0]) {
+        return dp[0];
+    } else {
+        return undefined;
+    }
+}
+
+
+function getTimestamp(id) {
+    return datapoints[id][0];
+}
+
+
 function executeProgram(id, callback) {
     scriptEngine.socket.emit("executeProgram", id, function () {
         if (callback) {
@@ -810,6 +826,41 @@ function email(obj) {
     } else {
         scriptEngine.logger.error("script-engine email adapter not enabled");
     }
+}
+
+function findDatapoint(needle, hssdp) {
+    if (!datapoints[needle]) {
+        if (regaIndex.Name[needle]) {
+            // Get by Name
+            needle = regaIndex.Name[needle][0];
+            if (hssdp) {
+                // Get by Name and Datapoint
+                if (regaObjects[needle].DPs) {
+                    return regaObjects[needle].DPs[hssdp];
+                } else {
+                    return false;
+                }
+            }
+        } else if (regaIndex.Address[needle]) {
+            needle = regaIndex.Address[needle][0];
+            if (hssdp) {
+                // Get by Channel-Address and Datapoint
+                if (regaObjects[needle].DPs && regaObjects[needle].DPs[hssdp]) {
+                    needle = regaObjects[needle].DPs[hssdp];
+                }
+            }
+        } else if (needle.match(/[a-zA-Z-]+\.[0-9A-Za-z-]+:[0-9]+\.[A-Z_]+/)) {
+            // Get by full BidCos-Address
+            addrArr = needle.split(".");
+            if (regaIndex.Address[addrArr[1]]) {
+                needle = regaObjects[regaIndex.Address[addrArr[1]]].DPs[addArr[2]];
+            }
+        } else {
+            return false;
+        }
+    }
+    return needle;
+
 }
 
 process.on('SIGINT', function () {
