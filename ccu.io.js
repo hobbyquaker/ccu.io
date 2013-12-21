@@ -1258,7 +1258,7 @@ function initSocketIO(_io) {
 
         socket.on('updateAddon', function (url, name) {
             var path = __dirname + "/update-addon.js";
-            logger.info("ccu.io        starting "+path);
+            logger.info("ccu.io        starting "+path+" "+url+" "+name);
             var updateProcess = childProcess.fork(path, [url, name]);
             updateProcess.on("close", function (code) {
                 if (code == 0) {
@@ -1272,6 +1272,23 @@ function initSocketIO(_io) {
                 if (ioSsl) {
                     ioSsl.sockets.emit("ioMessage", "Update "+name+msg);
                 }
+            });
+        });
+
+        socket.on('updateSelf', function (url, name) {
+            var path = __dirname + "/update-self.js";
+            settings.updateSelfRunning = true;
+            logger.info("ccu.io        starting "+path);
+            var updateProcess = childProcess.fork(path);
+            updateProcess.on("close", function (code) {
+                if (code == 0) {
+                    logger.info("ccu.io        update done. restarting...");
+                    settings.updateSelfRunning = false;
+                    childProcess.fork(__dirname+"/ccu.io-server.js", ["restart"]);
+                } else {
+                    logger.error("ccu.io        update failed.");
+                }
+
             });
         });
 
