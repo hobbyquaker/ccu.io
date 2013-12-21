@@ -178,12 +178,13 @@ $(document).ready(function () {
         $("input#update_self_check").click(function () {
             $("#update_self_check").attr("disabled", true);
             var url = "http://ccu.io/version.php";
-            alert(url);
             socket.emit("getUrl", url, function(res) {
                 $("#update_self_check").hide();
                 $(".ccu-io-availversion").html(res);
                 if (compareVersion(ccuIoSettings.version, res)) {
-                    $("#update_self").show();
+                    $("#update_self").show().click(function () {
+                        socket.emit("updateSelf");
+                    });
                 }
             });
         });
