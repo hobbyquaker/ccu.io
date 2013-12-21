@@ -3,6 +3,7 @@
 		"settings": {
 		"firstId": 80100,
 		"preview": 2,
+		"runEveryMinutes": 30,
 		"defURL": "http://XXXXXX"
 		}
 }	
