@@ -1275,18 +1275,36 @@ function initSocketIO(_io) {
             });
         });
 
-        socket.on('updateSelf', function (url, name) {
+        socket.on('updateSelf', function () {
             var path = __dirname + "/update-self.js";
             settings.updateSelfRunning = true;
             logger.info("ccu.io        starting "+path);
             var updateProcess = childProcess.fork(path);
+            if (io) {
+                io.sockets.emit("ioMessage", "Update started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Update started. Please be patient...");
+            }
             updateProcess.on("close", function (code) {
+                settings.updateSelfRunning = false;
                 if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Update done. Restarting...");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Update done. Restarting...");
+                    }
                     logger.info("ccu.io        update done. restarting...");
-                    settings.updateSelfRunning = false;
                     childProcess.fork(__dirname+"/ccu.io-server.js", ["restart"]);
                 } else {
                     logger.error("ccu.io        update failed.");
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Error: update failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Error: update failed.");
+                    }
                 }
 
             });
