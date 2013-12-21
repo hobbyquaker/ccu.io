@@ -32,7 +32,7 @@ settings.regahss.metaScripts = [
 
 
 
-var fs = require('fs'),
+var fs =        require('fs'),
     logger =    require(__dirname+'/logger.js'),
     binrpc =    require(__dirname+"/binrpc.js"),
     rega =      require(__dirname+"/rega.js"),
@@ -42,12 +42,12 @@ var fs = require('fs'),
     crypto =    require('crypto'),
     request =   require('request'),
     childProcess = require('child_process'),
+    url =       require('url'),
+    socketio =  require('socket.io'),
     app,
     appSsl,
-    url = require('url'),
     server,
     serverSsl,
-    socketio =  require('socket.io'),
     io,
     ioSsl,
     devlogCache = [],
@@ -964,6 +964,30 @@ function initExtensions() {
     }
 }
 
+function copyFile(source, target, cb) {
+	var cbCalled = false;
+
+	var rd = fs.createReadStream(source);
+	rd.on("error", function(err) {
+		done(err);
+	});
+	var wr = fs.createWriteStream(target);
+	wr.on("error", function(err) {
+		done(err);
+	});
+	wr.on("close", function(ex) {
+		done();
+	});
+	rd.pipe(wr);
+
+	function done(err) {
+		if (!cbCalled) {
+		  cb(err);
+		  cbCalled = true;
+		}
+	}
+}
+
 function initWebserver() {
     if (app) {
         app.use('/', express.static(__dirname + '/www'));
@@ -1027,9 +1051,23 @@ function initWebserver() {
 
     }
     webserverUp = true;
-
-
-
+	
+	// Copy dashui-user.css from datastore to www/dashui/css
+	// If dashui installed
+	if (fs.existsSync(__dirname+"/www/dashui/css")) {
+		if (fs.existsSync(settings.datastorePath + "dashui-user.css")) {
+			copyFile (settings.datastorePath + "dashui-user.css", __dirname+"/www/dashui/css/dashui-user.css", function (e){
+				if (e) {
+					logger.error("webserver     Cannot copy user css file: " + e);
+				}
+			});
+		}
+		else {
+			// Create empty file
+			var stream = fs.createWriteStream(__dirname+"/www/dashui/css/dashui-user.css");
+			stream.end();
+		}
+	}
 }
 
 function formatTimestamp() {

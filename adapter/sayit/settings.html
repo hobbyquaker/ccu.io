@@ -36,9 +36,49 @@
         <td>FTP password:</td>
         <td><input id="sayit_settings_ftp_pass" type="text" /></td>
     </tr>
+</table><br>
+<table style="font-size: 12px; border: 1px solid black" id="sayit_table">
+    <tr>
+        <th style="border: 1px solid black">Object ID</th>
+        <th style="border: 1px solid black">Name</th>
+        <th style="border: 1px solid black">Browser</th>
+        <th style="border: 1px solid black">MP24</th>
+        <th style="border: 1px solid black">MP24+FTP</th>
+        <th style="border: 1px solid black">System</th>
+		<th></th>
+    </tr>
 </table>
+<input type="button" id="add_variable" value="add variable"/>
+<p>
+    <h1>Hilfe</h1>
+        SayIt Adapter kann den Text in die Sprache umwandeln. Man muss mit dem Skript die eingestellte Variable beschreiben, damit man was hören kann.<br>
+        Z.B. falls die Variable 72902 ist, dann kann man die mit dem Text "Sag es im Browser" beschreiben.
+        Für jede Variable kann es eingestellt sein, wo die abgespielt wird. Momentan sind folgende Ausgänge unterstützt:
+        <ul>
+            <li><b>Browser</b> - der Text wird im Browser abgespiel. Fast in allen modernen Desktop-Browsern und fast in <span style="color:red">keinem</span> mobilen Browser unterstützt.</li>
+            <li><b><a href="http://www.home-24.net/index.php?app=media">Home24- MediaPlayer</a></b> - der Text wird am Gerät, wo Home24 - MediaPlayer installiert ist, abgespielt. Dabei wird das Text2Speech-Engine von dem Gerät (Tablet) benutzt. Port ist fest auf 50000 eingestellt.</li>
+            <li><b><a href="https://play.google.com/store/apps/details?id=lutey.FTPServer">Home24 - MediaPlayer und FTP Server</a></b> - der Text wird am Gerät, wo Home24 - MediaPlayer installiert ist, abgespielt. Dabei wird das bessere Text2Speech-Engine vom Google oder Acapela benutzt. Generierte MP3 Datei wird über FTP zum Gerät kopiert und dann mit Home24 - MediaPlayer abgespielt.
+                Es müss nur in beiden Apps das gleiche Home-Verzeichnis eingestellen sein. (Z.B. Root-Verzeichnis von "sd card" benutzen).</li>
+            <li><b>System</b> - der Text wird am CCU.IO Server abgespielt. Es sind folgende OS unterstützt: Windows, linux</li>
+        </ul>
+        <br>Um abspielen auf dem Raspberry PI zu ermöglichen, sollte man einmal aufrufen "sudo apt-get -y install mpg321" um mpg321 zu installieren.
+        <br>Mit "amixer cset numid=3 1" kann man Audio-Output von HDMI auf analog umstellen.
+        <br>Man kann auch andere mp3 Dateien abspielen in dem man die Variable mit dem Dateiname beschreibt. (z.B. "dashui/img/door-bell.mp3")
 
+</p>
 <script type="text/javascript">
+	var sayit_options = {
+		"browser": "Browser",
+		"mp24"   : "MediaPlayer24",
+		"mp24ftp": "MediaPlayer24+FTP",
+		"system" : "System"
+	};
+	var sayit_count = 10;
+	
+    function storeSettings () {
+        console.log (JSON.stringify(currentAdapterSettings));
+        updateAdapterSettings();
+    }
 
     if (currentAdapterSettings.enabled) {
         $("#sayit_enabled option[value='false']").removeAttr("selected");
@@ -50,42 +90,199 @@
 
     $("#sayit_enabled").change(function () {
         currentAdapterSettings.enabled = ($("#sayit_enabled option:selected").val() == "false" ? false : true);
-        updateAdapterSettings();
+        storeSettings();
     });
 
     $("#sayit_settings_language [value='"+currentAdapterSettings.settings.language+"']").attr("selected", "selected");
 
     $("#sayit_settings_language").change(function () {
         currentAdapterSettings.settings.language = $("#sayit_settings_language").val();
-        updateAdapterSettings();
+        storeSettings();
     });
 
     $("#sayit_settings_mediaplayer").val(currentAdapterSettings.settings.mediaPlayer || "");
 
     $("#sayit_settings_mediaplayer").change(function () {
         currentAdapterSettings.settings.mediaPlayer = $("#sayit_settings_mediaplayer").val();
-        updateAdapterSettings();
+        storeSettings();
     }).keyup(function() { $(this).trigger("change")});
 
     $("#sayit_settings_ftp_port").val(currentAdapterSettings.settings.ftp_port || "");
 
     $("#sayit_settings_ftp_port").change(function () {
         currentAdapterSettings.settings.ftp_port = $("#sayit_settings_ftp_port").val();
-        updateAdapterSettings();
+        storeSettings();
     }).keyup(function() { $(this).trigger("change")});
 
     $("#sayit_settings_ftp_login").val(currentAdapterSettings.settings.ftp_user || "");
 
     $("#sayit_settings_ftp_login").change(function () {
         currentAdapterSettings.settings.ftp_user = $("#sayit_settings_ftp_login").val();
-        updateAdapterSettings();
+        storeSettings();
     }).keyup(function() { $(this).trigger("change")});
 
     $("#sayit_settings_ftp_pass").val(currentAdapterSettings.settings.ftp_pass || "");
 
     $("#sayit_settings_ftp_pass").change(function () {
         currentAdapterSettings.settings.ftp_pass = $("#sayit_settings_ftp_pass").val();
-        updateAdapterSettings();
+        storeSettings();
     }).keyup(function() { $(this).trigger("change")});
+	
+    $("#add_variable").button().click(function () {
+        // Find free id
+        var i = 1;
+        while (currentAdapterSettings.settings.vars["_"+i]) i++;
+		
+		var id = currentAdapterSettings.settings.firstId + 2;
+		
+		var found = false;
+		do {
+			found = false;
+			for (var z in currentAdapterSettings.settings.vars) {
+				if (currentAdapterSettings.settings.vars[z].id == id) {
+					found = true;
+					id++;
+				}
+			}
+        } while (found);
+		
+		
+        currentAdapterSettings.settings.vars["_"+i] = {id: id, name:""+id, options:"all"};
+        storeSettings();
+		
+		sayitRefreshVariables ();
+    });	
+	
+	function showVariable (id) {
+		var sText = '<tr class="sayit-optvariable">';
+		sText += '<td style="border: 1px solid black"><select id="sayit_id_'  +id+'" data-sayit-variable="'+id+'" type="text">';
+		for (var i = currentAdapterSettings.settings.firstId + 2; i < currentAdapterSettings.settings.firstId + 2 + sayit_count; i++) {
+			sText += "<option value='"+ i +"' "+ (i == currentAdapterSettings.settings.vars[id].id ? "selected" : "") +">"+ i +"</option>";
+		}
+		sText += '</select></td>';
+		sText += '<td style="border: 1px solid black"><input id="sayit_name_'+id+'" data-sayit-variable="'+id+'" type="text" value="'+(currentAdapterSettings.settings.vars[id].name || "")+'"/></td>';	
+		
+		var options = currentAdapterSettings.settings.vars[id].options.split(',');
+		for (var t in sayit_options) {
+			var found = false;
+			for (var u = 0; u < options.length; u++) {
+				if (options[u] == t || options[0] == "all") {
+					found = true;
+					break;
+				}
+			}
+		
+			sText += "<td style='border: 1px solid black; text-align: center'><input type='checkbox' id='sayit_option_"+t+"_"+id+"' "+(found ? "checked": "")+" data-sayit-variable='"+id+"' data-sayit-option='"+t+"'/></td>";
+		}
+        sText += '<td style="border: 1px solid black"><input data-sayit-variable="'+id+'" type="button" value="remove variable" class="sayit-remove"/></td>';
+		sText += "</tr>";
 
+		$("#sayit_table").append(sText);
+
+        $(".sayit-remove:last").button().click(function () {
+            sayitRemoveVariabe($(this).attr("data-sayit-variable"));
+        });
+        $("#sayit_name_"+id).change(function () {
+            currentAdapterSettings.settings.vars[$(this).attr('data-sayit-variable')].name = $(this).val();
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#sayit_id_"+id).change(function () {
+			// check if this id is unique
+			var isConflict = false;
+			for (var z in currentAdapterSettings.settings.vars) {
+				if (z == $(this).attr('data-sayit-variable')) continue;
+				if (currentAdapterSettings.settings.vars[z].id == $(this).val()) {
+					isConflict = true;
+				}
+			}
+			
+			if (!isConflict) {
+				currentAdapterSettings.settings.vars[$(this).attr('data-sayit-variable')].id = $(this).val();
+			}
+			
+			
+			
+            storeSettings();
+			if (isConflict) {
+				sayitRefreshVariables ();
+			}
+        }).keyup(function() { $(this).trigger("change")});
+
+		for (var t in sayit_options) {
+			$("#sayit_option_"+t+"_"+id).change(function () {
+				var opts = currentAdapterSettings.settings.vars[$(this).attr('data-sayit-variable')].options;
+				var options = opts.split(',');
+				if (this.checked) {
+					var found = false;
+					for (var k = 0; k < options.length; k++) {
+						if (options[k] == $(this).attr('data-sayit-option')) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						options[options.length] = $(this).attr('data-sayit-option');
+						var c = 0;
+						for (var t in sayit_options) {
+							c++;
+						}
+						if (options.length == c) {
+							options = ['all'];
+						}
+					}
+					opts = options.join(',');
+				} 
+				else {
+					opts = "";
+					if (options[0] == 'all') {
+						options = [];
+						for (var t in sayit_options) {
+							options[options.length] = t;
+						}
+					}
+					
+					for (var k = 0; k < options.length; k++) {
+						if (options[k] == 'all' || options[k] == $(this).attr('data-sayit-option')) {
+							continue;
+						}
+						opts += ((opts == "") ? "" : ",") + options[k];
+					}
+				}
+				currentAdapterSettings.settings.vars[$(this).attr('data-sayit-variable')].options = opts;
+				storeSettings();
+			});
+		}
+
+        $(".sayit-remove").button().click(function () {
+            var j = $(this).attr("data-sayit-variable");
+            sayitRemoveVariabe(j);
+        });		
+    }
+	
+    function sayitRemoveVariabe(j) {
+        delete currentAdapterSettings.settings.vars[j];
+        storeSettings();
+        sayitRefreshVariables();
+    }
+	
+	function sayitRefreshVariables() {
+		var obj;
+		while ($('.sayit-optvariable:first').length) {
+			$('.sayit-optvariable:first').remove ();
+		}
+	
+        var i = 0;
+		for (var id in currentAdapterSettings.settings.vars) {
+			showVariable (id);
+			i++;
+        }
+		if (i < sayit_count)
+			$('#add_variable').show ();
+		else
+			$('#add_variable').hide ();
+    }
+	
+	sayitRefreshVariables ();
+	
 </script>

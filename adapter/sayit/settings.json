@@ -5,6 +5,9 @@
 		"language": "de",
         "ftp_port": "",
         "ftp_user": "",
-        "ftp_pass": ""
+        "ftp_pass": "",
+		"vars" : {
+			"_1": {"id": "72902", "name": "All", "options": "all"}
+		}
     }
 }
