@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.4*
+*aktuelle Version: 1.0.5*
 
 ## Dokumentation
 
@@ -10,7 +10,6 @@ siehe http://ccu.io/
 
 ## Todo/Roadmap
 
-* Methode getState für Script-Engine
 * Script-Engine Addins
 * _persistent Attribut - Werte speichern
 * RPI Adapter: 1-Wire Unterstützung
@@ -25,6 +24,13 @@ siehe http://ccu.io/
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 1.0.5
+* (Hobbyquaker) Neue Methode touchFile
+* (Hobbyquaker) rpi Adapter: fixed settings.json - added firstId
+* (Bluefox) SayIt Adapter: Support of mixer settings for raspberry PI
+* (Bluefox) SayIt Adapter: Support of new config concept and support of playing sound on Windows and linux servers.
+
 
 ### 1.0.4
 * (Hobbyquaker) CCU.IO kann sich nun selbst updaten
