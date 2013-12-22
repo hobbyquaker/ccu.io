@@ -13,14 +13,21 @@
     <tr>
         <td>Language:</td>
         <td><select id="sayit_settings_language">
-            <option value="en">English</option>
-            <option value="de">Deutsch</option>
-            <option value="ru">Русский</option>
-            <option value="it">Italiano</option>
-            <option value="es">Espaniol</option>
+            <option value="en">Google-English</option>
+            <option value="de">Google-Deutsch</option>
+            <option value="ru">Google-Русский</option>
+            <option value="it">Google-Italiano</option>
+            <option value="es">Google-Espaniol</option>
         </select></td>
     </tr>
     <tr>
+        <td>Output on Raspberry Pi:</td>
+        <td><select id="sayit_settings_rasp_output">
+            <option value="0">Auto</option>
+            <option value="1">Analog</option>
+            <option value="2">HDMI</option>
+        </select></td>
+    </tr>    <tr>
         <td>Home24-Mediaplayer IP:</td>
         <td><input id="sayit_settings_mediaplayer" type="text" /></td>
     </tr>
@@ -97,6 +104,13 @@
 
     $("#sayit_settings_language").change(function () {
         currentAdapterSettings.settings.language = $("#sayit_settings_language").val();
+        storeSettings();
+    });
+
+    $("#sayit_settings_rasp_output [value='"+(currentAdapterSettings.settings.rasp_output || 0)+"']").attr("selected", "selected");
+
+    $("#sayit_settings_rasp_output").change(function () {
+        currentAdapterSettings.settings.rasp_output = $("#sayit_settings_rasp_output").val();
         storeSettings();
     });
 

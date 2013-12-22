@@ -389,6 +389,7 @@ createObject(sayitSettings.firstId + 1, {
     "ValueSubType": 29,
     "ValueList": ""
 });
+var isMixerInitialized = false;
 for (var id in sayitSettings.vars) {
     createObject(sayitSettings.vars[id].id, {
 		"Name": "SayIt."+sayitSettings.vars[id].name,
@@ -400,5 +401,17 @@ for (var id in sayitSettings.vars) {
 		"ValueType": 16,
 		"ValueSubType": 29,
 		"ValueList": ""
-	});	
+	});
+    // Set valid output for raspberry PI. If you have other hardware under linux, just leave this value on "Auto"
+    if (!isMixerInitialized &&
+        (sayitSettings.vars[id].options == "all" || sayitSettings.vars[id].options.indexOf("system") != -1)) {
+        isMixerInitialized = true;
+        var p = os.platform();
+        var ls = null;
+
+        if (p == 'linux' && sayitSettings.rasp_output && sayitSettings.rasp_output != "0") {
+            //linux
+            ls = cp.spawn('amixer', ["cset", "numid=3", sayitSettings.rasp_output]);
+        }
+    }
 }
