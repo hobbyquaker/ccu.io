@@ -1,10 +1,14 @@
 {
     "enabled": false,
     "settings": {
-		"firstId":  72900,
-		"language": "de",
-        "ftp_port": "",
-        "ftp_user": "",
-        "ftp_pass": ""
+		"firstId":     72900,
+		"language":    "de",
+        "ftp_port":    "",
+        "ftp_user":    "",
+        "ftp_pass":    "",
+        "rasp_output": "0",
+		"vars" : {
+			"_1": {"id": "72902", "name": "All", "options": "all"}
+		}
     }
 }
