@@ -1431,6 +1431,15 @@ function initSocketIO(_io) {
             });
         });
 
+        socket.on('touchFile', function (name, callback) {
+            logger.verbose("socket.io <-- touchFile "+name);
+            if (!fs.existsSync(__dirname+"/"+name)) {
+                logger.info("ccu.io        creating empty file "+name);
+                var stream = fs.createWriteStream(__dirname+"/"+name);
+                stream.end();
+            }
+        });
+
         socket.on('delRawFile', function (name, callback) {
             logger.info("socket.io <-- delRawFile "+name);
 
