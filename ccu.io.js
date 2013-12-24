@@ -424,8 +424,9 @@ function pollRega() {
             return false;
         }
         var data = JSON.parse(data);
-        var val;
         for (id in data) {
+            var val;
+
             if (settings.logging.enabled) {
                 var ts = Math.round((new Date()).getTime() / 1000);
                 if (typeof data[id][0] == "string") {
@@ -435,7 +436,7 @@ function pollRega() {
                 }
 
                 if (settings.logging.varChangeOnly && notFirstVarUpdate) {
-                    if (datapoints[id][0] != val) {
+                    if (datapoints[id][0] != val || !datapoints[id][2]) {
                         devLog(ts, id, val);
                     }
                 } else {
