@@ -12,6 +12,17 @@ var graphite = LazySocket.createConnection(adapterSettings.port, adapterSettings
 var logger =    require(__dirname+'/../../logger.js'),
     io =        require('socket.io-client');
 
+var nameCache = {};
+
+var startWait = true;
+setTimeout(function() {
+    socket.emit('getObjects', function(data) {
+        logger.info("adapter graphite fetched regaObjects");
+        regaObjects = data;
+        startWait = false;
+        logger.info("adapter graphite started");
+    });
+}, 45000);
 
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
@@ -28,9 +39,6 @@ if (settings.ioListenPort) {
 
 var regaObjects;
 
-socket.emit('getObjects', function(data) {
-    regaObjects = data;
-});
 
 socket.on('connect', function () {
     logger.info("adapter graphite connected to ccu.io");
@@ -41,7 +49,7 @@ socket.on('disconnect', function () {
 });
 
 socket.on('event', function (obj) {
-    if (!obj || !obj[0]) {
+    if (startWait || !obj || !obj[0]) {
         return;
     }
     var name = adapterSettings.prefix+".";
@@ -51,30 +59,41 @@ socket.on('event', function (obj) {
         val = 1;
     } else if (val === "false" || val === false) {
         val = 0;
-    } else if (isNaN(val)) {
+    } else if (isNaN(val) || val === "") {
         return;
     }
     var ts = obj[2];
 
-    if (regaObjects[id] && regaObjects[id].Name) {
-        if (adapterSettings.logNames) {
-            if (regaObjects[id].Parent) {
-                name = name + regaObjects[regaObjects[id].Parent].Name;
-                var dpParts = regaObjects[id].Name.split(".");
-                name = name + "."+dpParts[2];
+    if (nameCache[id]) {
+        name = nameCache[id];
+    } else {
+
+        if (regaObjects[id] && regaObjects[id].Name) {
+            if (adapterSettings.logNames) {
+                if (regaObjects[id].Parent) {
+                    if (adapterSettings.logDeviceNames && regaObjects[regaObjects[id].Parent].Parent) {
+                        name = name + regaObjects[regaObjects[regaObjects[id].Parent].Parent].Name+".";
+                    }
+                    name = name + regaObjects[regaObjects[id].Parent].Name;
+                    var dpParts = regaObjects[id].Name.split(".");
+                    name = name + "."+dpParts[2];
+                } else {
+                    name = name + regaObjects[id].Name;
+                }
             } else {
                 name = name + regaObjects[id].Name;
             }
         } else {
-            name = name + regaObjects[id].Name;
+            name = name + id;
         }
-    } else {
-        name = name + id;
+
+        name = name.replace(/\/| /g, "_").toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss");
+        nameCache[id] = name;
+
     }
 
-    name = name.replace(/\/| /g, "_").toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss");
-
     var sendData = name+" "+val+" "+Math.floor((new Date(ts)).getTime() / 1000)+ "\n";
+    //console.log(sendData);
     graphite.write(sendData, 'utf-8', function(err) {});
 
 });
