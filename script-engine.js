@@ -758,7 +758,7 @@ function setState(id, val, callback) {
 
 function getState(id, dpType) {
     var dp = datapoints[findDatapoint(id, dpType)];
-    if (dp[0]) {
+    if (dp && dp[0]) {
         return dp[0];
     } else {
         return undefined;
@@ -849,7 +849,7 @@ function findDatapoint(needle, hssdp) {
                     needle = regaObjects[needle].DPs[hssdp];
                 }
             }
-        } else if (needle.match(/[a-zA-Z-]+\.[0-9A-Za-z-]+:[0-9]+\.[A-Z_]+/)) {
+        } else if (needle.toString().match(/[a-zA-Z-]+\.[0-9A-Za-z-]+:[0-9]+\.[A-Z_]+/)) {
             // Get by full BidCos-Address
             addrArr = needle.split(".");
             if (regaIndex.Address[addrArr[1]]) {
