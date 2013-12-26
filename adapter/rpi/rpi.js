@@ -10,9 +10,9 @@ var adapterSettings = settings.adapters.rpi.settings;
 var logger =    require(__dirname+'/../../logger.js'),
     io =        require('socket.io-client'),
     fs =        require("fs");
-var gpio = require("gpio");
-var gpioIDs = {};
-var gpioObjs = {};
+var gpio =      require("gpio");
+var gpioIDs =   {};
+var gpioObjs =  {};
 
 if (settings.ioListenPort) {
     var socket = io.connect(settings.binrpc.listenIp, {
