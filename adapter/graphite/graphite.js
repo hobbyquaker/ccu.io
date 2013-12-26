@@ -22,7 +22,7 @@ setTimeout(function() {
         startWait = false;
         logger.info("adapter graphite started");
     });
-}, 45000);
+}, 60000);
 
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
@@ -94,9 +94,21 @@ socket.on('event', function (obj) {
 
     var sendData = name+" "+val+" "+Math.floor((new Date(ts)).getTime() / 1000)+ "\n";
     //console.log(sendData);
-    graphite.write(sendData, 'utf-8', function(err) {});
+    queue.push(sendData);
+
 
 });
+
+var queue = [];
+
+function popQueue() {
+    if (queue.length > 0) {
+        var sendData = queue.pop();
+        graphite.write(sendData, 'utf-8', function(err) {});
+    }
+}
+
+setInterval(popQueue, 100);
 
 function stop() {
     logger.info("adapter graphite terminating");
