@@ -191,14 +191,14 @@ $(document).ready(function () {
 
         setTimeout(function() {
             $("input.updateCheck").click(function () {
-                $(this).attr("disabled", true);
                 var $this = $(this);
-                var url = $(this).attr("data-update-url");
-                var name = $(this).attr("data-update-name");
-                var id = $(this).attr("id");
+                $this.attr("disabled", true);
+                var url = $this.attr("data-update-url");
+                var name = $this.attr("data-update-name");
+                var id = $this.attr("id");
                 socket.emit("getUrl", url, function(res) {
                     try {
-                        obj = JSON.parse(res);
+                        var obj = JSON.parse(res);
                         $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
 
                         var instVersion = $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html();
