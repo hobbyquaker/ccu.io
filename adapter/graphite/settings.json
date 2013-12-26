@@ -1,0 +1,9 @@
+{
+    enabled: false,
+    settings: {
+        host: "127.0.0.1",
+        port: 2003,
+        logNames: true,
+        prefix: "ccu_io"
+    }
+}

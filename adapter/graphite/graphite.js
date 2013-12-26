@@ -1,0 +1,95 @@
+var settings = require(__dirname+'/../../settings.js');
+
+if (!settings.adapters.graphite || !settings.adapters.graphite.enabled) {
+    process.exit();
+}
+
+var adapterSettings = settings.adapters.graphite.settings;
+
+var LazySocket = require('lazy-socket');
+var graphite = LazySocket.createConnection(adapterSettings.port, adapterSettings.host);
+
+var logger =    require(__dirname+'/../../logger.js'),
+    io =        require('socket.io-client');
+
+
+if (settings.ioListenPort) {
+    var socket = io.connect("127.0.0.1", {
+        port: settings.ioListenPort
+    });
+} else if (settings.ioListenPortSsl) {
+    var socket = io.connect("127.0.0.1", {
+        port: settings.ioListenPortSsl,
+        secure: true,
+    });
+} else {
+    process.exit();
+}
+
+var regaObjects;
+
+socket.emit('getObjects', function(data) {
+    regaObjects = data;
+});
+
+socket.on('connect', function () {
+    logger.info("adapter graphite connected to ccu.io");
+});
+
+socket.on('disconnect', function () {
+    logger.info("adapter graphite disconnected from ccu.io");
+});
+
+socket.on('event', function (obj) {
+    if (!obj || !obj[0]) {
+        return;
+    }
+    var name = adapterSettings.prefix+".";
+    var id = obj[0];
+    var val = obj[1];
+    if (val === "true" || val === true) {
+        val = 1;
+    } else if (val === "false" || val === false) {
+        val = 0;
+    } else if (isNaN(val)) {
+        return;
+    }
+    var ts = obj[2];
+
+    if (regaObjects[id] && regaObjects[id].Name) {
+        if (adapterSettings.logNames) {
+            if (regaObjects[id].Parent) {
+                name = name + regaObjects[regaObjects[id].Parent].Name;
+                var dpParts = regaObjects[id].Name.split(".");
+                name = name + "."+dpParts[2];
+            } else {
+                name = name + regaObjects[id].Name;
+            }
+        } else {
+            name = name + regaObjects[id].Name;
+        }
+    } else {
+        name = name + id;
+    }
+
+    name = name.replace(/\/| /g, "_").toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss");
+
+    var sendData = name+" "+val+" "+Math.floor((new Date(ts)).getTime() / 1000)+ "\n";
+    graphite.write(sendData, 'utf-8', function(err) {});
+
+});
+
+function stop() {
+    logger.info("adapter graphite terminating");
+    setTimeout(function () {
+        process.exit();
+    }, 250);
+}
+
+process.on('SIGINT', function () {
+    stop();
+});
+
+process.on('SIGTERM', function () {
+    stop();
+});
