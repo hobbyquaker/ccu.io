@@ -151,8 +151,7 @@ var socketlist = [],
     homematic,
     stringtable = {},
     datapoints = {},
-    regaObjectsPersistent = loadPersistentObjects(),
-    regaObjects = regaObjectsPersistent,
+    regaObjects = {},
     regaIndex = {
         Name: {},
         Address: {},
@@ -174,6 +173,8 @@ var ignoreNextUpdate = [];
 logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
 logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
 
+loadPersistentObjects();
+loadDatapoints();
 initWebserver();
 
 var regahss = new rega({
@@ -1689,11 +1690,6 @@ function initSocketIO(_io) {
 
             regaObjects[id] = obj;
 
-            if (obj._persistent) {
-                regaObjectsPersistent[id] = obj;
-                savePersistentObjects();
-            }
-
             if (callback) {
                 callback();
             }
@@ -1813,6 +1809,8 @@ function stop() {
     if (homematic && initsDone) {
         homematic.stopInits();
     }
+    saveDatapoints();
+    savePersistentObjects();
     try {
         socketlist.forEach(function(socket) {
             logger.info("socket.io --> disconnecting socket");
@@ -1932,18 +1930,46 @@ function devLog(ts, id, val) {
 }
 
 function savePersistentObjects() {
-    var name = "io-persistent.json";
-    var content = JSON.stringify(regaObjectsPersistent);
-    logger.verbose("socket.io <-- writeFile "+name+" "+content);
+    var name = "io-persistent-objs.json";
+    var content = JSON.parse(JSON.stringify(regaObjects));
+    for (var id in content) {
+        if (parseInt(id, 10) < 65536 || !regaObjects[id]._persistent) {
+            delete content[id];
+        }
+    }
+    logger.info("ccu.io        saving persistent objects");
     fs.writeFile(settings.datastorePath+name, content);
 }
 function loadPersistentObjects() {
-    var objects;
     try {
-        var x = fs.readFileSync(settings.datastorePath+"io-persistent.json");
-        objects = JSON.parse(x);
+        var x = fs.readFileSync(settings.datastorePath+"io-persistent-objs.json");
+        regaObjects = JSON.parse(x);
+        logger.info("ccu.io        loaded persistent objects");
+        return true;
     } catch (e) {
-        objects = {};
+        return false;
     }
-    return objects;
+}
+function saveDatapoints() {
+    var name = "io-persistent-dps.json";
+    var content = JSON.parse(JSON.stringify(datapoints));
+    for (var id in content) {
+        if (parseInt(id, 10) < 65536) {
+            delete content[id];
+        }
+    }
+    logger.info("ccu.io        saving datapoints");
+    fs.writeFile(settings.datastorePath+name, JSON.stringify(content));
+}
+function loadDatapoints() {
+    var dps;
+    try {
+        var x = fs.readFileSync(settings.datastorePath+"io-persistent-dps.json");
+        dps = JSON.parse(x);
+        datapoints = dps;
+        logger.info("ccu.io        loaded datapoints");
+        return true
+    } catch (e) {
+        return false;
+    }
 }
