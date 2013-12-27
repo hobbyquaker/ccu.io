@@ -1575,6 +1575,9 @@ function initSocketIO(_io) {
             }
             if (obj.rooms) {
                 for (var i = 0; i < obj.rooms.length; i++) {
+                    if (obj.rooms[i] === "") {
+                        continue;
+                    }
                     var roomId;
                     if (regaIndex.ENUM_ROOMS.indexOf(obj.rooms[i]) != -1) {
                         roomId = obj.rooms[i];
@@ -1604,6 +1607,9 @@ function initSocketIO(_io) {
             }
             if (obj.funcs) {
                 for (var i = 0; i < obj.funcs.length; i++) {
+                    if (obj.funcs[i] === "") {
+                        continue;
+                    }
                     var funcId;
                     if (regaIndex.ENUM_FUNCTIONS.indexOf(obj.funcs[i]) != -1) {
                         funcId = obj.funcs[i];
@@ -1633,6 +1639,9 @@ function initSocketIO(_io) {
             }
             if (obj.favs) {
                 for (var i = 0; i < obj.favs.length; i++) {
+                    if (obj.favs[i] === "") {
+                        continue;
+                    }
                     var favId;
                     if (regaIndex.FAVORITE.indexOf(obj.favs[i]) != -1) {
                         favId = obj.favs[i];
@@ -1685,7 +1694,7 @@ function initSocketIO(_io) {
                     obj.ValueUnit = "";
                 }
                 logger.verbose("adding dp "+id);
-                datapoints[id] = [obj.Value, formatTimestamp(), true];
+                datapoints[id] = [obj.Value, formatTimestamp()];
             }
 
             regaObjects[id] = obj;
@@ -1933,12 +1942,12 @@ function savePersistentObjects() {
     var name = "io-persistent-objs.json";
     var content = JSON.parse(JSON.stringify(regaObjects));
     for (var id in content) {
-        if (parseInt(id, 10) < 65536 || !regaObjects[id]._persistent) {
+        if (parseInt(id, 10) < 65536 || !content[id]._persistent) {
             delete content[id];
         }
     }
     logger.info("ccu.io        saving persistent objects");
-    fs.writeFile(settings.datastorePath+name, content);
+    fs.writeFile(settings.datastorePath+name, JSON.stringify(content));
 }
 function loadPersistentObjects() {
     try {
@@ -1956,6 +1965,8 @@ function saveDatapoints() {
     for (var id in content) {
         if (parseInt(id, 10) < 65536) {
             delete content[id];
+        } else {
+            content[id][2] = null;
         }
     }
     logger.info("ccu.io        saving datapoints");
