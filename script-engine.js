@@ -761,7 +761,7 @@ function getState(id, dpType) {
     if (dp && dp[0]) {
         return dp[0];
     } else {
-        return undefined;
+        return null;
     }
 }
 
