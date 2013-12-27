@@ -11,6 +11,14 @@
         </td>
     </tr>
     <tr>
+        <td>
+            Period:
+        </td>
+        <td>
+            <input id="period" type="number"/>
+        </td>
+    </tr>
+    <tr>
         <td>Strasse:</td>
         <td><input id="street" type="text"/></td>
     </tr>
@@ -75,6 +83,12 @@
         updateAdapterSettings();
     });
 
+    $("#period").val(currentAdapterSettings.period);
+
+    $("#period").change(function () {
+        currentAdapterSettings.period = $("#period").val();
+        updateAdapterSettings();
+    });
 
     $("#street").val(currentAdapterSettings.settings.street);
 
