@@ -1,6 +1,6 @@
 /**
  *
- * MySQL Adapter for CCU.IO v1.2
+ * MySQL Adapter for CCU.IO v1.3
  *
  * Copyright (c) 10'2013 hobbyquaker http://hobbyquaker.github.io
  *
@@ -59,6 +59,11 @@ socket.on('event', function (obj) {
         if (regaObjects) {
 
             if (regaObjects[obj[0]]) {
+
+                if (regaObjects[obj[0]].dontLog) {
+                    return;
+                }
+
                 name = regaObjects[obj[0]].Name;
             }
 
@@ -69,9 +74,6 @@ socket.on('event', function (obj) {
                 }
             });
 
-            if (regaObjects[obj[0]].dontLog) {
-                return;
-            }
 
             if (settings.adapters.mysql.settings.enableEventLog) {
                 // Grundsätzlich nur bei Änderung loggen?
