@@ -1,8 +1,11 @@
 {
-		"enabled": true,
+		"enabled": false,
 		"settings": {
 		"firstId": 80100,
 		"preview": 2,
+		"runEveryMinutes": 30,
+	    "colorize": true,
+	    "debug": false,
 		"defURL": "http://XXXXXX"
 		}
 }	

@@ -17,6 +17,10 @@ Alternativ kann dem Lesebefehl auch eine URL mitgegeben werden, um z.B. zeitweil
 
 Das Ergebnis liefert der iCal Adapter in die Variable iCalEvents.
 
+Alternativ kann der Adapter auch automatisch in einem definierbaren Intervall den Kalender abfragen (nur mit der defaultURL). Dazu in den Settings mit der Variablen runEveryMinutes das Abfrageintervall (in Minuten) einstellen.
+
+Das automatische Einlesen kann durch schreiben des Strings "stop" on die Variable iCalReadTrigger gestoppt und mit "start" wieder gestartet werden. 
+
 In den Settings wird durch die Angabe der "preview" Option festgelegt wie viele Tage im voraus Termine mit einbezogen werden, also z.B. durch die Angabe der Zahl "2" werden Termine von heute und morgen angezeigt. Durch Angabe der "1" werden nur Termine vom heutigen Tag angezeigt.
 
 Kalender:

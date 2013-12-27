@@ -2,7 +2,7 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
- *      Version 0.1
+ *      Version 0.3
  *		
  */
 var settings = require(__dirname+'/../../settings.js');
@@ -21,7 +21,29 @@ var objects = {},
 var ical = require('ical'), months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']
 var RRule = require('rrule').RRule;
 var preview = icalSettings.preview;
-		
+var intervalID;
+var fontbold = '<span style="font-weight:bold;color:white">';
+var fontnormal = '<span style="font-weight:normal;color:white">';
+var fontboldorange = '<span style="font-weight:bold;color:orange">';
+var fontnormalorange = '<span style="font-weight:normal;color:orange">';
+var fontboldred = '<span style="font-weight:bold;color:red">';
+var fontnormalred = '<span style="font-weight:normal;color:red">';
+var colorize = icalSettings.colorize;
+var minoneorange = 0;
+var minonered = 0;
+
+var warn = fontboldred;
+var warn2 =fontnormalred;
+var prewarn = fontboldorange;
+var prewarn2 = fontnormalorange;
+var normal = fontbold;
+var normal2 = fontnormal;
+var debug = icalSettings.debug;
+
+var prefix;
+var suffix;
+
+
 if (settings.ioListenPort) {
 	var socket = io.connect("127.0.0.1", {
 		port: settings.ioListenPort
@@ -52,20 +74,33 @@ socket.on('event', function (obj) {
     var val = obj[1];
     var ts = obj[2];
     var ack = obj[3];
-        
         if (obj[0] == icalSettings.firstId) {
-                if (id == icalSettings.firstId && val != "") {
+          //  logger.info("Event:"+id + " l"+val+"l");
+                if (id == icalSettings.firstId && val != "" && val !="autorun" && val != "stopped") {
 					var content = val.split(" ");
-					//von defURL lesen
 					setState(icalSettings.firstId + 1, "");
+                    //von defURL lesen
 					if (content[0] == "read") {
 						logger.info("adapter ical reading iCal from default URL: " + icalSettings.defURL);
 						checkiCal(icalSettings.defURL);
 					}
+                    // autoload starten
+                    if (content[0] == "start") {
+                        //eventuell alte Instanz stoppen
+                        clearInterval(intervalID);
+                        logger.info("adapter ical startting autoload every " + icalSettings.runEveryMinutes);
+                        intervalID = setInterval(function() {checkiCal(icalSettings.defURL)},runeveryminutes);
+                        setState(icalSettings.firstId, "autorun");
+                    }
+                    //autoload stoppen
+                    if (content[0] == "stop") {
+                        logger.info("adapter ical stopping autoload");
+                        clearInterval(intervalID);
+                        setState(icalSettings.firstId, "stopped");
+                    }
 					//von custom URL lesen
 					if (content[0] == "readURL") {
 						if (content[1] != "") {
-							setState(icalSettings.firstId + 1, "");
 							logger.info("adapter ical reading iCal from URL: " + content[1]);
 							checkiCal(content[1]);
 						}
@@ -74,60 +109,194 @@ socket.on('event', function (obj) {
 		}
 });
 
+/* Compare the current date against another date.
+ *
+ * @param b  {Date} the other date
+ * @returns   -1 : if this < b
+ *             0 : if this === b
+ *             1 : if this > b
+ *            NaN : if a or b is an illegal date
+ */
+Date.prototype.compare = function(b) {
+    if (b.constructor !== Date) {
+        throw "invalid_date";
+    }
+
+    return (isFinite(this.valueOf()) && isFinite(b.valueOf()) ?
+        (this>b)-(this<b) : NaN
+        );
+};
 
 function checkiCal(loc) {
-	
-	ical.fromURL(loc, {}, function(err, data){
-		var arrDates = new Array();
-	  for (var k in data){
-		  
-	    if (data.hasOwnProperty(k)){
-	      var ev = data[k]
-	  
-		  //es interessieren nur Termine mit einer Summary
-		 var enddate = new Date();
-		 var now = new Date();
-		 enddate.setDate(enddate.getDate()+preview);
-		 if (ev.summary != undefined) {
-			 //aha, eine RRULE in dem Termin --> auswerten
-			 if (ev.rrule != undefined) {
-				// console.log(ev.rrule.toString());
-				 var rule = RRule.fromString(ev.rrule.toString());
-				 var dates = rule.between(now, enddate);
-				 if (dates.length > 0) {
-					 for (var i=0; i<dates.length; i++) {
-						 var datevar = new Date(Date.parse(dates));
-	 					 var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':'
-	 					              + ('0' + (ev.start.getMinutes())).slice(-2);
-						 var singleDate = datevar.getDate()+ "." + (datevar.getMonth()+1)+"."+datevar.getFullYear()+" "+MyTimeString+ " " +ev.summary;
-						 //console.log("pushe: "+singleDate);
-						 arrDates.push(singleDate);
-					 }
-				 }
-			 } else {
-				 //Nein, also ein einzelner Termin
-				 if (ev.start < enddate && ev.start > now) {
-					 //Termin innerhalb des Zeitfensters
-					var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':'
-					              + ('0' + (ev.start.getMinutes())).slice(-2);
-					var singleDate = ev.start.getDate()+"."+(ev.start.getMonth()+1)+"."+ev.start.getFullYear()+" "+MyTimeString+" "+ev.summary;
-					 //console.log("pushe: "+singleDate);
-					 arrDates.push(singleDate);
-					 
-				 } 
-			} 
-			if (arrDates.length>0) {
-				setState(icalSettings.firstId + 1,brSeparatedList(arrDates));
-			}
-		 }	
-	    }
-	  }
-	})
+
+        ical.fromURL(loc, {}, function (err, data) {
+           logger.info("adapter ical processing URL" + loc);
+            //Variable ablöschen
+            setState(icalSettings.firstId + 1, "");
+            minoneorange = false;
+            minonered = false;
+            var arrDates = new Array();
+            /*for (var k in data) {
+                if (data.hasOwnProperty(k)) {
+                    var value = data[k];
+                    console.log("property name is " + k + " value is " + value);
+                    for (var l in value) {
+                        if (value.hasOwnProperty(l)) {
+                            var val = value[l];
+                           console.log("property name2 is " + k + " " + l + " value is " + val);
+                        }
+                    }
+                }
+            }*/
+            for (var k in data) {
+            //  console.log(k);
+                if (data.hasOwnProperty(k)) {
+                    var ev = data[k]
+                    var enddate = new Date();
+                    var now = new Date();
+                    enddate.setDate(enddate.getDate() + preview);
+                    now.setHours(0,0,0,0);
+                    tomorrow = new Date();
+                    tomorrow.setDate(now.getDate() + 1);
+                    tomorrow.setHours(0,0,0,0);
+                    tomorrow2 = new Date();
+                    //es interessieren nur Termine mit einer Summary
+                    if (ev.summary != undefined) {
+                    //aha, eine RRULE in dem Termin --> auswerten
+                        if (ev.rrule != undefined) {
+                            var options = RRule.parseString(ev.rrule.toString());
+                            options.dtstart = ev.start
+                            rule = new RRule(options)
+                           // console.log(ev.summary + " " + ev.start.toString() + " " + enddate.toString() + " " +rule.toText());
+
+                            var dates = rule.between(now, enddate);
+                            if (dates.length > 0) {
+                                for (var i = 0; i < dates.length; i++) {
+                                    //console.log("Termin rrule:" +ev.summary + " " + dates[i]);
+                                    var datevar = new Date(Date.parse(dates[i]));
+                                    //console.log("parseddate:" + datevar);
+                                    var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
+
+                                    var com = datevar;
+                                    com.setHours(0,0,0,0);
+
+                                    if (colorize) {
+                                        // console.log("date: " + com.toString() + " " + tomorrow.toString());;
+                                        //  console.log(com.compare(now).toString() + " " + com.compare(tomorrow).toString());
+                                        //Heute
+                                        if (com.compare(now) == 0) {
+                                            minonered = true;
+                                            var singleDate = warn + datevar.getDate() + "." + (datevar.getMonth() + 1) + "." + datevar.getFullYear() + " " + MyTimeString + warn2 + " " + ev.summary;
+                                        }
+                                        //Morgen
+                                        if (com.compare(tomorrow) == 0) {
+                                            minoneorange = true;
+                                            var singleDate = prewarn + datevar.getDate() + "." + (datevar.getMonth() + 1) + "." + datevar.getFullYear() + " " + MyTimeString + prewarn2 + " " + ev.summary;
+                                        }
+                                        //Ansonsten
+                                        if (com.compare(tomorrow) == 1) {
+                                            var singleDate = normal + datevar.getDate() + "." + (datevar.getMonth() + 1) + "." + datevar.getFullYear() + " " + MyTimeString + normal2 + " " + ev.summary;
+                                        }
+                                    } else {
+                                        var singleDate = fontbold + datevar.getDate() + "." + (datevar.getMonth() + 1) + "." + datevar.getFullYear() + " " + MyTimeString + fontnormal + " " + ev.summary;
+                                    }
+                                   if (debug) {logger.info("RRUle Termin hinzugefügt: " + ev.summary + " "+ singleDate);}
+                                    arrDates.push(singleDate);
+                                }
+                            }
+                        } else {
+                            //Nein, also ein einzelner Termin
+                            if (ev.start < enddate && ev.start > now) {
+                            //Termin innerhalb des Zeitfensters
+                                var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
+                                var com = ev.start;
+                                com.setHours(0,0,0,0);
+                                if (colorize) {
+                                    //Heute
+                                    if (com.compare(now) == 0) {
+                                        minonered = true;
+                                        prefix = warn;
+                                        suffix = warn2;
+                                      //  var singleDate = warn + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + warn2 + " " + ev.summary;
+                                    }
+                                    //Morgen
+                                    if (com.compare(tomorrow) == 0) {
+                                        minoneorange = true;
+                                        prefix = prewarn;
+                                        suffix = prewarn2;
+
+                                       // var singleDate = prewarn + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + prewarn2 + " " + ev.summary;
+                                    }
+                                    //Ansonsten
+                                    if (com.compare(tomorrow) == 1) {
+                                        //var singleDate = normal + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + normal2 + " " + ev.summary;
+                                        prefix = normal;
+                                        suffix = normal2;
+                                    }
+
+                                } else {
+                                    prefix = normal;
+                                    suffix = normal2;
+                                  // var singleDate = fontbold + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + fontnormal + " " + ev.summary;
+                                }
+                                var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + ev.summary;
+                                if (debug) {logger.info("Termin hinzugefügt : " + ev.summary + " am " + singleDate);}
+                                arrDates.push(singleDate);
+
+                            } else {
+                                if (debug) {logger.info("Termin " +ev.summary + " am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
+                            }
+                        }
+
+                    } else {
+                        if (debug) {logger.info("Termin: " +ev.start + " aussortiert, da kein Summary");}
+                    }
+                }
+            }
+            if (arrDates.length > 0) {
+                setState(icalSettings.firstId + 1, brSeparatedList(arrDates));
+            }
+        })
+}
+
+
+function parseDate(input) {
+    var parts = input.match(/(\d+)/g);
+    // note parts[1]-1
+    return new Date(parts[2], parts[1]-1, parts[0]);
+}
+
+//Sortierfunktion für arr.sort
+function SortDates(a,b) {
+    //Datum aus dem HTML extrahieren
+    var firstindex = a.indexOf(">");
+    var lastindex = a.lastIndexOf("<");
+    var a1 = a.substr(firstindex+1,(lastindex-firstindex)-1);
+    var da1 = a1.split(' ')[0];
+    var ti1 = a1.split(' ')[1];
+    var d = da1 ;
+    //in Date wandeln
+    var date1 = parseDate(d);
+    date1.setHours(ti1.split(":")[0]);
+    date1.setMinutes(ti1.split(":")[1])
+
+    firstindex = b.indexOf(">");
+    lastindex = b.lastIndexOf("<");
+    b1 = b.substr(firstindex+1,(lastindex-firstindex)-1);
+    var da2 = b1.split(' ')[0];
+    var ti2 = b1.split(' ')[1];
+    var d2 = da2;
+    var date2 = parseDate(d2);
+    date2.setHours(ti2.split(":")[0]);
+    date2.setMinutes(ti2.split(":")[1])
+    //vergleichen
+    return date1.compare(date2);
 }
 
 function brSeparatedList(arr) {
     var text = "";
-	arr.sort();
+    //Sortieren nach eigener Methode
+    arr.sort(SortDates);
     var length = arr.length;
     if (length > 0) {
         var first = true;
@@ -142,9 +311,6 @@ function brSeparatedList(arr) {
     }
     return text;
 }
-
-
-
 
 function stop() {
     logger.info("adapter ical terminating");
@@ -191,10 +357,19 @@ function iCalInit() {
 	setState(icalSettings.firstId + 1, "");
 	
 	  logger.info("adapter ical objects inserted, starting at: "+icalSettings.firstId);
+
+    if (icalSettings.runEveryMinutes > 0) {
+        //Autostart --> first read in 30sec
+        setTimeout(function() {checkiCal(icalSettings.defURL)},4000);
+        //now schedule
+        var runeveryminutes = icalSettings.runEveryMinutes * 60000;
+        logger.info("adapter ical autorun every " + icalSettings.runEveryMinutes + " Minutes");
+        setState(icalSettings.firstId, "autorun");
+        intervalID = setInterval(function() {checkiCal(icalSettings.defURL)},runeveryminutes);
+    }
+
 }
 
 logger.info("adapter ical start");
 
 iCalInit();
-
-
