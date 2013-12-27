@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.2";
+settings.version = "1.0.5";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -32,7 +32,7 @@ settings.regahss.metaScripts = [
 
 
 
-var fs = require('fs'),
+var fs =        require('fs'),
     logger =    require(__dirname+'/logger.js'),
     binrpc =    require(__dirname+"/binrpc.js"),
     rega =      require(__dirname+"/rega.js"),
@@ -42,12 +42,12 @@ var fs = require('fs'),
     crypto =    require('crypto'),
     request =   require('request'),
     childProcess = require('child_process'),
+    url =       require('url'),
+    socketio =  require('socket.io'),
     app,
     appSsl,
-    url = require('url'),
     server,
     serverSsl,
-    socketio =  require('socket.io'),
     io,
     ioSsl,
     devlogCache = [],
@@ -1258,7 +1258,7 @@ function initSocketIO(_io) {
 
         socket.on('updateAddon', function (url, name) {
             var path = __dirname + "/update-addon.js";
-            logger.info("ccu.io        starting "+path);
+            logger.info("ccu.io        starting "+path+" "+url+" "+name);
             var updateProcess = childProcess.fork(path, [url, name]);
             updateProcess.on("close", function (code) {
                 if (code == 0) {
@@ -1272,6 +1272,41 @@ function initSocketIO(_io) {
                 if (ioSsl) {
                     ioSsl.sockets.emit("ioMessage", "Update "+name+msg);
                 }
+            });
+        });
+
+        socket.on('updateSelf', function () {
+            var path = __dirname + "/update-self.js";
+            settings.updateSelfRunning = true;
+            logger.info("ccu.io        starting "+path);
+            var updateProcess = childProcess.fork(path);
+            if (io) {
+                io.sockets.emit("ioMessage", "Update started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Update started. Please be patient...");
+            }
+            updateProcess.on("close", function (code) {
+                settings.updateSelfRunning = false;
+                if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Update done. Restarting...");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Update done. Restarting...");
+                    }
+                    logger.info("ccu.io        update done. restarting...");
+                    childProcess.fork(__dirname+"/ccu.io-server.js", ["restart"]);
+                } else {
+                    logger.error("ccu.io        update failed.");
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Error: update failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Error: update failed.");
+                    }
+                }
+
             });
         });
 
@@ -1394,6 +1429,15 @@ function initSocketIO(_io) {
                     callback(data.toString());
                 }
             });
+        });
+
+        socket.on('touchFile', function (name, callback) {
+            logger.verbose("socket.io <-- touchFile "+name);
+            if (!fs.existsSync(__dirname+"/"+name)) {
+                logger.info("ccu.io        creating empty file "+name);
+                var stream = fs.createWriteStream(__dirname+"/"+name);
+                stream.end();
+            }
         });
 
         socket.on('delRawFile', function (name, callback) {

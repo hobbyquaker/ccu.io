@@ -100,11 +100,11 @@ app.post('/*', function (req, res) {
         socket.emit("setState", [dpId+3, req.body.entry]);
         socket.emit("setState", [dpId+4, formatTimestamp(req.body.date)]);
         res.status(200);
-        res.send("<!DOCTYPE html><html><body><h1>OK</h1></body></html>");
+        res.send("OK");
     } else {
         logger.warn("adapter geof. received webhook for unknown device "+id);
         res.status(404);
-        res.send("<!DOCTYPE html><html><body><h1>404</h1></body></html>");
+        res.send("UNKNOWN DEVICE");
     }
 });
 

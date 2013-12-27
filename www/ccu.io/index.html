@@ -33,37 +33,53 @@
             </ul>
             <div id="subTab11">
 
-                <p id="version_info">
-                    CCU.IO Version: <span class="ccu-io-version"></span> <!--,
-                    CCU.IO Uptime: <span class="ccu-io-uptime"></span>,
-                    CCU Firmware: <span class="ccu-version"></span>,
-                    CCU Uptime: <span class="ccu-version"></span>-->
+                <table style="font-size:12px" id="version_info">
+                    <tr>
+                        <td style="width: 200px">
+                            CCU.IO installed Version:
+                        </td>
+                        <td style="width:165px; text-align:right;">
+                            <span class="ccu-io-version"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            CCU.IO available Version:
+                        </td>
+                        <td style="width:165px; text-align:right;">
+                            <input style="display:none" type="button" id="update_self" value="update"/>
+                            <input type="button" id="update_self_check" value="check"/>
+                            <span class="ccu-io-availversion"></span>
 
-                </p>
+                        </td>
+                    </tr>
+
+
+                </table>
                 <p>
                 <table style="font-size:12px">
                     <tr>
-                        <td style="width: 160px">CCU reachable:</td><td style="width:100px; text-align:right;" class="ccu-reachable"></td>
+                        <td style="width: 200px">CCU reachable:</td><td style="width:165px; text-align:right;" class="ccu-reachable"></td>
                     </tr>
                     <tr>
-                        <td>ReGa Up:</td><td style="width:100px; text-align:right;" class="ccu-regaup"></td>
+                        <td>ReGa Up:</td><td style="width:165px; text-align:right;" class="ccu-regaup"></td>
                     </tr>
                     <tr>
-                        <td>ReGa Data loaded:</td><td style="width:100px; text-align:right;" class="ccu-regadata"></td>
+                        <td>ReGa Data loaded:</td><td style="width:165px; text-align:right;" class="ccu-regadata"></td>
                     </tr>
                     <tr>
-                        <td>RPC Inits:</td><td style="width:100px; text-align:right;" class="ccu-rpc"></td>
+                        <td>RPC Inits:</td><td style="width:165px; text-align:right;" class="ccu-rpc"></td>
                     </tr>
                 </table>
                 </p>
                 <p>
                 <table style="font-size:12px">
                     <tr>
-                        <td style="width: 160px">script-engine enabled:</td><td style="width:100px; text-align:right;" class="ccu-io-scriptengine"></td>
+                        <td style="width: 200px">script-engine enabled:</td><td style="width:165px; text-align:right;" class="ccu-io-scriptengine"></td>
                     </tr>
 
                     <tr>
-                        <td>logging enabled:</td><td style="width:100px; text-align:right;" class="ccu-io-logging"></td>
+                        <td>logging enabled:</td><td style="width:165px; text-align:right;" class="ccu-io-logging"></td>
                     </tr>
                 </table>
                 </p>
@@ -72,16 +88,16 @@
                 <p>
                 <table style="font-size:12px">
                 <tr>
-                    <td style="width: 160px">Last ReGa poll:</td><td style="width:100px; text-align:right;" class="ccu-io-lastrega"></td>
+                    <td style="width: 200px">Last ReGa poll:</td><td style="width:165px; text-align:right;" class="ccu-io-lastrega"></td>
                 </tr>
                 <tr>
-                    <td style="width: 160px">Last rf event:</td><td style="width:100px; text-align:right;" class="ccu-io-lastrf"></td>
+                    <td style="width: 200px">Last rf event:</td><td style="width:165px; text-align:right;" class="ccu-io-lastrf"></td>
                 </tr>
                 <tr>
-                        <td>Last hs485 event:</td><td style="width:100px; text-align:right;" class="ccu-io-lasths485"></td>
+                        <td>Last hs485 event:</td><td style="width:165px; text-align:right;" class="ccu-io-lasths485"></td>
                     </tr>
                     <tr>
-                        <td>Last CUx event:</td><td style="width:100px; text-align:right;" class="ccu-io-lastcux"></td>
+                        <td>Last CUx event:</td><td style="width:165px; text-align:right;" class="ccu-io-lastcux"></td>
                     </tr>
                 </table>
                 </p>
@@ -127,7 +143,7 @@
             <div id="subTab13">
                 <input type="button" id="saveSettings" value="save changes"/><br/><br/>
                 <div class="settings-box">
-                    <h3>Base</h3>
+                    <h3>Base configuration</h3>
                     <table class="settings-table">
                         <tr>
                             <td class="settings-td1">CCU IP-Address</td>
@@ -391,8 +407,10 @@
     <select id="install_addon_select">
         <option value="dashui">DashUI</option>
         <option value="yahui">yahui</option>
-        <option value="charts">CCU.IO-Highcharts</option>
-        <option value="eventlist">CCU.IO-Eventlist</option>
+        <option value="charts">Highcharts</option>
+        <option value="eventlist">Eventlist</option>
+        <option value="ScriptGUI">ScriptGUI</option>
+        <option value="ScriptEditor">ScriptEditor</option>
     </select>
     <input type="button" id="install_addon_button" value="install"/>
 </div>

@@ -6,40 +6,20 @@ var request =   require("request"),
 
 ncp.limit = 16;
 
-logger.info("update-addon  started");
+logger.info("update-ccu.io started");
 
+var url = "https://github.com/hobbyquaker/ccu.io/archive/master.zip",
+    tmpDir = "ccu.io-master";
 
-var arguments = process.argv.slice(2),
-    url = arguments[0],
-    name = arguments[1],
-    urlParts = url.split("/"),
-    nameArr = urlParts.splice(-3),
-    tmpDir = nameArr[0]+"-master";
-
-logger.info("update-addon  download and unzip "+url);
+logger.info("update-ccu.io download and unzip "+url);
 
 // Download and Unzip
 request(url).pipe(unzip.Extract({path: __dirname+"/tmp"})).on("close", function () {
-    logger.info("update-addon  unzip done");
-    var sourcedir =        __dirname+"/tmp/"+tmpDir,
-        destination =   __dirname+"/www/"+name;
+    logger.info("update-ccu.io unzip done");
+    var source =        __dirname+"/tmp/"+tmpDir,
+        destination =   __dirname;
 
-    var source = sourcedir;
-
-    try {
-        var stats = fs.lstatSync(sourcedir+"/"+name);
-
-        if (stats.isDirectory()) {
-
-            source = sourcedir+"/"+name
-        }
-    }
-    catch (e) {
-
-    }
-
-
-    logger.info("update-addon  copying "+source+" to "+destination);
+    logger.info("update-ccu.io copying "+source+" to "+destination);
 
     ncp(source, destination, function (err) {
         if (err) {
@@ -49,14 +29,14 @@ request(url).pipe(unzip.Extract({path: __dirname+"/tmp"})).on("close", function 
 
         setTimeout(function () {
             // Ordner im tmp Verzeichnis löschen
-            logger.info('update-addon  delete tmp folder '+__dirname+"/tmp/"+tmpDir);
+            logger.info('update-ccu.io delete tmp folder '+__dirname+"/tmp/"+tmpDir);
             deleteFolderRecursive(__dirname+"/tmp/"+tmpDir);
-            logger.info('update-addon  done');
+            logger.info('update-ccu.io done');
             //process.exit(0);
         }, 2000);
 
-
     });
+
 });
 
 var deleteFolderRecursive = function(path) {

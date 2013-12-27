@@ -7,14 +7,22 @@ try {
     var settingsJson = fs.readFileSync(__dirname+"/datastore/io-settings.json");
     settings = JSON.parse(settingsJson.toString());
     logger.verbose("ccu.io        settings found");
-
+    if (!settings.uid) {
+        logger.verbose("ccu.io        creating uid");
+        settings.uid = Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16);
+        fs.writeFileSync(__dirname+"/datastore/io-settings.json", JSON.stringify(settings));
+    }
 } catch (e) {
     logger.info("ccu.io        creating datastore/io-settings.json");
     var settingsJson = fs.readFileSync(__dirname+"/settings-dist.json");
     settings = JSON.parse(settingsJson.toString());
     settings.unconfigured = true;
+    logger.verbose("ccu.io        creating uid");
+    settings.uid = Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16);
     fs.writeFileSync(__dirname+"/datastore/io-settings.json", JSON.stringify(settings));
 }
+
+settings.updateSelfRunning = false;
 
 settings.binrpc.inits = [];
 if (settings.binrpc.rfdEnabled) {
