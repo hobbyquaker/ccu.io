@@ -4,8 +4,11 @@
 		"firstId": 80100,
 		"preview": 2,
 		"runEveryMinutes": 30,
+<<<<<<< HEAD
 	    "colorize": true,
 	    "debug": false,
+=======
+>>>>>>> 22099adf23fa5c5eb1b270df6ff899b5701a871c
 		"defURL": "http://XXXXXX"
 		}
 }	
