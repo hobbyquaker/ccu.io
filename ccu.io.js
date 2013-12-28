@@ -1256,6 +1256,22 @@ function initSocketIO(_io) {
             childProcess.exec(cmd, callback);
         });
 
+        socket.on('execScript', function (script, arg, callback) {
+            logger.info("ccu.io        script "+script + "["+arg+"]");
+            var scr_prc = childProcess.fork (script, arg);
+            var result = null;
+            scr_prc.on('message', function(obj) {
+                // Receive results from child process
+                console.log ("Message: " + obj);
+                result = obj;
+            });
+            scr_prc.on ("exit", function (code, signal) {
+                if (callback) {
+                    callback (script, arg, result);
+                }
+            });
+        });
+
         socket.on('updateAddon', function (url, name) {
             var path = __dirname + "/update-addon.js";
             logger.info("ccu.io        starting "+path+" "+url+" "+name);
