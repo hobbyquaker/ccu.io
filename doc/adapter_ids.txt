@@ -26,6 +26,8 @@
 72901                           sayIt text: Write this variable with text to say
 72902-72920                     sayIt reserved
 
+73000-73095                     lirc adapter
+
 80000-?                         itrans adapter
 
 80100-?                         iCal adapter
