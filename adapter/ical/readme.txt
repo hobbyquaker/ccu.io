@@ -23,6 +23,8 @@ Das automatische Einlesen kann durch schreiben des Strings "stop" on die Variabl
 
 In den Settings wird durch die Angabe der "preview" Option festgelegt wie viele Tage im voraus Termine mit einbezogen werden, also z.B. durch die Angabe der Zahl "2" werden Termine von heute und morgen angezeigt. Durch Angabe der "1" werden nur Termine vom heutigen Tag angezeigt.
 
+Mit der Option „colorize“ wird der Termin am Tag vor dem Ereignis gelb gefärbt und beim aktuellen Tag rot gefärbt. Die Option debug schreibt mehr Informationen in das CCU.IO LogFile.
+
 Kalender:
 =========
 
