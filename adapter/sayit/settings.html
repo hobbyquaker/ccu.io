@@ -21,7 +21,7 @@
         </select></td>
     </tr>
     <tr>
-        <td>Output on Raspberry Pi:</td>
+        <td>Output on Raspberry PI:</td>
         <td><select id="sayit_settings_rasp_output">
             <option value="0">Auto</option>
             <option value="1">Analog</option>
@@ -52,6 +52,10 @@
         <th style="border: 1px solid black">MP24</th>
         <th style="border: 1px solid black">MP24+FTP</th>
         <th style="border: 1px solid black">System</th>
+        <th style="border: 1px solid black">MP24 IP</th>
+        <th style="border: 1px solid black">FTP Port</th>
+        <th style="border: 1px solid black">FTP User</th>
+        <th style="border: 1px solid black">FTP Pass</th>
 		<th></th>
     </tr>
 </table>
@@ -59,7 +63,8 @@
 <p>
     <h1>Hilfe</h1>
         SayIt Adapter kann den Text in die Sprache umwandeln. Man muss mit dem Skript die eingestellte Variable beschreiben, damit man was hören kann.<br>
-        Z.B. falls die Variable 72902 ist, dann kann man die mit dem Text "Sag es im Browser" beschreiben.
+        Z.B. falls die Variable 72910 ist, dann kann man die mit dem Text "Sag es im Browser" beschreiben.<br>
+        Die Variable <b>72903</b> schreibt den Text in allen eingestellten Variablen automatisch rein.<br>
         Für jede Variable kann es eingestellt sein, wo die abgespielt wird. Momentan sind folgende Ausgänge unterstützt:
         <ul>
             <li><b>Browser</b> - der Text wird im Browser abgespiel. Fast in allen modernen Desktop-Browsern und fast in <span style="color:red">keinem</span> mobilen Browser unterstützt.</li>
@@ -68,10 +73,9 @@
                 Es müss nur in beiden Apps das gleiche Home-Verzeichnis eingestellen sein. (Z.B. Root-Verzeichnis von "sd card" benutzen).</li>
             <li><b>System</b> - der Text wird am CCU.IO Server abgespielt. Es sind folgende OS unterstützt: Windows, linux</li>
         </ul>
-        <br>Um abspielen auf dem Raspberry PI zu ermöglichen, sollte man einmal aufrufen "sudo apt-get -y install mpg321" um mpg321 zu installieren.
-        <br>Mit "amixer cset numid=3 1" kann man Audio-Output von HDMI auf analog umstellen.
-        <br>Man kann auch andere mp3 Dateien abspielen in dem man die Variable mit dem Dateiname beschreibt. (z.B. "dashui/img/door-bell.mp3")
-
+        Um abspielen auf dem Raspberry PI zu ermöglichen, sollte man einmal aufrufen "sudo apt-get -y install mpg321" um mpg321 zu installieren.<br>
+        Man kann auch andere mp3 Dateien abspielen in dem man die Variable mit dem Dateiname beschreibt. (z.B. "dashui/img/door-bell.mp3")<br>
+        Falls ie Variable keine MP24_IP oder FTP Einstellungen hat, dann werden die allgemeine Einstellungen benutzt.
 </p>
 <script type="text/javascript">
 	var sayit_options = {
@@ -147,7 +151,7 @@
         var i = 1;
         while (currentAdapterSettings.settings.vars["_"+i]) i++;
 		
-		var id = currentAdapterSettings.settings.firstId + 2;
+		var id = currentAdapterSettings.settings.firstId + 10;
 		
 		var found = false;
 		do {
@@ -170,7 +174,7 @@
 	function showVariable (id) {
 		var sText = '<tr class="sayit-optvariable">';
 		sText += '<td style="border: 1px solid black"><select id="sayit_id_'  +id+'" data-sayit-variable="'+id+'" type="text">';
-		for (var i = currentAdapterSettings.settings.firstId + 2; i < currentAdapterSettings.settings.firstId + 2 + sayit_count; i++) {
+		for (var i = currentAdapterSettings.settings.firstId + 10; i < currentAdapterSettings.settings.firstId + 10 + sayit_count; i++) {
 			sText += "<option value='"+ i +"' "+ (i == currentAdapterSettings.settings.vars[id].id ? "selected" : "") +">"+ i +"</option>";
 		}
 		sText += '</select></td>';
@@ -188,6 +192,10 @@
 		
 			sText += "<td style='border: 1px solid black; text-align: center'><input type='checkbox' id='sayit_option_"+t+"_"+id+"' "+(found ? "checked": "")+" data-sayit-variable='"+id+"' data-sayit-option='"+t+"'/></td>";
 		}
+        sText += '<td style="border: 1px solid black"><input id="sayit_mp24_'    +id+'" data-sayit-variable="'+id+'" type="text" value="'+(currentAdapterSettings.settings.vars[id].mediaPlayer || "")+'"/></td>';
+        sText += '<td style="border: 1px solid black"><input id="sayit_ftp_port_'+id+'" data-sayit-variable="'+id+'" type="text" value="'+(currentAdapterSettings.settings.vars[id].ftp_port || "")+'"/></td>';
+        sText += '<td style="border: 1px solid black"><input id="sayit_ftp_user_'+id+'" data-sayit-variable="'+id+'" type="text" value="'+(currentAdapterSettings.settings.vars[id].ftp_user || "")+'"/></td>';
+        sText += '<td style="border: 1px solid black"><input id="sayit_ftp_pass_'+id+'" data-sayit-variable="'+id+'" type="text" value="'+(currentAdapterSettings.settings.vars[id].ftp_pass || "")+'"/></td>';
         sText += '<td style="border: 1px solid black"><input data-sayit-variable="'+id+'" type="button" value="remove variable" class="sayit-remove"/></td>';
 		sText += "</tr>";
 
@@ -200,6 +208,27 @@
             currentAdapterSettings.settings.vars[$(this).attr('data-sayit-variable')].name = $(this).val();
             storeSettings();
         }).keyup(function() { $(this).trigger("change")});
+
+        $("#sayit_ftp_port_"+id).change(function () {
+            currentAdapterSettings.settings.vars[$(this).attr('data-sayit-variable')].ftp_port = $(this).val();
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#sayit_ftp_user_"+id).change(function () {
+            currentAdapterSettings.settings.vars[$(this).attr('data-sayit-variable')].ftp_user = $(this).val();
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#sayit_ftp_pass_"+id).change(function () {
+            currentAdapterSettings.settings.vars[$(this).attr('data-sayit-variable')].ftp_pass = $(this).val();
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#sayit_mp24_"+id).change(function () {
+            currentAdapterSettings.settings.vars[$(this).attr('data-sayit-variable')].mediaPlayer = $(this).val();
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
 
         $("#sayit_id_"+id).change(function () {
 			// check if this id is unique
@@ -214,9 +243,7 @@
 			if (!isConflict) {
 				currentAdapterSettings.settings.vars[$(this).attr('data-sayit-variable')].id = $(this).val();
 			}
-			
-			
-			
+
             storeSettings();
 			if (isConflict) {
 				sayitRefreshVariables ();

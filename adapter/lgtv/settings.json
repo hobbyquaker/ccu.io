@@ -1,0 +1,15 @@
+{
+    "enabled": false,
+    "settings": {
+        "firstId":    73000,
+        "devices":    {
+            "_1": {"ip":      "0.0.0.0",
+                   "pairKey": "",
+                   "name":    "",
+                   "rooms":   [],
+                   "funcs":   [],
+				   "favs" :   []
+            }
+        }
+    }
+}

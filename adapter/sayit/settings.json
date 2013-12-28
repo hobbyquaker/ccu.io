@@ -6,9 +6,10 @@
         "ftp_port":    "",
         "ftp_user":    "",
         "ftp_pass":    "",
+        "mediaPlayer": "",
         "rasp_output": "0",
 		"vars" : {
-			"_1": {"id": "72902", "name": "All", "options": "all"}
+			"_1": {"id": "72910", "name": "First", "options": "all", "ftp_port":"", "ftp_user":"", "ftp_pass":"","rasp_output":"", "mediaPlayer":""}
 		}
     }
 }

@@ -1,0 +1,203 @@
+<table style="font-size: 12px" id="lgtv_table">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td colspan='5'>
+            <select id="lgtv_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th>IP Address</th>
+        <th>Name</th>
+        <th>Pair Key</th>
+        <th>Rooms</th>
+        <th>Functions</th>
+        <th>Favorites</th>
+        <th></th>
+    </tr>
+</table>
+<input type="button" id="add_device" value="add device"/><br><br>
+<input type="button" id="browse" value="Browse"/>
+
+<script type="text/javascript">
+
+    var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host') + "?key="+socketSession);
+
+    function storeSettings () {
+        console.log (JSON.stringify(currentAdapterSettings));
+        updateAdapterSettings();
+    }
+
+	function showDevice (id) {
+		var sText = '<tr class="lgtv-optdevice">';
+		sText += '<td><input id="lgtv_ip_'  +id+'" data-lgtv-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.devices[id].ip   || "")+'"/></td>';
+		sText += '<td><input id="lgtv_name_'+id+'" data-lgtv-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.devices[id].name || "")+'"/></td>';
+        sText += '<td><input id="lgtv_pair_'+id+'" data-lgtv-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.devices[id].pairKey || "")+'"/></td>';
+
+		var t = "";
+        if (currentAdapterSettings.settings.devices[id].rooms) {
+            for (var i = 0; i < currentAdapterSettings.settings.devices[id].rooms.length; i++) {
+                t += ((t == "") ? "":",") + currentAdapterSettings.settings.devices[id].rooms[i];
+            }
+        }
+		sText += '<td><input id="lgtv_rooms_'+id+'" data-lgtv-device="'+id+'" type="text" value="'+t+'"/></td>';
+		
+		
+		t = "";
+        if (currentAdapterSettings.settings.devices[id].funcs) {
+            for (var i = 0; i < currentAdapterSettings.settings.devices[id].funcs.length; i++) {
+                t += ((t == "") ? "":",") + currentAdapterSettings.settings.devices[id].funcs[i];
+            }
+        }
+		sText += '<td><input id="lgtv_funcs_'+id+'" data-lgtv-device="'+id+'" type="text" value="'+t+'"/></td>';
+		
+		t = "";
+        if (currentAdapterSettings.settings.devices[id].favs) {
+            for (var i = 0; i < currentAdapterSettings.settings.devices[id].favs.length; i++) {
+                t += ((t == "") ? "":",") + currentAdapterSettings.settings.devices[id].favs[i];
+            }
+        }
+		sText += '<td><input id="lgtv_favs_'+id+'" data-lgtv-device="'+id+'" type="text" value="'+t+'"/></td>';
+
+        sText += '<td><input data-lgtv-device="'+id+'" type="button" value="show pair" class="lgtv-show-pair"/></td>';
+        sText += '<td><input data-lgtv-device="'+id+'" type="button" value="remove device" class="lgtv-remove"/></td>';
+		sText += "</tr>";
+
+		$("#lgtv_table").append(sText);
+
+        $(".lgtv-remove:last").button().click(function () {
+            lgtvRemoveDevice($(this).attr("data-lgtv-device"));
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $(".lgtv-show-pair:last").button().click(function () {
+            if (currentAdapterSettings.settings.devices[$(this).attr('data-lgtv-device')]) {
+                lgtvShowPair (currentAdapterSettings.settings.devices[$(this).attr('data-lgtv-device')]["ip"]);
+            }
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#lgtv_name_"+id).change(function () {
+            currentAdapterSettings.settings.devices[$(this).attr('data-lgtv-device')].name = $(this).val();
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+		$("#lgtv_pair_"+id).change(function () {
+            currentAdapterSettings.settings.devices[$(this).attr('data-lgtv-device')].pairKey = $(this).val().toUpperCase();
+			if (currentAdapterSettings.settings.devices[$(this).attr('data-lgtv-device')].pairKey != $(this).val()) {
+				$(this).val(currentAdapterSettings.settings.devices[$(this).attr('data-lgtv-device')].pairKey);
+			}
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+		
+        $("#lgtv_ip_"+id).change(function () {
+            if ($(this).val().match(/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/)) {
+				currentAdapterSettings.settings.devices[$(this).attr('data-lgtv-device')].ip = $(this).val();
+				storeSettings();
+				$(this).css({color: "black"});
+			}
+			else {
+				$(this).css({color: "red"});
+			}
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#lgtv_rooms_"+id).change(function () {
+            var arr = $(this).val().split(',');
+
+            for (var t = 0; t < arr.length; t++)
+                arr[t] = arr[t].trim();
+
+            currentAdapterSettings.settings.devices[$(this).attr('data-lgtv-device')].rooms = arr;
+
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#lgtv_funcs_"+id).change(function () {
+            var arr = $(this).val().split(',');
+
+            for (var t = 0; t < arr.length; t++)
+                arr[t] = arr[t].trim();
+
+            currentAdapterSettings.settings.devices[$(this).attr('data-lgtv-device')].funcs = arr;
+
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+    }
+	
+    function lgtvRefreshDevices() {
+        for (var id in currentAdapterSettings.settings.devices) {
+			showDevice (id);
+        }
+        $(".lgtv-remove").button().click(function () {
+            var j = $(this).attr("data-lgtv-device");
+            lgtvRemoveDevice(j);
+        });
+    }
+    lgtvRefreshDevices();
+
+    if (currentAdapterSettings.enabled) {
+        $("#lgtv_enabled option[value='false']").removeAttr("selected");
+        $("#lgtv_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#lgtv_enabled option[value='true']").removeAttr("selected");
+        $("#lgtv_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#lgtv_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#lgtv_enabled option:selected").val() == "false" ? false : true);
+        storeSettings();
+    }).keyup(function() { $(this).trigger("change")});
+
+    $("#add_device").button().click(function () {
+        // Find free id
+        var i = 1;
+        while (currentAdapterSettings.settings.devices["_"+i]) i++;
+
+        currentAdapterSettings.settings.devices["_"+i] = {ip: "0.0.0.1", name:"", rooms:[""], funcs:[""], pairKey: ""};
+        showDevice ("_"+i);
+    });
+
+    $("#browse").button().click(function () {
+        lgtvBrowse ();
+    });
+
+    function lgtvRemoveDevice(j) {
+        $("tr.lgtv-optdevice").remove();
+        delete currentAdapterSettings.settings.devices[j];
+        lgtvRefreshDevices();
+        storeSettings();
+    }
+
+    function lgtvBrowse () {
+        socket.emit('execScript', "adapter/lgtv/lgtvBrowse.js", [""], function(script, arg, result) {
+            var IPs = result.split(",");
+            console.log (result);
+            for (var u = 0; u < IPs.length; u++) {
+                var isFound = false;
+                for (var id in currentAdapterSettings.settings.devices) {
+                    if (currentAdapterSettings.settings.devices[id].ip == IPs[u]) {
+                        isFound = true;
+                        break;
+                    }
+                }
+                if (!isFound) {
+                    // Find free id
+                    var i = 1;
+                    while (currentAdapterSettings.settings.devices["_"+i]) i++;
+
+                    currentAdapterSettings.settings.devices["_"+i] = {ip: IPs[u], name:"", rooms:[""], funcs:["Media"], pairKey: ""};
+                    showDevice ("_"+i);
+                }
+            }
+        });
+    }
+
+    function lgtvShowPair(ip) {
+        console.log ("SHOW:"+ip);
+        socket.emit('execScript', "adapter/lgtv/lgtvPair.js", [ip]);
+    }
+
+</script>
