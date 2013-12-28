@@ -229,7 +229,7 @@ var commands = {
 	"tv_teletext" :               "32",
 	"tv_t_opt" :                  "33",
 	"tv_channel_list" :           "83",
-	"tv_greyed_out_add_button?" : "85",
+	"tv_greyed_out_add_button" : "85",
 	"tv_guide" :                  "169",
 	"tv_info" :                   "170",
 	"tv_live_tv" :                "158",
@@ -399,7 +399,7 @@ function lgtvInit () {
     for (var id in lgtvSettings.devices) {
         var ip = lgtvSettings.devices[id].ip;
         var i = parseInt(id.substring(1));
-        chnDp = lgtvSettings.firstId + 20 + i * 20;
+        chnDp = lgtvSettings.firstId + i * 20;
         dp    = chnDp + 1;
 
         var ip_ = ip.replace(/\./g,"_");
