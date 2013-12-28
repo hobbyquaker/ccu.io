@@ -2,7 +2,7 @@
  *      CCU.IO SayIt Adapter
  *      12'2013 Bluefox
  *
- *      Version 0.2
+ *      Version 0.3
  *      
  *      It uses unofficial Google Translate TTS and it can be closed any time.
  *      
@@ -22,8 +22,9 @@ if (!settings.adapters.sayit || !settings.adapters.sayit.enabled) {
     process.exit();
 }
 
-var sayitSettings = settings.adapters.sayit.settings;
-var sayIndex      = 0;
+var sayitSettings        = settings.adapters.sayit.settings;
+var sayIndex             = 0;
+var sayLastGeneratedText = "";
 
 var logger      = require(__dirname+'/../../logger.js'),
     io          = require('socket.io-client'),
@@ -57,9 +58,13 @@ socket.on('event', function (obj) {
         return;
     }
 	
-	if (obj[0] >= sayitSettings.firstId+1 && obj[0] <= sayitSettings.firstId+20 && obj[1]) {
+	if (obj[0] >= sayitSettings.firstId+3 && obj[0] <= sayitSettings.firstId+21 && obj[1]) {
 		sayIt (obj[0], obj[1]);
-	}
+	} else
+    // Volume on Raspbery PI
+    if (obj[0] == sayitSettings.firstId+2) {
+        sayItSystemVolume (obj[1]);
+    }
 });
 
 socket.on('connect', function () {
@@ -123,7 +128,6 @@ function sayItGetSpeechGoogle (i_, text, language, callback) {
                 if (err)
                     logger.error ('File error:' + err);
                 else {
-                    console.log('File saved.');
                     if (callback) {
                         callback (i_, text, language);
                     }
@@ -132,6 +136,7 @@ function sayItGetSpeechGoogle (i_, text, language, callback) {
         })
     });
 }
+
 function sayItGetSpeechAcapela (i_, text, language, callback) {
     var options = {
         host: 'vaassl3.acapela-group.com',
@@ -172,7 +177,6 @@ function sayItGetSpeechAcapela (i_, text, language, callback) {
     });
 }
 
-
 function sayItGetSpeech (i_, text, language, callback) {
     if (sayit_engines[language] && sayit_engines[language].engine) {
         if (sayit_engines[language].engine == "google") {
@@ -188,7 +192,7 @@ function sayItGetSpeech (i_, text, language, callback) {
     }
 }
 
-function sayItBrowser (text, language) {
+function sayItBrowser (i_, text, language) {
 	sayIndex++;
     if (sayItIsPlayFile (text)) {
         setState (sayitSettings.firstId + 1, text);
@@ -200,9 +204,10 @@ function sayItBrowser (text, language) {
 	setState (sayitSettings.firstId, sayIndex);
 }
 
-function sayItMP24 (text, language) {
-	if (sayitSettings.mediaPlayer && !sayItIsPlayFile (text)) {
-		request ("http://"+sayitSettings.mediaPlayer+":50000/tts="+querystring.escape(text),
+function sayItMP24 (i_, text, language) {
+    var mediaPlayer = sayitSettings.vars[i_].mediaPlayer || sayitSettings.mediaPlayer;
+	if (mediaPlayer && !sayItIsPlayFile (text)) {
+		request ("http://"+mediaPlayer+":50000/tts="+querystring.escape(text),
 			function (error, response, body) {
 				if (!error && response.statusCode == 200) {
 					console.log(body) // Print the google web page.
@@ -211,39 +216,42 @@ function sayItMP24 (text, language) {
 	}		
 }
 
-function sayItMP24ftp (text, language) {
+function sayItMP24ftp (i_, text, language) {
+    var ftp_port    = sayitSettings.vars[i_].ftp_port    || sayitSettings.ftp_port;
+    var mediaPlayer = sayitSettings.vars[i_].mediaPlayer || sayitSettings.mediaPlayer;
+
 	// Copy mp3 file to android device to play it later with MediaPlayer
-	if (sayitSettings.ftp_port && sayitSettings.mediaPlayer) {
+	if (ftp_port && mediaPlayer) {
 
         var file = sayItGetFileName (text);
 
 		var Ftp = new ftp({
-			host: sayitSettings.mediaPlayer,
-			port: parseInt(sayitSettings.ftp_port), // defaults to 21
-			user: sayitSettings.ftp_user || "anonymous", // defaults to "anonymous"
-			pass: sayitSettings.ftp_pass || "@anonymous" // defaults to "@anonymous"
+			host: mediaPlayer,
+			port: parseInt(ftp_port), // defaults to 21
+			user: sayitSettings.vars[i_].ftp_user || sayitSettings.ftp_user || "anonymous", // defaults to "anonymous"
+			pass: sayitSettings.vars[i_].ftp_pass || sayitSettings.ftp_pass || "@anonymous" // defaults to "@anonymous"
 		});
 
 		Ftp.put (file, 'say.mp3', function(hadError) {
 			if (!hadError) {
-				console.log("File transferred successfully!");
-				request ("http://"+sayitSettings.mediaPlayer+":50000/track=say.mp3",
+				request ("http://"+mediaPlayer+":50000/track=say.mp3",
 					function (error, response, body) {
 						if (!error && response.statusCode == 200) {
-							console.log(body) // Print the google web page.
+							logger.error(body) // Print the google web page.
 						}
 					});
 			} else {
 				logger.error ('FTP error:' + hasError);
 			}
 			Ftp.raw.quit(function(err, data) {
-				if (err) return console.error(err);
+				if (err) logger.error(err);
 
 				Ftp.destroy();
 			});
 		});
 	}
 }
+
 function sayItIsPlayFile (text) {
     if (text.length > 4) {
         var ext = text.substring (text.length - 4);
@@ -262,7 +270,7 @@ function sayItGetFileName (text) {
     return __dirname+"/../../www/say.mp3";
 }
 
-function sayItSystem (text, language) {
+function sayItSystem (i_, text, language) {
     var p = os.platform();
     var ls = null;
     var outstring = "";
@@ -277,25 +285,69 @@ function sayItSystem (text, language) {
     } else if (p == 'darwin') {
         //mac osx
         //var ls = cp.spawn('/sbin/ping', ['-n', '-t 2', '-c 1', addr]);
+        logger.warn ("No play file yet supported for OS X");
     }
 
-    ls.on('error', function(e) {
-        throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
-    });
+    if (ls) {
+        ls.on('error', function(e) {
+            throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
+        });
+    }
+}
+
+function sayItSystemVolume (level) {
+    var p = os.platform();
+    var ls = null;
+    var outstring = "";
+    var file = sayItGetFileName (text);
+
+    if (p == 'linux') {
+        //linux
+        //ls = cp.spawn('mpg321', [file]);
+        logger.warn ("No volume yet supported for LINUX");
+    } else if (p.match(/^win/)) {
+        //windows
+        //var ls = cp.spawn (__dirname + '/cmdmp3/cmdmp3.exe', [file]);
+        logger.warn ("No volume yet supported for Windows");
+    } else if (p == 'darwin') {
+        //mac osx
+        //var ls = cp.spawn('/sbin/ping', ['-n', '-t 2', '-c 1', addr]);
+        logger.warn ("No volume yet supported for MAC OS");
+    }
+
+    if (ls) {
+        ls.on('error', function(e) {
+            throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
+        });
+    }
 }
 
 function sayItExecute (i_, text, language) {
-	var options = sayitSettings.vars[i_].options.split(',');
-	var isGenerate = false;
+	var options     = sayitSettings.vars[i_].options.split(',');
+    var ftp_port    = sayitSettings.vars[i_].ftp_port    || sayitSettings.ftp_port;
+    var mediaPlayer = sayitSettings.vars[i_].mediaPlayer || sayitSettings.mediaPlayer;
+
 	if (options[0] == "all") {
+
 		for (var opt in sayit_options) {
-			sayit_options[opt].func (text, language);
+            // Skip mp24 if FTP option is enabled and configured
+            if (opt == "mp24" && ftp_port && mediaPlayer) {
+                continue;
+            }
+			sayit_options[opt].func (i_, text, language);
 		}
 	}
 	else {
 		for (var q = 0; q < options.length; q++) {
 			if (sayit_options[options[q]]) {
-				sayit_options[options[q]].func (text, language);
+
+                // Skip mp24 if FTP option is enabled and configured
+                if (opt == "mp24" &&
+                    sayitSettings.vars[i_].options.indexOf ("mp24ftp") != -1 &&
+                    ftp_port && mediaPlayer) {
+                        continue;
+                }
+				sayit_options[options[q]].func (i_, text, language);
 			}
 		}
 	}
@@ -312,6 +364,14 @@ function sayIt (objId, text, language) {
     }
 
 	var i = null;
+    // If say on all possible variables
+    if (objId == sayitSettings.firstId + 3) {
+        for (var t in sayitSettings.vars) {
+            sayIt (sayitSettings.vars[t].id, text, language);
+        }
+        return;
+    }
+
 	for (var t in sayitSettings.vars) {
 		if (sayitSettings.vars[t].id == objId) {
 			i = t;
@@ -341,7 +401,8 @@ function sayIt (objId, text, language) {
                 }
             }
         }
-		if (isGenerate) {
+		if (isGenerate && sayLastGeneratedText != "["+language+"]"+text) {
+            sayLastGeneratedText = "["+language+"]"+text;
 			sayItGetSpeech (i, text, language, sayItExecute);
 		}
 		else {
@@ -352,8 +413,8 @@ function sayIt (objId, text, language) {
 
 var sayit_options = {
 	"browser": {name: "Browser",           mp3Required: true,  func: sayItBrowser},
+    "mp24ftp": {name: "MediaPlayer24+FTP", mp3Required: true,  func: sayItMP24ftp},
 	"mp24"   : {name: "MediaPlayer24",     mp3Required: false, func: sayItMP24},
-	"mp24ftp": {name: "MediaPlayer24+FTP", mp3Required: true,  func: sayItMP24ftp},
 	"system" : {name: "System",            mp3Required: true,  func: sayItSystem}
 };
 
@@ -373,7 +434,7 @@ createObject(sayitSettings.firstId, {
     "ValueMin": 0,
     "ValueMax": 4294967295,
     "ValueUnit": "",
-    "ValueType": 16,
+    "ValueType": 4,
     "ValueSubType": 0,
     "ValueList": ""
 });
@@ -385,10 +446,33 @@ createObject(sayitSettings.firstId + 1, {
     "ValueMin": null,
     "ValueMax": null,
     "ValueUnit": "",
-    "ValueType": 16,
-    "ValueSubType": 29,
+    "ValueType": 20,
+    "ValueSubType": 11,
     "ValueList": ""
 });
+createObject(sayitSettings.firstId + 2, {
+    "Name": "SayIt.VOLUME",
+    "TypeName": "VARDP",
+    "DPInfo": "SayIt",
+    "ValueMin": null,
+    "ValueMax": null,
+    "ValueUnit": "",
+    "ValueType": 4,
+    "ValueSubType": 0,
+    "ValueList": ""
+});
+createObject(sayitSettings.firstId + 3, {
+    "Name": "SayIt.ALL",
+    "TypeName": "VARDP",
+    "DPInfo": "SayIt",
+    "ValueMin": null,
+    "ValueMax": null,
+    "ValueUnit": "",
+    "ValueType": 20,
+    "ValueSubType": 11,
+    "ValueList": ""
+});
+
 var isMixerInitialized = false;
 for (var id in sayitSettings.vars) {
     createObject(sayitSettings.vars[id].id, {

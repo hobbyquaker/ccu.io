@@ -42,9 +42,11 @@
         <th></th>
     </tr>
 </table>
-<input type="button" id="add_device" value="add device"/>
+<input type="button" id="add_device" value="add device"/><br><br>
+<input type="button" id="browse" value="Browse"/>
 
 <script type="text/javascript">
+    var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host') + "?key="+socketSession);
 
     function storeSettings () {
         console.log (JSON.stringify(currentAdapterSettings));
@@ -190,6 +192,9 @@
         showDevice ("_"+i);
     });
 
+    $("#browse").button().click(function () {
+        sonosBrowse ();
+    });
     function sonosRemoveDevice(j) {
         $("tr.sonos-optdevice").remove();
         delete currentAdapterSettings.settings.devices[j];
@@ -197,4 +202,27 @@
         storeSettings();
     }
 
+    function sonosBrowse () {
+        socket.emit('execScript', "adapter/sonos/sonosBrowse.js", [""], function(script, arg, result) {
+            var IPs = result.split(",");
+            console.log (result);
+            for (var u = 0; u < IPs.length; u++) {
+                var isFound = false;
+                for (var id in currentAdapterSettings.settings.devices) {
+                    if (currentAdapterSettings.settings.devices[id].ip == IPs[u]) {
+                        isFound = true;
+                        break;
+                    }
+                }
+                if (!isFound) {
+                    // Find free id
+                    var i = 1;
+                    while (currentAdapterSettings.settings.devices["_"+i]) i++;
+
+                    currentAdapterSettings.settings.devices["_"+i] = {ip: IPs[u], name:"", rooms:[""], funcs:["Media"], pairKey: ""};
+                    showDevice ("_"+i);
+                }
+            }
+        });
+    }
 </script>
