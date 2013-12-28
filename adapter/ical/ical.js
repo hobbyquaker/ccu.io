@@ -2,11 +2,7 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
-<<<<<<< HEAD
  *      Version 0.3
-=======
- *      Version 0.2
->>>>>>> 22099adf23fa5c5eb1b270df6ff899b5701a871c
  *		
  */
 var settings = require(__dirname+'/../../settings.js');
@@ -26,7 +22,6 @@ var ical = require('ical'), months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 
 var RRule = require('rrule').RRule;
 var preview = icalSettings.preview;
 var intervalID;
-<<<<<<< HEAD
 var fontbold = '<span style="font-weight:bold;color:white">';
 var fontnormal = '<span style="font-weight:normal;color:white">';
 var fontboldorange = '<span style="font-weight:bold;color:orange">';
@@ -47,14 +42,6 @@ var debug = icalSettings.debug;
 
 var prefix;
 var suffix;
-=======
-var fontbold = '<span style="font-weight:bold">';
-var fontnormal = '<span style="font-weight:normal">';
-
-
-
-
->>>>>>> 22099adf23fa5c5eb1b270df6ff899b5701a871c
 
 
 if (settings.ioListenPort) {
@@ -144,7 +131,6 @@ function checkiCal(loc) {
 
         ical.fromURL(loc, {}, function (err, data) {
            logger.info("adapter ical processing URL" + loc);
-<<<<<<< HEAD
             //Variable ablöschen
             setState(icalSettings.firstId + 1, "");
             minoneorange = false;
@@ -162,14 +148,10 @@ function checkiCal(loc) {
                     }
                 }
             }*/
-=======
-            var arrDates = new Array();
->>>>>>> 22099adf23fa5c5eb1b270df6ff899b5701a871c
             for (var k in data) {
             //  console.log(k);
                 if (data.hasOwnProperty(k)) {
                     var ev = data[k]
-<<<<<<< HEAD
                     var enddate = new Date();
                     var now = new Date();
                     enddate.setDate(enddate.getDate() + preview);
@@ -219,23 +201,6 @@ function checkiCal(loc) {
                                         var singleDate = fontbold + datevar.getDate() + "." + (datevar.getMonth() + 1) + "." + datevar.getFullYear() + " " + MyTimeString + fontnormal + " " + ev.summary;
                                     }
                                    if (debug) {logger.info("RRUle Termin hinzugefügt: " + ev.summary + " "+ singleDate);}
-=======
-                    //es interessieren nur Termine mit einer Summary
-                    var enddate = new Date();
-                    var now = new Date();
-                    enddate.setDate(enddate.getDate() + preview);
-                    if (ev.summary != undefined) {
-                    //aha, eine RRULE in dem Termin --> auswerten
-                        if (ev.rrule != undefined) {
-                        // console.log(ev.rrule.toString());
-                            var rule = RRule.fromString(ev.rrule.toString());
-                            var dates = rule.between(now, enddate);
-                            if (dates.length > 0) {
-                                for (var i = 0; i < dates.length; i++) {
-                                    var datevar = new Date(Date.parse(dates));
-                                    var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':'+ ('0' + (ev.start.getMinutes())).slice(-2);
-                                    var singleDate = fontbold + datevar.getDate() + "." + (datevar.getMonth() + 1) + "." + datevar.getFullYear() + " " + MyTimeString + fontnormal + " " + ev.summary;
->>>>>>> 22099adf23fa5c5eb1b270df6ff899b5701a871c
                                     arrDates.push(singleDate);
                                 }
                             }
@@ -243,7 +208,6 @@ function checkiCal(loc) {
                             //Nein, also ein einzelner Termin
                             if (ev.start < enddate && ev.start > now) {
                             //Termin innerhalb des Zeitfensters
-<<<<<<< HEAD
                                 var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
                                 var com = ev.start;
                                 com.setHours(0,0,0,0);
@@ -327,21 +291,6 @@ function SortDates(a,b) {
     date2.setMinutes(ti2.split(":")[1])
     //vergleichen
     return date1.compare(date2);
-=======
-                                var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':'
-                                    + ('0' + (ev.start.getMinutes())).slice(-2);
-                                var singleDate = fontbold + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + fontnormal + " " + ev.summary;
-                                arrDates.push(singleDate);
-                            }
-                        }
-                        if (arrDates.length > 0) {
-                            setState(icalSettings.firstId + 1, brSeparatedList(arrDates));
-                        }
-                    }
-                }
-            }
-        })
->>>>>>> 22099adf23fa5c5eb1b270df6ff899b5701a871c
 }
 
 function brSeparatedList(arr) {
@@ -409,17 +358,9 @@ function iCalInit() {
 	
 	  logger.info("adapter ical objects inserted, starting at: "+icalSettings.firstId);
 
-<<<<<<< HEAD
     if (icalSettings.runEveryMinutes > 0) {
         //Autostart --> first read in 30sec
         setTimeout(function() {checkiCal(icalSettings.defURL)},4000);
-=======
-
-
-    if (icalSettings.runEveryMinutes > 0) {
-        //Autostart --> first read in 30sec
-        setTimeout(function() {checkiCal(icalSettings.defURL)},30000);
->>>>>>> 22099adf23fa5c5eb1b270df6ff899b5701a871c
         //now schedule
         var runeveryminutes = icalSettings.runEveryMinutes * 60000;
         logger.info("adapter ical autorun every " + icalSettings.runEveryMinutes + " Minutes");
