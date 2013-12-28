@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.5*
+*aktuelle Version: 1.0.6*
 
 ## Dokumentation
 
@@ -24,6 +24,16 @@ siehe http://ccu.io/
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 1.0.6
+* (Hobbyquaker) neuer Adapter: LIRC
+* (Hobbyquaker) neuer Adapter: Graphite
+* (Hobbyquaker) Adapter MySQL Bugfix
+* (Hobbyquaker) several Bugfixes
+* (Hobbyquaker) persistent Objects and Datapoints (save on quit)
+* (Hobbyquaker) Bugfix getState()
+* (Hobbyquaker) Adapter muell_stuttgart: Konfigurationsseite
+
 
 ### 1.0.5
 * (Hobbyquaker) Neue Methode touchFile
