@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.6*
+*aktuelle Version: 1.0.7*
 
 ## Dokumentation
 
@@ -24,6 +24,12 @@ siehe http://ccu.io/
 * Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 1.0.7
+* (Bluefox) New adapter: LG TV, to control LG tv over ethernet
+* (Bluefox) Browse function for SONOS adapter by settings
+* (Bluefox) SayIt adapter changed: first user variable is 72910, new variable 72903 to output the text over all configured variables, MP24 settings for every variable (to control different Tablets and Android devices)
+* (Vader722) Adapter iCal, Bugfixes, farbliche Hervorhebungen, debugging
 
 ### 1.0.6
 * (Hobbyquaker) neuer Adapter: LIRC
