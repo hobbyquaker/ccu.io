@@ -5,7 +5,7 @@
 		"preview": 2,
 		"runEveryMinutes": 30,
 		"colorize": true,
-		"debugging": true,
+		"debugging": false,
 		"defURL": "http://XXXXXX"
 		}
 }	
