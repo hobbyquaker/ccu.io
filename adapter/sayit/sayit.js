@@ -290,11 +290,11 @@ function sayItSystemVolume (level) {
 	if (level < 0)   level = 0;
 	if (level > 100) level = 100;	
 
-    if (volume === sayLastVolume) {
+    if (level === sayLastVolume) {
 		return;
 	}
 	
-	sayLastVolume = volume;
+	sayLastVolume = level;
 	
 	var p = os.platform();
     var ls = null;
@@ -305,7 +305,7 @@ function sayItSystemVolume (level) {
     } else if (p.match(/^win/)) {
         //windows
 		// windows volume is from 0 to 65535
-		level = 65535 * level; // because this level is from 0 to 100
+		level = Math.round((65535 * level) / 100); // because this level is from 0 to 100
         ls = cp.spawn (__dirname + '/nircmd/nircmdc.exe', ["setsysvolume", level]);
     } else if (p == 'darwin') {
         //mac osx
