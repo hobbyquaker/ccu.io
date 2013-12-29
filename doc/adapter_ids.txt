@@ -22,9 +22,9 @@
 
 72500-72899                     rpi adapter
 
-72900                           sayIt trigger
-72901                           sayIt text: Write this variable with text to say
-72902-72920                     sayIt reserved
+72900-72950                     sayIt adapter
+
+73200-73500                     lgtv adapter
 
 73000-73095                     lirc adapter
 

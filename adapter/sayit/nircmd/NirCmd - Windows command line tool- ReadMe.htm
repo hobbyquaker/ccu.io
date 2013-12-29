@@ -1,0 +1,998 @@
+
+<!-- saved from url=(0040)http://www.nirsoft.net/utils/nircmd.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<title>NirCmd - Windows command line tool</title>
+<meta name="keywords" content="command-line,freeware,dial,monitor off,create shortcut,open cd-rom door,turn off,registry,change volume,mute">
+<meta name="description" content="NirCmd is a small utility that allows you to do many useful tasks from command-line, without displaying any user interface:  change your display settings, turn off your monitor, open the door of your CD-ROM drive, and more...">
+
+<link rel="stylesheet" href="http://www.nirsoft.net/main.css">
+
+<body leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%">
+<tbody><tr>
+<td colspan="3" class="siteheader" height="50">
+
+
+
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%">
+<tbody><tr style="height:2">
+<td>
+</td><td>
+
+</td></tr><tr>
+<td>
+<a href="http://www.nirsoft.net/">
+</a>
+
+</td><td>
+
+
+</td></tr><tr style="height:4">
+<td>
+</td><td>
+
+
+</td></tr></tbody></table>
+
+
+
+</td>
+</tr>
+
+
+<tr>
+<td valign="top" class="siteheader" style="width:140">
+
+<table border="0" cellpadding="3" width="100%" style="width:140">
+<tbody><tr class="menu1"><td nowrap=""><a href="http://www.nirsoft.net/">Main Page</a><br>
+</td></tr>
+<tr class="menu1"><td nowrap=""><a href="http://blog.nirsoft.net/">Blog</a><br>
+</td></tr>
+<tr class="menu1"><td nowrap=""><a href="http://www.nirsoft.net/search_freeware.html">Search</a><br>
+</td></tr>
+<tr class="menu1"><td nowrap=""><a href="http://www.nirsoft.net/faq.html">FAQ</a><br>
+</td></tr>
+<tr class="menu1"><td nowrap=""><a href="http://www.nirsoft.net/top_utilities_downloads.html">TOP 10</a><br>
+</td></tr>
+<tr class="menu1"><td nowrap=""><a href="http://www.nirsoft.net/freeware_links.html">Links</a><br>
+</td></tr>
+<tr class="menu1"><td nowrap=""><a href="http://www.nirsoft.net/awards.html">Awards</a><br>
+</td></tr>
+<tr class="menu1"><td nowrap=""><a href="http://www.nirsoft.net/pad">Pad Files</a><br>
+</td></tr>
+<tr class="menu1"><td nowrap=""><a href="http://www.nirsoft.net/contact-new.html">Contact</a><br>
+</td></tr>
+<tr class="menu1"><td nowrap=""><a href="http://www.nirsoft.net/about_nirsoft_freeware.html">About...</a><br>
+</td></tr>
+<tr class="menu1"><td nowrap=""><a href="http://www.nirsoft.net/donate.html" style="color:#000080">Donate</a><br>
+</td></tr>
+</tbody></table>
+<br>
+<table border="0" cellpadding="3" width="100%">
+<tbody><tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/utils/index.html">All Utilities</a><br>
+</td></tr>
+<tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/password_recovery_tools.html">Password Tools</a><br>
+</td></tr>
+<tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/system_tools.html">System Tools</a><br>
+</td></tr>
+<tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/web_browser_tools.html">Browser Tools</a><br>
+</td></tr>
+<tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/programmer_tools.html">Programmer Tools</a><br>
+</td></tr>
+<tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/network_tools.html">Network Tools</a><br>
+</td></tr>
+<tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/outlook_office_software.html">Outlook/Office</a><br>
+</td></tr>
+<tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/x64_download_package.html">64-bit Download</a><br>
+</td></tr>
+<tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/panel">Panel</a><br>
+</td></tr>
+<tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/computer_forensic_software.html">Forensics</a><br>
+</td></tr>
+<tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/code_samples.html">Code Samples</a><br>
+</td></tr>
+<tr class="menu2"><td nowrap=""><a href="http://www.nirsoft.net/articles">Articles</a><br>
+</td></tr>
+
+</tbody></table>
+
+
+
+
+<p>
+
+</p><center>
+
+
+</center>
+
+
+
+</td>
+
+<td class="menutomain">&nbsp;
+</td>
+
+<td valign="top">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tbody><tr>
+<td class="toptomain" colspan="3">
+</td>
+</tr><tr>
+<td style="width:7">&nbsp;</td>
+<td valign="top">
+
+
+
+<table border="0" class="utilcaption">
+<tbody><tr>
+<td>NirCmd v2.75
+<br>
+Copyright (c) 2003 - 2013 Nir Sofer
+</td></tr></tbody></table>
+
+<p>
+</p><h4 class="utilsubject">See Also</h4>
+<ul>
+<li><a href="http://www.nirsoft.net/utils/outlook_nk2_edit.html">NK2Edit</a> - Edit, merge and fix the AutoComplete files (.NK2) of Microsoft Outlook.
+</li></ul>
+
+
+<p>
+<a name="description"></a></p><h4 class="utilsubject">Description</h4>
+NirCmd is a small command-line utility that allows you to do some useful tasks without
+displaying any user interface. By running NirCmd with simple command-line option, you can
+write and delete values and keys in the Registry, write values into INI file, dial to your
+internet account or connect to a VPN network, restart windows or shut down the computer, 
+create shortcut to a file, change the created/modified date of a file, change your display
+settings, turn off your monitor, open the door of your CD-ROM drive, and more...
+
+
+<p>
+<a name="examples"></a></p><h4 class="utilsubject">Examples of what you can do with NirCmd</h4>
+<table border="1" cellpadding="5">
+<tbody><tr>
+<td width="50%">Open the door of J: CD-ROM drive
+</td><td nowrap="">
+<span class="commandline">
+nircmd.exe cdrom open j: 
+</span>
+
+</td></tr><tr>
+<td>Close the door of Y: CD-ROM drive
+</td><td class="commandline" nowrap="">
+nircmd.exe cdrom close y: 
+
+</td></tr><tr>
+<td>Speaks the text currently in the clipboard (For Windows XP/Vista/7/8).
+</td><td class="commandline" nowrap="">
+speak text ~$clipboard$ 
+
+</td></tr><tr>
+<td>Speaks the text stored inside speak.txt into speak.wav filename (For Windows XP/Vista/7/8).
+</td><td class="commandline" nowrap="">
+speak file "c:\temp\speak.txt" 0 100 "c:\temp\speak.wav" 48kHz16BitStereo
+
+
+
+</td></tr><tr>
+<td>Increase the system volume by 2000 units (out of 65535)
+</td><td class="commandline" nowrap="">
+nircmd.exe changesysvolume 2000
+
+</td></tr><tr>
+<td>Decrease the system volume by 5000 units (out of 65535)
+</td><td class="commandline" nowrap="">
+nircmd.exe changesysvolume -5000
+
+
+</td></tr><tr>
+<td>Set the volume to the highest value
+</td><td class="commandline" nowrap="">
+nircmd.exe setsysvolume 65535
+
+</td></tr><tr>
+<td>Mute the system volume
+</td><td class="commandline" nowrap="">
+nircmd.exe mutesysvolume 1
+
+</td></tr><tr>
+<td>Unmute the system volume
+</td><td class="commandline" nowrap="">
+nircmd.exe mutesysvolume 0
+
+</td></tr><tr>
+<td>Switch the system volume between the mute and normal state.
+</td><td class="commandline" nowrap="">
+nircmd.exe mutesysvolume 2
+
+</td></tr><tr>
+<td>Create a shortcut on your desktop that switch the system volume between the mute and normal state.
+</td><td class="commandline">
+nircmd.exe cmdshortcut  "~$folder.desktop$" "Switch Volume" mutesysvolume 2
+
+</td></tr><tr>
+<td>Turn off the monitor
+</td><td class="commandline" nowrap="">
+nircmd.exe monitor off
+
+</td></tr><tr>
+<td>Start the default screen saver
+</td><td class="commandline" nowrap="">
+nircmd.exe screensaver  
+
+</td></tr><tr>
+<td>Put your computer in 'standby' mode
+</td><td class="commandline" nowrap="">
+nircmd.exe standby
+
+</td></tr><tr>
+<td>
+log off the current user
+</td><td class="commandline" nowrap="">
+nircmd.exe exitwin logoff
+
+</td></tr><tr>
+<td>
+Ask if you want to reboot, and if you answer 'Yes', reboot the computer.
+</td><td class="commandline" nowrap="">
+nircmd.exe qboxcom "Do you want to reboot ?" "question" exitwin reboot
+
+</td></tr><tr>
+<td>
+Turn off your computer
+</td><td class="commandline" nowrap="">
+nircmd.exe exitwin poweroff 
+
+
+</td></tr><tr>
+<td>
+Turn off all computers specified in computers.txt !
+</td><td class="commandline" nowrap="">
+multiremote copy "c:\temp\computers.txt" exitwin poweroff force 
+
+</td></tr><tr>
+<td>Dial to "My Internet" connection 
+</td><td class="commandline" nowrap="">
+nircmd.exe rasdial "My Internet"
+
+</td></tr><tr>
+<td>Disconnect the "My Internet" connection 
+</td><td class="commandline" nowrap="">
+nircmd.exe rashangup "My Internet"
+
+</td></tr><tr>
+<td>Make your Internet Explorer windows 75% transparent ! (192 / 256)
+</td><td class="commandline" nowrap="">
+nircmd.exe win trans ititle "internet explorer" 192
+
+</td></tr><tr>
+<td>Minimize all your Internet Explorer windows 
+</td><td class="commandline" nowrap="">
+nircmd.exe win min class "IEFrame" 
+
+</td></tr><tr>
+<td>Close all your Internet Explorer windows 
+</td><td class="commandline" nowrap="">
+nircmd.exe win close class "IEFrame" 
+
+</td></tr><tr>
+<td>Close all your Explorer windows (My Computer, folders, and so on)
+</td><td class="commandline" nowrap="">
+nircmd.exe win close class "CabinetWClass"
+
+</td></tr><tr>
+<td>Hide all your Internet Explorer windows 
+</td><td class="commandline" nowrap="">
+nircmd.exe win hide class "IEFrame" 
+
+</td></tr><tr>
+<td>Show all your Internet Explorer windows (after you made them hidden with previous example)
+</td><td class="commandline" nowrap="">
+nircmd.exe win show class "IEFrame" 
+
+</td></tr><tr>
+<td>Center all top-level windows
+</td><td class="commandline" nowrap="">
+nircmd.exe win center alltop
+
+</td></tr><tr>
+<td>Remove the title bar of My Computer window.
+</td><td class="commandline" nowrap="">
+nircmd.exe win -style title "my computer" 0x00C00000
+
+</td></tr><tr>
+<td>Return the title bar of My Computer window that we removed in the previous example.
+</td><td class="commandline" nowrap="">
+nircmd.exe win +style title "my computer" 0x00C00000
+
+
+</td></tr><tr>
+<td>Set the My Computer window to right-to-left order (For hebrew and arabic languages)
+</td><td class="commandline" nowrap="">
+nircmd win +exstyle title "my computer" 0x00400000
+
+
+</td></tr><tr>
+<td>Set all child windows of  My Computer window to right-to-left order (For hebrew and arabic languages)
+</td><td class="commandline" nowrap="">
+nircmd win child title "my computer" +exstyle all 0x00400000
+
+</td></tr><tr>
+<td>Create a shortcut on your desktop that closes all your Internet Explorer windows 
+</td><td class="commandline">
+nircmd.exe cmdshortcut " "~$folder.desktop$ "Close All IE" win close class "IEFrame" 
+
+</td></tr><tr>
+<td>Create a shortcut on your desktop that hides all your Internet Explorer windows 
+</td><td class="commandline">
+nircmd.exe cmdshortcut " "~$folder.desktop$ "Hide All IE" win hide class "IEFrame" 
+
+</td></tr><tr>
+<td>Create a shortcut on your desktop that shows back all your Internet Explorer windows 
+</td><td class="commandline">
+nircmd.exe cmdshortcut " "~$folder.desktop$ "Show All IE" win show class "IEFrame" 
+
+</td></tr><tr>
+<td>Set the Windows Calculator as top-most window (above all other windows)
+</td><td class="commandline" nowrap="">
+nircmd.exe win settopmost title "Calculator" 1
+
+</td></tr><tr>
+<td>Set the Windows Calculator back to regular window (non top-most window)
+</td><td class="commandline" nowrap="">
+nircmd.exe win settopmost title "Calculator" 0
+
+</td></tr><tr>
+<td>Create a shortcut to Windows calculator under Start Menu-&gt;Programs-&gt;Calculators 
+</td><td class="commandline">
+nircmd.exe shortcut "f:\winnt\system32\calc.exe" "~$folder.programs$\Calculators" "Windows Calculator" 
+
+</td></tr><tr>
+<td>Hide the desktop window
+</td><td class="commandline" nowrap="">
+nircmd.exe win hide class progman
+
+</td></tr><tr>
+<td>Show the desktop window (After hiding it in previous example)
+</td><td class="commandline" nowrap="">
+nircmd.exe win show class progman
+
+</td></tr><tr>
+<td>Hide the start button on the system tray
+</td><td class="commandline" nowrap="">
+nircmd.exe win child class "Shell_TrayWnd" hide class "button"
+
+
+</td></tr><tr>
+<td>Show the start button on the system tray
+</td><td class="commandline" nowrap="">
+nircmd.exe win child class "Shell_TrayWnd" show class "button"
+
+
+</td></tr><tr>
+<td>Hide the clock on the system tray
+</td><td class="commandline" nowrap="">
+nircmd.exe win child class "Shell_TrayWnd" hide class "TrayClockWClass"
+
+</td></tr><tr>
+<td>Show the clock on the system tray
+</td><td class="commandline" nowrap="">
+nircmd.exe win child class "Shell_TrayWnd" show class "TrayClockWClass" 
+
+</td></tr><tr>
+<td>Kill (terminate) all instance of Internet Explorer processes
+</td><td class="commandline" nowrap="">
+nircmd.exe killprocess iexplore.exe
+
+
+</td></tr><tr>
+<td>Create a shortcut on your desktop that opens the door of K: CDROM drive when you run it.
+</td><td class="commandline">
+nircmd.exe cmdshortcut "~$folder.desktop$" "Open CDROM" cdrom open k:
+
+</td></tr><tr>
+<td>Create a shortcut to NirSoft Web site on your desktop
+</td><td class="commandline" nowrap="">
+nircmd.exe urlshortcut "http://www.nirsoft.net" "~$folder.desktop$" "NirSoft"
+
+</td></tr><tr>
+<td>Add NirSoft Web site to your Favorities under Links folder.
+</td><td class="commandline">
+nircmd.exe urlshortcut "http://www.nirsoft.net" "~$folder.favorites$\Links" "NirSoft"
+
+</td></tr><tr>
+<td>Create a shortcut to NirSoft Web site on the desktop of all computers listed in computers.txt
+</td><td class="commandline">
+nircmd.exe multiremote copy "c:\temp\computers.txt" urlshortcut "http://www.nirsoft.net" "~$folder.common_desktop$" "NirSoft"
+
+</td></tr><tr>
+<td>Set the display mode to 800x600x24bit colors
+</td><td class="commandline" nowrap="">
+nircmd.exe setdisplay 800 600 24
+
+</td></tr><tr>
+<td>Create a shortcut on the desktop that set the display mode to 800x600x24bit colors
+</td><td class="commandline">
+nircmd.exe cmdshortcut "~$folder.desktop$" "800x600x24" setdisplay 800 600 24
+
+</td></tr><tr>
+<td>Copy all shortcuts on your desktop to another folder (f:\temp\desktop).
+</td><td class="commandline">
+nircmd.exe execmd copy "~$folder.desktop$\*.lnk" f:\temp\desktop 
+
+</td></tr><tr>
+<td>Restart your Apache server (under Windows NT/2000/XP/2003)
+</td><td class="commandline" nowrap="">
+nircmd.exe service restart apache
+
+</td></tr><tr>
+<td>Create a shortcut on your desktop that restarts the Apache server
+</td><td class="commandline">
+nircmd.exe cmdshortcut "~$folder.desktop$" "Restart Apache" service restart apache
+
+</td></tr><tr>
+<td>Restart your IIS
+</td><td class="commandline" nowrap="">
+nircmd.exe service restart w3svc 
+
+</td></tr><tr>
+<td>Restart MySql
+</td><td class="commandline" nowrap="">
+nircmd.exe service restart MySql 
+
+</td></tr><tr>
+<td>Open the desired Registry key/value in RegEdit
+</td><td class="commandline">
+nircmd.exe regedit "HKLM\Software\Microsoft\Windows\CurrentVersion" "CommonFilesDir"
+
+
+</td></tr><tr>
+<td>Open the Registry key that you copied to the clipboard in RegEdit.
+</td><td class="commandline">
+nircmd regedit "~$clipboard$"
+
+</td></tr><tr>
+<td>Disable the screen saver
+</td><td class="commandline" nowrap="">
+nircmd.exe regsetval sz "HKCU\control panel\desktop" "ScreenSaveActive" 0
+
+
+</td></tr><tr>
+<td>Enable the screen saver
+</td><td class="commandline" nowrap="">
+nircmd.exe regsetval sz "HKCU\control panel\desktop" "ScreenSaveActive" 1
+
+
+</td></tr><tr>
+<td>Change the date/time of the specified filename (creation time and modified time)
+</td><td class="commandline">
+nircmd.exe setfiletime "c:\temp\myfile.txt" "24-06-2003 17:57:11" "22-11-2005 10:21:56" 
+
+
+</td></tr><tr>
+<td>Copy your desktop folder path to the clipboard
+</td><td class="commandline">
+nircmd.exe clipboard set ~$folder.desktop$
+
+
+</td></tr><tr>
+<td>Copy your start menu folder path to the clipboard
+</td><td class="commandline">
+nircmd.exe clipboard set ~$folder.start_menu$
+
+</td></tr><tr>
+<td>Copy the content of info1.txt (simple text file) to the clipboard
+</td><td class="commandline">
+nircmd.exe clipboard readfile "c:\My Files\info1.txt"
+
+</td></tr><tr>
+<td>Add the text content of clipboard to info1.txt
+</td><td class="commandline">
+nircmd.exe clipboard addfile "c:\My Files\info1.txt"
+
+</td></tr><tr>
+<td>Clear the clipboard
+</td><td class="commandline">
+nircmd.exe clipboard clear
+
+</td></tr><tr>
+<td>Create all folders specified in "c:\temp\folders.txt". The folder path names are
+separated by CRLF characters.
+</td><td class="commandline">
+nircmd.exe paramsfile "c:\temp\folders.txt" "" "" execmd md ~$fparam.1$
+
+
+</td></tr><tr>
+<td>Install the specified .NET assembly in the global assembly cache (like gacutil)
+</td><td class="commandline">
+nircmd.exe gac install "C:\temp\MyAssembly\bin\MyAssembly.dll"
+
+
+</td></tr><tr>
+<td>Empty the recycle bin in all drives.
+</td><td class="commandline" nowrap="">
+nircmd.exe emptybin 
+
+
+
+</td></tr><tr>
+<td>Answer 'Yes' to a standard Windows message-box.
+</td><td class="commandline" nowrap="">
+nircmd.exe dlg "" "" click yes
+
+</td></tr><tr>
+<td>Wait 2 seconds, and then save the current screen to shot.png
+</td><td class="commandline" nowrap="">
+nircmd.exe cmdwait 2000 savescreenshot "f:\temp\shot.png"
+
+</td></tr><tr>
+<td>Save 10 screenshots in a loop, and wait 60 seconds between the screenshot save calls.
+The filenames of the screenshot will contain the time and date of the saved screenshot.
+
+</td><td class="commandline">
+nircmd.exe loop 10 60000 savescreenshot c:\temp\scr~$currdate.MM_dd_yyyy$-~$currtime.HH_mm_ss$.png
+
+</td></tr><tr>
+<td>
+Wait until Firefox is closed, and then say "Firefox was closed"
+</td><td class="commandline" nowrap="">
+nircmd.exe waitprocess firefox.exe speak text "Firefox was closed"
+
+
+</td></tr><tr>
+<td>
+Run RegEdit with SYSTEM user (On Windows 7/8/Vista/2008), which allows you to view all hidden system Registry keys
+</td><td class="commandline" nowrap="">
+nircmd.exe elevatecmd runassystem c:\windows\regedit.exe
+
+
+</td></tr></tbody></table>
+
+<p>
+<a name="sysreq"></a></p><h4 class="utilsubject">System Requirements</h4>
+This utility can work in all versions of Windows operating system: Windows 9x/ME, 
+Windows NT, Windows 2000, Windows XP, Windows Server 2003, Windows Vista, Windows Server 2008, Windows 7, and Windows 8.
+
+
+<a name="verhistory"></a><h4 class="utilsubject">Versions History</h4>
+<table border="1" cellpadding="5">
+
+<tbody><tr class="utiltableheader"><th>Date </th><th> Version </th><th> Description
+
+</th></tr><tr><td>10/08/2013</td><td>2.75</td><td>
+<ul>
+<li>Added new commands: moverecyclebin, suspendprocess , resumeprocess.
+</li><li>Added etitle option to the find parameter of win command.
+</li><li>'clipboard readfile' command now reads Unicode files (UTF-8 and UTF-16).
+</li></ul>
+
+</td></tr><tr><td>29/10/2012</td><td>2.71</td><td>
+<ul>
+<li>Added runassystem command, which allows you to run a process with SYSTEM user (Works on Windows 7/8/Vista/2008)
+</li></ul>
+
+</td></tr><tr><td>12/09/2012</td><td>2.70</td><td>
+<ul>
+<li>Added new option to speak command: You can now save the entire speach into a .wav file that can be played with any
+media player (Instead of playing it directly to your sound card).
+</li><li>Added restartexplorer command, which simply restarts Windows Explorer gracefully.
+</li><li>Added screensavertimeout command, which allows you to set the screensaver timeout, in seconds.
+</li><li>Added togglemax, togglemin, togglehide, toggledisable actions to win command.
+</li><li>Added SystemSounds support for setappvolume, changeappvolume, and muteappvolume commands.
+</li><li>Fixed issue on Windows 7: 'win close alltopnodesktop' command caused a shutdown dialog-box to appear.
+</li><li>Fixed the setprimarydisplay to work properly.
+</li></ul>
+
+
+
+</td></tr><tr><td>28/06/2011</td><td>2.65</td><td>
+<ul>
+<li>Added setdefaultsounddevice command (for Windows 7/Vista/2008 only), which
+allows you to set the default sound device.
+</li><li>Added setsubunitvolumedb command (for Windows 7/Vista/2008 only), which
+allows you to set the volume of sound device subunits (Line In, Microphone, and so on)
+</li><li>Added mutesubunitvolume command (for Windows 7/Vista/2008 only), which
+allows you to mute/unmute the volume of sound device subunits (Line In, Microphone, and so on)
+</li></ul>
+
+</td></tr><tr><td>21/06/2011</td><td>2.60</td><td>
+<ul>
+<li>Added mediaplay command for playing audio file (.mp3, .wav, and so on) for the
+specified number of milliseconds.
+</li><li>Added changebrightness and setbrightness commands for setting the
+screen brightness on laptops and netbook computers.
+</li></ul>
+
+</td></tr><tr><td>08/06/2011</td><td>2.55</td><td>
+<ul>
+<li>On savescreenshot, savescreenshotfull, and savescreenshotwin commands,
+you can now specify *clipboard* as a filename, in order to save the screenshow into the clipboard
+</li><li>On savescreenshot command, you can now specify a rectangle to capture as x, y, width, and height instead of 
+capturing the entire screen.
+</li><li>Fixed savescreenshotfull command to work properly on multiple screen system with negative coordinates. 
+
+</li></ul>
+
+</td></tr><tr><td>27/03/2011</td><td>2.52</td><td>
+<ul>
+<li>Added 'runas' command, which allows you to run a new process with the specified user name/password.
+</li><li>Added 'Flash' action to the win command, with allows you to flash the specified window.
+</li></ul>
+
+</td></tr><tr><td>13/03/2011</td><td>2.51</td><td>
+<ul>
+<li>Added 'focused' option for setappvolume, changeappvolume, and muteappvolume commands, which allow you to easily
+change the volume of the application that is currently in focus, on Windows 7/Vista/2008.
+</li><li>Added 'default_record' option for 
+setsysvolume, changesysvolume, setsysvolume2, changesysvolume2, and mutesysvolume commands, which allows you set easily
+change the volume of default recording device, on Windows 7/Vista/2008.
+</li></ul>
+
+
+</td></tr><tr><td>24/02/2011</td><td>2.50</td><td>
+<ul>
+<li>Added 3 new sound volume commands to change or mute application volume on Windows 7/Vista/2008:
+setappvolume, changeappvolume, muteappvolume
+</li><li>Added new information command that shows you a message box with all sound devices on your Windows 7/Vista/2008 system:
+showsounddevices. 
+</li></ul>
+
+
+</td></tr><tr><td>22/02/2011</td><td>2.48</td><td>
+<ul>
+<li>Fixed the problems with the timeout of the tray balloon in trayballoon command. 
+
+</li></ul>
+
+</td></tr><tr><td>20/01/2011</td><td>2.47</td><td>
+<ul>
+<li>Fixed bug: The sendkeypress command didn't work properly with Fxx keys (F1, F2, and so on). 
+</li></ul>
+
+
+</td></tr><tr><td>28/11/2010</td><td>2.46</td><td>
+<ul>
+<li>Added option to locate window by process in win command.
+</li><li>Added max and min options (Minimized and maximized windows) into exec and exec2 commands.
+</li><li>Added x64 builds of nircmd.exe and nircmdc.exe
+</li></ul>
+
+
+</td></tr><tr><td>18/10/2010</td><td>2.45</td><td>
+<ul>
+<li>Added trayballoon command - displays a tray balloon with your desired text and icon.
+</li><li>Added sendkeypress command - Alternative to the sendkey command. Allows you to send key press
+combination in much easier way, for example: sendkeypress ctrl+shift+esc
+</li><li>Added clonefiletime command to clone the date/time of existing file into one or more files.
+</li><li>Added setconsolemode command to set the console display mode - window or full screen.
+</li><li>Added setconsolecolor command to set the foreground and background colors of the console text.
+</li><li>Added consolewrite command to write text into the console window. 
+</li><li>Added debugwrite for writing text into the debug output.
+</li><li>Added ~$folder.mydocuments$ variable.
+</li></ul>
+</td></tr><tr><td>21/02/2010</td><td>2.41</td><td>
+<ul>
+<li>Fixed a bug in elevate command: when running a program without parameters, NirCmd sent the elevate command string as a parameter of the program.
+</li></ul>
+
+</td></tr><tr><td>16/02/2010</td><td>2.40</td><td>
+<ul>
+<li>Added elevate and elevatecmd commands to run and execute commands with administrator rights under Windows 7/Vista/2008.
+</li><li>Added monitor parameter to setdisplay command, for using it with multiple monitors.
+</li><li>Added setprimarydisplay command.
+</li><li>Added folder.programfiles and folder.common_programfiles variables.
+</li><li>Added async_off, async_on, async_low for monitor command. You can try them if NirCmd.exe remains in memory 
+when you use monitor on/off command.
+</li></ul>
+
+
+</td></tr><tr><td>26/05/2009</td><td>2.37</td><td>
+<ul>
+<li>Improved the help .chm file - Now it contains a link to every command.
+</li><li>Added help command - Automatically opens the reference of the desired command in <a href="http://nircmd.nirsoft.net/" target="nircmd">http://nircmd.nirsoft.net</a>.
+For example, if you type 'nircmd.exe help speak', the reference page of speak command - <a href="http://nircmd.nirsoft.net/speak.html" target="speak">http://nircmd.nirsoft.net/speak.html</a> will be opened in your default browser.
+</li></ul>
+
+</td></tr><tr><td>19/05/2009</td><td>2.36</td><td>
+<ul>
+<li>Fixed bug in script: Sometimes the last line in the script was not executed properly.
+</li></ul>
+
+</td></tr><tr><td>20/04/2009</td><td>2.35</td><td>
+<ul>
+<li>Added loop command - execute a command multiple times.
+</li><li>Added currtime and currdate variables.
+</li><li>waitprocess - Added option to execute a NirCmd command after the process was closed. 
+</li><li>Added rem (or ;) command, just for adding remarks in a script.
+</li></ul>
+
+
+</td></tr><tr><td>01/04/2009</td><td>2.30</td><td>
+<ul>
+<li>Added speak command - Speaks the contents of the text or file that you specify, by using the Speech library (SAPI) that comes with Windows XP and Windows Vista.
+</li><li>Added savescreenshotfull command.
+</li></ul>
+
+</td></tr><tr><td>02/02/2009</td><td>2.25</td><td>
+<ul>
+<li>New actions for clipboard command -  loadclp and saveclp (load/save in Windows .clp format)
+</li><li>New command: setprocessaffinity 
+</li></ul>
+
+</td></tr><tr><td>01/01/2009</td><td>2.20</td><td>
+<ul>
+<li>New commands: waitprocess, setprocesspriority, qboxtop, qboxcomtop.
+</li><li>New action in clipboard command: copyimage (Copy image file to the clipboard)
+</li></ul>
+
+</td></tr><tr><td>25/06/2008</td><td>2.15</td><td>
+<ul>
+<li>New commands: setcursorwin, savescreenshotwin, filldelete
+</li></ul>
+
+</td></tr><tr><td>12/04/2008</td><td>2.10</td><td>
+<ul>
+<li>New commands: shellcopy, savescreenshot
+</li></ul>
+
+</td></tr><tr><td>09/02/2008</td><td>2.05</td><td>
+<ul>
+<li>New commands: shellrefresh, convertimage, convertimages
+</li><li>New option in clipboard command - saveimage
+</li></ul>
+
+
+</td></tr><tr><td>16/06/2007</td><td>2.00</td><td>
+<ul>
+<li>All sound volume commands and monitor command now works under Vista.
+</li><li>New commands: dlg, dlgany, sendkey, sendmouse, returnval
+</li><li>New actions in win command - dlgclick, dlgsettext, dlgsetfocus
+</li></ul>
+
+
+</td></tr><tr><td>24/07/2006</td><td>1.85</td><td>
+<ul>
+<li>New command: cmdshortcutkey
+</li></ul>
+
+
+</td></tr><tr><td>15/07/2006</td><td>1.84</td><td>
+<ul>
+<li>Starting from this version, if you don't specify a sound device index in setsysvolume, changesysvolume, setsysvolume2, changesysvolume2 and mutesysvolume commands, 
+the default sound device in control panel ("preferred device") is used.
+</li><li>New find options in win command: active, foreground, desktop
+</li></ul>
+
+</td></tr><tr><td>20/05/2006</td><td>1.83</td><td>
+<ul>
+<li>Fixed bug with parameter variables: parameter dialog-box appear more than once.
+</li><li>New find option in Win command: alltopnodesktop
+</li></ul>
+
+</td></tr><tr><td>18/02/2006</td><td>1.82</td><td>
+<ul>
+<li>New win actions: postmsg and sendmsg.
+</li><li>New command: closeprocess
+</li><li>NirCmd now returns a non-zero value on error.
+</li></ul>
+
+</td></tr><tr><td>19/11/2005</td><td>1.81</td><td>
+<ul>
+<li>New command: emptybin - Empty the Recycle Bin.
+</li><li>New optional parameter in setdisplay command: refresh rate.
+</li><li>rashangup command without parameter - disconnect all active connections.
+</li></ul>
+
+</td></tr><tr><td>24/09/2005</td><td>1.80</td><td>
+<ul>
+<li>New commands: exec2, cmdwait.
+</li><li>New options in clipboard command.
+</li><li>Volume commands (setsysvolume, changesysvolume, setsysvolume2, changesysvolume2, mutesysvolume) now allows you to change the volume of non-default sound card.
+</li></ul>
+
+</td></tr><tr><td>07/07/2005</td><td>1.70</td><td>
+<ul>
+<li>New win actions: activate, hideshow, +style, -style, +exstyle, -exstyle
+</li><li>New commands: movecursor, setcursor.
+</li><li>New command: setfilefoldertime - allows you to change the date/time of folders, under Windows 2000/XP only.
+</li></ul>
+
+</td></tr><tr><td>10/06/2005</td><td>1.62</td><td>
+<ul>
+<li>New actions in win command: focus, enable, disable
+</li></ul>
+
+</td></tr><tr><td>26/05/2005</td><td>1.61</td><td>
+<ul>
+<li>new command: sysrefresh - make a general system refresh after modifying your system settings in the Registry.
+</li></ul>
+
+
+</td></tr><tr><td>07/05/2005</td><td>1.60</td><td>
+<ul>
+<li>New paramsfile command: Allows you to execute a command multiple times by loading the parameters from a text file.
+</li><li>New actions in win command: move, center, settext.
+</li><li>New 'child' action in win command: Allows you to move/hide child windows (For example: the start button in the system tray)
+</li><li>New clipboard command: Allows you to put a string in the clipboard, and clear the clipboard.
+</li><li>New gac command: Allows you to install assemblies in Global Assembly Cache.
+
+</li></ul>
+
+</td></tr><tr><td>28/12/2004</td><td>1.56</td><td>
+<ul>
+<li>New variable: ~$clipboard$ - paste the text that you copied to the clipboard into the command-line.
+</li><li>Parameter variables: ~$param.ParamName$ - Display an input window for typing the text that you want insert into the command-line.
+</li></ul>
+
+</td></tr><tr><td>07/12/2004</td><td>1.55</td><td>
+Added RegEdit command.
+
+</td></tr><tr><td>18/11/2004</td><td>1.54</td><td>
+<ul>
+<li>On reg commands (regsetval, regdelval, regdelkey), you can now also use the following 
+abbreviated key name: HKCU for HKEY_CURRENT_USER, HKLM for HKEY_LOCAL_MACHINE, HKCR for HKEY_CLASSES_ROOT, HKU for HKEY_USERS,
+HKCC for HKEY_CURRENT_CONFIG.
+</li><li>redraw action for win command.
+</li></ul>
+
+</td></tr><tr><td>03/11/2004</td><td>1.53</td><td>
+Fixed 'monitor off' problem in XP SP2.
+
+</td></tr><tr><td>09/10/2004</td><td>1.52</td><td>
+rasapi32.dll is now loaded only when using the dial commands (rasdial, rasdialdlg, rashangup).
+In previous versions, NirCmd was statically linked to rasapi32.dll, and that caused problems in old NT systems.
+
+</td></tr><tr><td>29/09/2004</td><td>1.51</td><td>
+Variable names are now enclosed with '$' char instead of '%' char.
+<br>
+I made this change because the '%' char causes problems when running NirCmd from cmd/bat file.
+using the '%' char for variable names is still supported for backward compatibility.
+
+
+
+</td></tr><tr><td>22/09/2004</td><td>1.50</td><td>
+<ul>
+<li>New commands: cmdshortcut, regsvr, mutesysvolume, changesysvolume, changesysvolume2, setsysvolume2.
+</li><li>New actions in win command: trans, setsize, settopmost, ititle.
+</li><li>New variables: folder.nircmd, nir.exefile
+</li><li>nircmdc.exe - console version of NirCmd.
+</li><li>Changed name - from NirComLime to NirCmd.
+</li></ul>
+
+</td></tr><tr><td>05/05/2004</td><td>1.40</td><td>
+<ul>
+<li>New commands: wait, setvolume, setsysvolume, execmd, exec.
+</li><li>New commands for executing NirCmd on remote machines: remote and multiremote.
+</li><li>Folder and system variables.
+</li><li>New option in setfiletime command - set the file time to the current time (now parameter)
+</li><li>New parameter in shortcut command - hot key.
+
+</li></ul>
+
+</td></tr><tr><td>01/03/2004</td><td>1.30</td><td>
+<ul>
+<li>New commands: qboxcom, beep, stdbeep, cdrom, urlshortcut, monitor, screensaver, standby, and hibernate.
+</li><li>Fixed the bug with ~x string sequences.
+</li></ul>
+
+</td></tr><tr><td>08/01/2004</td><td>1.20</td><td>
+<ul>
+<li>New commands: setdialuplogon, script
+</li><li>Special string sequences (~q, ~t, ~n and so on) to allow you to embed quotes and new line characters into the parameters of any command.
+</li></ul>
+</td></tr><tr><td>19/11/2003</td><td>1.11</td><td>
+New options in shortcut command
+
+</td></tr><tr><td>10/10/2003</td><td>1.10</td><td>
+New commands: killprocess, service, memdump, win, lockws.
+</td></tr><tr><td>09/09/2003</td><td>1.00</td><td>
+First release.
+</td></tr></tbody></table>
+
+<p>
+</p><h4 class="utilsubject">License</h4>
+This utility is released as freeware. 
+You are allowed to freely distribute this utility via floppy disk, CD-ROM, 
+Internet, or in any other way, as long as you don't charge anything for this.  
+If you distribute this utility, you must include all files in
+the distribution package, without any modification !
+
+
+
+
+<p>
+<table border="0" cellpadding="10" width="100%">
+<tbody><tr><td align="center">
+<a class="downloadline" href="http://www.nirsoft.net/utils/nircmd2.html#using">View NirCmd Full Help File</a>
+
+</td></tr><tr><td align="center">
+<a class="downloadline" href="http://www.nirsoft.net/utils/nircmd.zip">Download NirCmd</a>
+
+
+</td></tr><tr><td align="center">
+<a class="downloadline" href="http://www.nirsoft.net/utils/nircmd-x64.zip">Download NirCmd 64-bit</a>
+
+</td></tr></tbody></table>
+
+</p><p>
+
+
+</p><p>
+
+<table>
+<tbody><tr>
+<td>
+&nbsp;
+</td></tr></tbody></table>
+</p><p>
+
+<table>
+<tbody><tr>
+<td>
+&nbsp;
+</td></tr></tbody></table>
+</p><p>
+
+
+
+</p><center>
+<table cellspacing="5">
+<tbody><tr>
+
+<td>
+
+
+
+</td></tr></tbody></table>
+
+</center>
+
+<p>
+
+
+<table>
+<tbody><tr>
+<td>
+&nbsp;
+
+</td></tr></tbody></table>
+</p><p>
+
+
+
+
+
+
+
+
+
+
+</p><p>
+
+
+
+
+
+
+
+</p></td>
+
+<td width="10">&nbsp;&nbsp;</td>
+</tr>
+
+</tbody></table>
+
+<p>
+</p></td>
+
+
+
+
+</tr>
+
+</tbody></table>
+
+</body></html>
