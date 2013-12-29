@@ -21,10 +21,10 @@
     </tr>
 </table>
 <input type="button" id="add_device" value="add device"/><br><br>
-<input type="button" id="browse" value="Browse"/>
+<input type="button" id="browse" value="Browse"/><div id="browseResult"></div>
 <p>
 <h1>Hilfe</h1>
-To control LG tv over ethernet write variable 73022 with text command or 73023 with command number.
+To control LG tv over ethernet write variable 73222 with text command or 73223 with command number.
 <br>Following commands are supported:
 <table>
     <tr><td colspan="2"><b>Menus</b>   </td></tr>
@@ -271,9 +271,15 @@ To control LG tv over ethernet write variable 73022 with text command or 73023 w
     }
 
     function lgtvBrowse () {
+		$('#browseResult').html("Searching...");
         socket.emit('execScript', "adapter/lgtv/lgtvBrowse.js", [""], function(script, arg, result) {
+            if (!result) {
+				$('#browseResult').html("Nothing found");
+				return;
+			}
             var IPs = result.split(",");
             console.log (result);
+			$('#browseResult').html("Found "+ IPs.length + " devices");
             for (var u = 0; u < IPs.length; u++) {
                 var isFound = false;
                 for (var id in currentAdapterSettings.settings.devices) {

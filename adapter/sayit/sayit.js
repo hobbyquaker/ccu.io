@@ -25,6 +25,7 @@ if (!settings.adapters.sayit || !settings.adapters.sayit.enabled) {
 var sayitSettings        = settings.adapters.sayit.settings;
 var sayIndex             = 0;
 var sayLastGeneratedText = "";
+var sayLastVolume        = null;
 
 var logger      = require(__dirname+'/../../logger.js'),
     io          = require('socket.io-client'),
@@ -140,19 +141,9 @@ function sayItGetSpeechGoogle (i_, text, language, callback) {
 function sayItGetSpeechAcapela (i_, text, language, callback) {
     var options = {
         host: 'vaassl3.acapela-group.com',
-        //port: 443,
         path: '/Services/Synthesizer?prot_vers=2&req_voice='+language+'22k&cl_env=FLASH_AS_3.0&req_text=%5Cvct%3D100%5C+%5Cspd%3D180%5C+' +
             querystring.escape(text) + '&req_asw_type=STREAM&cl_vers=1-30&req_err_as_id3=yes&cl_login=ACAPELA_BOX&cl_app=PROD&cl_pwd=0g7znor2aa'
     };
-
-    //if (language == "ru") {
-    //    options.headers = {
-    //        "User-Agent"     : "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0",
-    //        "Accept"         : "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    //        "Accept-Language": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
-    //        "Accept-Encoding": "gzip, deflate"
-    //    };
-    //}
 
     https.get(options, function(res){
         var sounddata = ''
@@ -164,8 +155,9 @@ function sayItGetSpeechAcapela (i_, text, language, callback) {
 
         res.on('end', function(){
             fs.writeFile(__dirname+"/../../www/say.mp3", sounddata, 'binary', function(err){
-                if (err)
+                if (err) {
                     logger.error ('File error:' + err);
+				}
                 else {
                     console.log('File saved.');
                     if (callback) {
@@ -273,7 +265,6 @@ function sayItGetFileName (text) {
 function sayItSystem (i_, text, language) {
     var p = os.platform();
     var ls = null;
-    var outstring = "";
     var file = sayItGetFileName (text);
 
     if (p == 'linux') {
@@ -281,11 +272,10 @@ function sayItSystem (i_, text, language) {
         ls = cp.spawn('mpg321', [file]);
     } else if (p.match(/^win/)) {
         //windows
-        var ls = cp.spawn (__dirname + '/cmdmp3/cmdmp3.exe', [file]);
+        ls = cp.spawn (__dirname + '/cmdmp3/cmdmp3.exe', [file]);
     } else if (p == 'darwin') {
         //mac osx
-        //var ls = cp.spawn('/sbin/ping', ['-n', '-t 2', '-c 1', addr]);
-        logger.warn ("No play file yet supported for OS X");
+        ls = cp.spawn('/usr/bin/afplay', [file]);
     }
 
     if (ls) {
@@ -296,23 +286,30 @@ function sayItSystem (i_, text, language) {
 }
 
 function sayItSystemVolume (level) {
-    var p = os.platform();
-    var ls = null;
-    var outstring = "";
-    var file = sayItGetFileName (text);
+	level = parseInt (level);
+	if (level < 0)   level = 0;
+	if (level > 100) level = 100;	
 
+    if (volume === sayLastVolume) {
+		return;
+	}
+	
+	sayLastVolume = volume;
+	
+	var p = os.platform();
+    var ls = null;
+	
     if (p == 'linux') {
         //linux
-        //ls = cp.spawn('mpg321', [file]);
-        logger.warn ("No volume yet supported for LINUX");
+        ls = cp.spawn('amixer', ["cset", "numid=1", "--", level+"%"]);
     } else if (p.match(/^win/)) {
         //windows
-        //var ls = cp.spawn (__dirname + '/cmdmp3/cmdmp3.exe', [file]);
-        logger.warn ("No volume yet supported for Windows");
+		// windows volume is from 0 to 65535
+		level = 65535 * level; // because this level is from 0 to 100
+        ls = cp.spawn (__dirname + '/nircmd/nircmdc.exe', ["setsysvolume", level]);
     } else if (p == 'darwin') {
         //mac osx
-        //var ls = cp.spawn('/sbin/ping', ['-n', '-t 2', '-c 1', addr]);
-        logger.warn ("No volume yet supported for MAC OS");
+        ls = cp.spawn('sudo', ['osascript', '-e', '"set Volume ' + Math.round(level / 10) + '"']);
     }
 
     if (ls) {
@@ -354,14 +351,41 @@ function sayItExecute (i_, text, language) {
 }
 
 function sayIt (objId, text, language) {
+	var volume = null;
     logger.info("adapter sayIt saying: " + text);
 
     // Extract language from "en;Text to say"
     if (text.indexOf (";") != -1) {
-        language = text.split(';',2);
-        text = language[1];
-		language = language[0];
+        var arr = text.split(';',3);
+		// If language;text or volume;text
+		if (arr.length == 2) {
+			// If number
+			if (parseInt(arr[0]) == arr[0]) {
+				volume = arr[0];
+			}
+			else {
+				language = arr[0];
+			}
+			text = arr[1];
+		}
+		// If language;volume;text or volume;language;text
+		else if (arr.length == 3) {
+			// If number
+			if (parseInt(arr[0]) == arr[0]) {
+				volume   = arr[0];
+				language = arr[1];
+			}
+			else {
+				volume   = arr[1];
+				language = arr[0];
+			}
+			text = arr[2];
+		}
     }
+	
+	if (volume !== null) {
+		sayItSystemVolume (volume);
+	}
 
 	var i = null;
     // If say on all possible variables

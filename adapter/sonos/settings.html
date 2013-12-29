@@ -43,7 +43,7 @@
     </tr>
 </table>
 <input type="button" id="add_device" value="add device"/><br><br>
-<input type="button" id="browse" value="Browse"/>
+<input type="button" id="browse" value="Browse"/><div id="browseResult"></div>
 
 <script type="text/javascript">
     var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host') + "?key="+socketSession);
@@ -203,9 +203,16 @@
     }
 
     function sonosBrowse () {
+		$('#browseResult').html("Searching...");
+		
         socket.emit('execScript', "adapter/sonos/sonosBrowse.js", [""], function(script, arg, result) {
-            var IPs = result.split(",");
+            if (!result) {
+				$('#browseResult').html("Nothing found");
+				return;
+			}
+			var IPs = result.split(",");
             console.log (result);
+			$('#browseResult').html("Found "+ IPs.length + " devices");
             for (var u = 0; u < IPs.length; u++) {
                 var isFound = false;
                 for (var id in currentAdapterSettings.settings.devices) {
