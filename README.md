@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.7*
+*aktuelle Version: 1.0.8*
 
 ## Dokumentation
 
@@ -11,19 +11,24 @@ siehe http://ccu.io/
 ## Todo/Roadmap
 
 * Script-Engine Addins
-* _persistent Attribut - Werte speichern
 * RPI Adapter: 1-Wire Unterstützung
+* ArtNet (DMX) Adapter
 * Doku, Doku, Doku
-* LIRC Adapter
 * CCU2-Paket für einfache Installation
 * .msi für einfache Installation unter Windows (ccu.io als Service registrieren)
 * .pkg für einfache Installation unter Mac OS X
-* ArtNet (DMX) Adapter
 * BIN-RPC Implementierung vervollständigen
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
-* Unterstützung für mehrere CCUs?
 
 ## Changelog
+
+### 1.0.8
+* (Bluefox) execScript() - fork Node Child-Process - required for Browse function (Sonos, LGTV)
+* (Bluefox) SayIT adapter: Support volume for system …	8c0fda7
+* (Bluefox) Shift firstId for LG Tv, because of conflict with LIRC	ec7099c
+* (Bluefox) Fix small errors for browser function (LG TV and Sonos)	bf48aed
+* (Bluefox) Add disk usage to RPi Adapter (only for "/")
+* (Hobbyquaker) fehlendes Node-Modul "lazy-socket" ergänzt (benötigt für Graphite Adapter)
 
 ### 1.0.7
 * (Bluefox) New adapter: LG TV, to control LG tv over ethernet
