@@ -1709,8 +1709,10 @@ function initSocketIO(_io) {
                 if (!obj.ValueUnit) {
                     obj.ValueUnit = "";
                 }
-                logger.verbose("adding dp "+id);
-                datapoints[id] = [obj.Value, formatTimestamp()];
+                if (!datapoints[id] || obj.Value) {
+                    logger.verbose("adding dp "+id);
+                    datapoints[id] = [obj.Value, formatTimestamp()];
+                }
             }
 
             regaObjects[id] = obj;
@@ -1962,8 +1964,8 @@ function savePersistentObjects() {
             delete content[id];
         }
     }
-    logger.info("ccu.io        saving persistent objects");
-    fs.writeFile(settings.datastorePath+name, JSON.stringify(content));
+    fs.writeFileSync(settings.datastorePath+name, JSON.stringify(content));
+    logger.info("ccu.io        saved persistent objects");
 }
 function loadPersistentObjects() {
     try {
@@ -1985,8 +1987,8 @@ function saveDatapoints() {
             content[id][2] = null;
         }
     }
-    logger.info("ccu.io        saving datapoints");
-    fs.writeFile(settings.datastorePath+name, JSON.stringify(content));
+    fs.writeFileSync(settings.datastorePath+name, JSON.stringify(content));
+    logger.info("ccu.io        saved datapoints");
 }
 function loadDatapoints() {
     var dps;
