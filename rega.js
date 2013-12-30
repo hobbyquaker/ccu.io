@@ -255,7 +255,9 @@ rega.prototype = {
 
         post_req.on('error', function(e) {
             logger.error('rega          post request error: ' + e.message);
-            callback (null, 'rega          post request error: ' + e.message);
+            if (callback) {
+                callback(null, 'rega          post request error: ' + e.message);
+            }
         });
 
         post_req.write(script);
