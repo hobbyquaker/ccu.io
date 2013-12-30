@@ -26,7 +26,7 @@ var net = require('net');
 
 var client = net.connect({host:adapterSettings.servers[0].host, port: adapterSettings.servers[0].port}, function() {
     isLircConnected = true;
-    logger.info('adapter lirc    connected to lirc');
+    logger.info('adapter lirc  connected to lirc');
 });
 
 if (settings.ioListenPort) {
@@ -171,11 +171,11 @@ function list(remote, callback) {
 
 
 socket.on('connect', function () {
-    logger.info("adapter lirc    connected to ccu.io");
+    logger.info("adapter lirc  connected to ccu.io");
 });
 
 socket.on('disconnect', function () {
-    logger.info("adapter lirc    disconnected from ccu.io");
+    logger.info("adapter lirc  disconnected from ccu.io");
 });
 
 socket.on('event', function (obj) {
@@ -194,7 +194,7 @@ socket.on('event', function (obj) {
 
 
 function stop() {
-    logger.info("adapter lirc    terminating");
+    logger.info("adapter lirc  terminating");
     setTimeout(function () {
         process.exit();
     }, 250);
