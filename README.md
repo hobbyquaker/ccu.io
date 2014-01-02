@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.8*
+*aktuelle Version: 1.0.9*
 
 ## Dokumentation
 
@@ -21,6 +21,12 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.9
+* (Hobbyquaker) Bugfix rega post request errors
+* (Hobbyquaker) Bugfix saving of persitent objects and datapoints
+* (Bluefox) Fix error with volume for SayIt adapter
+
 
 ### 1.0.8
 * (Bluefox) execScript() - fork Node Child-Process - required for Browse function (Sonos, LGTV)

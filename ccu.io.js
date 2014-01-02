@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.8";
+settings.version = "1.0.9";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -542,6 +542,10 @@ function loadRegaData(index, err, rebuild, triggerReload) {
                 delete data[id].AlState;
                 delete data[id].LastTriggerTime;
                 delete data[id].AlOccurrenceTime;
+            }
+
+            if (data[id].ValueUnit && data[id].ValueUnit == "�C") {
+                data[id].ValueUnit = "°C";
             }
 
             // Meta-Daten setzen
