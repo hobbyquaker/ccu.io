@@ -2,7 +2,9 @@
  *      CCU.IO telnet-client Adapter 0.1
  *
  * Todo:
- *  -
+ *
+ * Changelog:
+ *
  *
 **/
 
@@ -13,20 +15,15 @@ if (!settings.adapters.telnet || !settings.adapters.telnet.enabled) {
     process.exit();
 }
 
-var adapterSettings = settings.adapters.telnet.settings;
-
-
-
-var logger =    require(__dirname+'/../../logger.js'),
-    io =        require('socket.io-client');
-var net = require('net');
-
-var client = [];
-var datapoints = {};
-var sendDatapoints = [];
+var adapterSettings = settings.adapters.telnet.settings,
+    logger =    require(__dirname+'/../../logger.js'),
+    io =        require('socket.io-client'),
+    net =       require('net'),
+    client = [],
+    datapoints = {},
+    sendDatapoints = [];
 
 function telnetConnect(server) {
-
         client[server] = net.connect({host:adapterSettings.servers[server].host, port: adapterSettings.servers[server].port}, function() {
             logger.info('adapter telnet connected to '+server+" ("+adapterSettings.servers[server].host+":"+adapterSettings.servers[server].port+")");
             socket.emit("setState", [datapoints[server].CONNECTION, true, null, true]);
@@ -38,14 +35,11 @@ function telnetConnect(server) {
 
         client[server].on("end", function () {
             //console.log("client end event");
-
-            //lircConnect();
         });
 
         client[server].on("timeout", function () {
             logger.error('adapter telnet connection timeout '+server+" ("+adapterSettings.servers[server].host+":"+adapterSettings.servers[server].port+") ");
             socket.emit("setState", [datapoints[server].CONNECTION, false, null, true]);
-
         });
 
         client[server].on("close", function () {
@@ -59,11 +53,11 @@ function telnetConnect(server) {
 
         client[server].on("data", function (data) {
             data = data.toString();
-            console.log("< "+data);
+            //console.log("< "+data);
             socket.emit("setState", [datapoints[server].RECEIVE, data, null, true]);
         });
-
 }
+
 
 // Mit CCU.IO verbinden
 if (settings.ioListenPort) {
@@ -128,8 +122,7 @@ for (var server in adapterSettings.servers) {
     });
 }
 
-console.log(sendDatapoints);
-
+//console.log(sendDatapoints);
 socket.emit("setObject", settings.adapters.telnet.firstId, {
     Name: "TELNET",
     TypeName: "DEVICE",
@@ -150,11 +143,11 @@ socket.on('event', function (obj) {
         val = obj[1];
 
     // Datenpunkt relevant?
-    console.log("? "+id);
+    //console.log("? "+id);
     if (sendDatapoints.indexOf(id) == -1) {
         return false;
     }
-    console.log("! "+id);
+    //console.log("! "+id);
     // Server finden
     for (var server in datapoints) {
         if (datapoints[server].SEND == id) {
@@ -163,12 +156,10 @@ socket.on('event', function (obj) {
         }
     }
     if (needle) {
-        console.log("> "+val);
+        //console.log("> "+val);
         client[needle].write(val+(adapterSettings.servers[needle].noNewLine?"":"\n"));
     }
 });
-
-
 
 socket.on('connect', function () {
     logger.info("adapter telnet connected to ccu.io");
@@ -195,8 +186,10 @@ process.on('SIGTERM', function () {
     stop();
 });
 
-// Verbinden!
 
-for (var server in adapterSettings.servers) {
-    telnetConnect(server);
-}
+// Verbinden!
+setTimeout(function () {
+    for (var server in adapterSettings.servers) {
+        telnetConnect(server);
+    }
+}, 2500);
