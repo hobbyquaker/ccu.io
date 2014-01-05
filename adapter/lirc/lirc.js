@@ -3,9 +3,13 @@
  *
  * Todo:
  *  - implement send_start and send_stop
- *  - connect to multiple lirc daemons
+ *  - connect to multiple lirc daemons (see telnet adapter)
  *  - parse lirc responses and execute callbacks (see http://www.lirc.org/html/technical.html#applications)
  *  - save remotes and buttons (poll from lirc via LIST cmd) in regaIndex(?) - for use in dashui widgets
+ *
+ * Changelog:
+ *
+ *
  */
 
 
@@ -169,11 +173,6 @@ for (var i in adapterSettings.servers) {
     });
 
 }
-
-
-
-
-
 
 function sendOnce(remote, button, repeat, callback) {
     if (typeof repeat === "function") {
