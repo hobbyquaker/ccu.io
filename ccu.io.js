@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.9";
+settings.version = "1.0.10";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -44,6 +44,7 @@ var fs =        require('fs'),
     childProcess = require('child_process'),
     url =       require('url'),
     socketio =  require('socket.io'),
+    scheduler = require('node-schedule'),
     app,
     appSsl,
     server,
@@ -240,20 +241,14 @@ function updateStatus () {
 
 }
 
+
+
 if (settings.logging.enabled) {
-    //devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
-    //    flags: "a", encoding: "utf8", mode: 0644
-    //});
-
     setInterval(writeLog, settings.logging.writeInterval * 1000);
-
     if (settings.logging.move) {
-        var midnight = new Date();
-        midnight.setHours( 23 );
-        midnight.setMinutes( 59 );
-        midnight.setSeconds( 59 );
-        midnight.setMilliseconds( 950 );
-        setTimeout(moveLog, midnight.getTime() - new Date().getTime());
+        schedule.scheduleJob('0 0 * * *', function(){
+            moveLog(settings.logging.file);
+        });
     }
 }
 
@@ -1905,11 +1900,11 @@ function cacheLog(str) {
     devlogCache.push(str);
 }
 
-var logMoving = false;
+var logMoving = [];
 
 function writeLog() {
 
-    if (logMoving) {
+    if (logMoving[settings.logging.file]) {
         setTimeout(writeLog, 250);
         return false;
     }
@@ -1930,20 +1925,21 @@ function writeLog() {
 
 }
 
-function moveLog() {
-    logMoving = true;
+function moveLog(file) {
+    logMoving[file] = true;
     setTimeout(moveLog, 86400000);
     var ts = (new Date()).getTime() - 3600000;
     ts = new Date(ts);
 
-    logger.info("ccu.io        moving Logfile");
 
     var timestamp = ts.getFullYear() + '-' +
         ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
         ("0" + (ts.getDate()).toString(10)).slice(-2);
 
-    fs.rename(__dirname+"/log/"+settings.logging.file, __dirname+"/log/"+settings.logging.file+"."+timestamp, function() {
-        logMoving = false;
+    logger.info("ccu.io        moving Logfile "+file+" "+timestamp);
+
+    fs.rename(__dirname+"/log/"+file, __dirname+"/log/"+file+"."+timestamp, function() {
+        logMoving[file] = false;
     });
 
 }
