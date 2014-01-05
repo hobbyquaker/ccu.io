@@ -41,6 +41,11 @@ var logger      = require(__dirname+'/../../logger.js'),
 
 sayitSettings.language = sayitSettings.language || 'de';
 
+var objTrigger  = sayitSettings.firstId;
+var objFileName = sayitSettings.firstId + 1;
+var objVolume   = sayitSettings.firstId + 2;
+var objPlayAll  = sayitSettings.firstId + 3;
+var objPlaying  = sayitSettings.firstId + 4;
 
 if (settings.ioListenPort) {
 	var socket = io.connect("127.0.0.1", {
@@ -59,11 +64,11 @@ socket.on('event', function (obj) {
         return;
     }
 	
-	if (obj[0] >= sayitSettings.firstId+3 && obj[0] <= sayitSettings.firstId+21 && obj[1]) {
+	if (obj[0] == objPlayAll || (obj[0] > objPlaying && obj[0] <= (sayitSettings.firstId + 21) && obj[1])) {
 		sayIt (obj[0], obj[1]);
 	} else
     // Volume on Raspbery PI
-    if (obj[0] == sayitSettings.firstId+2) {
+    if (obj[0] == objVolume) {
         sayItSystemVolume (obj[1]);
     }
 });
@@ -187,13 +192,13 @@ function sayItGetSpeech (i_, text, language, callback) {
 function sayItBrowser (i_, text, language) {
 	sayIndex++;
     if (sayItIsPlayFile (text)) {
-        setState (sayitSettings.firstId + 1, text);
+        setState (objFileName, text);
     }
     else {
-        setState (sayitSettings.firstId + 1, "say.mp3");
+        setState (objFileName, "say.mp3");
     }
 
-	setState (sayitSettings.firstId, sayIndex);
+	setState (objTrigger, sayIndex);
 }
 
 function sayItMP24 (i_, text, language) {
@@ -266,16 +271,23 @@ function sayItSystem (i_, text, language) {
     var p = os.platform();
     var ls = null;
     var file = sayItGetFileName (text);
+    setState (objPlaying, true);
 
     if (p == 'linux') {
         //linux
-        ls = cp.spawn('mpg321', [file]);
+        ls = cp.exec('mpg321 ' + file, function (error, stdout, stderr) {
+            setState (objPlaying, false);
+        });
     } else if (p.match(/^win/)) {
         //windows
-        ls = cp.spawn (__dirname + '/cmdmp3/cmdmp3.exe', [file]);
+        ls = cp.exec (__dirname + '/cmdmp3/cmdmp3.exe ' + file, function (error, stdout, stderr) {
+            setState (objPlaying, false);
+        });
     } else if (p == 'darwin') {
         //mac osx
-        ls = cp.spawn('/usr/bin/afplay', [file]);
+        ls = cp.exec('/usr/bin/afplay '+ file, function (error, stdout, stderr) {
+            setState (objPlaying, false);
+        });
     }
 
     if (ls) {
@@ -293,6 +305,8 @@ function sayItSystemVolume (level) {
     if (level === sayLastVolume) {
 		return;
 	}
+
+    setState(sayitSettings.firstId+2, level);
 	
 	sayLastVolume = level;
 	
@@ -389,7 +403,7 @@ function sayIt (objId, text, language) {
 
 	var i = null;
     // If say on all possible variables
-    if (objId == sayitSettings.firstId + 3) {
+    if (objId == objPlayAll) {
         for (var t in sayitSettings.vars) {
             sayIt (sayitSettings.vars[t].id, text, language);
         }
@@ -451,7 +465,7 @@ var sayit_engines = {
     "alyona": {name: "Acapela - Russian Алёна",  engine: "acapela"}
 };
 
-createObject(sayitSettings.firstId, {
+createObject(objTrigger, {
     "Name": "SayIt.Trigger",
     "TypeName": "VARDP",
     "DPInfo": "SayIt",
@@ -463,7 +477,7 @@ createObject(sayitSettings.firstId, {
     "ValueList": ""
 });
 
-createObject(sayitSettings.firstId + 1, {
+createObject(objFileName, {
     "Name": "SayIt.FileName",
     "TypeName": "VARDP",
     "DPInfo": "SayIt",
@@ -474,7 +488,7 @@ createObject(sayitSettings.firstId + 1, {
     "ValueSubType": 11,
     "ValueList": ""
 });
-createObject(sayitSettings.firstId + 2, {
+createObject(objVolume, {
     "Name": "SayIt.VOLUME",
     "TypeName": "VARDP",
     "DPInfo": "SayIt",
@@ -485,7 +499,20 @@ createObject(sayitSettings.firstId + 2, {
     "ValueSubType": 0,
     "ValueList": ""
 });
-createObject(sayitSettings.firstId + 3, {
+
+createObject(objPlaying, {
+    "Name": "SayIt.Playing",
+    "TypeName": "VARDP",
+    "DPInfo": "SayIt",
+    "ValueMin": null,
+    "ValueMax": null,
+    "ValueUnit": "",
+    "ValueType": 4,
+    "ValueSubType": 0,
+    "ValueList": ""
+});
+
+createObject(objPlayAll, {
     "Name": "SayIt.ALL",
     "TypeName": "VARDP",
     "DPInfo": "SayIt",

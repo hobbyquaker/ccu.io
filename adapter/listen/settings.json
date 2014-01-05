@@ -1,0 +1,12 @@
+{
+    "enabled": false,
+    "settings": {
+		"firstId":          72950,
+		"language":         "de",
+		"reclen":           0,
+		"qualityThreshold": 0.4,
+		"processTextID":    72970,
+		"autoListen":       true,
+        "ackSoundID":       0
+    }
+}

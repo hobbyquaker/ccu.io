@@ -1551,6 +1551,12 @@ function initSocketIO(_io) {
             callback(datapoints);
         });
 
+        socket.on('getDatapoint', function(id, callback) {
+            logger.verbose("socket.io <-- getDatapoint " + id);
+
+            callback(id, datapoints[id]);
+        });
+		
         socket.on('getObjects', function(callback) {
             logger.verbose("socket.io <-- getObjects");
             callback(regaObjects);
