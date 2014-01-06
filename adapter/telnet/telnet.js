@@ -15,17 +15,26 @@ if (!settings.adapters.telnet || !settings.adapters.telnet.enabled) {
     process.exit();
 }
 
-var adapterSettings = settings.adapters.telnet.settings,
-    logger =    require(__dirname+'/../../logger.js'),
-    io =        require('socket.io-client'),
-    net =       require('net'),
-    client = [],
-    datapoints = {},
-    sendDatapoints = [];
+var adapterSettings =   settings.adapters.telnet.settings,
+    logger =            require(__dirname+'/../../logger.js'),
+    io =                require('socket.io-client'),
+    net =               require('net'),
+    client =            [],
+    datapoints =        {},
+    sendDatapoints =    [],
+    telnetConnections = {};
+
+
+function telnetDisconnect(server) {
+    if (telnetConnections[server]) {
+        client[server].end();
+    }
+}
 
 function telnetConnect(server) {
         client[server] = net.connect({host:adapterSettings.servers[server].host, port: adapterSettings.servers[server].port}, function() {
             logger.info('adapter telnet connected to '+server+" ("+adapterSettings.servers[server].host+":"+adapterSettings.servers[server].port+")");
+            telnetConnections[server] = true;
             socket.emit("setState", [datapoints[server].CONNECTION, true, null, true]);
         });
 
@@ -39,6 +48,7 @@ function telnetConnect(server) {
 
         client[server].on("timeout", function () {
             logger.error('adapter telnet connection timeout '+server+" ("+adapterSettings.servers[server].host+":"+adapterSettings.servers[server].port+") ");
+            telnetConnections[server] = false;
             socket.emit("setState", [datapoints[server].CONNECTION, false, null, true]);
         });
 
@@ -46,6 +56,7 @@ function telnetConnect(server) {
             logger.verbose('adapter telnet connection closed '+server+" ("+adapterSettings.servers[server].host+":"+adapterSettings.servers[server].port+") ");
             //console.log("client close event");
             socket.emit("setState", [datapoints[server].CONNECTION, false, null, true]);
+            telnetConnections[server] = false;
             setTimeout(function (_server) {
                 telnetConnect(_server);
             }, adapterSettings.servers[server].reconnectInterval || 10000, server);
@@ -122,7 +133,6 @@ for (var server in adapterSettings.servers) {
     });
 }
 
-//console.log(sendDatapoints);
 socket.emit("setObject", settings.adapters.telnet.firstId, {
     Name: "TELNET",
     TypeName: "DEVICE",
@@ -173,9 +183,12 @@ socket.on('disconnect', function () {
 // Prozess
 function stop() {
     logger.info("adapter telnet terminating");
+    for (var server in adapterSettings.servers) {
+        telnetDisconnect(server);
+    }
     setTimeout(function () {
         process.exit();
-    }, 250);
+    }, 500);
 }
 
 process.on('SIGINT', function () {
