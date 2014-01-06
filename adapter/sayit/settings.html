@@ -27,7 +27,12 @@
             <option value="1">Analog</option>
             <option value="2">HDMI</option>
         </select></td>
-    </tr>    <tr>
+    </tr>
+    <tr>
+        <td>Start volume 0 - 100:</td>
+        <td><input id="sayit_settings_start_volume" type="text" /></td>
+    </tr>
+    <tr>
         <td>Home24-Mediaplayer IP:</td>
         <td><input id="sayit_settings_mediaplayer" type="text" /></td>
     </tr>
@@ -118,6 +123,12 @@
         storeSettings();
     });
 
+    $("#sayit_settings_start_volume [value='"+((currentAdapterSettings.settings.start_volume === undefined) ? 100 : currentAdapterSettings.settings.start_volume) + "']").attr("selected", "selected");
+
+    $("#sayit_settings_start_volume").change(function () {
+        currentAdapterSettings.settings.start_volume = $("#sayit_settings_start_volume").val();
+        storeSettings();
+    });
     $("#sayit_settings_mediaplayer").val(currentAdapterSettings.settings.mediaPlayer || "");
 
     $("#sayit_settings_mediaplayer").change(function () {

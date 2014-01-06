@@ -18,10 +18,6 @@
             <option value="ru">Русский</option>
         </select></td>
     </tr>
-    <tr>
-        <td>Start words:</td>
-        <td><input id="textCommands_settings_keywords" type="text"></td>
-    </tr>    
 	<tr>
         <td>SayIt ID:</td>
         <td><input id="textCommands_settings_sayIt" type="text" /></td>
@@ -49,7 +45,7 @@
     var commands = null;
     var homematic = {regaIndex:{}, regaObjects: {}};
 
-	socket.emit('execScript', "adapter/textCommands/readModel.js", [""], function(script, arg, result) {
+	socket.emit('execScript', "/adapter/textCommands/readModel.js", [""], function(script, arg, result) {
 		if (!result) {
 			console.log ("Cannot get language model");
 			return;
@@ -90,13 +86,6 @@
         currentAdapterSettings.settings.language = $("#textCommands_settings_language").val();
         storeSettings();
         textCommandsRefreshRules ();
-    });
-
-    $("#textCommands_settings_keywords").val(currentAdapterSettings.settings.keywords || "");
-
-    $("#textCommands_settings_keywords").change(function () {
-        currentAdapterSettings.settings.keywords = $(this).val();
-        storeSettings();
     });
 
 	$("#textCommands_settings_sayIt").val(currentAdapterSettings.settings.sayIt || "");
@@ -149,7 +138,6 @@
                 freeNames [freeNames.length] = rule;
             }
         }
-
 
         sText += '<td style="border: 1px solid black">'+(id + 1)+'</td>';
         sText += '<td style="border: 1px solid black"><select id="textCommands_name_'+id+'" data-textCommands-rule="'+id+'" value="'+(currentAdapterSettings.settings.rules[id].name || "")+'">';
@@ -221,7 +209,7 @@
         });
 
         $("#textCommands_words_"+id).change(function () {
-            var words = $(this).val();
+            var words = $(this).val().toLowerCase();
             if (words.indexOf (',') != -1) {
                 words = words.split(',');
                 for (var t = 0; t < words.length; t++) {

@@ -65,6 +65,44 @@ var commands = {
 			'ru': "ID сенсора дома '.TEMPERATURE'"
 		}
 	},
+    'switchOnOff': {
+        description: {
+            'en': "Switch light on/off",
+            'de': "Schalte das Licht an oder aus",
+            'ru': "Включить/выключить свет"
+        },
+        unique:   true,
+        editable: false,
+        words: {
+            'en': "switch light on/off",
+            'de': "licht einschalten/ausschalten/ein/aus/an",
+            'ru': "свет ключи/включи/включить/выключи/выключить/потушить/потуши/зажги/зажечь"
+        },
+        ack:  {
+            'en': "If acknowledge must be spoken",
+            'de': "Ob Ergebniss gesprochen werden soll",
+            'ru': "Проговорить команду"
+        }
+    },
+    'blindsUpDown': {
+        description: {
+            'en': "Open/close blinds",
+            'de': "Rolladen auf/zu machen",
+            'ru': "Поднять опустить ставни"
+        },
+        unique:   true,
+        editable: false,
+        words: {
+            'en': "blinds up/down",
+            'de': "rollladen/rolllade auf/zu/hoch/runter",
+            'ru': "ставни/окно/окна поднять/подними/опустить/опусти/открой/открыть/закрыть/закрой"
+        },
+        ack:  {
+            'en': "If acknowledge must be spoken",
+            'de': "Ob Ergebniss gesprochen werden soll",
+            'ru': "Проговорить команду"
+        }
+    },
     'userDeviceControl' : {
         description: {
             'en': "Switch something on/off",
@@ -97,7 +135,8 @@ var commands = {
             'de': "Programm-ID",
             'ru': "ID программы"
         }
-    }};
+    }
+};
 
 if (module) {
 	module.exports = commands;

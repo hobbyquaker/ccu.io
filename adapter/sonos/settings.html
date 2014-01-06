@@ -205,7 +205,7 @@
     function sonosBrowse () {
 		$('#browseResult').html("Searching...");
 		
-        socket.emit('execScript', "adapter/sonos/sonosBrowse.js", [""], function(script, arg, result) {
+        socket.emit('execScript', "/adapter/sonos/sonosBrowse.js", [""], function(script, arg, result) {
             if (!result) {
 				$('#browseResult').html("Nothing found");
 				return;

@@ -39,7 +39,8 @@ var logger      = require(__dirname+'/../../logger.js'),
     os          = require('os');
 
 
-sayitSettings.language = sayitSettings.language || 'de';
+sayitSettings.language     = sayitSettings.language || 'de';
+sayitSettings.start_volume = (sayitSettings.start_volume === undefined) ? 100: sayitSettings.start_volume;
 
 var objTrigger  = sayitSettings.firstId;
 var objFileName = sayitSettings.firstId + 1;
@@ -105,7 +106,7 @@ function setState(id, val) {
 	socket.emit("setState", [id,val,null,true]);
 }
 
-function sayItGetSpeechGoogle (i_, text, language, callback) {
+function sayItGetSpeechGoogle (i_, text, language, volume, callback) {
     var options = {
         host: 'translate.google.com',
         //port: 80,
@@ -135,7 +136,7 @@ function sayItGetSpeechGoogle (i_, text, language, callback) {
                     logger.error ('File error:' + err);
                 else {
                     if (callback) {
-                        callback (i_, text, language);
+                        callback (i_, text, language, volume);
                     }
                 }
             });
@@ -143,7 +144,7 @@ function sayItGetSpeechGoogle (i_, text, language, callback) {
     });
 }
 
-function sayItGetSpeechAcapela (i_, text, language, callback) {
+function sayItGetSpeechAcapela (i_, text, language, volume, callback) {
     var options = {
         host: 'vaassl3.acapela-group.com',
         path: '/Services/Synthesizer?prot_vers=2&req_voice='+language+'22k&cl_env=FLASH_AS_3.0&req_text=%5Cvct%3D100%5C+%5Cspd%3D180%5C+' +
@@ -166,7 +167,7 @@ function sayItGetSpeechAcapela (i_, text, language, callback) {
                 else {
                     console.log('File saved.');
                     if (callback) {
-                        callback (i_, text, language);
+                        callback (i_, text, language, volume);
                     }
                 }
             });
@@ -174,22 +175,22 @@ function sayItGetSpeechAcapela (i_, text, language, callback) {
     });
 }
 
-function sayItGetSpeech (i_, text, language, callback) {
+function sayItGetSpeech (i_, text, language, volume, callback) {
     if (sayit_engines[language] && sayit_engines[language].engine) {
         if (sayit_engines[language].engine == "google") {
-            sayItGetSpeechGoogle (i_, text, language, callback);
+            sayItGetSpeechGoogle (i_, text, language, volume, callback);
         }
         else
         if (sayit_engines[language].engine == "acapela") {
-            sayItGetSpeechAcapela (i_, text, language, callback);
+            sayItGetSpeechAcapela (i_, text, language, volume, callback);
         }
     }
     else {
-        sayItGetSpeechGoogle (i_, text, language, callback);
+        sayItGetSpeechGoogle (i_, text, language, volume, callback);
     }
 }
 
-function sayItBrowser (i_, text, language) {
+function sayItBrowser (i_, text, language, volume) {
 	sayIndex++;
     if (sayItIsPlayFile (text)) {
         setState (objFileName, text);
@@ -201,7 +202,7 @@ function sayItBrowser (i_, text, language) {
 	setState (objTrigger, sayIndex);
 }
 
-function sayItMP24 (i_, text, language) {
+function sayItMP24 (i_, text, language, volume) {
     var mediaPlayer = sayitSettings.vars[i_].mediaPlayer || sayitSettings.mediaPlayer;
 	if (mediaPlayer && !sayItIsPlayFile (text)) {
 		request ("http://"+mediaPlayer+":50000/tts="+querystring.escape(text),
@@ -213,7 +214,7 @@ function sayItMP24 (i_, text, language) {
 	}		
 }
 
-function sayItMP24ftp (i_, text, language) {
+function sayItMP24ftp (i_, text, language, volume) {
     var ftp_port    = sayitSettings.vars[i_].ftp_port    || sayitSettings.ftp_port;
     var mediaPlayer = sayitSettings.vars[i_].mediaPlayer || sayitSettings.mediaPlayer;
 
@@ -267,11 +268,17 @@ function sayItGetFileName (text) {
     return __dirname+"/../../www/say.mp3";
 }
 
-function sayItSystem (i_, text, language) {
+function sayItSystem (i_, text, language, volume) {
     var p = os.platform();
     var ls = null;
     var file = sayItGetFileName (text);
     setState (objPlaying, true);
+    var oldVolume = null;
+
+    if (volume !== null && volume !== undefined) {
+        oldVolume = sayLastVolume;
+        sayItSystemVolume (volume);
+    }
 
     if (p == 'linux') {
         //linux
@@ -294,6 +301,10 @@ function sayItSystem (i_, text, language) {
         ls.on('error', function(e) {
             throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
         });
+    }
+
+    if (oldVolume !== null) {
+        sayItSystemVolume (oldVolume);
     }
 }
 
@@ -333,7 +344,7 @@ function sayItSystemVolume (level) {
     }
 }
 
-function sayItExecute (i_, text, language) {
+function sayItExecute (i_, text, language, volume) {
 	var options     = sayitSettings.vars[i_].options.split(',');
     var ftp_port    = sayitSettings.vars[i_].ftp_port    || sayitSettings.ftp_port;
     var mediaPlayer = sayitSettings.vars[i_].mediaPlayer || sayitSettings.mediaPlayer;
@@ -345,7 +356,7 @@ function sayItExecute (i_, text, language) {
             if (opt == "mp24" && ftp_port && mediaPlayer) {
                 continue;
             }
-			sayit_options[opt].func (i_, text, language);
+			sayit_options[opt].func (i_, text, language, volume);
 		}
 	}
 	else {
@@ -358,14 +369,15 @@ function sayItExecute (i_, text, language) {
                     ftp_port && mediaPlayer) {
                         continue;
                 }
-				sayit_options[options[q]].func (i_, text, language);
+				sayit_options[options[q]].func (i_, text, language, volume);
 			}
 		}
 	}
 }
 
 function sayIt (objId, text, language) {
-	var volume = null;
+	var volume    = null;
+    var oldVolume = null;
     logger.info("adapter sayIt saying: " + text);
 
     // Extract language from "en;Text to say"
@@ -396,10 +408,6 @@ function sayIt (objId, text, language) {
 			text = arr[2];
 		}
     }
-	
-	if (volume !== null) {
-		sayItSystemVolume (volume);
-	}
 
 	var i = null;
     // If say on all possible variables
@@ -441,10 +449,10 @@ function sayIt (objId, text, language) {
         }
 		if (isGenerate && sayLastGeneratedText != "["+language+"]"+text) {
             sayLastGeneratedText = "["+language+"]"+text;
-			sayItGetSpeech (i, text, language, sayItExecute);
+			sayItGetSpeech (i, text, language, volume, sayItExecute);
 		}
 		else {
-			sayItExecute (i, text, language);
+			sayItExecute (i, text, language, volume);
 		}
 	}
 }
@@ -550,3 +558,6 @@ for (var id in sayitSettings.vars) {
         }
     }
 }
+
+// Init volume
+sayItSystemVolume(sayitSettings.start_volume);

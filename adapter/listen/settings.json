@@ -3,10 +3,19 @@
     "settings": {
 		"firstId":          72950,
 		"language":         "de",
+        "keywords":         "system",
+        "keywordTimeout":   6000,
+        "processBeep":      "",
+        "keywordBeep":      "80;../adapter/listen/beepStart.wav",
+        "keywordFailBeep":  "80;../adapter/listen/beepFail.wav",
 		"reclen":           0,
 		"qualityThreshold": 0.4,
+        "recHardware":      "hw:1,0",
+        "startThreshold":   "0.1 3%",
+        "stopThreshold":    "0.4 1%",
 		"processTextID":    72970,
-		"autoListen":       true,
-        "ackSoundID":       0
+        "sayItID":          72903,
+        "autoListen":       true,
+        "languageKeywords": {"en":"","de":"","ru":""}
     }
 }

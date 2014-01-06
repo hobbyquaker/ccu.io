@@ -1,0 +1,286 @@
+<table style="font-size: 12px">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td colspan="2">
+            <select id="listen_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Main language:</td>
+        <td><select id="listen_settings_language">
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="ru">Русский</option>
+        </select></td>
+        <td>In this language will be detected the key word.</td>
+    </tr>
+    <tr>
+        <td>Auto listen:</td>
+        <td>
+            <select id="listen_settings_autoListen">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+        <td>If the recording should start automatically (true) or only manually triggered (false) over 72950 variable.</td>
+    </tr>
+    <tr>
+        <td>Start words for main language:</td>
+        <td><input id="listen_settings_keywords" type="text"></td>
+        <td>Adapter will try to detect these words, before starting with command recognition. Can be blank, so every sentence will be treated as command. Can be more than one word, divided by "/". Can be more than one word, e.g: "dear lady".</td>
+    </tr>
+    <tr>
+        <td>Start words for English:</td>
+        <td><input id="listen_settings_en_keywords" type="text"></td>
+        <td>After detection of this key word, the command will be treated as in english. Start word will be processed in main language.</td>
+    </tr>
+    <tr>
+        <td>Start words for German:</td>
+        <td><input id="listen_settings_de_keywords" type="text"></td>
+        <td>After detection of this key word, the command will be treated as in german. Start word will be processed in main language.</td>
+    </tr>
+    <tr>
+        <td>Start words for Russian:</td>
+        <td><input id="listen_settings_ru_keywords" type="text"></td>
+        <td>After detection of this key word, the command will be treated as in russian. Start word will be processed in main language.</td>
+    </tr>
+    <tr>
+        <td>Timeout after start word:</td>
+        <td><input id="listen_settings_keywordTimeout" type="text"></td>
+        <td>Time in ms the "listen" adapter waits for command after the start word was detected.</td>
+    </tr>
+    <tr>
+        <td>Sound by sending data to Google:</td>
+        <td><input id="listen_settings_processBeep" type="text"></td>
+        <td>Every time the "listen" adapter sends voice to Google this sound will be played. It is not recommended, if this sound can be recorded by microphone and will influence the voice recognition. You can set the volume as "20;sound.wav" to reduce the effect.</td>
+    </tr>
+    <tr>
+        <td>Ready acoustic signal:</td>
+        <td><input id="listen_settings_keywordBeep" type="text"></td>
+        <td>Every time the key word detected this sound will be played. Set up the volume ("volume;sound.wav"), so the recording will not be affected by this sound. Can be leave empty, so visual signal will be used. If the key word was said together with command, no sound will be played.</td>
+    </tr>
+    <tr>
+        <td>Acoustic signal by timeout:</td>
+        <td><input id="listen_settings_keywordFailBeep" type="text"></td>
+        <td>This sound will be played if timeout occurs after the key word was detected. You can specify some text here or set up wav/mp3 file in "www" directory. (Valid for all sound file settings.) </td>
+    </tr>
+    <tr>
+        <td>SayIt ID:</td>
+        <td><input id="listen_settings_sayIt" type="text" /></td>
+        <td>ID to play sound and texts with it. Normally ID of the SayIt adapter 72903</td>
+    </tr>
+    <tr>
+        <td>Text processor ID:</td>
+        <td><input id="listen_settings_processTextID" type="text" /></td>
+        <td>Where should be stored the command. Normally in "TextCommands" adapter 72970.</td>
+    </tr>
+    <tr>
+        <td>Recrord lentgh:</td>
+        <td><input id="listen_settings_reclen" type="text" /></td>
+        <td>How long the command should be recorded. Can be set to 0 or left empty if the end should be detected automatically.</td>
+    </tr>
+    <tr>
+        <td>Quality threshold:</td>
+        <td><input id="listen_settings_qualityThreshold" type="text" /></td>
+        <td>Google deliver with text the quality from 0 to 1, that describes how good the text was recognised.</td>
+    </tr>
+    <tr>
+        <td>Record hardware:</td>
+        <td><input id="listen_settings_recHardware" type="text" /></td>
+        <td>Used for Raspberry PI and Linux systems, not for Windows. Set up the microphone hardware.</td>
+    </tr>
+    <tr>
+        <td>Start threshold:</td>
+        <td><input id="listen_settings_startThreshold" type="text" /></td>
+        <td>How long the sound should be over this threshold to start the recording. Please read <a href="http://linux.die.net/man/1/rec">Manual</a> (silence option)</a> before playing with this option.</td>
+    </tr>
+    <tr>
+        <td>Start threshold:</td>
+        <td><input id="listen_settings_stopThreshold" type="text" /></td>
+        <td>How long the sound should stay under this threshold to detect the end of sentence. Will be ignored if record length is set.</td>
+    </tr>
+</table><br>
+
+<p>
+<h1>Hilfe</h1>
+    This adapter is continually listens for voice activity and sends it to Google API.<br>
+    It creates following variables in CCU.IO:<br>
+    <ul>
+        <li>1. 72950 - listening indication. If no autoListen enabled, write true into this variable to start recording</li>
+        <li>2. 72951 - error text. Is something goes wrong, here will be the error text.</li>
+        <li>3. 72952 - auto listen value. Indication of the auto listen mode. Can be controlled in runtime. Value will not be stored in the settings.</li>
+        <li>4. 72953 - processing beep. Indication if the beep by voice processing is enabled. Can be controlled in runtime but will not be stored permanently.</li>
+    </ul>
+    After the voice is recognised the text will be written into the text processor variable, e.g. textCommands adapter 72970.<br>
+    If the auto listen mode is enabled the recording starts immediately after the text was processed.<br>
+<br>
+
+Install first following components on system (Raspberry PI or linux):
+apt-get install v4l-utils sox alsa-tools alsa-oss flac
+
+You can list the installed interfaces with: arecord -l
+Find additional information under <a href="http://linux.die.net/man/1/rec">http://linux.die.net/man/1/rec</a> or
+<a href="http://digitalcardboard.com/blog/2009/08/25/the-sox-of-silence/">http://digitalcardboard.com/blog/2009/08/25/the-sox-of-silence/</a>
+</p>
+<script type="text/javascript">
+
+function storeSettings () {
+    console.log (JSON.stringify(currentAdapterSettings));
+    updateAdapterSettings();
+}
+
+if (currentAdapterSettings.enabled) {
+    $("#listen_enabled option[value='false']").removeAttr("selected");
+    $("#listen_enabled option[value='true']").attr("selected", true);
+} else {
+    $("#listen_enabled option[value='true']").removeAttr("selected");
+    $("#listen_enabled option[value='false']").attr("selected", true);
+}
+
+$("#listen_enabled").change(function () {
+    currentAdapterSettings.enabled = ($("#listen_enabled option:selected").val() == "false" ? false : true);
+    storeSettings();
+});
+
+$("#listen_settings_language [value='"+currentAdapterSettings.settings.language+"']").attr("selected", "selected");
+
+$("#listen_settings_language").change(function () {
+    currentAdapterSettings.settings.language = $("#listen_settings_language").val();
+    storeSettings();
+    listenRefreshRules ();
+});
+
+console.log (currentAdapterSettings.settings.autoListen);
+
+if (currentAdapterSettings.settings.autoListen) {
+    $("#listen_settings_autoListen option[value='false']").removeAttr("selected");
+    $("#listen_settings_autoListen option[value='true']").attr("selected", true);
+} else {
+    $("#listen_settings_autoListen option[value='true']").removeAttr("selected");
+    $("#listen_settings_autoListen option[value='false']").attr("selected", true);
+}
+
+$("#listen_settings_autoListen").change(function () {
+    currentAdapterSettings.settings.autoListen = ($("#listen_settings_autoListen option:selected").val() == "false" ? false : true);
+    storeSettings();
+});
+
+$("#listen_settings_keywords").val(currentAdapterSettings.settings.keywords || "");
+
+$("#listen_settings_keywords").change(function () {
+    currentAdapterSettings.settings.keywords = $(this).val().toLowerCase();
+    storeSettings();
+});
+
+$("#listen_settings_en_keywords").val(currentAdapterSettings.settings.languageKeywords ? (currentAdapterSettings.settings.languageKeywords["en"] || "") : "");
+
+$("#listen_settings_en_keywords").change(function () {
+    if (!currentAdapterSettings.settings.languageKeywords){
+        currentAdapterSettings.settings.languageKeywords = {"de":"","en":"","ru":""};
+    }
+    currentAdapterSettings.settings.languageKeywords["en"] = $(this).val().toLowerCase();
+    storeSettings();
+});
+
+$("#listen_settings_de_keywords").val( currentAdapterSettings.settings.languageKeywords ? (currentAdapterSettings.settings.languageKeywords["de"] || "") : "");
+
+$("#listen_settings_de_keywords").change(function () {
+    if (!currentAdapterSettings.settings.languageKeywords){
+        currentAdapterSettings.settings.languageKeywords = {"de":"","en":"","ru":""};
+    }
+    currentAdapterSettings.settings.languageKeywords["de"] = $(this).val().toLowerCase();
+    storeSettings();
+});
+$("#listen_settings_ru_keywords").val(currentAdapterSettings.settings.languageKeywords ? (currentAdapterSettings.settings.languageKeywords["ru"] || "") : "");
+
+$("#listen_settings_ru_keywords").change(function () {
+    if (!currentAdapterSettings.settings.languageKeywords){
+        currentAdapterSettings.settings.languageKeywords = {"de":"","en":"","ru":""};
+    }
+    currentAdapterSettings.settings.languageKeywords["ru"] = $(this).val().toLowerCase();
+    storeSettings();
+});
+
+$("#listen_settings_sayIt").val(currentAdapterSettings.settings.sayItID || "");
+
+$("#listen_settings_sayIt").change(function () {
+    currentAdapterSettings.settings.sayItID = $(this).val();
+    storeSettings();
+});
+
+$("#listen_settings_keywordTimeout").val(currentAdapterSettings.settings.keywordTimeout || "");
+
+$("#listen_settings_keywordTimeout").change(function () {
+    currentAdapterSettings.settings.keywordTimeout = $(this).val();
+    storeSettings();
+});
+
+$("#listen_settings_processBeep").val(currentAdapterSettings.settings.processBeep || "");
+
+$("#listen_settings_processBeep").change(function () {
+    currentAdapterSettings.settings.processBeep = $(this).val();
+    storeSettings();
+});
+
+$("#listen_settings_keywordBeep").val(currentAdapterSettings.settings.keywordBeep || "");
+
+$("#listen_settings_keywordBeep").change(function () {
+    currentAdapterSettings.settings.keywordBeep = $(this).val();
+    storeSettings();
+});
+
+$("#listen_settings_keywordFailBeep").val(currentAdapterSettings.settings.keywordFailBeep || "");
+
+$("#listen_settings_keywordFailBeep").change(function () {
+    currentAdapterSettings.settings.keywordFailBeep = $(this).val();
+    storeSettings();
+});
+
+$("#listen_settings_processTextID").val(currentAdapterSettings.settings.processTextID || "");
+
+$("#listen_settings_processTextID").change(function () {
+    currentAdapterSettings.settings.processTextID = $(this).val();
+    storeSettings();
+});
+
+$("#listen_settings_reclen").val(currentAdapterSettings.settings.reclen || "");
+
+$("#listen_settings_reclen").change(function () {
+    currentAdapterSettings.settings.reclen = $(this).val();
+    storeSettings();
+});
+
+$("#listen_settings_qualityThreshold").val(currentAdapterSettings.settings.qualityThreshold || "");
+
+$("#listen_settings_qualityThreshold").change(function () {
+    currentAdapterSettings.settings.qualityThreshold = $(this).val();
+    storeSettings();
+});
+
+$("#listen_settings_recHardware").val(currentAdapterSettings.settings.recHardware || "");
+
+$("#listen_settings_recHardware").change(function () {
+    currentAdapterSettings.settings.recHardware = $(this).val();
+    storeSettings();
+});
+
+$("#listen_settings_startThreshold").val(currentAdapterSettings.settings.startThreshold || "");
+
+$("#listen_settings_startThreshold").change(function () {
+    currentAdapterSettings.settings.startThreshold = $(this).val();
+    storeSettings();
+});
+
+$("#listen_settings_stopThreshold").val(currentAdapterSettings.settings.stopThreshold || "");
+
+$("#listen_settings_stopThreshold").change(function () {
+    currentAdapterSettings.settings.stopThreshold = $(this).val();
+    storeSettings();
+});
+
+</script>
