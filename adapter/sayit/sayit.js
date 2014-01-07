@@ -276,7 +276,6 @@ function sayItSystem (i_, text, language, volume) {
     var oldVolume = null;
 
     if (volume !== null && volume !== undefined) {
-        oldVolume = sayLastVolume;
         sayItSystemVolume (volume);
     }
 
@@ -302,10 +301,6 @@ function sayItSystem (i_, text, language, volume) {
             throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
         });
     }
-
-    if (oldVolume !== null) {
-        sayItSystemVolume (oldVolume);
-    }
 }
 
 function sayItSystemVolume (level) {
@@ -317,7 +312,7 @@ function sayItSystemVolume (level) {
 		return;
 	}
 
-    setState(sayitSettings.firstId+2, level);
+    setState(objVolume, level);
 	
 	sayLastVolume = level;
 	

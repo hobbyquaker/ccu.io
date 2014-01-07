@@ -148,7 +148,15 @@ socket.on('event', function (obj) {
     if (obj[0] == objKeywordBeep && obj[1] !== undefined) {
         listenSettings.keywordBeep = obj[1];
     }
-});
+    else
+    if (obj[0] == objAutoListen && obj[1] !== undefined) {
+        if (listenSettings.autoListen != !!obj[1]) {
+            listenSettings.autoListen = !!obj[1];
+            if (listenSettings.autoListen) {
+                listenRecord (listenGetTextGoogle);
+            }
+        }
+    }});
 
 
 function stop() {
@@ -254,7 +262,7 @@ function listenRecord (callback) {
     var p = os.platform();
     var ls = null;
 
-    var cmdExec = '-r 16000 -c 1 ' + __dirname + '/temp.flac silence -l 1 '+listenSettings.startThreshold+' ' + ((listenSettings.reclen) ? ('trim 0 ' + listenSettings.reclen) : '1 '+listenSettings.stopThreshold);
+    var cmdExec = '-r 16000 -c 1 ' + __dirname + '/../../tmp/temp.flac silence -l 1 '+listenSettings.startThreshold+' ' + ((listenSettings.reclen) ? ('trim 0 ' + listenSettings.reclen) : '1 '+listenSettings.stopThreshold);
 
     if (p == 'linux') {
         //linux
@@ -309,10 +317,10 @@ function listenRecord (callback) {
                 }
             }
             else {
-                fs.renameSync (__dirname + "/temp.flac",  __dirname + "/command"+fileCounter+".flac");
+                fs.renameSync (__dirname + "/../../tmp/temp.flac",  __dirname + "/../../tmp/command"+fileCounter+".flac");
                 // Try to recognize this text
                 if (callback) {
-                    setTimeout (callback, 0,  __dirname + "/command"+fileCounter+".flac");
+                    setTimeout (callback, 0,  __dirname + "/../../tmp/command"+fileCounter+".flac");
                 }
                 fileCounter++;
             }
@@ -361,7 +369,7 @@ afterRecognitionCallback = function (xmlResult, file) {
 
     // Rename this file to last command file for debug
     try {
-        fs.renameSync (file, __dirname + "/lastCommand.flac");
+        fs.renameSync (file, __dirname + "/../../tmp/lastCommand.flac");
     }catch (e){
 
     }
@@ -392,6 +400,12 @@ function checkCommand (text) {
             clearTimeout (timerKeyword);
             timerKeyword = null;
         }
+
+        if (!isDetectKeyWord) {
+            // There is no key word
+            setState (objDetectedKeyword, "---");
+        }
+
         // Send text for textCommands
         setState (listenSettings.processTextID, currentLanguage + ";" + text);
 
@@ -445,6 +459,8 @@ function checkCommand (text) {
     if (isFound) {
         if (text) {
             setState (listenSettings.processTextID, currentLanguage + ";" + text);
+            // Restore language
+            currentLanguage = listenSettings.language;
         }
         else {
             waitForCommand = true;
