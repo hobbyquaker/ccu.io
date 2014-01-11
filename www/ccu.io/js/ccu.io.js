@@ -90,7 +90,7 @@ $(document).ready(function () {
                 if (adapter == "skeleton.js" || adapter == ".DS_Store") { continue; }
                 var adapterData = {
                     name:   data[i],
-                    settings:   '<button class="adapter-settings" data-adapter="'+adapter+'">configure</button>',
+                    settings:   '<button class="adapter-settings" data-adapter="'+adapter+'">configure</button><button class="adapter-restart" data-adapter="'+adapter+'">reload</button>',
                     confed:     (settings.adapters[data[i]]?"true":"false"),
                     enabled:    (settings.adapters[data[i]]? (settings.adapters[data[i]].enabled ? "<span style='color:green'><b>TRUE</b></span>" : "false"):""),
                     mode:       (settings.adapters[data[i]]?settings.adapters[data[i]].mode:""),
@@ -100,6 +100,9 @@ $(document).ready(function () {
             }
             $(".adapter-settings").click(function () {
                 editAdapterSettings($(this).attr("data-adapter"));
+            });
+            $(".adapter-restart").click(function () {
+                restartAdapter($(this).attr("data-adapter"));
             });
         });
 
@@ -149,8 +152,8 @@ $(document).ready(function () {
         }
 
         function compareVersion(instVersion, availVersion) {
-            var instVersionArr = instVersion.split(".");
-            var availVersionArr = availVersion.split(".");
+            var instVersionArr = instVersion.replace(/beta/,".").split(".");
+            var availVersionArr = availVersion.replace(/beta/,".").split(".");
 
             var updateAvailable = false;
 
@@ -933,6 +936,12 @@ $(document).ready(function () {
         delete settingsWithoutAdapters.adapters;
         socket.emit("writeFile", "io-settings.json", settingsWithoutAdapters, function () {
             alert("CCU.IO settings saved. Please restart CCU.IO");
+        });
+    }
+
+    function restartAdapter(adapter) {
+        socket.emit("restartAdapter", adapter, function (res) {
+            alert(res);
         });
     }
 
