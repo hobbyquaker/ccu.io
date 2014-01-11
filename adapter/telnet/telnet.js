@@ -2,6 +2,8 @@
  *      CCU.IO telnet-client Adapter 0.1
  *
  * Todo:
+ *  - Support for Authentication
+ *  - settings.html
  *
  * Changelog:
  *
