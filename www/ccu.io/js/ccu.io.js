@@ -87,7 +87,7 @@ $(document).ready(function () {
         socket.emit("readdir", ["adapter"], function (data) {
             for (var i = 0; i < data.length; i++) {
                 var adapter = data[i];
-                if (adapter == "skeleton.js" || adapter == ".DS_Store") { continue; }
+                if (adapter.match(/^skeleton/) || adapter == ".DS_Store") { continue; }
                 var adapterData = {
                     name:   data[i],
                     settings:   '<button class="adapter-settings" data-adapter="'+adapter+'">configure</button><button class="adapter-restart" data-adapter="'+adapter+'">reload</button>',
