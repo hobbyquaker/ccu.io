@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.9*
+*aktuelle Version: 1.0.10*
 
 ## Dokumentation
 
@@ -11,8 +11,10 @@ siehe http://ccu.io/
 ## Todo/Roadmap
 
 * Script-Engine Addins
+* adapter/skeleton-ipc.js
 * RPI Adapter: 1-Wire Unterstützung
 * ArtNet (DMX) Adapter
+* Anymote Adapter (control Google TV)
 * Doku, Doku, Doku
 * CCU2-Paket für einfache Installation
 * .msi für einfache Installation unter Windows (ccu.io als Service registrieren)
@@ -21,6 +23,14 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.10
+* (Hobbyquaker) Neuer Adapter: Telnet-Client
+* (Hobbyquaker) Lirc-Adapter ....
+* (Hobbyquaker) LogMove via node-schedule, Vorbereitung für ccu.io.log
+* (Hobbyquaker) Adapter können nun einzeln neu gestartet werden
+* (Eisbaeeer) Neuer Adapter: Onkyo
+
 
 ### 1.0.9
 * (Hobbyquaker) Bugfix rega post request errors
