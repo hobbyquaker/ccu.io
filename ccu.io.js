@@ -54,6 +54,8 @@ var fs =        require('fs'),
     devlogCache = [],
     notFirstVarUpdate = false,
     children = [],
+    childrenAdapter = {},
+    timerAdapter = {},
     childScriptEngine,
     pollTimer,
     ccuReachable = false,
@@ -246,7 +248,7 @@ function updateStatus () {
 if (settings.logging.enabled) {
     setInterval(writeLog, settings.logging.writeInterval * 1000);
     if (settings.logging.move) {
-        schedule.scheduleJob('0 0 * * *', function(){
+        scheduler.scheduleJob('0 0 * * *', function(){
             moveLog(settings.logging.file);
         });
     }
@@ -1273,6 +1275,9 @@ function initSocketIO(_io) {
             });
         });
 
+        socket.on('restartAdapter', function (adapter) {
+           return restartAdapter(adapter)
+        });
         socket.on('updateAddon', function (url, name) {
             var path = __dirname + "/update-addon.js";
             logger.info("ccu.io        starting "+path+" "+url+" "+name);
@@ -1778,6 +1783,41 @@ function startScriptEngine() {
     childScriptEngine = childProcess.fork(path);
 }
 
+function restartAdapter(adapter) {
+    if (!settings.adapters[adapter].enabled) {
+        return "Error: Adapter not enabled";
+    }
+    //logger.info("ccu.io        found adapter "+adapter);
+    var mode = settings.adapters[adapter].mode;
+    var period = settings.adapters[adapter].period * 60000;
+
+    var path = __dirname + "/adapter/"+adapter+"/"+adapter+".js";
+
+    switch (mode) {
+        case "periodical":
+            clearTimeout(timerAdapter[adapter]);
+            setTimeout(function (_path, _period, _adapter) {
+                startAdapterPeriod(_path, _period);
+                logger.info("ccu.io        adapter "+_adapter+" timer restarted");
+            }, 50, path, period, adapter);
+            return "adapter "+adapter+" timer restarted";
+            break;
+
+        default:
+            logger.info("ccu.io        killing adapter "+adapter);
+
+            childrenAdapter[adapter].process.kill();
+            setTimeout(function (_path, _adapter) {
+                logger.info("ccu.io        starting adapter "+_path);
+                childrenAdapter[_adapter] = childProcess.fork(_path);
+                return "adapter "+_adapter+" timer restartet";
+            }, 1000, path, adapter);
+    }
+
+
+    return "Adapter restarted";
+}
+
 function startAdapters () {
     if (!settings.adapters) {
         return false;
@@ -1793,19 +1833,25 @@ function startAdapters () {
 
         var path = __dirname + "/adapter/"+adapter+"/"+adapter+".js";
 
+        if (!childrenAdapter[adapter]) {
+            childrenAdapter[adapter] = {};
+        }
 
         switch (mode) {
             case "periodical":
-                setTimeout(function (_path, _period) {
-                    startAdapterPeriod(_path, _period);
-                }, (i*3000), path, period);
+                setTimeout(function (_path, _period, _adapter) {
+                    startAdapterPeriod(_path, _period, _adapter);
+                }, (i*3000), path, period, adapter);
                 break;
 
             default:
-                setTimeout(function (_path) {
+                setTimeout(function (_path, _adapter) {
                     logger.info("ccu.io        starting adapter "+_path);
-                    children.push(childProcess.fork(_path));
-                }, (i*3000), path);
+                    if (!childrenAdapter[_adapter]) {
+                        childrenAdapter[_adapter] = {};
+                    }
+                    childrenAdapter[_adapter].process = childProcess.fork(_path);
+                }, (i*3000), path, adapter);
         }
         i += 1;
     }
@@ -1814,13 +1860,19 @@ function startAdapters () {
     }
 }
 
-function startAdapterPeriod (adapter, interval) {
-   setInterval(function () {
-        logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
-        childProcess.fork(adapter);
-    }, interval);
-    logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
-    childProcess.fork(adapter);
+function startAdapterPeriod (adapter, interval, _adapter) {
+   interval = parseInt(interval, 10) || 3600000;
+
+    if (!childrenAdapter[_adapter]) {
+        childrenAdapter[_adapter] = {};
+    }
+
+   timerAdapter[_adapter] = setInterval(function () {
+       logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
+       childrenAdapter[_adapter].process = childProcess.fork(adapter);
+   }, interval);
+   logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
+   childrenAdapter[_adapter].process = childProcess.fork(adapter);
 }
 
 process.on('SIGINT', function () {
@@ -1859,13 +1911,12 @@ function stop() {
             childScriptEngine.kill();
         }
 
-
-        logger.info("ccu.io        killing child processes");
-        for (var i = 0; i < children.length; i++) {
-            children[i].kill();
+        for (var adapter in childrenAdapter) {
+            logger.info("ccu.io        killing adapter "+adapter);
+            childrenAdapter[adapter].process.kill();
         }
     } catch (e) {
-        logger.error("ccu.io        something went wrong "+e)
+        logger.error("ccu.io        something went wrong while terminating: "+e)
     }
 
 
