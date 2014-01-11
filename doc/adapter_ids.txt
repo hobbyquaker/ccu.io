@@ -30,6 +30,8 @@
 
 73100-73199                     telnet-client adapter
 
+73300-?                         onkyo adapter
+
 80000-?                         itrans adapter
 
 80100-?                         iCal adapter

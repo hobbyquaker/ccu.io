@@ -1,9 +1,9 @@
 {
-		"enabled": false,
-		"settings": {
+    "enabled": false,
+    "settings": {
 		"IP": "xxx.xxx.xxx.xxx",
 		"port": 60128,
-    "firstId": xxxxxx,
-    "debug": false
-		}
+        "firstId": 73300,
+        "debug": false
+    }
 }	
