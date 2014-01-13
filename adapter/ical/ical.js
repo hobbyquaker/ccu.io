@@ -2,7 +2,7 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
- *      Version 0.3
+ *      Version 0.4
  *		
  */
 var settings = require(__dirname+'/../../settings.js');
@@ -22,15 +22,17 @@ var ical = require('ical'), months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 
 var RRule = require('rrule').RRule;
 var preview = icalSettings.preview;
 var intervalID;
-var fontbold = '<span style="font-weight:bold;color:white">';
-var fontnormal = '<span style="font-weight:normal;color:white">';
+var fontbold = '<span style=\"font-weight:bold;color:'+icalSettings.defColor+'\">';
+var fontnormal = '<span style=\"font-weight:normal;color:'+icalSettings.defColor+'\">';
 var fontboldorange = '<span style="font-weight:bold;color:orange">';
 var fontnormalorange = '<span style="font-weight:normal;color:orange">';
 var fontboldred = '<span style="font-weight:bold;color:red">';
 var fontnormalred = '<span style="font-weight:normal;color:red">';
+var fullTime = icalSettings.fulltime;
 var colorize = icalSettings.colorize;
 var minoneorange = 0;
 var minonered = 0;
+var arrDates = Array();
 
 var warn = fontboldred;
 var warn2 =fontnormalred;
@@ -82,14 +84,14 @@ socket.on('event', function (obj) {
                     //von defURL lesen
 					if (content[0] == "read") {
 						logger.info("adapter ical reading iCal from default URL: " + icalSettings.defURL);
-						checkiCal(icalSettings.defURL);
+						readOne(icalSettings.defURL);
 					}
                     // autoload starten
                     if (content[0] == "start") {
                         //eventuell alte Instanz stoppen
                         clearInterval(intervalID);
                         logger.info("adapter ical startting autoload every " + icalSettings.runEveryMinutes);
-                        intervalID = setInterval(function() {checkiCal(icalSettings.defURL)},runeveryminutes);
+						intervallID = setInterval(readAll,icalSettings.runEveryMinutes * 60000);
                         setState(icalSettings.firstId, "autorun");
                     }
                     //autoload stoppen
@@ -102,7 +104,7 @@ socket.on('event', function (obj) {
 					if (content[0] == "readURL") {
 						if (content[1] != "") {
 							logger.info("adapter ical reading iCal from URL: " + content[1]);
-							checkiCal(content[1]);
+							readOne(content[1]);
 						}
 					}
 				}
@@ -135,7 +137,7 @@ function checkiCal(loc) {
             setState(icalSettings.firstId + 1, "");
             minoneorange = false;
             minonered = false;
-            var arrDates = new Array();
+           
             /*for (var k in data) {
                 if (data.hasOwnProperty(k)) {
                     var value = data[k];
@@ -201,7 +203,7 @@ function checkiCal(loc) {
                                         var singleDate = fontbold + datevar.getDate() + "." + (datevar.getMonth() + 1) + "." + datevar.getFullYear() + " " + MyTimeString + fontnormal + " " + ev.summary;
                                     }
                                    if (debug) {logger.info("RRUle Termin hinzugefügt: " + ev.summary + " "+ singleDate);}
-                                    arrDates.push(singleDate);
+								    arrDates.push(singleDate);
                                 }
                             }
                         } else {
@@ -241,7 +243,7 @@ function checkiCal(loc) {
                                 }
                                 var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + ev.summary;
                                 if (debug) {logger.info("Termin hinzugefügt : " + ev.summary + " am " + singleDate);}
-                                arrDates.push(singleDate);
+								arrDates.push(singleDate);
 
                             } else {
                                 if (debug) {logger.info("Termin " +ev.summary + " am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
@@ -253,13 +255,44 @@ function checkiCal(loc) {
                     }
                 }
             }
-            if (arrDates.length > 0) {
-                setState(icalSettings.firstId + 1, brSeparatedList(arrDates));
-            }
+           
         })
 }
 
+//Alle Kalender einlesen
+function readAll() {
+	arrDates = new Array();
+	if ((icalSettings.defURL != "") && (icalSettings.defURL != undefined)) {
+	 	if (debug) {logger.info("adapter ical reading Calendar from URL1"+icalSettings.defURL);}
+		checkiCal(icalSettings.defURL);
+	}
+	if ((icalSettings.defURL2 != "") && (icalSettings.defURL2 != undefined)) {
+		if (debug) {logger.info("adapter ical reading Calendar from URL2"+icalSettings.defURL2);}
+	 	checkiCal(icalSettings.defURL2);
+	}
+	if ((icalSettings.defURL3 != "") && (icalSettings.defURL3 != undefined)) {
+		if (debug) {logger.info("adapter ical reading Calendar from URL3"+icalSettings.defURL3);}
+	 	checkiCal(icalSettings.defURL3);
+	}
+	//10 Sek warten bis alle eingelesen wurden (hoffentlich)
+	 setTimeout(displayDates,10000);
+	
+}
 
+//Einen Kalender einlesen
+
+function readOne(url) {
+	arrDates = new Array();
+	checkiCal(url);
+	setTimeout(displayDates,4000);
+}
+
+//Darstellen nachdem alle eingelesen wurden
+function displayDates() {
+    if (arrDates.length > 0) {
+        setState(icalSettings.firstId + 1, brSeparatedList(arrDates));
+    }
+}
 function parseDate(input) {
     var parts = input.match(/(\d+)/g);
     // note parts[1]-1
@@ -308,6 +341,10 @@ function brSeparatedList(arr) {
             }
             text = text + arr[i];
         }
+    }
+	//Wenn fullTime gesetzt dann 00:00 ersetzen durch String
+    if (fullTime != "") {
+	   text = text.replace(/00:00/g, fullTime);
     }
     return text;
 }
@@ -360,13 +397,15 @@ function iCalInit() {
 
     if (icalSettings.runEveryMinutes > 0) {
         //Autostart --> first read in 30sec
-        setTimeout(function() {checkiCal(icalSettings.defURL)},4000);
+       // setTimeout(function() {checkiCal(icalSettings.defURL)},4000);
+	   setTimeout(readAll,4000);
         //now schedule
         var runeveryminutes = icalSettings.runEveryMinutes * 60000;
         logger.info("adapter ical autorun every " + icalSettings.runEveryMinutes + " Minutes");
         setState(icalSettings.firstId, "autorun");
-        intervalID = setInterval(function() {checkiCal(icalSettings.defURL)},runeveryminutes);
-    }
+        //intervalID = setInterval(function() {checkiCal(icalSettings.defURL)},runeveryminutes);
+        intervallID = setInterval(readAll,runeveryminutes);
+	}
 
 }
 
