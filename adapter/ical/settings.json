@@ -6,7 +6,7 @@
 		"runEveryMinutes": 30,
 		"colorize": true,
 		"debugging": false,
-		"defColor": white,
+		"defColor": "white",
 		"fulltime": " ",
 		"defURL": "http://XXXXXX",
         "defURL2": "",
