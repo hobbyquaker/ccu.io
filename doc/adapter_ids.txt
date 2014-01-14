@@ -34,6 +34,8 @@
 
 73200-73295                     Fritz.box! call monitor adapter
 
+73300-73395                     dreamBox adapter
+
 80000-?                         itrans adapter
 
 80100-?                         iCal adapter

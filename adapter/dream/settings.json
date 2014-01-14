@@ -1,0 +1,10 @@
+{
+	"enabled": true,
+	"settings": {
+		"ip": "192.168.1.50",
+		"port": 80,
+		"messageTimeout": 5,
+		"pollingInterval": 10000,
+		"firstId": 73300
+	}
+}
