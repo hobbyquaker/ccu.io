@@ -82,6 +82,7 @@ listenSettings.keywords         = (listenSettings.keywords !== undefined && list
 listenSettings.keywordBeep      = listenSettings.keywordBeep || "";
 listenSettings.keywordFailBeep  = listenSettings.keywordFailBeep || "";
 listenSettings.keywordTimeout   = (listenSettings.keywordTimeout || 6000);
+listenSettings.debug            = (listenSettings.debug || false);
 
 var fileCounter     = 0;
 var waitForCommand  = false;
@@ -369,7 +370,9 @@ afterRecognitionCallback = function (xmlResult, file) {
 
     // Rename this file to last command file for debug
     try {
-        fs.renameSync (file, __dirname + "/../../tmp/lastCommand.flac");
+        if (!listenSettings.debug) {
+            fs.renameSync (file, __dirname + "/../../tmp/lastCommand.flac");
+        }
     }catch (e){
 
     }

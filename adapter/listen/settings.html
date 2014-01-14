@@ -12,7 +12,7 @@
     </tr>
     <tr>
         <td>Main language:</td>
-        <td><select id="listen_settings_language">
+        <td style="width: 300px"><select id="listen_settings_language">
             <option value="en">English</option>
             <option value="de">Deutsch</option>
             <option value="ru">Русский</option>
@@ -31,77 +31,93 @@
     </tr>
     <tr>
         <td>Start words for main language:</td>
-        <td><input id="listen_settings_keywords" type="text"></td>
+        <td><input id="listen_settings_keywords" style="width:100px" type="text"></td>
         <td>Adapter will try to detect these words, before starting with command recognition. Can be blank, so every sentence will be treated as command. Can be more than one word, divided by "/". Can be more than one word, e.g: "dear lady".</td>
     </tr>
     <tr>
         <td>Start words for English:</td>
-        <td><input id="listen_settings_en_keywords" type="text"></td>
+        <td><input id="listen_settings_en_keywords" style="width:100px" type="text"></td>
         <td>After detection of this key word, the command will be treated as in english. Start word will be processed in main language.</td>
     </tr>
     <tr>
         <td>Start words for German:</td>
-        <td><input id="listen_settings_de_keywords" type="text"></td>
+        <td><input id="listen_settings_de_keywords" style="width:100px" type="text"></td>
         <td>After detection of this key word, the command will be treated as in german. Start word will be processed in main language.</td>
     </tr>
     <tr>
         <td>Start words for Russian:</td>
-        <td><input id="listen_settings_ru_keywords" type="text"></td>
+        <td><input id="listen_settings_ru_keywords" style="width:100px" type="text"></td>
         <td>After detection of this key word, the command will be treated as in russian. Start word will be processed in main language.</td>
     </tr>
     <tr>
         <td>Timeout after start word:</td>
-        <td><input id="listen_settings_keywordTimeout" type="text"></td>
+        <td><input id="listen_settings_keywordTimeout" style="width:60px" type="text"></td>
         <td>Time in ms the "listen" adapter waits for command after the start word was detected.</td>
     </tr>
     <tr>
         <td>Sound by sending data to Google:</td>
-        <td><input id="listen_settings_processBeep" type="text"></td>
+        <td><input id="listen_settings_processBeep" style="width:250px" type="text"></td>
         <td>Every time the "listen" adapter sends voice to Google this sound will be played. It is not recommended, if this sound can be recorded by microphone and will influence the voice recognition. You can set the volume as "20;sound.wav" to reduce the effect.</td>
     </tr>
     <tr>
         <td>Ready acoustic signal:</td>
-        <td><input id="listen_settings_keywordBeep" type="text"></td>
+        <td>
+            <select id="listen_select_keywordBeep">
+            <option value="user">Custom</option>
+            <option value="">---</option>
+            <option value="../adapter/listen/sounds/beepStart_25.mp3">25% Volume</option>
+            <option value="../adapter/listen/sounds/beepStart_50.mp3">50% Volume</option>
+            <option value="../adapter/listen/sounds/beepStart_75.mp3">75% Volume</option>
+            <option value="../adapter/listen/sounds/beepStart_100.mp3">100% Volume</option>
+        </select>&nbsp;<input id="listen_settings_keywordBeep"  style="width:250px" type="text"></td>
         <td>Every time the key word detected this sound will be played. Set up the volume ("volume;sound.wav"), so the recording will not be affected by this sound. Can be leave empty, so visual signal will be used. If the key word was said together with command, no sound will be played.</td>
     </tr>
     <tr>
         <td>Acoustic signal by timeout:</td>
-        <td><input id="listen_settings_keywordFailBeep" type="text"></td>
+        <td><select id="listen_select_keywordFailBeep">
+            <option value="user">Custom</option>
+            <option value="">---</option>
+            <option value="../adapter/listen/sounds/beepFail_15.mp3">15% Volume</option>
+            <option value="../adapter/listen/sounds/beepFail_25.mp3">25% Volume</option>
+            <option value="../adapter/listen/sounds/beepFail_50.mp3">50% Volume</option>
+            <option value="../adapter/listen/sounds/beepFail_75.mp3">75% Volume</option>
+            <option value="../adapter/listen/sounds/beepFail_100.mp3">100% Volume</option>
+        </select>&nbsp;<input id="listen_settings_keywordFailBeep"  style="width:250px" type="text"></td>
         <td>This sound will be played if timeout occurs after the key word was detected. You can specify some text here or set up wav/mp3 file in "www" directory. (Valid for all sound file settings.) </td>
     </tr>
     <tr>
         <td>SayIt ID:</td>
-        <td><input id="listen_settings_sayIt" type="text" /></td>
+        <td><input id="listen_settings_sayIt" style="width:70px" type="text" /></td>
         <td>ID to play sound and texts with it. Normally ID of the SayIt adapter 72903</td>
     </tr>
     <tr>
         <td>Text processor ID:</td>
-        <td><input id="listen_settings_processTextID" type="text" /></td>
+        <td><input id="listen_settings_processTextID" style="width:70px" type="text" /></td>
         <td>Where should be stored the command. Normally in "TextCommands" adapter 72970.</td>
     </tr>
     <tr>
         <td>Recrord lentgh:</td>
-        <td><input id="listen_settings_reclen" type="text" /></td>
+        <td><input id="listen_settings_reclen" style="width:70px" type="text" /></td>
         <td>How long the command should be recorded. Can be set to 0 or left empty if the end should be detected automatically.</td>
     </tr>
     <tr>
         <td>Quality threshold:</td>
-        <td><input id="listen_settings_qualityThreshold" type="text" /></td>
+        <td><input id="listen_settings_qualityThreshold" style="width:70px" type="text" /></td>
         <td>Google deliver with text the quality from 0 to 1, that describes how good the text was recognised.</td>
     </tr>
     <tr>
         <td>Record hardware:</td>
-        <td><input id="listen_settings_recHardware" type="text" /></td>
+        <td><input id="listen_settings_recHardware" style="width:70px" type="text" /></td>
         <td>Used for Raspberry PI and Linux systems, not for Windows. Set up the microphone hardware.</td>
     </tr>
     <tr>
         <td>Start threshold:</td>
-        <td><input id="listen_settings_startThreshold" type="text" /></td>
+        <td><input id="listen_settings_startThreshold" style="width:70px" type="text" /></td>
         <td>How long the sound should be over this threshold to start the recording. Please read <a href="http://linux.die.net/man/1/rec">Manual</a> (silence option)</a> before playing with this option.</td>
     </tr>
     <tr>
         <td>Start threshold:</td>
-        <td><input id="listen_settings_stopThreshold" type="text" /></td>
+        <td><input id="listen_settings_stopThreshold" style="width:70px" type="text" /></td>
         <td>How long the sound should stay under this threshold to detect the end of sentence. Will be ignored if record length is set.</td>
     </tr>
 </table><br>
@@ -234,11 +250,27 @@ $("#listen_settings_keywordBeep").change(function () {
     storeSettings();
 });
 
+$("#listen_select_keywordBeep option[value='"+currentAdapterSettings.settings.keywordBeep+"']").attr("selected", true);
+
+$("#listen_select_keywordBeep").change(function () {
+    if ($(this).val() != "user") {
+        $("#listen_settings_keywordBeep").val ($(this).val()).trigger("change");
+    }
+});
+
 $("#listen_settings_keywordFailBeep").val(currentAdapterSettings.settings.keywordFailBeep || "");
 
 $("#listen_settings_keywordFailBeep").change(function () {
     currentAdapterSettings.settings.keywordFailBeep = $(this).val();
     storeSettings();
+});
+
+$("#listen_select_keywordFailBeep option[value='"+currentAdapterSettings.settings.keywordFailBeep+"']").attr("selected", true);
+
+$("#listen_select_keywordFailBeep").change(function () {
+    if ($(this).val() != "user") {
+        $("#listen_settings_keywordFailBeep").val ($(this).val()).trigger("change");
+    }
 });
 
 $("#listen_settings_processTextID").val(currentAdapterSettings.settings.processTextID || "");
