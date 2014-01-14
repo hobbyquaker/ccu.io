@@ -1,0 +1,134 @@
+<table style="font-size: 12px" id="fritzBox_table">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td colspan="2">
+            <select id="fritzbox_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>IP address:</td>
+        <td style="width: 100px"><input id="fritzbox_settings_ip" style="width:100px" type="text"></td>
+        <td>IP address of the fritz.box!</td>
+    </tr>
+    <tr>
+        <td>Max stored missed calls:</td>
+        <td style="width: 100px"><input id="fritzbox_settings_maxMissed" style="width:50px" type="text"></td>
+        <td>Number of stored missed calls.</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="height:20px"></td>
+    </tr>
+    <tr>
+        <td colspan="3"><h3>Phonebook</h3></td>
+    </tr>
+
+    <tr>
+        <th>Number</th>
+        <th>Name</th>
+        <th></th>
+    </tr>
+</table>
+<input type="button" id="add_name" value="add name"/><br><br>
+
+<p>
+<h1>Description</h1>
+The fritz!box has an integrated call monitor that can be activated by dialling #96*5* (and deactivated by #96*4* …).
+Additionally the CCU.IO adapter has to be enabled too.
+Following objects will be created:<br>
+1. 73200 - STATE [NONE | RING | TALKING ]
+2. 73201 - RINGING: true if STATE is RING
+3. 73202 - MISSED: count of missed calls. Can be cleared with value 0.
+4. 73203 - MISSED_LIST: list of missed calls in form "14.01.14 23:01:03/Caller Number".
+5. 73204 - LAST_MISSED: Name or number of last missed call.
+
+</p>
+
+<script type="text/javascript">
+
+    function storeSettings () {
+        updateAdapterSettings();
+    }
+
+    if (currentAdapterSettings.enabled) {
+        $("#fritzbox_enabled option[value='false']").removeAttr("selected");
+        $("#fritzbox_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#fritzbox_enabled option[value='true']").removeAttr("selected");
+        $("#fritzbox_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#fritzbox_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#fritzbox_enabled option:selected").val() == "false" ? false : true);
+        storeSettings();
+    });
+
+    $("#fritzbox_settings_ip").val(currentAdapterSettings.settings.IP || "192.168.1.1");
+
+    $("#fritzbox_settings_ip").change(function () {
+        currentAdapterSettings.settings.IP = $(this).val();
+        storeSettings();
+    });
+
+    $("#fritzbox_settings_maxMissed").val(currentAdapterSettings.settings.maxMissed === undefined ? 10 : currentAdapterSettings.settings.maxMissed);
+
+    $("#fritzbox_settings_maxMissed").change(function () {
+        currentAdapterSettings.settings.maxMissed = $(this).val();
+        if (currentAdapterSettings.settings.maxMissed > 100) {
+            currentAdapterSettings.settings.maxMissed = 100;
+            $(this).val(currentAdapterSettings.settings.maxMissed);
+        }
+        storeSettings();
+    });
+
+    function showEntry (id) {
+        console.log(currentAdapterSettings.settings.phonebook[id]);
+
+        var sText = '<tr class="fritzBox-optentry">';
+        sText += '<td><input id="fritzBox_number_'+id+'" data-fritzBox-entry="'+id+'" type="text" value="'+(currentAdapterSettings.settings.phonebook[id].number || "")+'"/></td>';
+        sText += '<td><input id="fritzBox_name_'  +id+'" data-fritzBox-entry="'+id+'" type="text" value="'+(currentAdapterSettings.settings.phonebook[id].name   || "")+'"/></td>';
+        sText += '<td><input data-fritzBox-entry="'+id+'" type="button" value="remove" class="fritzBox-remove"/></td>';
+        sText += "</tr>";
+
+        $("#fritzBox_table").append(sText);
+
+        $(".fritzBox-remove:last").button().click(function () {
+            fritzBoxRemoveEntry($(this).attr("data-fritzBox-entry"));
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#fritzBox_number_"+id).change(function () {
+            currentAdapterSettings.settings.phonebook[$(this).attr('data-fritzBox-entry')].number = $(this).val();
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#fritzBox_name_"+id).change(function () {
+            currentAdapterSettings.settings.phonebook[$(this).attr('data-fritzBox-entry')].name = $(this).val();
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+    }
+
+    $("#add_name").button().click(function () {
+        currentAdapterSettings.settings.phonebook[currentAdapterSettings.settings.phonebook.length] = {number: "", name:""};
+        showEntry (currentAdapterSettings.settings.phonebook.length - 1);
+    });
+
+    function fritzBoxRemoveEntry(j) {
+        $("tr.fritzBox-optentry").remove();
+        currentAdapterSettings.settings.phonebook.splice(j, 1);
+        fritzBoxRefreshNames();
+        storeSettings();
+    }
+    function fritzBoxRefreshNames () {
+        for (var i = 0; i < currentAdapterSettings.settings.phonebook.length; i++) {
+            showEntry (i);
+        }
+    }
+
+    fritzBoxRefreshNames();
+
+</script>
