@@ -32,6 +32,8 @@
 
 73000-73095                     lirc adapter
 
+73200-73295                     Fritz.box! call monitor adapter
+
 80000-?                         itrans adapter
 
 80100-?                         iCal adapter

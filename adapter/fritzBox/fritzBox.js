@@ -1,6 +1,6 @@
 /**
  *      CCU.IO Fritz.Box call monitor Adapter
- *      12'2013 Bluefox
+ *      01'2014 Bluefox
  *      Can store incoming calls into the list.
  *
  *      Version 0.1
@@ -37,7 +37,8 @@ var objState        = fritzBoxSettings.firstId + 0, // Current state of phone: F
     objRinging      = fritzBoxSettings.firstId + 1, // TRUE if ringing, else false
 	objMissedCalls  = fritzBoxSettings.firstId + 2, // Count of missed calls
 	objMissedList   = fritzBoxSettings.firstId + 3, // List of missed calls
-    objLastMissed   = fritzBoxSettings.firstId + 4; // Last missed call
+    objMissedListFormatted   = fritzBoxSettings.firstId + 4, // List of missed calls
+    objLastMissed   = fritzBoxSettings.firstId + 5; // Last missed call
 
 if (settings.ioListenPort) {
 	var socket = io.connect("127.0.0.1", {
@@ -125,6 +126,17 @@ function listToText () {
 
     return text;
 }
+
+function listToHtml () {
+    var text = '<table class="missedlistTable">';
+    for (var i = missedList.length - 1; i >= 0; i--) {
+        text += "<tr class='missedlistTableLine'><td class='missedlistTableTime'>" + missedList[i].time + "</td><td class='missedlistTableName'>" + resolveNumber (missedList[i].number) + "</td></tr>";
+    }
+    text += "</table>"
+
+    return text;
+}
+
 
 function connectToFritzBox () {
     if (connecting) {
@@ -232,6 +244,7 @@ function connectToFritzBox () {
                 setState(objMissedCalls, missedCount);
                 setState(objMissedList, listToText());
                 setState(objLastMissed, resolveNumber(callStatus[item.connectionId].calledNumber));
+                setState(objMissedListFormatted, listToHtml ());
             }
 
         }
@@ -293,6 +306,14 @@ createObject(objMissedCalls, {
 
 createObject(objMissedList, {
     Name:     "FRITZBOX.MISSED_LIST",
+    "DPInfo": "FritzBox",
+    TypeName: "VARDP",
+    "ValueType": 20,
+    "ValueSubType": 11
+});
+
+createObject(objMissedListFormatted, {
+    Name:     "FRITZBOX.MISSED_LIST_FMT",
     "DPInfo": "FritzBox",
     TypeName: "VARDP",
     "ValueType": 20,
