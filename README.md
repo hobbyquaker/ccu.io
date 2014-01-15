@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.11*
+*aktuelle Version: 1.0.12*
 
 ## Dokumentation
 
@@ -22,6 +22,21 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.12
+* (Bluefox) new listen adapter (not finished yet)
+* (Bluefox) new textCommand adapter (not finished yet)
+* (Bluefox) Add hmSelectDialog to www/lib/js
+* (Bluefox) Listen and textCommand adapters improving. (not yet finished)
+* (Bluefox) Changes for sayIt and listen adapters.
+* (Bluefox) Add cache properties for Web Server of ccu.io.js
+* (Bluefox) Remove warnings if security for non SSL enabled
+* (Bluefox) fritz.box! adapter.
+* (Bluefox) Add HTML table for missed calls
+* (Bluefox) Edit adapter_ids.txt
+* (Bluefox) Add DreamBox adapter
+* (Bluefox) Add new data point ringing number.
+* (Bluefox) Add description for RINGING_NUMBER.
 
 ### 1.0.11
 * (Hobbyquaker) Adapter rpi: Standalone-Modus
