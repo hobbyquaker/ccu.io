@@ -6,6 +6,10 @@
 		"runEveryMinutes": 30,
 		"colorize": true,
 		"debugging": false,
-		"defURL": "http://XXXXXX"
+		"defColor": "white",
+		"fulltime": " ",
+		"defURL": "http://XXXXXX",
+        "defURL2": "",
+        "defURL3": ""
 		}
 }	
