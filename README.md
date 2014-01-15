@@ -12,7 +12,6 @@ siehe http://ccu.io/
 
 * Script-Engine Addins
 * adapter/skeleton-ipc.js
-* RPI Adapter: 1-Wire Unterstützung
 * ArtNet (DMX) Adapter
 * Anymote Adapter (control Google TV)
 * Doku, Doku, Doku
@@ -26,6 +25,8 @@ siehe http://ccu.io/
 
 ### 1.0.11
 * (Hobbyquaker) Adapter rpi: Standalone-Modus
+* (Hobbyquaker) Adapter rpi: Datenpunkte für RAM und Swap Usage
+* (Hobbyquaker) Adapter rpi: Unterstützung für 1-Wire Temperatur-Sensoren
 * (Hobbyquaker) Neue Socket.IO Methode "log" für standalone-adapter logging
 * (Vader722) Adapter iCal: now reading up to 3 calendar, custom font color, changeable fulltime
 * (Vader722) Adapter iCal: fixed syntax
