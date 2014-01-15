@@ -38,6 +38,12 @@
 
 90000-90549                     hue adapter
 
+95000-?                         fritzbox adapter
+
+95100-?                         dreambox adapter
+
+
+
 100000-299999                   reserviert für eigene Scripte
 
 268435456 - 268500991           reserviert für zweite CCU (0x10000000 - 0x1000FFFF)
