@@ -1,0 +1,121 @@
+<table style="font-size: 12px">
+    <tr>
+        <td>Enabled:</td>
+        <td>
+            <select id="dream_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>First ID:</td>
+        <td><input id="dream_firstId" type="number"/></td>
+    </tr>
+    <tr>
+        <td>Dreambox (IP):</td>
+        <td><input id="dream_ip" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Dreambox (Port):</td>
+        <td><input id="dream_port" type="number" min="10" max="65535"/></td>
+    </tr>
+    <tr>
+        <td>Polling enabled:</td>
+        <td>
+            <select id="dream_pollingEnabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Polling Interval:</td>
+        <td><input id="dream_pollingInterval" type="number" min="5" max="86400"/> seconds</td>
+    </tr>
+    <tr>
+        <td>Message Type:</td>
+        <td>
+            <select id="dream_messageType">
+                <option value="0">Yes/No</option>
+                <option value="1">Info</option>
+                <option value="2">Message</option>
+                <option value="3">Attention</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Message Timeout:</td>
+        <td><input id="dream_messageTimeout" type="number" min="1" max="30"/> seconds</td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+    if (currentAdapterSettings.enabled) {
+        $("#dream_enabled option[value='false']").removeAttr("selected");
+        $("#dream_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#dream_enabled option[value='true']").removeAttr("selected");
+        $("#dream_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#dream_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#dream_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+    if (currentAdapterSettings.settings.pollingEnabled) {
+        $("#dream_pollingEnabled option[value='false']").removeAttr("selected");
+        $("#dream_pollingEnabled option[value='true']").attr("selected", true);
+    } else {
+        $("#dream_pollingEnabled option[value='true']").removeAttr("selected");
+        $("#dream_pollingEnabled option[value='false']").attr("selected", true);
+    }
+
+    $("#dream_pollingEnabled").change(function () {
+        currentAdapterSettings.settings.pollingEnabled = ($("#dream_pollingEnabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+    $("#dream_messageType option[value='"+currentAdapterSettings.settings.messageType+"']").attr("selected", true);
+
+    $("#dream_messageType").change(function () {
+        currentAdapterSettings.settings.messageType = $("#dream_messageType option:selected").val();
+        updateAdapterSettings();
+    });
+
+    $("#dream_messageTimeout").val(currentAdapterSettings.settings.messageTimeout);
+
+    $("#dream_messageTimeout").change(function () {
+        currentAdapterSettings.settings.messageTimeout = $("#dream_messageTimeout").val();
+        updateAdapterSettings();
+    });
+
+    $("#dream_pollingInterval").val(currentAdapterSettings.settings.pollingInterval/1000);
+
+    $("#dream_pollingInterval").change(function () {
+        currentAdapterSettings.settings.pollingInterval = $("#dream_pollingInterval").val() * 1000;
+        updateAdapterSettings();
+    });
+
+    $("#dream_firstId").val(currentAdapterSettings.settings.firstId);
+
+    $("#dream_firstId").change(function () {
+        currentAdapterSettings.settings.firstId = $("#dream_firstId").val();
+        updateAdapterSettings();
+    });
+
+    $("#dream_ip").val(currentAdapterSettings.settings.ip);
+
+    $("#dream_ip").change(function () {
+        currentAdapterSettings.settings.ip = $("#dream_ip").val();
+        updateAdapterSettings();
+    });
+
+    $("#dream_port").val(currentAdapterSettings.settings.port);
+
+    $("#dream_port").change(function () {
+        currentAdapterSettings.settings.port = $("#dream_port").val();
+        updateAdapterSettings();
+    });
+</script>
