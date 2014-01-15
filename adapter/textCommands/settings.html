@@ -1,0 +1,333 @@
+<table style="font-size: 12px">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td>
+            <select id="textCommands_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Language:</td>
+        <td><select id="textCommands_settings_language">
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="ru">Русский</option>
+        </select></td>
+    </tr>
+	<tr>
+        <td>SayIt ID:</td>
+        <td><input id="textCommands_settings_sayIt" type="text" /></td>
+    </tr>
+</table><br>
+<table style="font-size: 12px; border: 1px solid black" id="textCommands_table">
+    <tr>
+        <th style="border: 1px solid black">Position</th>
+        <th style="border: 1px solid black">Type</th>
+        <th style="border: 1px solid black; width: 300px">Words</th>
+        <th style="border: 1px solid black; width: 100px">Argument 1</th>
+        <th style="border: 1px solid black; width: 100px">Argument 2</th>
+        <th style="border: 1px solid black; width: 100px">Argument 3</th>
+		<th></th>
+        <th style="border: 1px solid black; width: 100px">Acknowledge</th>
+    </tr>
+</table>
+<input type="button" id="add_rule" value="add rule"/>
+<p>
+    <h1>Hilfe</h1>
+</p>
+<script src="../lib/js/selectID.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host') + "?key="+socketSession);
+    var commands = null;
+    var homematic = {regaIndex:{}, regaObjects: {}};
+
+	socket.emit('execScript', "/adapter/textCommands/readModel.js", [""], function(script, arg, result) {
+		if (!result) {
+			console.log ("Cannot get language model");
+			return;
+		}
+        commands = result;
+
+        socket.emit("getIndex", function (index) {
+            homematic.regaIndex = index;
+            socket.emit("getObjects", function (obj) {
+                homematic.regaObjects = obj;
+                textCommandsRefreshRules ();
+            });
+        });
+	});
+	
+	
+    function storeSettings () {
+        console.log (JSON.stringify(currentAdapterSettings));
+        updateAdapterSettings();
+    }
+
+    if (currentAdapterSettings.enabled) {
+        $("#textCommands_enabled option[value='false']").removeAttr("selected");
+        $("#textCommands_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#textCommands_enabled option[value='true']").removeAttr("selected");
+        $("#textCommands_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#textCommands_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#textCommands_enabled option:selected").val() == "false" ? false : true);
+        storeSettings();
+    });
+
+    $("#textCommands_settings_language [value='"+currentAdapterSettings.settings.language+"']").attr("selected", "selected");
+
+    $("#textCommands_settings_language").change(function () {
+        currentAdapterSettings.settings.language = $("#textCommands_settings_language").val();
+        storeSettings();
+        textCommandsRefreshRules ();
+    });
+
+	$("#textCommands_settings_sayIt").val(currentAdapterSettings.settings.sayIt || "");
+
+    $("#textCommands_settings_sayIt").change(function () {
+        currentAdapterSettings.settings.sayIt = $(this).val();
+        storeSettings();
+    });
+	
+    $("#add_rule").button().click(function () {
+        // Find free id
+		var i = currentAdapterSettings.settings.rules.length;		
+		
+        currentAdapterSettings.settings.rules[i] = {name: "", words:"", arg1:"", arg2:"", arg3:""};
+        storeSettings();
+		
+		textCommandsRefreshRules ();
+    });	
+
+    function setDescription (htmlId, hmId) {
+        var desc = hmGetObjDesc (homematic, hmId);
+        var title = desc;
+        if (desc.length > 40) {
+            var helps = desc.split("/",2);
+            desc = helps[0];
+            if (desc.length > 40) {
+                desc = "..." + desc.substring (desc.length - 40);
+            }
+        }
+        $("#"+htmlId).html(desc);
+        $("#"+htmlId).attr("title", title);
+    }
+
+	function showRule (id) {
+        var lang = currentAdapterSettings.settings.language || 'de';
+		var sText = '<tr class="textCommands-optrule">';
+        var freeNames = [];
+        for (var rule in commands) {
+            var isFound = false;
+            if (commands[rule].unique) {
+                for (var z = 0; z < currentAdapterSettings.settings.rules.length; z++) {
+                    if (z == id) continue;
+                    if (currentAdapterSettings.settings.rules[z].name == rule) {
+                        isFound = true;
+                        break;
+                    }
+                }
+            }
+            if (!isFound) {
+                freeNames [freeNames.length] = rule;
+            }
+        }
+
+        sText += '<td style="border: 1px solid black">'+(id + 1)+'</td>';
+        sText += '<td style="border: 1px solid black"><select id="textCommands_name_'+id+'" data-textCommands-rule="'+id+'" value="'+(currentAdapterSettings.settings.rules[id].name || "")+'">';
+        sText += '<option value="" '+(!currentAdapterSettings.settings.rules[id].name ? 'selected' : '')+'>---</option>';
+        for (var k = 0; k < freeNames.length; k++) {
+            sText += '<option value="'+freeNames[k]+'" '+(freeNames[k]==currentAdapterSettings.settings.rules[id].name ? 'selected' : '')+'>'+commands[freeNames[k]].description[lang]+'</option>';
+        }
+        sText += '</select></td>';
+
+        if (!currentAdapterSettings.settings.rules[id].name) {
+            sText += '<td style="border: 1px solid black"><input type="text" disabled style="width:100%"/></td>';
+            sText += '<td style="border: 1px solid black"><input type="text" disabled style="width:100%"/></td>';
+            sText += '<td style="border: 1px solid black"><input type="text" disabled style="width:100%"/></td>';
+            sText += '<td style="border: 1px solid black"><input type="text" disabled style="width:100%"/></td>';
+        }
+        else {
+            var words = (commands[currentAdapterSettings.settings.rules[id].name].words) ? commands[currentAdapterSettings.settings.rules[id].name].words[lang] : null;
+            if (currentAdapterSettings.settings.rules[id].words)
+                words = currentAdapterSettings.settings.rules[id].words;
+
+            if (typeof words == "array") {
+                words = words.join(',');
+            }
+
+            sText += '<td style="border: 1px solid black"><input id="textCommands_words_'+id+'" data-textCommands-rule="'+id+'"  style="width:100%" type="text" value="'+(words || "")+'" '+(!commands[currentAdapterSettings.settings.rules[id].name].editable ? 'disabled' : '')+'/></td>';
+            if (commands[currentAdapterSettings.settings.rules[id].name].arg1 !== undefined) {
+                sText += '<td style="border: 1px solid black"><input id="textCommands_arg1_' +id+'" data-textCommands-rule="'+id+'"  style="width:100%" type="text" value="'+(currentAdapterSettings.settings.rules[id].arg1 || "")+'" title="'+commands[currentAdapterSettings.settings.rules[id].name].arg1[lang]+'"/><input type="button" id="inspect1_'+id+'_btn" data-textCommands-rule="'+id+'" value="..."  style="width:30px"><div id="inspect1_'+id+'_desc"></div></td>';
+            }
+            else {
+                sText += '<td style="border: 1px solid black"><input type="text" disabled /></td>';
+            }
+            if (commands[currentAdapterSettings.settings.rules[id].name].arg2 !== undefined) {
+                sText += '<td style="border: 1px solid black"><input id="textCommands_arg2_' +id+'" data-textCommands-rule="'+id+'"  style="width:100%" type="text" value="'+(currentAdapterSettings.settings.rules[id].arg2 || "")+'" title="'+commands[currentAdapterSettings.settings.rules[id].name].arg2[lang]+'"/></td>';
+            }
+            else {
+                sText += '<td style="border: 1px solid black"><input type="text" disabled /></td>';
+            }
+            if (commands[currentAdapterSettings.settings.rules[id].name].arg3 !== undefined) {
+                sText += '<td style="border: 1px solid black"><input id="textCommands_arg3_' +id+'" data-textCommands-rule="'+id+'"  style="width:100%" type="text" value="'+(currentAdapterSettings.settings.rules[id].arg3 || "")+'" title="'+commands[currentAdapterSettings.settings.rules[id].name].arg3[lang]+'"/></td>';
+            }
+            else {
+                sText += '<td style="border: 1px solid black"><input type="text" disabled /></td>';
+            }
+        }
+        sText += '<td style="border: 1px solid black"><input data-textCommands-rule="'+id+'" type="button" value="remove rule" class="textCommands-remove"/>';
+        sText += '<input data-textCommands-rule="'+id+'" type="button" value="up" '+ (id == 0 ? 'disabled' : '')+'  class="textCommands-up"/>';
+        if (currentAdapterSettings.settings.rules.length > 1 && id != currentAdapterSettings.settings.rules.length - 1)
+            sText += '<input data-textCommands-rule="'+id+'" type="button" value="down" class="textCommands-down"/>';
+        sText += '</td>';
+        if (!currentAdapterSettings.settings.rules[id].name) {
+            sText += '<td style="border: 1px solid black"><input type="text" disabled style="width:100%"/></td>';
+        }
+        else
+        {
+            sText += '<td style="border: 1px solid black"><input id="textCommands_ack_'+id+'" data-textCommands-rule="'+id+'"  style="width:100%" type="text" value="'+(currentAdapterSettings.settings.rules[id].ack || "")+'" '+(!commands[currentAdapterSettings.settings.rules[id].name].editable ? 'disabled' : '')+'/></td>';
+        }
+		sText += '</tr>';
+
+		$("#textCommands_table").append(sText);
+
+        $(".textCommands-remove:last").button().click(function () {
+            textCommandsRemoveRule($(this).attr("data-textCommands-rule"));
+        });
+        $(".textCommands-up:last").button().click(function () {
+            textCommandsUpRule($(this).attr("data-textCommands-rule"));
+        });
+        $(".textCommands-down:last").button().click(function () {
+            textCommandsDownRule($(this).attr("data-textCommands-rule"));
+        });
+
+        $("#textCommands_words_"+id).change(function () {
+            var words = $(this).val().toLowerCase();
+            if (words.indexOf (',') != -1) {
+                words = words.split(',');
+                for (var t = 0; t < words.length; t++) {
+                    // Trim
+                    words[t] = words[t].replace(/^\s+|\s+$/g, '');
+                }
+            }
+            currentAdapterSettings.settings.rules[$(this).attr('data-textCommands-rule')].words = words;
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#textCommands_arg1_"+id).change(function () {
+            var id = $(this).attr('data-textCommands-rule');
+            currentAdapterSettings.settings.rules[id].arg1 = $(this).val();
+            setDescription ("inspect1_"+id+"_desc", currentAdapterSettings.settings.rules[id].arg1);
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#textCommands_arg2_"+id).change(function () {
+            var id = $(this).attr('data-textCommands-rule');
+            currentAdapterSettings.settings.rules[id].arg2 = $(this).val();
+            setDescription ("inspect2_"+id+"_desc", currentAdapterSettings.settings.rules[id].arg2);
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#textCommands_arg3_"+id).change(function () {
+            var id = $(this).attr('data-textCommands-rule');
+            currentAdapterSettings.settings.rules[id].arg3 = $(this).val();
+            setDescription ("inspect3_"+id+"_desc", currentAdapterSettings.settings.rules[id].arg3);
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        $("#textCommands_name_"+id).change(function () {
+            var id = $(this).attr('data-textCommands-rule');
+            currentAdapterSettings.settings.rules[id].name = $(this).val();
+            if (!commands[$(this).val()].arg1 && currentAdapterSettings.settings.rules[id].arg1 !== undefined) currentAdapterSettings.settings.rules[id].arg1 = undefined;
+            if (!commands[$(this).val()].arg2 && currentAdapterSettings.settings.rules[id].arg2 !== undefined) currentAdapterSettings.settings.rules[id].arg2 = undefined;
+            if (!commands[$(this).val()].arg3 && currentAdapterSettings.settings.rules[id].arg3 !== undefined) currentAdapterSettings.settings.rules[id].arg3 = undefined;
+            if (!commands[$(this).val()].editable && currentAdapterSettings.settings.rules[id].ack !== undefined) currentAdapterSettings.settings.rules[id].ack = undefined;
+            storeSettings();
+            textCommandsRefreshRules ();
+        }).keyup(function() { $(this).trigger("change")});
+
+        if (document.getElementById ("inspect1_"+id+"_btn")) {
+            // Select Homematic ID Dialog
+            $("#inspect1_"+id+"_btn").click ( function () {
+                var id = $(this).attr('data-textCommands-rule');
+                hmSelect.value = currentAdapterSettings.settings.rules[id].arg1;
+                hmSelect.show (homematic, id, function (_id, value) {
+                    $("#textCommands_arg1_"+_id).val(value);
+                    $("#textCommands_arg1_"+_id).trigger('change');
+                }, null);
+            });
+        }
+        setDescription ("inspect1_"+id+"_desc", currentAdapterSettings.settings.rules[id].arg1);
+
+        if (document.getElementById ("inspect2_"+id+"_btn")) {
+            // Select Homematic ID Dialog
+            $("#inspect1_"+id+"_btn").click ( function () {
+                var id = $(this).attr('data-textCommands-rule');
+                hmSelect.value = currentAdapterSettings.settings.rules[id].arg1;
+                hmSelect.show (homematic, id, function (_id, value) {
+                    $("#textCommands_arg1_"+_id).val(value);
+                    $("#textCommands_arg1_"+_id).trigger('change');
+                }, null);
+            });
+        }
+        setDescription ("inspect2_"+id+"_desc", currentAdapterSettings.settings.rules[id].arg2);
+        $("#textCommands_ack_"+id).change(function () {
+            currentAdapterSettings.settings.rules[$(this).attr('data-textCommands-rule')].ack = $(this).val();
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+    }
+	
+    function textCommandsRemoveRule (j) {
+        j = parseInt(j);
+        var oldArr = currentAdapterSettings.settings.rules;
+        currentAdapterSettings.settings.rules = [];
+        for (var p = 0; p < oldArr.length; p++) {
+            // Skip deleted element
+            if (p == j) continue;
+            currentAdapterSettings.settings.rules[currentAdapterSettings.settings.rules.length] = oldArr[p];
+        }
+        storeSettings();
+        textCommandsRefreshRules();
+    }
+
+    function textCommandsUpRule (j) {
+        j = parseInt(j);
+        if (j > 1) {
+            var temp = currentAdapterSettings.settings.rules [j - 1];
+            currentAdapterSettings.settings.rules[j - 1] = currentAdapterSettings.settings.rules [j];
+            currentAdapterSettings.settings.rules[j] = temp;
+            storeSettings();
+            textCommandsRefreshRules();
+        }
+    }
+
+    function textCommandsDownRule (j) {
+        j = parseInt(j);
+        if (currentAdapterSettings.settings.rules.length > 1 && j < currentAdapterSettings.settings.rules.length - 1) {
+            var temp = currentAdapterSettings.settings.rules [j + 1];
+            currentAdapterSettings.settings.rules[j + 1] = currentAdapterSettings.settings.rules [j];
+            currentAdapterSettings.settings.rules[j] = temp;
+            storeSettings();
+            textCommandsRefreshRules();
+        }
+    }
+	function textCommandsRefreshRules() {
+		var obj;
+		while ($('.textCommands-optrule:first').length) {
+			$('.textCommands-optrule:first').remove ();
+		}
+	
+		for (var i = 0; i < currentAdapterSettings.settings.rules.length; i++) {
+			showRule (i);
+        }
+    }
+	
+</script>

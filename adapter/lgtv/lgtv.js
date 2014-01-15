@@ -16,74 +16,12 @@ var lgtvSettings = settings.adapters.lgtv.settings;
 
 var logger         = require(__dirname+'/../../logger.js'),
     io_client      = require('socket.io-client'),
-    io             = require('socket.io'),
     xml2js         = require('xml2js').parseString,    
 	http           = require('http');
 
 var objects    = {},
     datapoints = {},
     devices    = {};
-	
-//$ip="192.168.1.22";
-//$pairKey= "SMHMKA";
-
-/*function getip()
-{
-    $strngtoXmit =  "M-SEARCH * HTTP/1.1\r\n".
-                    "HOST: 239.255.255.250:1900\r\n".
-                    "MAN: \"ssdp:discover\"\r\n".
-                    "MX: 2\r\n".
-                    "ST: urn:schemas-upnp-org:device:MediaRenderer:1\r\n\r\n";
-
-	// Create a new socket
-	$sock = socket_create (AF_INET, SOCK_DGRAM, SOL_UDP);
-	socket_bind ($sock, '0.0.0.0');
-
-	$from="";
-	$port=0;
-	$bytes="";
-
-	if ($sock !== false) 
-	{
-		$timeout = array('sec':3,'usec':0);
-
-		if (socket_set_option ($sock, SOL_SOCKET, SO_RCVTIMEO, $timeout) == false)
-			echo "Cannot set timeout to 3 seconds";
-
-		$i = 0;
-		//echo "Send ".$strngtoXmit."<br>\n";
-		if (socket_sendto ($sock, $strngtoXmit, strlen($strngtoXmit), 0, "239.255.255.250", 1900) != strlen($strngtoXmit))
-			echo "Cannot send ".strlen($strngtoXmit)." bytes";
-		else
-		{
-			while (i <= 5)
-			{
-				//echo "Sent ".strlen($strngtoXmit)." bytes. Waiting...<br>\n";
-				$res = @socket_recvfrom ($sock, $bytes, 512, 0, $from, $port);
-				if ($res !== false) 
-				{
-					//echo "Received ".$bytes." from remote address ".$from." and remote port ".$port.PHP_EOL;
-					if (strpos($bytes, "LGE") !== false) 
-						break;
-					else
-						$bytes = "";
-				}
-				else
-				{
-					$bytes = "";
-					break;
-					socket_sendto ($sock, $strngtoXmit, count($strngtoXmit), 0, "239.255.255.250", 1900);
-					$i++;
-				}
-			}
-		}
-		socket_close ($sock);
-	}
-	if ($bytes != "") 
-		return $from;
-	else
-		return "";
-}*/
 
 function postRequest (device, path, post_data, callback) {
     var options = {

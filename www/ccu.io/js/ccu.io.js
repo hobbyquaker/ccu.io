@@ -802,6 +802,12 @@ $(document).ready(function () {
         $("#authentication_user").val(ccuIoSettings.authentication.user);
         $("#authentication_password").val(ccuIoSettings.authentication.password);
 
+        if (ccuIoSettings.useCache) {
+            $("#useCache").attr("checked", true);
+        } else {
+            $("#useCache").removeAttr("checked");
+        }
+
         $("#binrpc_listenPort").val(ccuIoSettings.binrpc.listenPort);
 
         if (ccuIoSettings.binrpc.rfdEnabled) {
@@ -898,7 +904,11 @@ $(document).ready(function () {
 
         ccuIoSettings.authentication.user = $("#authentication_user").val();
         ccuIoSettings.authentication.password = $("#authentication_password").val();
-
+        if ($("#useCache").is(":checked")) {
+            ccuIoSettings.useCache = true;
+        } else {
+            ccuIoSettings.useCache = false;
+        }
         ccuIoSettings.binrpc.listenPort = $("#binrpc_listenPort").val();
 
         if ($("#binrpc_rfdEnabled").is(":checked")) {

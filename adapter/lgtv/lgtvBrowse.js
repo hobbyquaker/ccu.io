@@ -1,8 +1,7 @@
 var logger  = require(__dirname+'/../../logger.js'),
     dgram   = require("dgram");
 
-function lgtvBrowse ()
-{
+function lgtvBrowse () {
     var strngtoXmit =  "M-SEARCH * HTTP/1.1\r\n"+
     "HOST: 239.255.255.250:1900\r\n"+
     "MAN: \"ssdp:discover\"\r\n"+

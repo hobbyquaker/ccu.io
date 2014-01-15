@@ -272,7 +272,7 @@ To control LG tv over ethernet write variable 73222 with text command or 73223 w
 
     function lgtvBrowse () {
 		$('#browseResult').html("Searching...");
-        socket.emit('execScript', "adapter/lgtv/lgtvBrowse.js", [""], function(script, arg, result) {
+        socket.emit('execScript', "/adapter/lgtv/lgtvBrowse.js", [""], function(script, arg, result) {
             if (!result) {
 				$('#browseResult').html("Nothing found");
 				return;
@@ -302,7 +302,7 @@ To control LG tv over ethernet write variable 73222 with text command or 73223 w
 
     function lgtvShowPair(ip) {
         console.log ("SHOW:"+ip);
-        socket.emit('execScript', "adapter/lgtv/lgtvPair.js", [ip]);
+        socket.emit('execScript', "/adapter/lgtv/lgtvPair.js", [ip]);
     }
 
 </script>

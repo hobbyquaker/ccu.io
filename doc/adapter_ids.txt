@@ -22,7 +22,11 @@
 
 72500-72899                     rpi adapter
 
-72900-72950                     sayIt adapter
+72900-72949                     sayIt adapter
+
+72950-72969                     listen adapter
+
+72970-72999                     textCommand adapter
 
 73200-73500                     lgtv adapter
 
@@ -31,6 +35,10 @@
 73100-73199                     telnet-client adapter
 
 73300-?                         onkyo adapter
+
+73200-73295                     Fritz.box! call monitor adapter
+
+73300-73395                     dreamBox adapter
 
 80000-?                         itrans adapter
 

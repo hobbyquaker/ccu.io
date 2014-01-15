@@ -1,0 +1,9 @@
+{
+    "enabled": false,
+    "settings": {
+		"firstId":  72970,
+		"language": "de",
+		"sayIt"   : 72903,
+		"rules":    []
+    }
+}

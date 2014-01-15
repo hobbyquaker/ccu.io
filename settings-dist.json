@@ -3,6 +3,7 @@
     "ioListenPort": 8080,
     "httpsEnabled": false,
     "ioListenPortSsl": 8443,
+    "useCache":true,
 
     "authentication": {
         "enabled": false,

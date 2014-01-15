@@ -75,7 +75,6 @@ if (settings.ioListenPort) {
     }
 
     server =    require('http').createServer(app)
-
 }
 
 // Create md5 hash of user and password
@@ -969,8 +968,15 @@ function initExtensions() {
 
 function initWebserver() {
     if (app) {
-        app.use('/', express.static(__dirname + '/www'));
-        app.use('/log', express.static(__dirname + '/log'));
+        if (settings.useCache) {
+            var oneDay = 86400000;
+            app.use('/', express.static(__dirname + '/www', { maxAge: oneDay }));
+            app.use('/log', express.static(__dirname + '/log', { maxAge: oneDay }));
+        }
+        else {
+            app.use('/', express.static(__dirname + '/www'));
+            app.use('/log', express.static(__dirname + '/log'));
+        }
 
         // File Uploads
         app.use(express.bodyParser({uploadDir:__dirname+'/tmp'}));
@@ -990,8 +996,15 @@ function initWebserver() {
     }
 
     if (appSsl) {
-        appSsl.use('/', express.static(__dirname + '/www'));
-        appSsl.use('/log', express.static(__dirname + '/log'));
+        if (settings.useCache) {
+            var oneDay = 86400000;
+            appSsl.use('/', express.static(__dirname + '/www', { maxAge: oneDay }));
+            appSsl.use('/log', express.static(__dirname + '/log', { maxAge: oneDay }));
+        }
+        else {
+            appSsl.use('/', express.static(__dirname + '/www'));
+            appSsl.use('/log', express.static(__dirname + '/log'));
+        }
 
         // File Uploads
         appSsl.use(express.bodyParser());
@@ -1235,11 +1248,16 @@ function initSocketIO(_io) {
 	  this.set('authorization', function (handshakeData, callback) {
         var isHttps = (serverSsl !== undefined && this.server == serverSsl);
         if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
+            // do not check if localhost
+            if(handshakeData.address.address.toString() == "127.0.0.1") {
+                logger.verbose("ccu.io        local authetication " + handshakeData.address.address);
+                callback(null, true);
+            } else
             if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
-                logger.info("ccu.io        authetication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
-                callback ("Invalid session key", false)
+                logger.warn("ccu.io        authetication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                callback ("Invalid session key", false);
             } else{
-                logger.info("ccu.io        authetication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                logger.verbose("ccu.io        authetication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
                 callback(null, true);
             }
         }
@@ -1274,15 +1292,17 @@ function initSocketIO(_io) {
 
         socket.on('execScript', function (script, arg, callback) {
             logger.info("ccu.io        script "+script + "["+arg+"]");
-            var scr_prc = childProcess.fork (script, arg);
+            var scr_prc = childProcess.fork (__dirname + script, arg);
             var result = null;
             scr_prc.on('message', function(obj) {
                 // Receive results from child process
                 console.log ("Message: " + obj);
+				logger.debug("ccu.io        script result: " + obj);
                 result = obj;
             });
             scr_prc.on ("exit", function (code, signal) {
                 if (callback) {
+					logger.debug("ccu.io        script end result: " + result);
                     callback (script, arg, result);
                 }
             });
@@ -1564,6 +1584,12 @@ function initSocketIO(_io) {
             callback(datapoints);
         });
 
+        socket.on('getDatapoint', function(id, callback) {
+            logger.verbose("socket.io <-- getDatapoint " + id);
+
+            callback(id, datapoints[id]);
+        });
+		
         socket.on('getObjects', function(callback) {
             logger.verbose("socket.io <-- getObjects");
             callback(regaObjects);
