@@ -1,6 +1,10 @@
 {
     "enabled": true,
+    "mock": true,
     "settings": {
-        "firstId": 75100
+        "firstId": 75100,
+        "host": "127.0.0.1",
+        "port": 80
+
     }
 }
