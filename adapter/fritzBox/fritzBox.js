@@ -33,12 +33,13 @@ var socketBox,
 	datapoints  = {},
 	callStatus  = {};
        
-var objState        = fritzBoxSettings.firstId + 0, // Current state of phone: FREE, RING, TALKING
-    objRinging      = fritzBoxSettings.firstId + 1, // TRUE if ringing, else false
-	objMissedCalls  = fritzBoxSettings.firstId + 2, // Count of missed calls
-	objMissedList   = fritzBoxSettings.firstId + 3, // List of missed calls
+var objState         = fritzBoxSettings.firstId + 0, // Current state of phone: FREE, RING, TALKING
+    objRinging       = fritzBoxSettings.firstId + 1, // TRUE if ringing, else false
+	objMissedCalls   = fritzBoxSettings.firstId + 2, // Count of missed calls
+	objMissedList    = fritzBoxSettings.firstId + 3, // List of missed calls
     objMissedListFormatted   = fritzBoxSettings.firstId + 4, // List of missed calls
-    objLastMissed   = fritzBoxSettings.firstId + 5; // Last missed call
+    objLastMissed    = fritzBoxSettings.firstId + 5, // Last missed call
+    objRingingNumber = fritzBoxSettings.firstId + 6; // Now ringing Number / Name
 
 if (settings.ioListenPort) {
 	var socket = io.connect("127.0.0.1", {
@@ -270,7 +271,14 @@ function connectToFritzBox () {
 
         // Set ringing object
         if (datapoints[objRinging] != (newState == "RING")) {
-            setState(objRinging, (newState == "RING"));
+        	if (newState == "RING") {
+            	setState(objRingingNumber, resolveNumber(callStatus[item.connectionId].calledNumber));
+            	setState(objRinging, true);
+        	}
+        	else {
+            	setState(objRingingNumber, "");
+            	setState(objRinging, false);
+        	}
         }
 
         setState(objState, newState);
@@ -322,6 +330,14 @@ createObject(objMissedListFormatted, {
 
 createObject(objLastMissed, {
     Name:     "FRITZBOX.LAST_MISSED",
+    "DPInfo": "FritzBox",
+    TypeName: "VARDP",
+    "ValueType": 20,
+    "ValueSubType": 11
+});
+
+createObject(objRingingNumber, {
+    Name:     "FRITZBOX.RINGING_NUMBER",
     "DPInfo": "FritzBox",
     TypeName: "VARDP",
     "ValueType": 20,
