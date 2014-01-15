@@ -24,6 +24,16 @@ siehe http://ccu.io/
 
 ## Changelog
 
+### 1.0.11
+* (Hobbyquaker) Adapter rpi: Standalone-Modus
+* (Hobbyquaker) Neue Socket.IO Methode "log" für standalone-adapter logging
+* (Vader722) Adapter iCal: now reading up to 3 calendar, custom font color, changeable fulltime
+* (Vader722) Adapter iCal: fixed syntax
+* (Vader722) Adapter iCal: another syntax fix
+* (Vader722) Adapter iCal: logging in case of error
+* (BasGo) added new adapters for Dreambox and Fritzbox
+* (Eisbaeeer) Adapter Onkyo: Added array to command variable, major changes to variables (split to feedback and set variables)
+
 ### 1.0.10
 * (Hobbyquaker) Neuer Adapter: Telnet-Client
 * (Hobbyquaker) Lirc-Adapter ....
