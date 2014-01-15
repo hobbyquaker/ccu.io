@@ -1,11 +1,15 @@
 /**
- *      CCU.IO LIRC Adapter 0.1
+ *      CCU.IO LIRC Adapter 0.3
  *
  * Todo:
  *  - implement send_start and send_stop
- *  - connect to multiple lirc daemons
- *  - parse lirc responses and do callbacks (see http://www.lirc.org/html/technical.html#applications)
- *  - save remotes and buttons (poll from lirc via LIST cmd) in regaIndex - for use in dashui widgets
+ *  - connect to multiple lirc daemons (see telnet adapter)
+ *  - parse lirc responses and execute callbacks (see http://www.lirc.org/html/technical.html#applications)
+ *  - save remotes and buttons (poll from lirc via LIST cmd) in regaIndex(?) - for use in dashui widgets
+ *
+ * Changelog:
+ *
+ *
  */
 
 
@@ -24,10 +28,67 @@ var logger =    require(__dirname+'/../../logger.js'),
     io =        require('socket.io-client');
 var net = require('net');
 
-var client = net.connect({host:adapterSettings.servers[0].host, port: adapterSettings.servers[0].port}, function() {
-    isLircConnected = true;
-    logger.info('adapter lirc  connected to lirc');
-});
+var client;
+
+function lircConnect() {
+    console.log("lircConnect");
+    if (!isLircConnected) {
+
+        client = net.connect({host:adapterSettings.servers[0].host, port: adapterSettings.servers[0].port}, function() {
+            //console.log("connected");
+            logger.info('adapter lirc  connected to lirc');
+            isLircConnected = true;
+
+        });
+
+        client.on("error", function (data) {
+            logger.error('adapter lirc  '+data.toString());
+            //console.log(data.toString());
+        });
+
+        client.on("end", function () {
+            //console.log("client end event");
+            isLircConnected = false;
+            //lircConnect();
+        });
+
+        client.on("timeout", function () {
+            logger.error('adapter lirc  lirc connection timeout');
+            //console.log("client timeout event");
+            isLircConnected = false;
+            //lircConnect();
+        });
+
+        client.on("close", function () {
+            logger.info('adapter lirc  connection to lirc closed');
+            console.log("client close event");
+            isLircConnected = false;
+            setTimeout(lircConnect, 5000);
+        });
+
+        client.on("data", function (data) {
+            data = data.toString();
+            if (data.match(/^[0-9a-f]{16} /)) {
+                data = data.replace(/\n$/, "");
+                var msgs = data.split("\n");
+                for (var i = 0; i < msgs.length; i++) {
+                    //console.log("< "+msgs[i]);
+                    var parts = msgs[i].split(" ", 4);
+                    socket.emit("setState", [settings.adapters.lirc.firstId+6, parts[3]+","+parts[2]+(parseInt(parts[1],16)>0?","+parseInt(parts[1],16):""), null, true]);
+                }
+            } else {
+                //console.log("? "+data);
+            }
+        });
+
+
+    } else {
+        //console.log("already connected/connecting");
+    }
+
+}
+
+lircConnect();
 
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
@@ -36,7 +97,7 @@ if (settings.ioListenPort) {
 } else if (settings.ioListenPortSsl) {
     var socket = io.connect("127.0.0.1", {
         port: settings.ioListenPortSsl,
-        secure: true,
+        secure: true
     });
 } else {
     process.exit();
@@ -113,28 +174,14 @@ for (var i in adapterSettings.servers) {
 
 }
 
-
-
-
-client.on("data", function (data) {
-    data = data.toString();
-    if (data.match(/^[0-9a-f]{16} /)) {
-        data = data.replace("\n", "");
-        var parts = data.split(" ", 4);
-        //console.log("< "+parts[3]+" "+parts[2]+" "+parts[1]);
-        socket.emit("setState", [settings.adapters.lirc.firstId+6, parts[3]+" "+parts[2]+" "+parts[1], null, true]);
-    }
-});
-
-
 function sendOnce(remote, button, repeat, callback) {
     if (typeof repeat === "function") {
         callback = repeat;
         repeat = undefined;
     }
-    var str = "SEND_ONCE "+remote+" "+button+(repeat?" "+repeat:"");
-    //console.log("> "+str);
+    var str = "SEND_ONCE "+remote+" "+button+(repeat?" "+repeat.toString(16):"")+"\n";
     //expectResponse[str] = callback;
+    //console.log("> "+str);
     client.write(str);
 }
 
@@ -166,10 +213,6 @@ function list(remote, callback) {
     client.write(str);
 }
 
-
-
-
-
 socket.on('connect', function () {
     logger.info("adapter lirc  connected to ccu.io");
 });
@@ -183,15 +226,10 @@ socket.on('event', function (obj) {
         return;
     }
     if (obj[0] == settings.adapters.lirc.firstId+2) {
-        var parts = obj[1].split(" ");
+        var parts = obj[1].split(",");
         sendOnce(parts[0], parts[1], parts[2]);
     }
 });
-
-
-
-
-
 
 function stop() {
     logger.info("adapter lirc  terminating");

@@ -62,7 +62,7 @@ settings.adapters = {};
 var adapters = fs.readdirSync(__dirname+"/adapter");
 
 for (var i = 0; i < adapters.length; i++) {
-    if (adapters[i] == ".DS_Store" || adapters[i] == "skeleton.js") {
+    if (adapters[i] == ".DS_Store" || adapters[i].match(/^skeleton/)) {
         continue;
     }
 

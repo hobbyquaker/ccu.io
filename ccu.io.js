@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.9";
+settings.version = "1.0.12";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -44,6 +44,7 @@ var fs =        require('fs'),
     childProcess = require('child_process'),
     url =       require('url'),
     socketio =  require('socket.io'),
+    scheduler = require('node-schedule'),
     app,
     appSsl,
     server,
@@ -53,6 +54,8 @@ var fs =        require('fs'),
     devlogCache = [],
     notFirstVarUpdate = false,
     children = [],
+    childrenAdapter = {},
+    timerAdapter = {},
     childScriptEngine,
     pollTimer,
     ccuReachable = false,
@@ -239,20 +242,14 @@ function updateStatus () {
 
 }
 
+
+
 if (settings.logging.enabled) {
-    //devlog = fs.createWriteStream(__dirname+"/log/"+settings.logging.file, {
-    //    flags: "a", encoding: "utf8", mode: 0644
-    //});
-
     setInterval(writeLog, settings.logging.writeInterval * 1000);
-
     if (settings.logging.move) {
-        var midnight = new Date();
-        midnight.setHours( 23 );
-        midnight.setMinutes( 59 );
-        midnight.setSeconds( 59 );
-        midnight.setMilliseconds( 950 );
-        setTimeout(moveLog, midnight.getTime() - new Date().getTime());
+        scheduler.scheduleJob('0 0 * * *', function(){
+            moveLog(settings.logging.file);
+        });
     }
 }
 
@@ -1275,6 +1272,19 @@ function initSocketIO(_io) {
         var address = socket.handshake.address;
         logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
 
+        socket.on('log', function (sev, msg) {
+           switch (sev) {
+               case "info":
+                   logger.info(msg);
+                   break;
+               case "warn":
+                   logger.warn(msg);
+                   break;
+               case "error":
+                   logger.error(msg);
+           }
+        });
+
         socket.on('execCmd', function (cmd, callback) {
             logger.info("ccu.io        exec "+cmd);
             childProcess.exec(cmd, callback);
@@ -1298,6 +1308,9 @@ function initSocketIO(_io) {
             });
         });
 
+        socket.on('restartAdapter', function (adapter) {
+           return restartAdapter(adapter)
+        });
         socket.on('updateAddon', function (url, name) {
             var path = __dirname + "/update-addon.js";
             logger.info("ccu.io        starting "+path+" "+url+" "+name);
@@ -1809,6 +1822,41 @@ function startScriptEngine() {
     childScriptEngine = childProcess.fork(path);
 }
 
+function restartAdapter(adapter) {
+    if (!settings.adapters[adapter].enabled) {
+        return "Error: Adapter not enabled";
+    }
+    //logger.info("ccu.io        found adapter "+adapter);
+    var mode = settings.adapters[adapter].mode;
+    var period = settings.adapters[adapter].period * 60000;
+
+    var path = __dirname + "/adapter/"+adapter+"/"+adapter+".js";
+
+    switch (mode) {
+        case "periodical":
+            clearTimeout(timerAdapter[adapter]);
+            setTimeout(function (_path, _period, _adapter) {
+                startAdapterPeriod(_path, _period);
+                logger.info("ccu.io        adapter "+_adapter+" timer restarted");
+            }, 50, path, period, adapter);
+            return "adapter "+adapter+" timer restarted";
+            break;
+
+        default:
+            logger.info("ccu.io        killing adapter "+adapter);
+
+            childrenAdapter[adapter].process.kill();
+            setTimeout(function (_path, _adapter) {
+                logger.info("ccu.io        starting adapter "+_path);
+                childrenAdapter[_adapter] = childProcess.fork(_path);
+                return "adapter "+_adapter+" timer restartet";
+            }, 1000, path, adapter);
+    }
+
+
+    return "Adapter restarted";
+}
+
 function startAdapters () {
     if (!settings.adapters) {
         return false;
@@ -1824,19 +1872,25 @@ function startAdapters () {
 
         var path = __dirname + "/adapter/"+adapter+"/"+adapter+".js";
 
+        if (!childrenAdapter[adapter]) {
+            childrenAdapter[adapter] = {};
+        }
 
         switch (mode) {
             case "periodical":
-                setTimeout(function (_path, _period) {
-                    startAdapterPeriod(_path, _period);
-                }, (i*3000), path, period);
+                setTimeout(function (_path, _period, _adapter) {
+                    startAdapterPeriod(_path, _period, _adapter);
+                }, (i*3000), path, period, adapter);
                 break;
 
             default:
-                setTimeout(function (_path) {
+                setTimeout(function (_path, _adapter) {
                     logger.info("ccu.io        starting adapter "+_path);
-                    children.push(childProcess.fork(_path));
-                }, (i*3000), path);
+                    if (!childrenAdapter[_adapter]) {
+                        childrenAdapter[_adapter] = {};
+                    }
+                    childrenAdapter[_adapter].process = childProcess.fork(_path);
+                }, (i*3000), path, adapter);
         }
         i += 1;
     }
@@ -1845,13 +1899,19 @@ function startAdapters () {
     }
 }
 
-function startAdapterPeriod (adapter, interval) {
-   setInterval(function () {
-        logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
-        childProcess.fork(adapter);
-    }, interval);
-    logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
-    childProcess.fork(adapter);
+function startAdapterPeriod (adapter, interval, _adapter) {
+   interval = parseInt(interval, 10) || 3600000;
+
+    if (!childrenAdapter[_adapter]) {
+        childrenAdapter[_adapter] = {};
+    }
+
+   timerAdapter[_adapter] = setInterval(function () {
+       logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
+       childrenAdapter[_adapter].process = childProcess.fork(adapter);
+   }, interval);
+   logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
+   childrenAdapter[_adapter].process = childProcess.fork(adapter);
 }
 
 process.on('SIGINT', function () {
@@ -1890,13 +1950,12 @@ function stop() {
             childScriptEngine.kill();
         }
 
-
-        logger.info("ccu.io        killing child processes");
-        for (var i = 0; i < children.length; i++) {
-            children[i].kill();
+        for (var adapter in childrenAdapter) {
+            logger.info("ccu.io        killing adapter "+adapter);
+            childrenAdapter[adapter].process.kill();
         }
     } catch (e) {
-        logger.error("ccu.io        something went wrong "+e)
+        logger.error("ccu.io        something went wrong while terminating: "+e)
     }
 
 
@@ -1931,11 +1990,11 @@ function cacheLog(str) {
     devlogCache.push(str);
 }
 
-var logMoving = false;
+var logMoving = [];
 
 function writeLog() {
 
-    if (logMoving) {
+    if (logMoving[settings.logging.file]) {
         setTimeout(writeLog, 250);
         return false;
     }
@@ -1956,20 +2015,21 @@ function writeLog() {
 
 }
 
-function moveLog() {
-    logMoving = true;
+function moveLog(file) {
+    logMoving[file] = true;
     setTimeout(moveLog, 86400000);
     var ts = (new Date()).getTime() - 3600000;
     ts = new Date(ts);
 
-    logger.info("ccu.io        moving Logfile");
 
     var timestamp = ts.getFullYear() + '-' +
         ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
         ("0" + (ts.getDate()).toString(10)).slice(-2);
 
-    fs.rename(__dirname+"/log/"+settings.logging.file, __dirname+"/log/"+settings.logging.file+"."+timestamp, function() {
-        logMoving = false;
+    logger.info("ccu.io        moving Logfile "+file+" "+timestamp);
+
+    fs.rename(__dirname+"/log/"+file, __dirname+"/log/"+file+"."+timestamp, function() {
+        logMoving[file] = false;
     });
 
 }

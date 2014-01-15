@@ -1,4 +1,5 @@
-var fs = require("fs");
+var scheduler = require('node-schedule'),
+    fs = require("fs");
 
 var logger = {
     logfile: __dirname + "/log/ccu.io.log",

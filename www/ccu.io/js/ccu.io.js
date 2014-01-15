@@ -87,10 +87,10 @@ $(document).ready(function () {
         socket.emit("readdir", ["adapter"], function (data) {
             for (var i = 0; i < data.length; i++) {
                 var adapter = data[i];
-                if (adapter == "skeleton.js" || adapter == ".DS_Store") { continue; }
+                if (adapter.match(/^skeleton/) || adapter == ".DS_Store") { continue; }
                 var adapterData = {
                     name:   data[i],
-                    settings:   '<button class="adapter-settings" data-adapter="'+adapter+'">configure</button>',
+                    settings:   '<button class="adapter-settings" data-adapter="'+adapter+'">configure</button><button class="adapter-restart" data-adapter="'+adapter+'">reload</button>',
                     confed:     (settings.adapters[data[i]]?"true":"false"),
                     enabled:    (settings.adapters[data[i]]? (settings.adapters[data[i]].enabled ? "<span style='color:green'><b>TRUE</b></span>" : "false"):""),
                     mode:       (settings.adapters[data[i]]?settings.adapters[data[i]].mode:""),
@@ -100,6 +100,9 @@ $(document).ready(function () {
             }
             $(".adapter-settings").click(function () {
                 editAdapterSettings($(this).attr("data-adapter"));
+            });
+            $(".adapter-restart").click(function () {
+                restartAdapter($(this).attr("data-adapter"));
             });
         });
 
@@ -149,8 +152,8 @@ $(document).ready(function () {
         }
 
         function compareVersion(instVersion, availVersion) {
-            var instVersionArr = instVersion.split(".");
-            var availVersionArr = availVersion.split(".");
+            var instVersionArr = instVersion.replace(/beta/,".").split(".");
+            var availVersionArr = availVersion.replace(/beta/,".").split(".");
 
             var updateAvailable = false;
 
@@ -939,10 +942,21 @@ $(document).ready(function () {
         } else {
             ccuIoSettings.regahss.pollData = false;
         }
+        if ($("#regahss_pollDataTriggerEnabled").is(":checked")) {
+            ccuIoSettings.regahss.pollDataTriggerEnabled = true;
+        } else {
+            ccuIoSettings.regahss.pollDataTriggerEnabled = false;
+        }
         var settingsWithoutAdapters = JSON.parse(JSON.stringify(ccuIoSettings));
         delete settingsWithoutAdapters.adapters;
         socket.emit("writeFile", "io-settings.json", settingsWithoutAdapters, function () {
             alert("CCU.IO settings saved. Please restart CCU.IO");
+        });
+    }
+
+    function restartAdapter(adapter) {
+        socket.emit("restartAdapter", adapter, function (res) {
+            alert(res);
         });
     }
 

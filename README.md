@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.9*
+*aktuelle Version: 1.0.12*
 
 ## Dokumentation
 
@@ -11,8 +11,9 @@ siehe http://ccu.io/
 ## Todo/Roadmap
 
 * Script-Engine Addins
-* RPI Adapter: 1-Wire Unterstützung
+* adapter/skeleton-ipc.js
 * ArtNet (DMX) Adapter
+* Anymote Adapter (control Google TV)
 * Doku, Doku, Doku
 * CCU2-Paket für einfache Installation
 * .msi für einfache Installation unter Windows (ccu.io als Service registrieren)
@@ -21,6 +22,39 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.12
+* (Bluefox) new listen adapter (not finished yet)
+* (Bluefox) new textCommand adapter (not finished yet)
+* (Bluefox) Add hmSelectDialog to www/lib/js
+* (Bluefox) Listen and textCommand adapters improving. (not yet finished)
+* (Bluefox) Changes for sayIt and listen adapters.
+* (Bluefox) Add cache properties for Web Server of ccu.io.js
+* (Bluefox) Remove warnings if security for non SSL enabled
+* (Bluefox) Adapter Fritzbox: Add HTML table for missed calls
+* (Bluefox) Adapter Fritzbox: Add new data point ringing number.
+* (Bluefox) Adapter Fritzbox: Add description for RINGING_NUMBER.
+* (Bluefox) Edit adapter_ids.txt
+
+### 1.0.11
+* (Hobbyquaker) Adapter rpi: Standalone-Modus
+* (Hobbyquaker) Adapter rpi: Datenpunkte für RAM und Swap Usage
+* (Hobbyquaker) Adapter rpi: Unterstützung für 1-Wire Temperatur-Sensoren
+* (Hobbyquaker) Neue Socket.IO Methode "log" für standalone-adapter logging
+* (Vader722) Adapter iCal: now reading up to 3 calendar, custom font color, changeable fulltime
+* (Vader722) Adapter iCal: fixed syntax
+* (Vader722) Adapter iCal: another syntax fix
+* (Vader722) Adapter iCal: logging in case of error
+* (BasGo) added new adapters for Dreambox and Fritzbox
+* (Eisbaeeer) Adapter Onkyo: Added array to command variable, major changes to variables (split to feedback and set variables)
+
+### 1.0.10
+* (Hobbyquaker) Neuer Adapter: Telnet-Client
+* (Hobbyquaker) Lirc-Adapter ....
+* (Hobbyquaker) LogMove via node-schedule, Vorbereitung für ccu.io.log
+* (Hobbyquaker) Adapter können nun einzeln neu gestartet werden
+* (Eisbaeeer) Neuer Adapter: Onkyo
+
 
 ### 1.0.9
 * (Hobbyquaker) Bugfix rega post request errors
