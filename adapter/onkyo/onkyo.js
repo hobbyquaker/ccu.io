@@ -3,11 +3,11 @@
  *      01'2014 Eisbaeeer
  *      mail: Eisbaeeer@gmail.com 
  *
- *      Version 0.9
+ *      Version 0.9.1
  *      
  *      getestet mit:
- *      ab CCU.IO ver. 1.0.9
- *      ab Node ver. 0.10.20
+ *      CCU.IO ver. 1.0.9
+ *      Node ver. 0.10.20
  *      Onkyo TX-NR626, TX-NR515     
  *      
  */
@@ -311,15 +311,16 @@ socket.on('event', function (obj) {
            command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211"+myarray[i]+"\x0D");
            socketOnkyo.write(command);
            sleep(50);
+           
+       //Variablen wieder zurücksetzen
+       setState(id, "");
+
                                                   }
                                               }
-        //Variablen wieder zurücksetzen
-        setState(id, "");
-
 
   //MVL in hex
-  if (id == onkyoSettings.firstId +7 && val != "") { 
-        //convert decimal to hex 
+  if (id == onkyoSettings.firstId +7) {
+          //convert decimal to hex 
         var new_val = parseInt(val);  //string to integer
         new_val = decimalToHex(new_val).toUpperCase();  //call function decimalToHex();
         command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211MVL"+new_val+"\x0D");
@@ -328,10 +329,10 @@ socket.on('event', function (obj) {
                                               }
 				socketOnkyo.write(command);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		}
   //ZVL in hex
-  if (id == onkyoSettings.firstId +9 && val != "") { 
+  if (id == onkyoSettings.firstId +9) { 
         //convert decimal to hex
         var new_val = parseInt(val);  //string to integer
         new_val = decimalToHex(new_val).toUpperCase();  //call function decimalToHex();
@@ -341,10 +342,10 @@ socket.on('event', function (obj) {
                                               }
 				socketOnkyo.write(command);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		}    
   //TUN  
-  if (id == onkyoSettings.firstId +11 && val != "") { 
+  if (id == onkyoSettings.firstId +11) { 
         //String zerlegen, damit TUNDIRECT verwendet werden kann
           val1 = val.substr(0,1);
           val2 = val.substr(1,1);
@@ -373,7 +374,7 @@ socket.on('event', function (obj) {
         sleep(50);
         socketOnkyo.write(command7);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
         
         //Debug     
              if (onkyoSettings.debug == true) {
@@ -388,7 +389,7 @@ socket.on('event', function (obj) {
                                               }
 		}
   //TUZ  
-  if (id == onkyoSettings.firstId +13 && val != "") { 
+  if (id == onkyoSettings.firstId +13) { 
         //String zerlegen, damit TUNDIRECT verwendet werden kann
           val1 = val.substr(0,1);
           val2 = val.substr(1,1);
@@ -417,7 +418,7 @@ socket.on('event', function (obj) {
         sleep(50);
         socketOnkyo.write(command7);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
         
         //Debug     
              if (onkyoSettings.debug == true) {
@@ -432,7 +433,7 @@ socket.on('event', function (obj) {
                                               }
 		}                
   //NPR in hex
-  if (id == onkyoSettings.firstId +15 && val != "") { 
+  if (id == onkyoSettings.firstId +15) { 
         //convert decimal to hex 
         var new_val = parseInt(val);  //string to integer
         new_val = decimalToHex(new_val).toUpperCase();  //call function decimalToHex();
@@ -449,10 +450,10 @@ socket.on('event', function (obj) {
 //                                                           }
         socketOnkyo.write(command2);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		}    
   //NPZ in hex
-  if (id == onkyoSettings.firstId +17 && val != "") { 
+  if (id == onkyoSettings.firstId +17) { 
         //convert decimal to hex 
         var new_val = parseInt(val);  //string to integer
         new_val = decimalToHex(new_val).toUpperCase();  //call function decimalToHex();
@@ -469,50 +470,50 @@ socket.on('event', function (obj) {
 //                                                           }
         socketOnkyo.write(command2);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		}      
   //SLI
-  if (id == onkyoSettings.firstId +19 && val != "") { 
+  if (id == onkyoSettings.firstId +19) { 
         command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211SLI"+val+"\x0D");
           if (onkyoSettings.debug == true) {
 				      logger.info("adapter Onkyo send:"+command);
                                               }
 				socketOnkyo.write(command);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		}    
   //SLZ
-  if (id == onkyoSettings.firstId +21 && val != "") { 
+  if (id == onkyoSettings.firstId +21) { 
         command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211SLZ"+val+"\x0D");
           if (onkyoSettings.debug == true) {
 				      logger.info("adapter Onkyo send:"+command);
                                               }
 				socketOnkyo.write(command);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		}    
   //AMT
-  if (id == onkyoSettings.firstId +23 && val != "") { 
+  if (id == onkyoSettings.firstId +23) { 
         command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211AMT0"+val+"\x0D");
           if (onkyoSettings.debug == true) {
 				      logger.info("adapter Onkyo send:"+command);
                                               }
 				socketOnkyo.write(command);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		}  
   //ZMT
-  if (id == onkyoSettings.firstId +25 && val != "") { 
+  if (id == onkyoSettings.firstId +25) { 
         command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211ZMT0"+val+"\x0D");
           if (onkyoSettings.debug == true) {
 				      logger.info("adapter Onkyo send:"+command);
                                               }
 				socketOnkyo.write(command);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		}
   //PRS in hex
-  if (id == onkyoSettings.firstId +27 && val != "") { 
+  if (id == onkyoSettings.firstId +27) { 
         //convert decimal to hex 
         var new_val = parseInt(val);  //string to integer
         new_val = decimalToHex(new_val).toUpperCase();  //call function decimalToHex();
@@ -529,10 +530,10 @@ socket.on('event', function (obj) {
 //                                                           }
         socketOnkyo.write(command2);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		}                
   //PRZ in hex
-  if (id == onkyoSettings.firstId +29 && val != "") { 
+  if (id == onkyoSettings.firstId +29) { 
         //convert decimal to hex 
         var new_val = parseInt(val);  //string to integer
         new_val = decimalToHex(new_val).toUpperCase();  //call function decimalToHex();
@@ -542,34 +543,33 @@ socket.on('event', function (obj) {
 				      logger.info("adapter Onkyo send:"+command1);
               logger.info("adapter Onkyo send:"+command2);
                                               }
-       //Wenn Quelle bereits auf NET steht, nicht nochmals umschalten!                                              
-//      if (id == onkyoSettings.firstId +18 && val != '2B') { 
+
         socketOnkyo.write(command1);
         sleep(50);
-//                                                           }
         socketOnkyo.write(command2);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		}   
   //PWR
-  if (id == onkyoSettings.firstId +31 && val != "") { 
+  if (id == onkyoSettings.firstId +31) { 
         command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211PWR0"+val+"\x0D");
           if (onkyoSettings.debug == true) {
 				      logger.info("adapter Onkyo send:"+command);
                                               }
 				socketOnkyo.write(command);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		} 
   //ZPW
-  if (id == onkyoSettings.firstId +33 && val != "") { 
+  //if (id == onkyoSettings.firstId +33 && val != "") {
+  if (id == onkyoSettings.firstId +33) { 
         command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211ZPW0"+val+"\x0D");
           if (onkyoSettings.debug == true) {
 				      logger.info("adapter Onkyo send:"+command);
                                               }
 				socketOnkyo.write(command);
         //Variablen wieder zurücksetzen
-        setState(id, "");
+        //setState(id, "");
 		}       
       
 	}
