@@ -46,8 +46,6 @@
 
 90000-90549                     hue adapter
 
-95000-?                         fritzbox adapter
-
 95100-?                         dreambox adapter
 
 

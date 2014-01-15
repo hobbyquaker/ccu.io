@@ -31,12 +31,10 @@ siehe http://ccu.io/
 * (Bluefox) Changes for sayIt and listen adapters.
 * (Bluefox) Add cache properties for Web Server of ccu.io.js
 * (Bluefox) Remove warnings if security for non SSL enabled
-* (Bluefox) fritz.box! adapter.
-* (Bluefox) Add HTML table for missed calls
+* (Bluefox) Adapter Fritzbox: Add HTML table for missed calls
+* (Bluefox) Adapter Fritzbox: Add new data point ringing number.
+* (Bluefox) Adapter Fritzbox: Add description for RINGING_NUMBER.
 * (Bluefox) Edit adapter_ids.txt
-* (Bluefox) Add DreamBox adapter
-* (Bluefox) Add new data point ringing number.
-* (Bluefox) Add description for RINGING_NUMBER.
 
 ### 1.0.11
 * (Hobbyquaker) Adapter rpi: Standalone-Modus

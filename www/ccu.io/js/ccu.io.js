@@ -942,6 +942,11 @@ $(document).ready(function () {
         } else {
             ccuIoSettings.regahss.pollData = false;
         }
+        if ($("#regahss_pollDataTriggerEnabled").is(":checked")) {
+            ccuIoSettings.regahss.pollDataTriggerEnabled = true;
+        } else {
+            ccuIoSettings.regahss.pollDataTriggerEnabled = false;
+        }
         var settingsWithoutAdapters = JSON.parse(JSON.stringify(ccuIoSettings));
         delete settingsWithoutAdapters.adapters;
         socket.emit("writeFile", "io-settings.json", settingsWithoutAdapters, function () {
