@@ -35,27 +35,14 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 
 **Information:** Bei einer erfolgreichen Ausführung wird der Inhalt der Variable DREAM.COMMAND gelöscht.
 
-* MESSAGE:xyz
-  Sendet eine Nachricht xyz an die Box, die für die in der Konfiguration unter messageTimeout angegebene Zeit auf dem Bildschirm angezeigt wird.
-  
-* MUTE | UNMUTE | TOOGLEMUTE
-  Stellt die Box auf lautlos oder nicht lautlos bzw. wechselt zwischen beiden Möglichkeiten.
-  
-* VOLUME:xy
-  Stelt die Lautstärke auf den Wert xy, wobei es sich hier um einen Wert zwischen 0 und 100 handeln darf.
-  
-* WAKEUP | STANDBY | TOOGLESTANDBY
-  Weckt die Box aus dem Standby oder versetzt sie dorthin. Mit TOOGLESTANDBY ist ein entsprechender Wechsel möglich.
-  
-* DEEPSTANDBY
-  Setzt die Box in den Deep-Standby. Achtung: da in diesem Modus kein Web-Interface verfügbar ist, muss die Box per Hand wieder reaktiviert werden!
-  
-* REBOOT
-  Führt einen Reboot bei der Box durch. Achtung: für die Zeit des Reboots ist die Box nicht durch den Adapter erreichbar!
-  
-* RESTART
-  Führt einen Neustart des Enigma-Systems durch. Achtung: für die Zeit des Neustarts ist die Box nicht durch den Adapter erreichbar!
-  
+* **MESSAGE:xyz** - Sendet eine Nachricht xyz an die Box, die für die in der Konfiguration unter messageTimeout angegebene Zeit auf dem Bildschirm angezeigt wird.
+* **MUTE | UNMUTE | TOOGLEMUTE** - Stellt die Box auf lautlos oder nicht lautlos bzw. wechselt zwischen beiden Möglichkeiten.
+* **VOLUME:xy** - Stellt die Lautstärke auf den Wert xy, wobei es sich hier um einen Wert zwischen 0 und 100 handeln darf.
+* **WAKEUP | STANDBY | TOOGLESTANDBY** - Weckt die Box aus dem Standby oder versetzt sie dorthin. Mit TOOGLESTANDBY ist ein entsprechender Wechsel möglich.
+* **DEEPSTANDBY** - Setzt die Box in den Deep-Standby. Achtung: da in diesem Modus kein Web-Interface verfügbar ist, muss die Box per Hand wieder reaktiviert werden!
+* **REBOOT** - Führt einen Reboot bei der Box durch. Achtung: für die Zeit des Reboots ist die Box nicht durch den Adapter erreichbar!
+* **RESTART** - Führt einen Neustart des Enigma-Systems durch. Achtung: für die Zeit des Neustarts ist die Box nicht durch den Adapter erreichbar!
+
 ## Todo/Roadmap
 
 * Implementierung weiterer Funktionen
