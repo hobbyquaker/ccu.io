@@ -132,6 +132,9 @@ Date.prototype.compare = function(b) {
 function checkiCal(loc) {
 
         ical.fromURL(loc, {}, function (err, data) {
+			if (err != undefined) {
+				logger.info("adapter ical Error Reading from URL: " + err.toString());
+			}
            logger.info("adapter ical processing URL" + loc);
             //Variable ablöschen
             setState(icalSettings.firstId + 1, "");
