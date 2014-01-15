@@ -156,15 +156,19 @@ function DreamInit() {
 	
 	logger.info("adapter dream objects inserted, starting at: "+dreamSettings.firstId);
 	
-	// Fix polling interval if too short
-	if (dreamSettings.pollingInterval <= 5000 * (i + 1)) {
-		dreamSettings.pollingInterval = 5000 * (i + 1);
+	if (dreamSettings.pollingEnabled) {
+		// Fix polling interval if too short
+		if (dreamSettings.pollingInterval <= 5000 * (i + 1)) {
+			dreamSettings.pollingInterval = 5000 * (i + 1);
+		}
+
+		logger.info("adapter dream polling enabled - interval " + dreamSettings.pollingInterval + " ms");
+
+		setInterval(checkStatus, dreamSettings.pollingInterval);
+		checkStatus();
+	} else {
+		logger.info("adapter dream polling has been disabled by configuration");
 	}
-
-	logger.info("adapter dream polling enabled - interval " + dreamSettings.pollingInterval + "ms");
-
-	setInterval(checkStatus, dreamSettings.pollingInterval);
-	checkStatus();
 }
 
 function getResponse (command, path, callback){
@@ -250,7 +254,8 @@ function executeCommand(command, value) {
 	{
 		case "MESSAGE":
 			var msgTimeout = parseInt(dreamSettings.messageTimeout);
-			getResponse (command, "/web/message?text="+querystring.escape(value)+"&type=1&timeout="+msgTimeout, evaluateCommandResponse);
+			var msgType = parseInt(dreamSettings.messageType);
+			getResponse (command, "/web/message?text="+querystring.escape(value)+"&type="+msgType+"&timeout="+msgTimeout, evaluateCommandResponse);
 			break;
 		case "MUTE":
 			if (datapoints[dreamSettings.firstId + 3] == "false") {
