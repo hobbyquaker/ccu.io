@@ -1254,6 +1254,19 @@ function initSocketIO(_io) {
         var address = socket.handshake.address;
         logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
 
+        socket.on('log', function (sev, msg) {
+           switch (sev) {
+               case "info":
+                   logger.info(msg);
+                   break;
+               case "warn":
+                   logger.warn(msg);
+                   break;
+               case "error":
+                   logger.error(msg);
+           }
+        });
+
         socket.on('execCmd', function (cmd, callback) {
             logger.info("ccu.io        exec "+cmd);
             childProcess.exec(cmd, callback);
