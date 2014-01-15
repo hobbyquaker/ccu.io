@@ -240,9 +240,9 @@ function evaluateCommandResponse (command, xml) {
 			setState(dreamSettings.firstId + 3, parseBool(xml.e2volume.e2ismuted));	// True|False
 			break;
 		case "GETINFO":
-			setState(dreamSettings.firstId + 4, xml.e2abouts.e2about[0].e2servicename);				// RTL Television
-			setState(dreamSettings.firstId + 5, xml.e2abouts.e2about[0].e2hddinfo[0].capacity);		// 500.107 GB
-			setState(dreamSettings.firstId + 6, xml.e2abouts.e2about[0].e2hddinfo[0].free);			// 100.273 GB
+			setState(dreamSettings.firstId + 4, xml.e2abouts.e2about[0].e2servicename[0]);				// RTL Television
+			setState(dreamSettings.firstId + 5, xml.e2abouts.e2about[0].e2hddinfo[0].capacity[0]);		// 500.107 GB
+			setState(dreamSettings.firstId + 6, xml.e2abouts.e2about[0].e2hddinfo[0].free[0]);			// 100.273 GB
 			break;
 		default:
 			logger.warn("adapter dream received unknown command '"+command+"' @ evaluateCommandResponse");
