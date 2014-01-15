@@ -28,9 +28,10 @@ var logger		= require(__dirname + '/../../logger.js'),
 	net			= require('net'),
 	ping		= require("ping"),
 	http		= require('http'),
-	querystring	= require('querystring');
+	querystring	= require('querystring'),
+	xml2js		= require("xml2js");
 
-var boxUrl = "http://"+dreamSettings.ip+"/web";	
+var boxUrl = "http://"+dreamSettings.ip+"/web";
 
 var objects = {},
 	datapoints = {};
@@ -66,7 +67,7 @@ socket.on('event', function (obj) {
 	var ts = obj[2];			// Timestamp der letzten Änderung
 	var ack = obj[3];			// ACKnowledge der letzten Änderung
 	
-	if (obj[0] == dreamSettings.firstId + 1 && val != "") {
+	if (obj[0] == dreamSettings.firstId && val != "") {
 		logger.info("adapter dream event: "+id+" "+val+" "+ts+" "+ack+" "+obj);
 		var valString = val.toString();
 		var args = valString.split(":");
@@ -105,19 +106,50 @@ function setObject(id, obj) {
 
 function setState(id, val) {
 	datapoints[id] = [val];
+	//logger.info("DREAM setState for ID "+id+" to value '"+val+"'");
 	socket.emit("setState", [id,val,null,true]);
 }
 
 function DreamInit() {
 	var i = 0;
 	setObject(dreamSettings.firstId, {
-		Name: "DREAM.STATUS",
+		Name: "DREAM.COMMAND",
 		TypeName: "VARDP",
 		Value : ""
 	});
 	
 	setObject(dreamSettings.firstId + 1, {
-		Name: "DREAM.COMMAND",
+		Name: "DREAM.STANDBY",
+		TypeName: "VARDP",
+		Value : ""
+	});
+	
+	setObject(dreamSettings.firstId + 2, {
+		Name: "DREAM.VOLUME",
+		TypeName: "VARDP",
+		Value : "0"
+	});
+	
+	setObject(dreamSettings.firstId + 3, {
+		Name: "DREAM.MUTED",
+		TypeName: "VARDP",
+		Value : false
+	});
+	
+	setObject(dreamSettings.firstId + 4, {
+		Name: "DREAM.CHANNEL",
+		TypeName: "VARDP",
+		Value : ""
+	});
+	
+	setObject(dreamSettings.firstId + 5, {
+		Name: "DREAM.HDD.CAPACITY",
+		TypeName: "VARDP",
+		Value : ""
+	});
+	
+	setObject(dreamSettings.firstId + 6, {
+		Name: "DREAM.HDD.FREE",
 		TypeName: "VARDP",
 		Value : ""
 	});
@@ -135,71 +167,145 @@ function DreamInit() {
 	checkStatus();
 }
 
-function sendCommand(path, expected) {
-	var commandUrl = boxUrl + path;
-	request(commandUrl,
-		function (error, response, body) {
-			if (body && body.indexOf(expected) != -1){
-				logger.info("adapter dream successfully requested URL '"+commandUrl+"'");
-				setState(dreamSettings.firstId + 1, "");
-			} else {
-				logger.info("adapter dream missed expected '"+expected+"' for URL '"+commandUrl+"'");
-			}
-		}
-	);
+function getResponse (command, path, callback){
+	var options = {
+		host: dreamSettings.ip,
+		port: 80,
+		path: path,
+		method: 'GET'
+	};
+
+	var req = http.get(options, function(res) {
+		var pageData = "";
+		res.setEncoding('utf8');
+		res.on('data', function (chunk) {
+			pageData += chunk;
+		});
+		res.on('end', function () {
+	  		//logger.info("Trying to parse: "+pageData);
+			var parser = new xml2js.Parser();
+			parser.parseString(pageData, function (err, result) {
+				if (callback) {
+					callback (command, result);
+				}
+			});
+		});
+	});
+	req.on('error', function(e) {
+		logger.warn("adapter dream received error: "+e.message);
+	});
+
+}
+
+function parseBool(string){
+	switch(string[0].toLowerCase()){
+		case "true": case "yes": case "1": return true;
+		default: return false;
+	}
+}
+
+function evaluateCommandResponse (command, xml) {
+	//logger.info("evaluateCommandResponse - command: "+command+", received XML: "+JSON.stringify(xml));
+	switch (command.toUpperCase())
+	{
+		case "MESSAGE":
+		case "RESTART":
+		case "REBOOT":
+		case "DEEPSTANDBY":
+			setState(dreamSettings.firstId, "");
+			break;
+		case "MUTE":
+		case "UNMUTE":
+		case "TOOGLEMUTE":
+		case "VOLUME":
+			setState(dreamSettings.firstId + 2, xml.e2volume.e2current);	// 20
+			setState(dreamSettings.firstId + 3, parseBool(xml.e2volume.e2ismuted));	// True|False
+			setState(dreamSettings.firstId, "");
+			break;
+		case "WAKEUP":
+		case "STANDBY":
+		case "TOOGLESTANDBY":
+			setState(dreamSettings.firstId + 1, parseBool(xml.e2powerstate.e2instandby));		// true|false
+			setState(dreamSettings.firstId, "");
+			break;
+		case "GETSTANDBY":
+			setState(dreamSettings.firstId + 1, parseBool(xml.e2powerstate.e2instandby));		// true|false
+			break;
+		case "GETVOLUME":
+			setState(dreamSettings.firstId + 2, xml.e2volume.e2current);	// 20
+			setState(dreamSettings.firstId + 3, parseBool(xml.e2volume.e2ismuted));	// True|False
+			break;
+		case "GETINFO":
+			setState(dreamSettings.firstId + 4, xml.e2abouts.e2about[0].e2servicename);				// RTL Television
+			setState(dreamSettings.firstId + 5, xml.e2abouts.e2about[0].e2hddinfo[0].capacity);		// 500.107 GB
+			setState(dreamSettings.firstId + 6, xml.e2abouts.e2about[0].e2hddinfo[0].free);			// 100.273 GB
+			break;
+		default:
+			logger.warn("adapter dream received unknown command '"+command+"' @ evaluateCommandResponse");
+	}
 }
 
 function executeCommand(command, value) {
-	switch(command)
+	switch(command.toUpperCase())
 	{
 		case "MESSAGE":
 			var msgTimeout = parseInt(dreamSettings.messageTimeout);
-			sendCommand("/message?text="+querystring.escape(value)+"&type=1&timeout="+msgTimeout , "<e2state>True</e2state>");
+			getResponse (command, "/web/message?text="+querystring.escape(value)+"&type=1&timeout="+msgTimeout, evaluateCommandResponse);
 			break;
 		case "MUTE":
-			sendCommand("/vol?set=mute", "<e2result>True</e2result>");
+			if (datapoints[dreamSettings.firstId + 3] == "false") {
+				getResponse (command, "/web/vol?set=mute", evaluateCommandResponse);
+			} else {
+				setState(dreamSettings.firstId, "");
+			}
+			break;
+		case "UNMUTE":
+			if (datapoints[dreamSettings.firstId + 3] == "true") {
+				getResponse (command, "/web/vol?set=mute", evaluateCommandResponse);
+			} else {
+				setState(dreamSettings.firstId, "");
+			}
+			break;
+		case "TOOGLEMUTE":
+			getResponse (command, "/web/vol?set=mute", evaluateCommandResponse);
 			break;
 		case "VOLUME":
 			var volume = parseInt(value);
 			if (volume > 0 && volume < 101) {
-				sendCommand("/vol?set=set" + volume, "<e2result>True</e2result>");
+				getResponse (command, "/web/vol?set=set" + volume, evaluateCommandResponse);
 			}
 			break;
+		case "TOOGLESTANDBY":
+			getResponse (command, "/web/powerstate?newstate=0", evaluateCommandResponse);
+			break;
+		case "DEEPSTANDBY":
+			getResponse (command, "/web/powerstate?newstate=1", evaluateCommandResponse);
+			break;
 		case "REBOOT":
-			sendCommand("/powerstate?newstate=2", "<e2result>True</e2result>");
+			getResponse (command, "/web/powerstate?newstate=2", evaluateCommandResponse);
 			break;
 		case "RESTART":
-			sendCommand("/powerstate?newstate=3", "<e2result>True</e2result>");
+			getResponse (command, "/web/powerstate?newstate=3", evaluateCommandResponse);
 			break;
 		case "WAKEUP":
-			sendCommand("/powerstate?newstate=4", "<e2result>True</e2result>");
+			getResponse (command, "/web/powerstate?newstate=4", evaluateCommandResponse);
 			break;
 		case "STANDBY":
-			sendCommand("/powerstate?newstate=5", "<e2result>True</e2result>");
+			getResponse (command, "/web/powerstate?newstate=5", evaluateCommandResponse);
 			break;
 		default:
-			logger.warn("adapter dream received unknown command '"+command+"'");
+			logger.warn("adapter dream received unknown command '"+command+"' @ executeCommand");
 	}
 }
 
 function checkStatus() {
-	var powerstateUrl = boxUrl + "/powerstate";
-	//logger.info("adapter dream sends a ping to IP "+dreamSettings.ip);
-	
 	ping.sys.probe(dreamSettings.ip, function (isAlive) {
-		if (!isAlive) {
-			//logger.info("adapter dream box with IP "+dreamSettings.ip+" is UNREACHABLE");
-		} else {
-			request({uri: powerstateUrl, timeout: 4000}, function (error, response, body) {
-					if (body && body.indexOf("<e2instandby>true</e2instandby>") != -1){
-						setState(dreamSettings.firstId, "STANDBY");
-					} else {
-						setState(dreamSettings.firstId, "RUNNING");
-					}
-				});
+		if (isAlive) {
+			getResponse ("GETSTANDBY", "/web/powerstate", evaluateCommandResponse);
+			getResponse ("GETINFO", "/web/about", evaluateCommandResponse);
+			getResponse ("GETVOLUME", "/web/vol", evaluateCommandResponse);
 		}
 	});
-	//setTimeout(checkDream, 5000, curIP);
 }
 
 DreamInit ();
