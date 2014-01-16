@@ -161,6 +161,12 @@ function checkiCal(loc) {
                     var now = new Date();
                     enddate.setDate(enddate.getDate() + preview);
                     now.setHours(0,0,0,0);
+					//Now2 1 Sekunde  zurück für Vergleich 
+					var now2 = new Date();
+					//Uhzeit nullen
+					now2.setHours(0,0,0,0);
+					//Datum 1 Sec zurück wegen Ganztätigen Terminen um 00:00 Uhr
+					now2.setSeconds(now2.getSeconds() - 1);
                     tomorrow = new Date();
                     tomorrow.setDate(now.getDate() + 1);
                     tomorrow.setHours(0,0,0,0);
@@ -172,9 +178,9 @@ function checkiCal(loc) {
                             var options = RRule.parseString(ev.rrule.toString());
                             options.dtstart = ev.start
                             rule = new RRule(options)
-                           // console.log(ev.summary + " " + ev.start.toString() + " " + enddate.toString() + " " +rule.toText());
+                            if (debug) {logger.info(ev.summary + " " + ev.start.toString() + " " + enddate.toString() + " now:" + now + " now2:" + now2 +  " " +rule.toText());}
 
-                            var dates = rule.between(now, enddate);
+                            var dates = rule.between(now2, enddate);
                             if (dates.length > 0) {
                                 for (var i = 0; i < dates.length; i++) {
                                     //console.log("Termin rrule:" +ev.summary + " " + dates[i]);
@@ -211,7 +217,8 @@ function checkiCal(loc) {
                             }
                         } else {
                             //Nein, also ein einzelner Termin
-                            if (ev.start < enddate && ev.start > now) {
+							if (debug) {logger.info("ev.start: " + ev.start + " enddate: " + enddate + " now:" + now);}
+                            if (ev.start < enddate && ev.start > now2) {
                             //Termin innerhalb des Zeitfensters
                                 var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
                                 var com = ev.start;
