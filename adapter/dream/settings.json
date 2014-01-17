@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "enabled": false,
     "settings": {
         "ip": "192.168.1.50",
@@ -9,4 +10,25 @@
         "messageType": 1,
         "pollingEnabled": false
     }
+=======
+	"enabled": false,
+	"settings": {
+		"messageTimeout": 5,
+		"pollingInterval": 10000,
+		"firstId": 95100,
+		"messageType": 1,
+		"pollingEnabled": true,
+		"debugEnabled": true,
+		"boxes": {
+			"_1": {
+				"ip": "xxx.xxx.xxx.xxx",
+				"name": "",
+				"rooms": [""],
+				"funcs": [],
+				"favs": [],
+				"port": "80"
+			}
+		}
+	}
+>>>>>>> a8399ec4fde5079b31d1fe2e8812db06cfdee869
 }

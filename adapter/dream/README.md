@@ -1,10 +1,9 @@
 Dreambox adapter
 ======
 
-* Aktuelle Version: 0.2
-* Anzahl verwendeter Variablen in ccu.io: 7
-* vorkonfigurierte IDs: 95100 bis 95107
-* getestet mit CCU.IO 1.0.10 und Dreambox DM800se 
+* Aktuelle Version: 0.4
+* Anzahl verwendeter Variablen in ccu.io: pro konfigurierter Box 7
+* getestet mit CCU.IO 1.0.12 und Dreambox DM800se 
 
 ## Dokumentation
 
@@ -14,12 +13,19 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 
 * **Enabled** - Aktiviert den Adapter 
 * **First ID** - Erste ID, die für die Datenvariablen genutzt wird
-* **Dreambox (IP)** - IP-Adresse der Dreambox
-* **Dreambox (Port)** - Port des Web-Interfaces des Dreambox
 * **Polling enabled** - Aktiviert das zyklische Abrufen von Status-Informationen
 * **Polling Interval** - Definition des Abruf-Intervalls (in Sekunden)
 * **Message Type** - Typ der Nachricht, mit dem Meldungen auf dem Bildschirm der Dreambox ausgegeben werden
 * **Message Timeout** - Anzeigedauer einer auszugebenden Nachricht
+* **Debug enabled** - Aktiviert das Loggen von Debug-Informationen
+
+### Konfiguration pro Box
+* **Adresse** - IP-Adresse
+* **Port** - Port
+* **Name** - Name der Box, wird auch für den Namen der Datenpunkte verwendet
+* **Rooms** - Räume
+* **Functions** - Gewerke
+* **Favorites** - Favoriten
 
 ### Variablen
 
@@ -48,6 +54,12 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 * Implementierung weiterer Funktionen
 
 ## Changelog
+
+### 0.4
+* Fehler beim Speichern von Werten behoben (war object anstatt bool oder string)
+* Konfiguration mehrerer Boxen ermöglicht
+* Debug-Modus implementiert
+* Fix für VU+ und Geräte mit openwebif implementiert (Linefeed bei Bools)
 
 ### 0.3
 * Umstellung der Konfiguration (JSON -> Formular)
