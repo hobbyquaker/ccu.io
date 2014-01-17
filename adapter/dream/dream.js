@@ -222,8 +222,8 @@ function evaluateCommandResponse (command, xml) {
 		case "UNMUTE":
 		case "TOOGLEMUTE":
 		case "VOLUME":
-			setState(dreamSettings.firstId + 2, xml.e2volume.e2current);	// 20
-			setState(dreamSettings.firstId + 3, parseBool(xml.e2volume.e2ismuted));	// True|False
+			setState(dreamSettings.firstId + 2, parseInt(xml.e2volume.e2current[0]));	// 20
+			setState(dreamSettings.firstId + 3, parseBool(xml.e2volume.e2ismuted));		// True|False
 			setState(dreamSettings.firstId, "");
 			break;
 		case "WAKEUP":
@@ -236,8 +236,8 @@ function evaluateCommandResponse (command, xml) {
 			setState(dreamSettings.firstId + 1, parseBool(xml.e2powerstate.e2instandby));		// true|false
 			break;
 		case "GETVOLUME":
-			setState(dreamSettings.firstId + 2, xml.e2volume.e2current);	// 20
-			setState(dreamSettings.firstId + 3, parseBool(xml.e2volume.e2ismuted));	// True|False
+			setState(dreamSettings.firstId + 2, parseInt(xml.e2volume.e2current[0]));	// 20
+			setState(dreamSettings.firstId + 3, parseBool(xml.e2volume.e2ismuted));		// True|False
 			break;
 		case "GETINFO":
 			setState(dreamSettings.firstId + 4, xml.e2abouts.e2about[0].e2servicename[0]);				// RTL Television

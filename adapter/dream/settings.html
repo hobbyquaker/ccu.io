@@ -49,8 +49,49 @@
         <td><input id="dream_messageTimeout" type="number" min="1" max="30"/> seconds</td>
     </tr>
 </table>
+<br /><br />
+<h1>Hilfe</h1>
+<table style="font-size: 12px">
+    <tr><td colspan="3" style="font-size: 14px"><b>Variablen</b></td></tr>
+	<tr><td><b>Datenpunkt-Name</b></td><td><b>Datenpunkt-ID</b></td><td><b>Beschreibung</b></td></tr>
+    <tr><td>DREAM.COMMAND</td><td id="out_id01">95100</td><td>Nimmt Befehle zur Ausf&uuml;hrung entgegen (s.u.)</td></tr>
+    <tr><td>DREAM.STANDBY</td><td id="out_id02">95101</td><td>Zeigt an, ob sich die Box im Standby befindet (true) oder nicht (false)</td></tr>
+    <tr><td>DREAM.VOLUME</td><td id="out_id03">95102</td><td>Zeigt die aktuell eingestellte Lautst&auml;rke (0 - 100) an</td></tr>
+    <tr><td>DREAM.MUTED</td><td id="out_id04">95103</td><td>Zeigt an, ob die Box lautlos gestellt ist oder nicht (unabh&auml;ngig von der eingestellten Lautst&auml;rke!)</td></tr>
+    <tr><td>DREAM.CHANNEL</td><td id="out_id05">95104</td><td>Zeigt den aktuell eingestellten Sender an, sofern sich die Box nicht im Standby befindet</td></tr>
+    <tr><td>DREAM.HDD.CAPACITY</td><td id="out_id06">95105</td><td>Zeigt die Kapazit&auml;t der eingebauten Festplatte an</td></tr>
+    <tr><td>DREAM.HDD.FREE</td><td id="out_id07">95106</td><td>Zeigt an, wieviel Platz noch auf der eingebauten Festplatte verf&uuml;gbar ist</td></tr>
+    <tr><td colspan="3">&nbsp;</td></tr>
+    <tr><td colspan="3">&nbsp;</td></tr>
+    <tr><td colspan="3" style="font-size: 14px"><b>Kommandos</b></td></tr>
+    <tr><td colspan="3">Kommandos k&ouml;nnen verwendet werden, um Befehle an die Dreambox zu schicken. Hierzu muss einer der nachfolgend aufgelisteten Werte in das Datenfeld <span id=""></span> geschrieben werden. &Uuml;ber eine entsprechende Benachrichtigung nimmt der Adapter den Wert entgegen und sendet ihn an die Dreambox. Es ist egal, ob ein Kommando gro&szlig;- oder kleingeschirben wird, beide Varianten werden erkannt und umgesetzt. Bei einer erfolgreichen Ausf&uuml;hrung wird der Inhalt des Datenfelds gel&ouml;scht.</td></tr>
+    <tr><td colspan="3">&nbsp;</td></tr>
+    <tr><td><b>Kommando</b></td><td colspan="2"><b>Beschreibung</b></td></tr>
+    <tr><td>MESSAGE:xyz</td><td colspan="2">Sendet eine Nachricht <i>xyz</i> an die Box, die f&uuml;r die in der Konfiguration unter <i>messageTimeout</i> angegebene Zeit auf dem Bildschirm angezeigt wird.</td></tr>
+    <tr><td>MUTE</td><td colspan="2">Stellt die Box auf lautlos.</td></tr>
+    <tr><td>UNMUTE</td><td colspan="2">Stellt die Box auf nicht lautlos.</td></tr>
+    <tr><td>TOOGLEMUTE</td><td colspan="2">Wechselt zwischen lautlos und nicht lautlos hin und her.</td></tr>
+    <tr><td>VOLUME:xyz</td><td colspan="2">Stellt die Lautst&auml;rke auf den Wert <i>xyz</i>, wobei es sich hier um einen Wert zwischen 0 und 100 handeln darf.</td></tr>
+    <tr><td>WAKEUP</td><td colspan="2">Weckt die Box aus dem Standby.</td></tr>
+    <tr><td>STANDBY</td><td colspan="2">Versetzt die Box in den Standby.</td></tr>
+    <tr><td>TOOGLESTANDBY</td><td colspan="2">Wechselt zwischen Standby und Wakeup hin und her.</td></tr>
+    <tr><td>DEEPSTANDBY</td><td colspan="2">Setzt die Box in den Deep-Standby. <b>Achtung:</b> da in diesem Modus kein Web-Interface verf&uuml;gbar ist, muss die Box per Hand wieder reaktiviert werden!</td></tr>
+    <tr><td>REBOOT</td><td colspan="2">F&uuml;hrt einen Reboot bei der Box durch.<b>Achtung:</b> f&uuml;r die Zeit des Reboots ist die Box nicht durch den Adapter erreichbar!</td></tr>
+    <tr><td>RESTART</td><td colspan="2">F&uuml;hrt einen Neustart des Enigma-Systems durch. <b>Achtung:</b> f&uuml;r die Zeit des Neustarts ist die Box nicht durch den Adapter erreichbar!</td></tr>
+</table>
 
 <script type="text/javascript">
+    function setHelpValues (firstId) {
+		var val = parseInt(firstId);
+        $("#out_id01").html(val);
+		$("#out_id02").html(val+1);
+		$("#out_id03").html(val+2);
+		$("#out_id04").html(val+3);
+		$("#out_id05").html(val+4);
+		$("#out_id06").html(val+5);
+		$("#out_id07").html(val+6);
+    }
+	
     if (currentAdapterSettings.enabled) {
         $("#dream_enabled option[value='false']").removeAttr("selected");
         $("#dream_enabled option[value='true']").attr("selected", true);
@@ -100,8 +141,10 @@
 
     $("#dream_firstId").val(currentAdapterSettings.settings.firstId);
 
+	setHelpValues(currentAdapterSettings.settings.firstId);
     $("#dream_firstId").change(function () {
         currentAdapterSettings.settings.firstId = $("#dream_firstId").val();
+		setHelpValues(currentAdapterSettings.settings.firstId);
         updateAdapterSettings();
     });
 
@@ -112,6 +155,7 @@
         updateAdapterSettings();
     });
 
+	
     $("#dream_port").val(currentAdapterSettings.settings.port);
 
     $("#dream_port").change(function () {
