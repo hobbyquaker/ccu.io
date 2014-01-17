@@ -10,11 +10,24 @@ siehe http://ccu.io/
 
 ## Todo/Roadmap
 
-* Script-Engine Addins
 * adapter/skeleton-ipc.js
+* Prozesse überwachen (und evtl abgestürzte Adapter/Script-Engine neu starten?)
+* Logrotate für ccu.io.log
+* settings.html für diverse Adapter
+* diverse Adapter auf ipc umstellen?
+* Pushover Callbacks (Nachrichten bestätigen, callback Methode aufrufen)
+* Weboberfläche Ladeanzeige
+* Weboberfläche Datenpunkte anlegen, löschen
+* Weboberfläche Devices in Baumstruktur anzeigen
+* Weboberfläche Objekte neu laden wenn CCU.IO neue Objekte von Adaptern/Scripts erhalten hat
+* Persistente Objekte in regaIndex aufnehmen!
 * ArtNet (DMX) Adapter
+* Rocket LED Adapter
+* iTunes Adapter
+* Script-Engine Addins (von Addons "mitgebrachte" Methoden)?
 * Anymote Adapter (control Google TV)
 * Doku, Doku, Doku
+* CMS für Homepage?
 * CCU2-Paket für einfache Installation
 * .msi für einfache Installation unter Windows (ccu.io als Service registrieren)
 * .pkg für einfache Installation unter Mac OS X
