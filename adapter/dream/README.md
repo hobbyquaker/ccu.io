@@ -1,10 +1,9 @@
 Dreambox adapter
 ======
 
-* Aktuelle Version: 0.2
+* Aktuelle Version: 0.4
 * Anzahl verwendeter Variablen in ccu.io: 7
-* vorkonfigurierte IDs: 95100 bis 95107
-* getestet mit CCU.IO 1.0.10 und Dreambox DM800se 
+* getestet mit CCU.IO 1.0.12 und Dreambox DM800se 
 
 ## Dokumentation
 
