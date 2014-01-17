@@ -2,7 +2,7 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
- *      Version 0.4
+ *      Version 0.5
  *		
  */
 var settings = require(__dirname+'/../../settings.js');
@@ -129,6 +129,8 @@ Date.prototype.compare = function(b) {
         );
 };
 
+
+
 function checkiCal(loc) {
 
         ical.fromURL(loc, {}, function (err, data) {
@@ -138,33 +140,39 @@ function checkiCal(loc) {
            logger.info("adapter ical processing URL" + loc);
             //Variable ablöschen
             setState(icalSettings.firstId + 1, "");
-            minoneorange = false;
-            minonered = false;
-           
-            /*for (var k in data) {
-                if (data.hasOwnProperty(k)) {
-                    var value = data[k];
-                    console.log("property name is " + k + " value is " + value);
-                    for (var l in value) {
-                        if (value.hasOwnProperty(l)) {
-                            var val = value[l];
-                           console.log("property name2 is " + k + " " + l + " value is " + val);
-                        }
-                    }
-                }
-            }*/
+           /* for (var k in data) {
+             if (data.hasOwnProperty(k)) {
+             var value = data[k];
+             console.log("property name is " + k + " value is " + value);
+             for (var l in value) {
+             if (value.hasOwnProperty(l)) {
+             var val = value[l];
+             console.log("property name2 is " + k + " " + l + " value is " + val);
+             }
+             }
+             }
+             }*/
+
             for (var k in data) {
-            //  console.log(k);
                 if (data.hasOwnProperty(k)) {
-                    var ev = data[k]
-                    var enddate = new Date();
-                    var now = new Date();
-                    enddate.setDate(enddate.getDate() + preview);
-                    now.setHours(0,0,0,0);
+                    var ev = data[k];
+                    var endpreview = new Date();
+					var realnow = new Date();
+                    var heute = new Date();
+
+					endpreview.setDate(endpreview.getDate() + preview);
+                    heute.setHours(0,0,0,0);
+					//Now2 1 Sekunde  zurück für Vergleich von ganztägigen Terminen in RRule
+					var now2 = new Date();
+					//Uhzeit nullen
+					now2.setHours(0,0,0,0);
+					//Datum 1 Sec zurück wegen Ganztätigen Terminen um 00:00 Uhr
+					now2.setSeconds(now2.getSeconds() - 1);
                     tomorrow = new Date();
-                    tomorrow.setDate(now.getDate() + 1);
+                    tomorrow.setDate(heute.getDate() + 1);
                     tomorrow.setHours(0,0,0,0);
                     tomorrow2 = new Date();
+					
                     //es interessieren nur Termine mit einer Summary
                     if (ev.summary != undefined) {
                     //aha, eine RRULE in dem Termin --> auswerten
@@ -172,94 +180,98 @@ function checkiCal(loc) {
                             var options = RRule.parseString(ev.rrule.toString());
                             options.dtstart = ev.start
                             rule = new RRule(options)
-                           // console.log(ev.summary + " " + ev.start.toString() + " " + enddate.toString() + " " +rule.toText());
-
-                            var dates = rule.between(now, enddate);
+                            if (debug) {logger.info("RRule termin:" + ev.summary + " " + ev.start.toString() + " " + endpreview.toString() + " now:" + heute + " now2:" + now2 +  " " +rule.toText());}
+                            var dates = rule.between(now2, endpreview);
+                            //Termine innerhalb des Zeitfensters
                             if (dates.length > 0) {
                                 for (var i = 0; i < dates.length; i++) {
-                                    //console.log("Termin rrule:" +ev.summary + " " + dates[i]);
-                                    var datevar = new Date(Date.parse(dates[i]));
-                                    //console.log("parseddate:" + datevar);
-                                    var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
-
-                                    var com = datevar;
-                                    com.setHours(0,0,0,0);
-
-                                    if (colorize) {
-                                        // console.log("date: " + com.toString() + " " + tomorrow.toString());;
-                                        //  console.log(com.compare(now).toString() + " " + com.compare(tomorrow).toString());
-                                        //Heute
-                                        if (com.compare(now) == 0) {
-                                            minonered = true;
-                                            var singleDate = warn + datevar.getDate() + "." + (datevar.getMonth() + 1) + "." + datevar.getFullYear() + " " + MyTimeString + warn2 + " " + ev.summary;
-                                        }
-                                        //Morgen
-                                        if (com.compare(tomorrow) == 0) {
-                                            minoneorange = true;
-                                            var singleDate = prewarn + datevar.getDate() + "." + (datevar.getMonth() + 1) + "." + datevar.getFullYear() + " " + MyTimeString + prewarn2 + " " + ev.summary;
-                                        }
-                                        //Ansonsten
-                                        if (com.compare(tomorrow) == 1) {
-                                            var singleDate = normal + datevar.getDate() + "." + (datevar.getMonth() + 1) + "." + datevar.getFullYear() + " " + MyTimeString + normal2 + " " + ev.summary;
-                                        }
-                                    } else {
-                                        var singleDate = fontbold + datevar.getDate() + "." + (datevar.getMonth() + 1) + "." + datevar.getFullYear() + " " + MyTimeString + fontnormal + " " + ev.summary;
-                                    }
-                                   if (debug) {logger.info("RRUle Termin hinzugefügt: " + ev.summary + " "+ singleDate);}
-								    arrDates.push(singleDate);
+                                    //Datum ersetzen für jeden einzelnen Termin in RRule
+                                    //TODO: funktioniert nur mit Terminen innerhalt eines Tages, da auch das EndDate ersetzt wird
+                                    ev.start.setDate(dates[i].getDate());
+                                    ev.start.setMonth(dates[i].getMonth());
+                                    ev.start.setFullYear(dates[i].getFullYear());
+                                    ev.end.setDate(dates[i].getDate());
+                                    ev.end.setMonth(dates[i].getMonth());
+                                    ev.end.setFullYear(dates[i].getFullYear());
+                                    //Termin auswerten
+                                    checkDates(ev,endpreview,heute,tomorrow,realnow," rrule ");
                                 }
+                            } else {
+                                if (debug) {logger.info("Keine RRule Termine innerhalb des Zeitfensters");}
                             }
                         } else {
-                            //Nein, also ein einzelner Termin
-                            if (ev.start < enddate && ev.start > now) {
-                            //Termin innerhalb des Zeitfensters
-                                var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
-                                var com = ev.start;
-                                com.setHours(0,0,0,0);
-                                if (colorize) {
-                                    //Heute
-                                    if (com.compare(now) == 0) {
-                                        minonered = true;
-                                        prefix = warn;
-                                        suffix = warn2;
-                                      //  var singleDate = warn + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + warn2 + " " + ev.summary;
-                                    }
-                                    //Morgen
-                                    if (com.compare(tomorrow) == 0) {
-                                        minoneorange = true;
-                                        prefix = prewarn;
-                                        suffix = prewarn2;
+                            //Kein RRule Termin
+                            checkDates(ev,endpreview,heute,tomorrow,realnow," ");
 
-                                       // var singleDate = prewarn + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + prewarn2 + " " + ev.summary;
-                                    }
-                                    //Ansonsten
-                                    if (com.compare(tomorrow) == 1) {
-                                        //var singleDate = normal + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + normal2 + " " + ev.summary;
-                                        prefix = normal;
-                                        suffix = normal2;
-                                    }
-
-                                } else {
-                                    prefix = normal;
-                                    suffix = normal2;
-                                  // var singleDate = fontbold + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + fontnormal + " " + ev.summary;
-                                }
-                                var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + ev.summary;
-                                if (debug) {logger.info("Termin hinzugefügt : " + ev.summary + " am " + singleDate);}
-								arrDates.push(singleDate);
-
-                            } else {
-                                if (debug) {logger.info("Termin " +ev.summary + " am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
-                            }
                         }
-
-                    } else {
-                        if (debug) {logger.info("Termin: " +ev.start + " aussortiert, da kein Summary");}
                     }
                 }
             }
            
         })
+
+}
+
+function checkDates(ev,endpreview,heute,tomorrow,realnow,rule) {
+    var ft = false;
+    //Check ob ganztägig
+    if(ev.start.getHours() == "0" && ev.start.getMinutes() == "0" && ev.start.getSeconds() == "0" && ev.end.getHours() == "0" && ev.end.getMinutes() == "0" && ev.end.getSeconds() == "0" ) {
+        ft = true;
+    }
+    //Wenn ganztätig
+    if (ft) {
+        //Terminstart >= heute  && < previewzeit ---> anzeigen
+        if (ev.start < endpreview && ev.start >= heute) {
+            var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
+            colorizeDates(ev,heute,tomorrow);
+            var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + ev.summary;
+            if (debug) {logger.info("Termin (ganztägig) hinzugefügt : " +rule + ev.summary + " am " + singleDate);}
+            arrDates.push(singleDate);
+        } else {
+            //Termin ausserhalb des Zeitfensters
+            if (debug) {logger.info("Termin (ganztägig)" + rule +  ev.summary.toString() + " am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
+        }
+
+    } else {
+        //Termin mit Uhrzeit (werden nicht coloriert)
+        //Startzeitpunk >= heute && Startzeitpunkt < previewzeit && EndZeitpunkt >= jetzt
+        if (ev.start >= heute && ev.start < endpreview && ev.end >= realnow) {
+          //  logger.info("Termin mit Uhrzeit: " +rule + ev.start + " end: " + ev.end + " realnow:" +realnow);
+            var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
+            colorizeDates(ev,heute,tomorrow);
+            var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + ev.summary;
+            if (debug) {logger.info("Termin mit Uhrzeit hinzugefügt : "+rule + ev.summary + " am " + singleDate);}
+            arrDates.push(singleDate);
+        } else {
+            //Termin ausserhalb des Zeitfensters
+            if (debug) {logger.info("Termin " +ev.summary + rule +" am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
+        }
+    }
+}
+function colorizeDates(ev,heute,tomorrow) {
+    var com = ev.start;
+    com.setHours(0,0,0,0);
+    //Colorieren wenn gewünscht
+    if (colorize) {
+        //Heute
+        if (com.compare(heute) == 0) {
+            prefix = warn;
+            suffix = warn2;
+        }
+        //Morgen
+        if (com.compare(tomorrow) == 0) {
+            prefix = prewarn;
+            suffix = prewarn2;
+        }
+        //Ansonsten
+        if (com.compare(tomorrow) == 1) {
+            prefix = normal;
+            suffix = normal2;
+        }
+    } else {
+        prefix = normal;
+        suffix = normal2;
+    }
 }
 
 //Alle Kalender einlesen
