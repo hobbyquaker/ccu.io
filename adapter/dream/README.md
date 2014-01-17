@@ -2,7 +2,7 @@ Dreambox adapter
 ======
 
 * Aktuelle Version: 0.4
-* Anzahl verwendeter Variablen in ccu.io: 7
+* Anzahl verwendeter Variablen in ccu.io: pro konfigurierter Box 7
 * getestet mit CCU.IO 1.0.12 und Dreambox DM800se 
 
 ## Dokumentation
