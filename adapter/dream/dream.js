@@ -202,7 +202,8 @@ function getResponse (command, path, callback){
 }
 
 function parseBool(string){
-	switch(string[0].toLowerCase()){
+	var cleanedString = string[0].replace(/(\r\n|\n|\r)/gm,"");
+	switch(cleanedString.toLowerCase()){
 		case "true": case "yes": case "1": return true;
 		default: return false;
 	}
