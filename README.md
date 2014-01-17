@@ -36,6 +36,16 @@ siehe http://ccu.io/
 
 ## Changelog
 
+### 1.0.13
+* (Eisbaeeer) adapter Onkyo: Added array to command variable, major changes to variables (split to feedback and set variables)
+* (Eisbaeeer) adapter Onkyo: Small bugfix setVar, Remove function to empty set var
+* (Vader722) adapter iCal: bugfix for fulltime dates
+* (Vader722) adapter iCal: new code for processing dates, now full-time dates working
+* (BasGo) adapter Dreambox: fixed issue that some objects are stored
+* (BasGo) adapter Dreambox: fixed error and added documentation
+* (BasGo) adapter Dreambox: fixed bool recognition for openwebif
+* (BasGo) adapter Dreambox: multiple boxes and some small fixes
+
 ### 1.0.12
 * (Bluefox) new listen adapter (not finished yet)
 * (Bluefox) new textCommand adapter (not finished yet)
