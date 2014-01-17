@@ -49,6 +49,12 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 
 ## Changelog
 
+### 0.4
+* Fehler beim Speichern von Werten behoben (war object anstatt bool oder string)
+* Konfiguration mehrerer Boxen ermöglicht
+* Debug-Modus implementiert
+* Fix für VU+ und Geräte mit openwebif implementiert (Linefeed bei Bools)
+
 ### 0.3
 * Umstellung der Konfiguration (JSON -> Formular)
 * weitere Konfigurationsmöglichkeiten (Nachrichtentyp, Polling aktivieren/deaktivieren)
