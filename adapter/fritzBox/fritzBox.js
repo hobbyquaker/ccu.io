@@ -3,7 +3,7 @@
  *      01'2014 Bluefox
  *      Can store incoming calls into the list.
  *
- *      Version 0.1
+ *      Version 0.2
  *
  *    Wenn man beim Telefon #96*5* eintippt, wird der TCP-Port 1012 geoffnet.
  *    Mit #96*4* wird dieser wieder geschlossen.
@@ -12,46 +12,52 @@
  *    Eingehende Anrufe:            datum;RING;      ConnectionID;Anrufer-Nr; Angerufene-Nummer;
  *    Zustandegekommene Verbindung: datum;CONNECT;   ConnectionID;Nebenstelle;Nummer;
  *    Ende der Verbindung:          datum;DISCONNECT;ConnectionID;dauerInSekunden;
-*/
+ */
 var settings = require(__dirname + '/../../settings.js');
- 
+
 if (!settings.adapters.fritzBox || !settings.adapters.fritzBox.enabled) {
     process.exit();
 }
- 
+
 var fritzBoxSettings = settings.adapters.fritzBox.settings;
- 
+
+fritzBoxSettings.maxAll = fritzBoxSettings.maxAll || 20;
+
 var logger = require(__dirname + '/../../logger.js'),
     io     = require('socket.io-client'),
     net    = require('net');
-       
+
 var socketBox,
-    missedCount = 0,
-    missedList  = [],
-    connecting  = null,
-	objects     = {},
-	datapoints  = {},
-	callStatus  = {};
-       
-var objState         = fritzBoxSettings.firstId + 0, // Current state of phone: FREE, RING, TALKING
-    objRinging       = fritzBoxSettings.firstId + 1, // TRUE if ringing, else false
-	objMissedCalls   = fritzBoxSettings.firstId + 2, // Count of missed calls
-	objMissedList    = fritzBoxSettings.firstId + 3, // List of missed calls
-    objMissedListFormatted   = fritzBoxSettings.firstId + 4, // List of missed calls
-    objLastMissed    = fritzBoxSettings.firstId + 5, // Last missed call
-    objRingingNumber = fritzBoxSettings.firstId + 6; // Now ringing Number / Name
+    missedCount  = 0,
+    missedList   = [],
+    allCallsList = [],
+    connecting   = null,
+    objects      = {},
+    datapoints   = {},
+    callStatus   = {};
+
+var objState                  = fritzBoxSettings.firstId + 0, // Current state of phone: FREE, RING, TALKING
+    objRinging                = fritzBoxSettings.firstId + 1, // TRUE if ringing, else false
+    objMissedCalls            = fritzBoxSettings.firstId + 2, // Count of missed calls
+    objMissedList             = fritzBoxSettings.firstId + 3, // List of missed calls
+    objMissedListFormatted    = fritzBoxSettings.firstId + 4, // List of missed calls
+    objLastMissed             = fritzBoxSettings.firstId + 5, // Last missed call
+    objRingingNumber          = fritzBoxSettings.firstId + 6, // Now ringing Number / Name
+    objRingingNumberImage     = fritzBoxSettings.firstId + 7, // Now ringing Number / Image
+    objAllCallsList           = fritzBoxSettings.firstId + 8, // Incoming, Outgoing, Missed all together
+    objAllCallsListFormatted  = fritzBoxSettings.firstId + 9; // the same as previous but, formatted
 
 if (settings.ioListenPort) {
-	var socket = io.connect("127.0.0.1", {
-		port: settings.ioListenPort
-	});
+    var socket = io.connect("127.0.0.1", {
+        port: settings.ioListenPort
+    });
 } else if (settings.ioListenPortSsl) {
-	var socket = io.connect("127.0.0.1", {
-		port: settings.ioListenPortSsl,
-		secure: true
-	});
+    var socket = io.connect("127.0.0.1", {
+        port: settings.ioListenPortSsl,
+        secure: true
+    });
 } else {
-	process.exit();
+    process.exit();
 }
 
 function createObject(id, obj) {
@@ -91,21 +97,21 @@ process.on('SIGTERM', function () {
 });
 
 socket.on('connect', function () {
-	logger.info("adapter fritzBox connected to ccu.io");
+    logger.info("adapter fritzBox connected to ccu.io");
 });
- 
-socket.on('disconnect', function () {
-	logger.info("adapter fritzBox disconnected from ccu.io");
-});
- 
-socket.on('event', function (obj) {
-	if (!obj || !obj[0]) {
-        return;
-	}
 
-	if (obj[0] == objMissedCalls && (obj[1] == 0 || obj[1] == "0")) {
+socket.on('disconnect', function () {
+    logger.info("adapter fritzBox disconnected from ccu.io");
+});
+
+socket.on('event', function (obj) {
+    if (!obj || !obj[0]) {
+        return;
+    }
+
+    if (obj[0] == objMissedCalls && (obj[1] == 0 || obj[1] == "0")) {
         missedCount = 0;
-	}
+    }
 });
 
 function resolveNumber (number) {
@@ -119,19 +125,67 @@ function resolveNumber (number) {
     return number;
 }
 
-function listToText () {
+function resolveNumberImg (number) {
+    if (number) {
+        for (var i = fritzBoxSettings.phonebook.length - 1; i >= 0; i--) {
+            if (number.indexOf (fritzBoxSettings.phonebook[i].number) != -1) {
+                return fritzBoxSettings.phonebook[i].img || "/ccu.io/img/call.png";
+            }
+        }
+    }
+    return "/ccu.io/img/call.png";
+}
+
+function listToText (table) {
     var text = "";
-    for (var i = missedList.length - 1; i >= 0; i--) {
-        text += (text ? ";" : "") + missedList[i].time + "/" + resolveNumber (missedList[i].number);
+    for (var i = table.length - 1; i >= 0; i--) {
+        text += (text ? ";" : "") + table[i].type + "/" + table[i].time + "/" + table[i].number + "/" + table[i].duration;
     }
 
     return text;
 }
 
-function listToHtml () {
-    var text = '<table class="missedlistTable">';
-    for (var i = missedList.length - 1; i >= 0; i--) {
-        text += "<tr class='missedlistTableLine'><td class='missedlistTableTime'>" + missedList[i].time + "</td><td class='missedlistTableName'>" + resolveNumber (missedList[i].number) + "</td></tr>";
+function getImageType (type) {
+    switch (type) {
+        case "IN":
+            return "/ccu.io/img/callin.png";
+        case "OUT":
+            return "/ccu.io/img/callout.png";
+        case "MISSED":
+            return "/ccu.io/img/callinfailed.png";
+    }
+    return "";
+}
+function formatDuration (seconds) {
+    seconds = parseInt(seconds);
+
+    if (!seconds)
+        return "";
+
+    var hr  = Math.floor(seconds / 3600);
+    var min = Math.floor((seconds - hr * 3600) / 60);
+    var sec = seconds % 60;
+
+    if (hr  < 10) hr  = "0" + hr;
+    if (min < 10) min = "0" + min;
+    if (sec < 10) sec = "0" + sec;
+
+    if (hr != "00")
+        return hr +  ":" + min + ":" + sec;
+    else
+        return min + ":" + sec;
+}
+
+function listToHtml (table) {
+    var text = '<table class="callListTable">';
+    for (var i = table.length - 1; i >= 0; i--) {
+        text += "<tr class='callListTableLine"+(i%2)+"'>";
+        text += "<td class='callListTableType'><img src='" + getImageType (table[i].type) + "' style='width:32px;height:32px' /></td>";
+        text += "<td class='callListTableImg'><img src='" + resolveNumberImg (table[i].number) + "' style='width:32px;height:32px' /></td>";
+        text += "<td class='callListTableTime'>" + table[i].time + "</td>";
+        text += "<td class='callListTableName'>" + resolveNumber (table[i].number) + "</td>";
+        text += "<td class='callListTableDuration'>" + formatDuration (table[i].duration) + "</td>";
+        text += "</tr>";
     }
     text += "</table>"
 
@@ -228,26 +282,81 @@ function connectToFritzBox () {
             ", sec: "      + item.durationSecs +")");
 
         if (item.type == "DISCONNECT") {
-            // If missed call
-            callStatus[item.connectionId].type         = item.type;
             callStatus[item.connectionId].durationSecs = item.durationSecs;
 
-            if (item.durationSecs === 0 || item.durationSecs === "0") {
-                logger.info("adapter fritzBox missed call : "+ callStatus[item.connectionId].calledNumber + " / " +callStatus[item.connectionId].time);
+            // If missed call
+            if (callStatus[item.connectionId].type == "RING") {
+                callStatus[item.connectionId].type = item.type;
+
+                if (item.durationSecs === 0 || item.durationSecs === "0") {
+                    logger.info("adapter fritzBox missed call : "+ callStatus[item.connectionId].calledNumber + " / " +callStatus[item.connectionId].time);
+
+                    // Delete oldest entry
+                    if (missedList.length >= fritzBoxSettings.maxMissed) {
+                        missedList.split(0,1);
+                    }
+                    // Delete oldest entry
+                    if (allCallsList.length >= fritzBoxSettings.maxAll) {
+                        allCallsList.split(0,1);
+                    }
+
+                    missedList[missedList.length]     = {number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: 0};
+                    allCallsList[allCallsList.length] = {number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs, type: "MISSED"};
+                    missedCount++;
+                    setState(objMissedCalls, missedCount);
+                    setState(objMissedList, listToText(missedList));
+                    setState(objLastMissed, resolveNumber(callStatus[item.connectionId].calledNumber));
+                    setState(objMissedListFormatted, listToHtml (missedList));
+
+                    setState(objAllCallsList, listToText(allCallsList));
+                    setState(objAllCallsListFormatted, listToHtml (allCallsList));
+                }
+                else {
+                    // Incoming and not missed
+                    logger.info("adapter fritzBox incoming call : "+ callStatus[item.connectionId].calledNumber + " / " +callStatus[item.connectionId].time);
+
+                    // Delete oldest entry
+                    if (allCallsList.length >= fritzBoxSettings.maxAll) {
+                        allCallsList.split(0,1);
+                    }
+
+                    allCallsList[allCallsList.length] = {type: "IN", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
+                    setState(objAllCallsList, listToText(allCallsList));
+                    setState(objAllCallsListFormatted, listToHtml (allCallsList));
+                }
+            }
+            else
+            // If incoming call initiated
+            if (callStatus[item.connectionId].type == "CONNECT") {
+                callStatus[item.connectionId].type         = item.type;
+                // incoming
+                logger.info("adapter fritzBox incoming call : "+ callStatus[item.connectionId].calledNumber + " / " +callStatus[item.connectionId].time + " TAKEN");
+                callStatus[item.connectionId].type = item.type;
 
                 // Delete oldest entry
-                if (missedList.length >= fritzBoxSettings.maxMissed) {
-                    missedList.split(0,1);
+                if (allCallsList.length >= fritzBoxSettings.maxAll) {
+                    allCallsList.split(0,1);
                 }
 
-                missedList[missedList.length] = {number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time};
-                missedCount++;
-                setState(objMissedCalls, missedCount);
-                setState(objMissedList, listToText());
-                setState(objLastMissed, resolveNumber(callStatus[item.connectionId].calledNumber));
-                setState(objMissedListFormatted, listToHtml ());
+                allCallsList[allCallsList.length] = {type: "IN", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
+                setState(objAllCallsList, listToText(allCallsList));
+                setState(objAllCallsListFormatted, listToHtml (allCallsList));
             }
+            else
+            // If outgoing call
+            if (callStatus[item.connectionId].type == "CALL") {
+                // outgoing call
+                logger.info("adapter fritzBox outgoing call : "+ callStatus[item.connectionId].calledNumber + " / " +callStatus[item.connectionId].time);
 
+                // Delete oldest entry
+                if (allCallsList.length >= fritzBoxSettings.maxAll) {
+                    allCallsList.split(0,1);
+                }
+
+                allCallsList[allCallsList.length] = {type: "OUT", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
+                setState(objAllCallsList, listToText(allCallsList));
+                setState(objAllCallsListFormatted, listToHtml (allCallsList));
+            }
         }
         else {
             callStatus[item.connectionId] = item;
@@ -271,14 +380,16 @@ function connectToFritzBox () {
 
         // Set ringing object
         if (datapoints[objRinging] != (newState == "RING")) {
-        	if (newState == "RING") {
-            	setState(objRingingNumber, resolveNumber(callStatus[item.connectionId].calledNumber));
-            	setState(objRinging, true);
-        	}
-        	else {
-            	setState(objRingingNumber, "");
-            	setState(objRinging, false);
-        	}
+            if (newState == "RING") {
+                setState(objRingingNumber, resolveNumber(callStatus[item.connectionId].calledNumber));
+                setState(objRingingNumberImage, resolveNumberImg(callStatus[item.connectionId].calledNumber));
+                setState(objRinging, true);
+            }
+            else {
+                setState(objRingingNumber, "");
+                setState(objRingingNumberImage, "");
+                setState(objRinging, false);
+            }
         }
 
         setState(objState, newState);
@@ -344,6 +455,30 @@ createObject(objRingingNumber, {
     "ValueSubType": 11
 });
 
+createObject(objRingingNumberImage, {
+    Name:     "FRITZBOX.RINGING_IMAGE",
+    "DPInfo": "FritzBox",
+    TypeName: "VARDP",
+    "ValueType": 20,
+    "ValueSubType": 11
+});
+
+createObject(objAllCallsList, {
+    Name:     "FRITZBOX.ALL_LIST",
+    "DPInfo": "FritzBox",
+    TypeName: "VARDP",
+    "ValueType": 20,
+    "ValueSubType": 11
+});
+
+createObject(objAllCallsListFormatted, {
+    Name:     "FRITZBOX.ALL_LIST_FMT",
+    "DPInfo": "FritzBox",
+    TypeName: "VARDP",
+    "ValueType": 20,
+    "ValueSubType": 11
+});
+
 // Init objects if they are not stored
 getState (objMissedCalls, function (id, obj) {
     if (!obj){
@@ -353,7 +488,7 @@ getState (objMissedCalls, function (id, obj) {
         missedCount = obj[0];
     }
 });
-
+// Read stored lists
 getState (objMissedList, function (id, obj) {
     if (!obj){
         setState (objMissedList, "");
@@ -361,8 +496,23 @@ getState (objMissedList, function (id, obj) {
     else if (obj[0]) {
         var calls = obj[0].split(";");
         for (var i = calls.length - 1; i >= 0; i--) {
-            var els = calls[i].split("/", 2);
-            missedList[missedList.length] = {number: els[1], time: els[0]};
+            var els = calls[i].split("/", 4);// type/time/number/duration
+            missedList[missedList.length] = {number: els[2], time: els[1]};
         }
+        setState(objMissedListFormatted, listToHtml (missedList));
+    }
+});
+
+getState (objAllCallsList, function (id, obj) {
+    if (!obj){
+        setState (objAllCallsList, "");
+    }
+    else if (obj[0]) {
+        var calls = obj[0].split(";");
+        for (var i = calls.length - 1; i >= 0; i--) {
+            var els = calls[i].split("/", 4);// type/time/number/duration
+            allCallsList[allCallsList.length] = {type: els[0], time: els[1], number: els[2], duration: els[3]};
+        }
+        setState(objAllCallsListFormatted, listToHtml (allCallsList));
     }
 });

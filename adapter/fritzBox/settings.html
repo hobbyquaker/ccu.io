@@ -3,7 +3,7 @@
         <td>
             Enabled:
         </td>
-        <td colspan="2">
+        <td colspan="4">
             <select id="fritzbox_enabled">
                 <option value="false">false</option>
                 <option value="true">true</option>
@@ -13,23 +13,30 @@
     <tr>
         <td>IP address:</td>
         <td style="width: 100px"><input id="fritzbox_settings_ip" style="width:100px" type="text"></td>
-        <td>IP address of the fritz.box!</td>
+        <td colspan="3">IP address of the fritz.box!</td>
+    </tr>
+    <tr>
+        <td>Max stored calls:</td>
+        <td style="width: 100px"><input id="fritzbox_settings_maxAll" style="width:50px" type="text"></td>
+        <td colspan="3">Number of the stored all type calls.</td>
     </tr>
     <tr>
         <td>Max stored missed calls:</td>
         <td style="width: 100px"><input id="fritzbox_settings_maxMissed" style="width:50px" type="text"></td>
-        <td>Number of stored missed calls.</td>
+        <td colspan="3">Number of the stored missed calls.</td>
     </tr>
     <tr>
-        <td colspan="3" style="height:20px"></td>
+        <td colspan="5" style="height:20px"></td>
     </tr>
     <tr>
-        <td colspan="3"><h3>Phonebook</h3></td>
+        <td colspan="5"><h3>Phonebook</h3></td>
     </tr>
 
     <tr>
+        <th style="width:32px"></th>
         <th>Number</th>
         <th>Name</th>
+        <th>Image</th>
         <th></th>
     </tr>
 </table>
@@ -37,20 +44,25 @@
 
 <p>
 <h1>Description</h1>
-The fritz!box has an integrated call monitor that can be activated by dialling #96*5* (and deactivated by #96*4* …).
-Additionally the CCU.IO adapter has to be enabled too.
+The fritz!box has an integrated call monitor that can be activated by dialling #96*5* (and deactivated by #96*4* …).<br>
+Additionally the CCU.IO adapter has to be enabled too.<br>
 Following objects will be created:<br>
-1. 73200 - STATE [NONE | RING | TALKING ]
-2. 73201 - RINGING: true if STATE is RING
-3. 73202 - MISSED: count of missed calls. Can be cleared with value 0.
-4. 73203 - MISSED_LIST: list of missed calls in form "14.01.14 23:01:03/Caller Number".
-5. 73204 - MISSED_LIST_FMT: formatted list of last missed calls for HTML.
-6. 73205 - LAST_MISSED: Name or number of last missed call.
-7. 73206 - RINGING_NUMBER: Name or number of actual ringing call. Will be set to "" after ring is over.
+1. 73200 - STATE [NONE | RING | TALKING ]<br>
+2. 73201 - RINGING: true if STATE is RING<br>
+3. 73202 - MISSED: count of missed calls. Can be cleared with value 0.<br>
+4. 73203 - MISSED_LIST: list of missed calls in form "MISSED/14.01.14 23:01:03/Caller Number/0".<br>
+5. 73204 - MISSED_LIST_FMT: formatted list of last missed calls for HTML.<br>
+6. 73205 - LAST_MISSED: Name or number of last missed call.<br>
+7. 73206 - RINGING_NUMBER: Name or number of actual ringing call. Will be set to "" after ring is over.<br>
+8. 73207 - RINGING_IMAGE: Picture of actual ringing call. Will be set to "" after ring is over.<br>
+9. 73208 - ALL_LIST: list of all calls in form "type/14.01.14 23:01:03/Caller Number/Duration".<br>
+10.73209 - ALL_LIST_FMT: formatted list of all calls for HTML.<br>
 
 </p>
-
+<script src="../lib/js/selectImage.js" type="text/javascript"></script>
 <script type="text/javascript">
+    var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host') + "?key="+socketSession);
+    imageSelect._rootDir = "www/ccu.io/img/";
 
     function storeSettings () {
         updateAdapterSettings();
@@ -87,12 +99,25 @@ Following objects will be created:<br>
         storeSettings();
     });
 
+    $("#fritzbox_settings_maxAll").val(currentAdapterSettings.settings.maxAll === undefined ? 20 : currentAdapterSettings.settings.maxMissed);
+
+    $("#fritzbox_settings_maxAll").change(function () {
+        currentAdapterSettings.settings.maxAll = $(this).val();
+        if (currentAdapterSettings.settings.maxAll > 100) {
+            currentAdapterSettings.settings.maxAll = 100;
+            $(this).val(currentAdapterSettings.settings.maxAll);
+        }
+        storeSettings();
+    });
+
     function showEntry (id) {
         console.log(currentAdapterSettings.settings.phonebook[id]);
 
         var sText = '<tr class="fritzBox-optentry">';
-        sText += '<td><input id="fritzBox_number_'+id+'" data-fritzBox-entry="'+id+'" type="text" value="'+(currentAdapterSettings.settings.phonebook[id].number || "")+'"/></td>';
-        sText += '<td><input id="fritzBox_name_'  +id+'" data-fritzBox-entry="'+id+'" type="text" value="'+(currentAdapterSettings.settings.phonebook[id].name   || "")+'"/></td>';
+        sText += '<td><img id="fritzBox_image_'    +id+'" data-fritzBox-entry="'+id+'" src="'+(currentAdapterSettings.settings.phonebook[id].img || "/ccu.io/img/call.png")+'" width="32" height="32"/></td>';
+        sText += '<td><input id="fritzBox_number_' +id+'" data-fritzBox-entry="'+id+'" type="text" value="'+(currentAdapterSettings.settings.phonebook[id].number || "")+'"/></td>';
+        sText += '<td><input id="fritzBox_name_'   +id+'" data-fritzBox-entry="'+id+'" type="text" value="'+(currentAdapterSettings.settings.phonebook[id].name   || "")+'"/></td>';
+        sText += '<td><input id="fritzBox_img_'    +id+'" data-fritzBox-entry="'+id+'" type="text" value="'+(currentAdapterSettings.settings.phonebook[id].img    || "")+'"/><input type="button" id="fritzBox_img_btn_'+id+'" data-fritzBox-entry="'+id+'" value="..."></td>';
         sText += '<td><input data-fritzBox-entry="'+id+'" type="button" value="remove" class="fritzBox-remove"/></td>';
         sText += "</tr>";
 
@@ -112,10 +137,31 @@ Following objects will be created:<br>
             currentAdapterSettings.settings.phonebook[$(this).attr('data-fritzBox-entry')].name = $(this).val();
             storeSettings();
         }).keyup(function() { $(this).trigger("change")});
+
+        $("#fritzBox_img_"+id).change(function () {
+            currentAdapterSettings.settings.phonebook[$(this).attr('data-fritzBox-entry')].img = $(this).val();
+            $('#fritzBox_image_' + $(this).attr('data-fritzBox-entry')).attr("src", $(this).val() || "/ccu.io/img/call.png");
+            storeSettings();
+        }).keyup(function() { $(this).trigger("change")});
+
+        // Select image Dialog
+        $("#fritzBox_img_btn_"+id).click ( function () {
+            var img = $("#fritzBox_img_"+$(this).attr('data-fritzBox-entry')).val();
+            img = img.replace ("/ccu.io/", "");
+            var settings = {
+                current: img,
+                onselectArg: $(this).attr('data-fritzBox-entry'),
+                onselect:    function (img, obj)
+                {
+                    $("#fritzBox_img_"+obj).val("/ccu.io/" + img);
+                    $("#fritzBox_img_"+obj).trigger("change");
+                }};
+            imageSelect.Show (settings, socket);
+        });
     }
 
     $("#add_name").button().click(function () {
-        currentAdapterSettings.settings.phonebook[currentAdapterSettings.settings.phonebook.length] = {number: "", name:""};
+        currentAdapterSettings.settings.phonebook[currentAdapterSettings.settings.phonebook.length] = {number: "", name:"", img: ""};
         showEntry (currentAdapterSettings.settings.phonebook.length - 1);
     });
 

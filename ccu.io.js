@@ -1729,9 +1729,6 @@ function initSocketIO(_io) {
                 delete obj.favs;
             }
 
-
-
-
             if (obj.TypeName) {
                 if (!regaIndex[obj.TypeName]) {
                     regaIndex[obj.TypeName] = [];
