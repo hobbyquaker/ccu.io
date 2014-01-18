@@ -97,99 +97,101 @@ function handleCommand (device, session, cmd, cb) {
 }
 
 var commands = {
-// Menus
-	"menu_status_bar":            "35",
-	"menu_quick_menu":            "69",
-	"menu_home_menu":             "67",
-	"menu_premium_menu":          "89",
-	"menu_installation_menu":     "207",
-	"menu_IN_START":              "251",
-	"menu_EZ_ADJUST":             "255",
-	"menu_power_only":            "254",
-// Power controls                
-	"power_off" :                 "8",
-	"power_sleep_timer":          "14",
-// Navigation                    
-	"nav_left" :                  "7",
-	"nav_right" :                 "6",
-	"nav_up" :                    "64",
-	"nav_down" :                  "65",
-	"nav_select" :                "68",
-	"nav_back" :                  "40",
-	"nav_exit" :                  "91",
-	"nav_red" :                   "114",
-	"nav_green" :                 "113",
-	"nav_yellow" :                "99",
-	"nav_blue" :                  "97",
-// keypad                        
-	"keypad_0" :                  "16",
-	"keypad_1" :                  "17",
-	"keypad_2" :                  "18",
-	"keypad_3" :                  "19",
-	"keypad_4" :                  "20",
-	"keypad_5" :                  "21",
-	"keypad_6" :                  "22",
-	"keypad_7" :                  "23",
-	"keypad_8" :                  "24",
-	"keypad_9" :                  "25",
-	// Undescore                  
-	"keypad__" :                  "76",
-	//Playback controls          
-	"playback_play" :             "176",
-	"playback_pause" :            "186",
-	"playback_fast_forward" :     "142",
-	"playback_rewind" :           "143",
-	"playback_stop" :             "177",
-	"playback_record" :           "189",
-// Input controls                
-	"input_tv_radio" :            "15",
-	"input_simplink" :            "126",
-	"input_input" :               "11",
-	"input_component_rgb_hdmi" :  "152",
-	"input_component" :           "191",
-	"input_rgb" :                 "213",
-	"input_hdmi" :                "198",
-	"input_hdmi1" :               "206",
-	"input_hdmi2" :               "204",
-	"input_hdmi3" :               "233",
-	"input_hdmi4" :               "218",
-	"input_av1" :                 "90",
-	"input_av2" :                 "208",
-	"input_av3" :                 "209",
-	"input_usb" :                 "124",
-	"input_slideshow_usb1" :      "238",
-	"input_slideshow_usb2" :      "168",
-// TV Controls
-	"tv_channel_up" :             "0",
-	"tv_channel_down" :           "1",
-	"tv_channel_back" :           "26",
-	"tv_favorites" :              "30",
-	"tv_teletext" :               "32",
-	"tv_t_opt" :                  "33",
-	"tv_channel_list" :           "83",
-	"tv_greyed_out_add_button" : "85",
-	"tv_guide" :                  "169",
-	"tv_info" :                   "170",
-	"tv_live_tv" :                "158",
-  // Picture controls
-	"picture_av_mode" :           "48",
-	"picture_mode" :              "77",
-	"picture_ratio" :             "121",
-	"picture_ratio_4_3" :         "118",
-	"picture_ratio_16_9" :        "119",
-	"picture_energy_saving" :     "149",
-	"picture_cinema_zoom" :       "175",
-	"picture_3D" :                "220",
-	"picture_factory_check" :     "252",
-	// Audio controls
-	"audio_volume_up" :           "2",
-	"audio_volume_down" :         "3",
-	"audio_mute" :                "9",
-	"audio_language" :            "10",
-	"audio_sound_mode" :          "82",
-	"audio_factory_sound_check" : "253",
-	"audio_subtitle_language" :   "57",
-	"audio_audio_description" :   "145"
+// Menus                           2011  2012
+	"menu_status_bar":            ["35",  -1],
+	"menu_quick_menu":            ["69",  -1],
+	"menu_home_menu":             ["67",  "21"],
+	"menu_premium_menu":          ["89",  -1],
+	"menu_installation_menu":     ["207", -1],
+	"menu_IN_START":              ["251", -1],
+	"menu_EZ_ADJUST":             ["255", -1],
+	"menu_power_only":            ["254", -1],
+	"menu_my_apps":               [-1,   "417"],
+	"menu_net_cast":              [-1,   "408"],
+// Power controls                 
+	"power_off" :                 ["8",   "1"],
+	"power_sleep_timer":          ["14",  -1],
+// Navigation                     
+	"nav_left" :                  ["7",   "3"],
+	"nav_right" :                 ["6",   "4"],
+	"nav_up" :                    ["64",  "1"],
+	"nav_down" :                  ["65",  "2"],
+	"nav_select" :                ["68",  "20"],
+	"nav_back" :                  ["40",  "23"],
+	"nav_exit" :                  ["91",  "412"],
+	"nav_blue" :                  ["97",  "29"],
+	"nav_green" :                 ["113", "30"],
+	"nav_red" :                   ["114", "31"],
+	"nav_yellow" :                ["99",  "32"],
+// keypad                         
+	"keypad_0" :                  ["16",  -1],
+	"keypad_1" :                  ["17",  "5"],
+	"keypad_2" :                  ["18",  "6"],
+	"keypad_3" :                  ["19",  "7"],
+	"keypad_4" :                  ["20",  "8"],
+	"keypad_5" :                  ["21",  -1],
+	"keypad_6" :                  ["22",  -1],
+	"keypad_7" :                  ["23",  -1],
+	"keypad_8" :                  ["24",  -1],
+	"keypad_9" :                  ["25",  -1],
+	// Undescore                          
+	"keypad__" :                  ["76",  -1],
+	//Playback controls                   
+	"playback_play" :             ["176", "33"],
+	"playback_pause" :            ["186", "34"],
+	"playback_fast_forward" :     ["142", -1],
+	"playback_rewind" :           ["143", -1],
+	"playback_stop" :             ["177", "35"],
+	"playback_record" :           ["189", -1],
+// Input controls                         
+	"input_tv_radio" :            ["15",  -1],
+	"input_simplink" :            ["126", -1],
+	"input_input" :               ["11",  "47"],
+	"input_component_rgb_hdmi" :  ["152", -1],
+	"input_component" :           ["191", -1],
+	"input_rgb" :                 ["213", -1],
+	"input_hdmi" :                ["198", -1],
+	"input_hdmi1" :               ["206", -1],
+	"input_hdmi2" :               ["204", -1],
+	"input_hdmi3" :               ["233", -1],
+	"input_hdmi4" :               ["218", -1],
+	"input_av1" :                 ["90",  -1],
+	"input_av2" :                 ["208", -1],
+	"input_av3" :                 ["209", -1],
+	"input_usb" :                 ["124", -1],
+	"input_slideshow_usb1" :      ["238", -1],
+	"input_slideshow_usb2" :      ["168", -1],
+// TV Controls                            
+	"tv_channel_up" :             ["0",   "27"],
+	"tv_channel_down" :           ["1",   "28"],
+	"tv_channel_back" :           ["26",  "403"],
+	"tv_favorites" :              ["30",  -1],
+	"tv_teletext" :               ["32",  -1],
+	"tv_t_opt" :                  ["33",  -1],
+	"tv_channel_list" :           ["83",  -1],
+	"tv_greyed_out_add_button" :  ["85",  -1],
+	"tv_guide" :                  ["169", -1],
+	"tv_info" :                   ["170", -1],
+	"tv_live_tv" :                ["158", -1],
+  // Picture controls             
+	"picture_av_mode" :           ["48",  -1],
+	"picture_mode" :              ["77",  -1],
+	"picture_ratio" :             ["121", -1],
+	"picture_ratio_4_3" :         ["118", -1],
+	"picture_ratio_16_9" :        ["119", -1],
+	"picture_energy_saving" :     ["149", -1],
+	"picture_cinema_zoom" :       ["175", -1],
+	"picture_3D" :                ["220", "400"],
+	"picture_factory_check" :     ["252", -1],
+	// Audio controls                   
+	"audio_volume_up" :           ["2",   "24"],
+	"audio_volume_down" :         ["3",   "25"],
+	"audio_mute" :                ["9",   "26"],
+	"audio_language" :            ["10",  -1],
+	"audio_sound_mode" :          ["82",  -1],
+	"audio_factory_sound_check" : ["253", -1],
+	"audio_subtitle_language" :   ["57",  -1],
+	"audio_audio_description" :   ["145", -1]
 }; 
 
 if (settings.ioListenPort) {
@@ -249,10 +251,10 @@ ccu_socket.on('event', function (obj) {
     if (parseInt(val) == val) { val = parseInt(val); }
 	
 	var cmd = val;
-	if (id == devices[ip].DPs.COMMAND) {
-		cmd = commands[val];
+	if (id == dev.DPs.COMMAND) {
+		cmd = commands[val][dev.is2012 ? 1 : 0];
 	}
-	if (cmd === undefined || cmd == null) {
+	if (cmd === undefined || cmd == null || cmd === -1) {
 		logger.warn ("adapter lgtv  unknown command: " + val);
 		return;
 	}
@@ -348,6 +350,7 @@ function lgtvInit () {
             "sessionKey": null,
 			"ip":         ip,
 			"pairKey":    lgtvSettings.devices[id].pairKey,
+			"is2012":     lgtvSettings.devices[id].is2012 ? true : false,
             "DPs": {
                 STATE:             dp+0,
                 COMMAND:           dp+1,
