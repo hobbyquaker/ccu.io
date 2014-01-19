@@ -55,6 +55,8 @@
 	<tr>
 		<th>IP</th>
 		<th>Port</th>
+		<th>Username</th>
+		<th>Password</th>
 		<th>Name</th>
 		<th>Rooms</th>
 		<th>Functions</th>
@@ -114,6 +116,8 @@
 	var sText = '<tr class="dream-optdevice">';
 		sText += '<td><input id="dream_ip_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].ip   || "")+'"/></td>';
 		sText += '<td><input id="dream_port_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].port   || "")+'"/></td>';
+		sText += '<td><input id="dream_username_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].username   || "")+'"/></td>';
+		sText += '<td><input id="dream_password_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].password   || "")+'"/></td>';
 		sText += '<td><input id="dream_name_'+id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].name || "")+'"/></td>';
 		
 		var t = "";

@@ -1,7 +1,7 @@
 Dreambox adapter
 ======
 
-* Aktuelle Version: 0.4
+* Aktuelle Version: 0.5
 * Anzahl verwendeter Variablen in ccu.io: pro konfigurierter Box 7
 * getestet mit CCU.IO 1.0.12 und Dreambox DM800se 
 
@@ -55,6 +55,9 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 
 ## Changelog
 
+### 0.5
+* Authentifizierung hinzugefügt
+* Fehler für VU+ und Geräte mit openwebif behoben (nun richtige Korrektur von Linefeeds)
 ### 0.4
 * Fehler beim Speichern von Werten behoben (war object anstatt bool oder string)
 * Konfiguration mehrerer Boxen ermöglicht

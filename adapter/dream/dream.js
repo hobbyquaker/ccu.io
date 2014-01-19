@@ -198,6 +198,15 @@ function getResponse (command, deviceId, path, callback){
 		path: path,
 		method: 'GET'
 	};
+	
+	if (typeof device.username != 'undefined' && typeof device.password != 'undefined') {
+		if (device.username.length > 0 && device.password.length > 0) {
+			options.headers = {
+				'Authorization': 'Basic ' + new Buffer(device.username + ':' + device.password).toString('base64')
+			}
+			//logger.info("DREAM - Used user '"+device.username+"' with password '"+device.password+"' for request");
+		}
+	}
 
 	debugLog("getResponse - host: "+options.host+", port: "+options.port);
 	var req = http.get(options, function(res) {
@@ -223,7 +232,7 @@ function getResponse (command, deviceId, path, callback){
 }
 
 function parseBool(string){
-	var cleanedString = string[0].replace(/(\r\n|\n|\r)/gm,"");
+	var cleanedString = string[0].replace(/(\t\n|\n|\t)/gm,"");
 	switch(cleanedString.toLowerCase()){
 		case "true": case "yes": case "1": return true;
 		default: return false;
