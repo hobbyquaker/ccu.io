@@ -23,6 +23,8 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 * **Adresse** - IP-Adresse
 * **Port** - Port
 * **Name** - Name der Box, wird auch für den Namen der Datenpunkte verwendet
+* **Username** - Benutzername (sofern Authentifizierung aktiviert, sonst leer)
+* **Password** - Passwort (sofern Authentifizierung aktiviert, sonst leer)
 * **Rooms** - Räume
 * **Functions** - Gewerke
 * **Favorites** - Favoriten
@@ -56,8 +58,9 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 ## Changelog
 
 ### 0.5
-* Authentifizierung hinzugefügt
+* Authentifizierung hinzugefügt (ggf. Löschen der datastore\adapter-dream.json notwendig)
 * Fehler für VU+ und Geräte mit openwebif behoben (nun richtige Korrektur von Linefeeds)
+
 ### 0.4
 * Fehler beim Speichern von Werten behoben (war object anstatt bool oder string)
 * Konfiguration mehrerer Boxen ermöglicht
