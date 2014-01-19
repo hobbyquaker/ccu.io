@@ -1365,6 +1365,72 @@ function initSocketIO(_io) {
             });
         });
 
+        socket.on('createBackup', function () {
+            var path = __dirname + "/backup.js";
+            logger.info("ccu.io        starting "+path);
+            var backupProcess = childProcess.fork(path, ["create"]);
+            var fileName = "";
+            backupProcess.on("message", function (msg) {
+                fileName = msg;
+            });
+            if (io) {
+                io.sockets.emit("ioMessage", "Backup started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Backup started. Please be patient...");
+            }
+            backupProcess.on("close", function (code) {
+                if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("readyBackup", fileName);
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("readyBackup", fileName);
+                    }
+                } else {
+                    logger.error("ccu.io        Backup failed.");
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Error: Backup failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Error: Backup failed.");
+                    }
+                }
+            });
+        });
+
+        socket.on('applyBackup', function (fileName) {
+            var path = __dirname + "/backup.js";
+            logger.info("ccu.io        starting "+path);
+            var backupProcess = childProcess.fork(path, [fileName]);
+            var fileName = "";
+
+            if (io) {
+                io.sockets.emit("ioMessage", "Apply backup started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Apply backup started. Please be patient...");
+            }
+            backupProcess.on("close", function (code) {
+                if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Apply backup done. Restart CCU.IO");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Apply backup done. Restart CCU.IO");
+                    }
+                } else {
+                    logger.error("ccu.io        Apply backup failed.");
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Error: Backup failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Error: Backup failed.");
+                    }
+                }
+            });
+        });
+
         socket.on('refreshAddons', function () {
             if (io) {
                 io.sockets.emit("refreshAddons");

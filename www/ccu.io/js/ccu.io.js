@@ -121,6 +121,10 @@ $(document).ready(function () {
         $(".ccu-regadata").html(data.ccuRegaData ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
         $(".ccu-rpc").html(data.initsDone ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
     });
+
+    socket.on ("readyBackup", function (name) {
+        location.replace(name);
+    });
     socket.on("ioMessage", function (data) {
         alert(data);
     });
@@ -370,9 +374,51 @@ $(document).ready(function () {
         socket.emit('reloadData');
         //$("#reloading").show();
     });
+    $("#createBackup").button().css("width", 240).click(function () {
+        socket.emit('createBackup');
+    });
+
+    $("#applyBackup").button().css("width", 240);
+
+    $("#applyBackup").dropzone({
+        url: "/upload?path=./www/_",
+        acceptedFiles: "application/x-gzip",
+        uploadMultiple: false,
+        previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-details"><div class="dz-filename"><span data-dz-name></span></div><br/>' +
+            '<div class="dz-size" data-dz-size></div><br/><img data-dz-thumbnail /></div><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>' +
+            '<div class="dz-error-message"><span data-dz-errormessage></span></div></div>',
+        previewsContainer: "#uploadPreview",
+        clickable: true,
+        dragover: function (e) {
+            var el = $(e.toElement);
+            $(e.toElement).closest("li.ui-li").addClass("upload-start");
+        },
+        dragleave: function (e) {
+            $(e.toElement).closest("li.ui-li").removeClass("upload-start");
+        },
+        drop: function (e, ui) {
+            var closest = $(e.toElement).closest("li.ui-li");
+            closest.removeClass("upload-start");
+
+        },
+        complete: function (e) {
+            //$(this.element).dialog( "close" );
+            //$(this.element).remove ();
+            console.log("File _" + e.name);
+            socket.emit('applyBackup', "_" + e.name);
+        },
+        init: function () {
+            this.on("processing", function() {
+                this.options.url = "/upload?path=./www/_";
+            });
+        }
+
+    });
+
     $("#restartRPC").button().css("width", 240).click(function () {
         socket.emit('restartRPC');
     });
+
     $("#reloadScriptEngine").button().css("width", 240).click(function () {
         $("#reloadScriptEngine").button("disable");
         socket.emit('reloadScriptEngine', function () {
