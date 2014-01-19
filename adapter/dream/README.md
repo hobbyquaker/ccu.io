@@ -1,7 +1,7 @@
 Dreambox adapter
 ======
 
-* Aktuelle Version: 0.5
+* Aktuelle Version: 0.6
 * Anzahl verwendeter Variablen in ccu.io: pro konfigurierter Box 7
 * getestet mit CCU.IO 1.0.12 und Dreambox DM800se 
 
@@ -50,12 +50,56 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 * **DEEPSTANDBY** - Setzt die Box in den Deep-Standby. Achtung: da in diesem Modus kein Web-Interface verfügbar ist, muss die Box per Hand wieder reaktiviert werden!
 * **REBOOT** - Führt einen Reboot bei der Box durch. Achtung: für die Zeit des Reboots ist die Box nicht durch den Adapter erreichbar!
 * **RESTART** - Führt einen Neustart des Enigma-Systems durch. Achtung: für die Zeit des Neustarts ist die Box nicht durch den Adapter erreichbar!
+* **KEY:xyz** - Sendet ein Fernbedienungscode an die Box. Gültige Codes für xyz sind unter dem nachfolgenden Punkt aufgeführt. Ein Beispiel wäre 'KEY:115', der für 'Volume up' steht.
+
+### Gültige Fernbedienungscodes
+* **116** - Taste "Power"
+* **2** - Taste "1"	 
+* **3** - Taste "2"	
+* **4** - Taste "3"	
+* **5** - Taste "4"	
+* **6** - Taste "5"	
+* **7** - Taste "6"	
+* **8** - Taste "7"	
+* **9** - Taste "8"	
+* **10** - Taste "1"	
+* **11** - Taste "0"	
+* **412** - Taste "previous"	
+* **407** - Taste "next	
+* **115** - Taste "volume up"	
+* **113** - Taste "mute"	
+* **402** - Taste "bouquet up"	
+* **114** - Taste "volume down"	
+* **174** - Taste "lame"	
+* **403** - Taste "bouquet down"	
+* **358** - Taste "info"	
+* **103** - Taste "up"	
+* **139** - Taste "menu"	
+* **105** - Taste "left"	
+* **352** - Taste "OK"	
+* **106** - Taste "right"	
+* **392** - Taste "audio"	
+* **108** - Taste "down"	
+* **393** - Taste "video"	
+* **398** - Taste "red"	
+* **399** - Taste "green"	
+* **400** - Taste "yellow"	
+* **401** - Taste "blue"	
+* **377** - Taste "tv"	
+* **385** - Taste "radio"	
+* **388** - Taste "text"	
+* **138** - Taste "help"	
+
+
 
 ## Todo/Roadmap
 
 * Implementierung weiterer Funktionen
 
 ## Changelog
+
+### 0.6
+* Emulation der kompletten Fernbedienung. Im Moment werden nur die Zahlencodes verarbeitet, eventuell Aliase kommen später ggf. im Zuge einer Vereinheitlichung aller CCU.IO-Medienadapter (LGTV, Sonos, Onkyo, Dreambox etc.)
 
 ### 0.5
 * Authentifizierung hinzugefügt (ggf. Löschen der datastore\adapter-dream.json notwendig)

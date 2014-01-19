@@ -279,6 +279,8 @@ function evaluateCommandResponse (command, deviceId, xml) {
 			setState(boxId + 5, xml.e2abouts.e2about[0].e2hddinfo[0].capacity[0]);		// 500.107 GB
 			setState(boxId + 6, xml.e2abouts.e2about[0].e2hddinfo[0].free[0]);			// 100.273 GB
 			break;
+		case "KEY":
+			setState(boxId, "");
 		default:
 			logger.warn("adapter dream received unknown command '"+command+"' @ evaluateCommandResponse");
 	}
@@ -295,6 +297,9 @@ function executeCommand(command, value, deviceId) {
 			var msgTimeout = parseInt(dreamSettings.messageTimeout);
 			var msgType = parseInt(dreamSettings.messageType);
 			getResponse (command, deviceId, "/web/message?text="+querystring.escape(value)+"&type="+msgType+"&timeout="+msgTimeout, evaluateCommandResponse);
+			break;
+		case "KEY":
+			getResponse (command, deviceId, "/web/remotecontrol?command="+querystring.escape(value), evaluateCommandResponse);
 			break;
 		case "MUTE":
 			if (datapoints[boxId + 3] == "false") {
