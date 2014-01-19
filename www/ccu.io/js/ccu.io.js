@@ -123,10 +123,11 @@ $(document).ready(function () {
     });
 
     socket.on ("readyBackup", function (name) {
+        showMessage ();
         location.replace(name);
     });
     socket.on("ioMessage", function (data) {
-        alert(data);
+        showMessage (data);
     });
 
 
@@ -223,7 +224,7 @@ $(document).ready(function () {
                                 var that = this;
                                 socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
                                     if (err) {
-                                        alert(err);
+                                        showMessage (err);
                                     } else {
                                         $(that).remove();
                                     }
@@ -275,7 +276,7 @@ $(document).ready(function () {
                                     var that = this;
                                     socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
                                         if (err) {
-                                            alert(err);
+                                            showMessage(err);
                                         } else {
                                             $(that).remove();
                                         }
@@ -328,14 +329,14 @@ $(document).ready(function () {
 
             socket.emit("writeFile", file, data, function (res) {
                 //if (res) {
-                    alert("File saved.");
+                showMessage ("File saved.");
                 //} else {
                 //    alert("Error: can't save file");
                 //}
             });
 
         } catch (e) {
-            alert("Error: "+e);
+            showMessage ("Error: "+e);
 
         }
     });
@@ -346,7 +347,7 @@ $(document).ready(function () {
 
     socket.on('disconnect', function() {
         setTimeout(function () {
-            alert("CCU.IO disconnected");
+            showMessage ("CCU.IO disconnected");
             window.location.reload();
         }, 100);
 
@@ -780,9 +781,9 @@ $(document).ready(function () {
             $("#install_addon_dialog").dialog("close");
             socket.emit("updateAddon", addonInstall[addon], addon, function (err) {
                 if (err) {
-                    alert(err);
+                    showMessage (err);
                 } else {
-                    alert("install started");
+                    showMessage ("install started");
                 }
             });
         }
@@ -996,13 +997,13 @@ $(document).ready(function () {
         var settingsWithoutAdapters = JSON.parse(JSON.stringify(ccuIoSettings));
         delete settingsWithoutAdapters.adapters;
         socket.emit("writeFile", "io-settings.json", settingsWithoutAdapters, function () {
-            alert("CCU.IO settings saved. Please restart CCU.IO");
+            showMessage ("CCU.IO settings saved. Please restart CCU.IO");
         });
     }
 
     function restartAdapter(adapter) {
         socket.emit("restartAdapter", adapter, function (res) {
-            alert(res);
+            showMessage (res);
         });
     }
 
@@ -1038,13 +1039,31 @@ $(document).ready(function () {
         try {
             var adapterSettings = JSON.parse($("#adapter_config_json").val());
             socket.emit("writeFile", "adapter-"+adapter+".json", adapterSettings, function () {
-                alert(adapter+" adapter settings saved. Please restart CCU.IO");
+                showMessage(adapter+" adapter settings saved. Please restart CCU.IO");
             });
             return true;
         } catch (e) {
-            alert("Error: invalid JSON");
+            showMessage ("Error: invalid JSON");
             return false;
         }
+    }
+
+    function showMessage (text) {
+        if (!text) {
+            $('#dialogModal').dialog("close");
+            return;
+        }
+        $('#dialogModal').show ();
+        $('#dialogModal').html ("<p>"+text +"</p>").attr('title', "Message");
+        $( "#dialogModal" ).dialog({
+            height: 200,
+            modal: true,
+            buttons: {
+                "Ok": function() {
+                    $( this ).dialog( "close" );
+                }
+            }
+        });
     }
 
     $("#adapter_save").button().click(saveAdapterSettings);
