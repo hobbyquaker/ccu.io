@@ -124,7 +124,18 @@ $(document).ready(function () {
 
     socket.on ("readyBackup", function (name) {
         showMessage ();
+        $('#createBackup').button( "option", "disabled", false);
         location.replace(name);
+    });
+    socket.on ("applyReady", function (text) {
+        $('#applyBackup').button( "option", "disabled", false);
+        showMessage ();
+        showMessage (text);
+    });
+    socket.on ("applyError", function (text) {
+        $('#applyBackup').button( "option", "disabled", false);
+        showMessage ();
+        showMessage (text, "Error");
     });
     socket.on("ioMessage", function (data) {
         showMessage (data);
@@ -348,7 +359,15 @@ $(document).ready(function () {
     socket.on('disconnect', function() {
         setTimeout(function () {
             showMessage ("CCU.IO disconnected");
-            window.location.reload();
+            setInterval(function () {
+                //console.log("trying to force reconnect...");
+                $.ajax({
+                    url: "/ccu.io/index.html",
+                    success: function () {
+                        window.location.reload();
+                    }
+                });
+            }, 90000);
         }, 100);
 
     });
@@ -376,10 +395,13 @@ $(document).ready(function () {
         //$("#reloading").show();
     });
     $("#createBackup").button().css("width", 240).click(function () {
+        $(this).button( "option", "disabled", true );
         socket.emit('createBackup');
     });
 
-    $("#applyBackup").button().css("width", 240);
+    $("#applyBackup").button().css("width", 240).click(function () {
+        $("#applyBackup").button( "option", "disabled", true );
+    });
 
     $("#applyBackup").dropzone({
         url: "/upload?path=./www/_",
@@ -403,9 +425,6 @@ $(document).ready(function () {
 
         },
         complete: function (e) {
-            //$(this.element).dialog( "close" );
-            //$(this.element).remove ();
-            console.log("File _" + e.name);
             socket.emit('applyBackup', "_" + e.name);
         },
         init: function () {
@@ -1048,13 +1067,13 @@ $(document).ready(function () {
         }
     }
 
-    function showMessage (text) {
+    function showMessage (text, caption) {
         if (!text) {
             $('#dialogModal').dialog("close");
             return;
         }
         $('#dialogModal').show ();
-        $('#dialogModal').html ("<p>"+text +"</p>").attr('title', "Message");
+        $('#dialogModal').html ("<p>"+text +"</p>").attr('title', caption || "Message");
         $( "#dialogModal" ).dialog({
             height: 200,
             modal: true,

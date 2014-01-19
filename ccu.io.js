@@ -1414,18 +1414,18 @@ function initSocketIO(_io) {
             backupProcess.on("close", function (code) {
                 if (code == 0) {
                     if (io) {
-                        io.sockets.emit("ioMessage", "Apply backup done. Restart CCU.IO");
+                        io.sockets.emit("applyReady", "Apply backup done. Restart CCU.IO");
                     }
                     if (ioSsl) {
-                        ioSsl.sockets.emit("ioMessage", "Apply backup done. Restart CCU.IO");
+                        ioSsl.sockets.emit("applyReady", "Apply backup done. Restart CCU.IO");
                     }
                 } else {
                     logger.error("ccu.io        Apply backup failed.");
                     if (io) {
-                        io.sockets.emit("ioMessage", "Error: Backup failed.");
+                        io.sockets.emit("applyError", "Error: Backup failed.");
                     }
                     if (ioSsl) {
-                        ioSsl.sockets.emit("ioMessage", "Error: Backup failed.");
+                        ioSsl.sockets.emit("applyError", "Error: Backup failed.");
                     }
                 }
             });
