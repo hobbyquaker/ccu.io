@@ -1,10 +1,17 @@
-/* Create backup of all important files and folders.
-  Following elements will be backuped:
-  datastore (All)
-  scripts (All)
-  logs (Optional)
-  dashui/imgs (all except devices, mfd, back)
-  dashui/css/dashui-user.css
+/**
+ *      CCU.IO Back up solution
+ *      01'2014 Bluefox
+ *
+ *      Version 0.1
+ *
+ * Create backup of all important files and folders.
+ * Following elements will be backed up:
+ *  - datastore (All)
+ *  - scripts (All)
+ *  - logs (Optional, actually not)
+ *  - dashui/img (all except devices, mfd, back)
+ *  - dashui/css/dashui-user.css
+ *
  */
 var logger =    require(__dirname+'/logger.js'),
     fs =        require("fs"),
