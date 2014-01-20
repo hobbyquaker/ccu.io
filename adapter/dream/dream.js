@@ -255,7 +255,7 @@ function evaluateCommandResponse (command, deviceId, xml) {
 			break;
 		case "MUTE":
 		case "UNMUTE":
-		case "TOOGLEMUTE":
+		case "MUTE_TOGGLE":
 		case "VOLUME":
 			setState(boxId + 2, parseInt(xml.e2volume.e2current[0]));	// 20
 			setState(boxId + 3, parseBool(xml.e2volume.e2ismuted));		// True|False
@@ -263,6 +263,7 @@ function evaluateCommandResponse (command, deviceId, xml) {
 			break;
 		case "WAKEUP":
 		case "STANDBY":
+		case "OFF":
 		case "TOOGLESTANDBY":
 			setState(boxId + 1, parseBool(xml.e2powerstate.e2instandby));		// true|false
 			setState(boxId, "");
@@ -280,6 +281,21 @@ function evaluateCommandResponse (command, deviceId, xml) {
 			setState(boxId + 6, xml.e2abouts.e2about[0].e2hddinfo[0].free[0]);			// 100.273 GB
 			break;
 		case "KEY":
+		case "VOLUME_UP":
+		case "VOLUME_DOWN":
+		case "LEFT":
+		case "RIGHT":
+		case "UP":
+		case "DOWN":
+		case "EXIT":
+		case "CH_UP":
+		case "CH_DOWN":
+		case "SELECT":
+		case "OK":
+		case "BOUQUET_UP":
+		case "BOUQUET_DOWN":
+		case "INFO":
+		case "MENU":
 			setState(boxId, "");
 		default:
 			logger.warn("adapter dream received unknown command '"+command+"' @ evaluateCommandResponse");
@@ -301,6 +317,45 @@ function executeCommand(command, value, deviceId) {
 		case "KEY":
 			getResponse (command, deviceId, "/web/remotecontrol?command="+querystring.escape(value), evaluateCommandResponse);
 			break;
+		case "VOLUME_UP":
+			getResponse (command, deviceId, "/web/remotecontrol?command=115", evaluateCommandResponse);
+			break;
+		case "VOLUME_DOWN":
+			getResponse (command, deviceId, "/web/remotecontrol?command=114", evaluateCommandResponse);
+			break;
+		case "BOUQUET_UP":
+			getResponse (command, deviceId, "/web/remotecontrol?command=402", evaluateCommandResponse);
+			break;
+		case "BOUQUET_DOWN":
+			getResponse (command, deviceId, "/web/remotecontrol?command=403", evaluateCommandResponse);
+			break;
+		case "LEFT":
+		case "CH_DOWN":
+			getResponse (command, deviceId, "/web/remotecontrol?command=105", evaluateCommandResponse);
+			break;
+		case "RIGHT":
+		case "CH_UP"
+			getResponse (command, deviceId, "/web/remotecontrol?command=106", evaluateCommandResponse);
+			break;
+		case "UP":
+			getResponse (command, deviceId, "/web/remotecontrol?command=103", evaluateCommandResponse);
+			break;
+		case "DOWN":
+			getResponse (command, deviceId, "/web/remotecontrol?command=108", evaluateCommandResponse);
+			break;
+		case "EXIT":
+			getResponse (command, deviceId, "/web/remotecontrol?command=174", evaluateCommandResponse);
+			break;
+		case "INFO":
+			getResponse (command, deviceId, "/web/remotecontrol?command=358", evaluateCommandResponse);
+			break;
+		case "MENU":
+			getResponse (command, deviceId, "/web/remotecontrol?command=139", evaluateCommandResponse);
+			break;
+		case "SELECT":
+		case "OK":
+			getResponse (command, deviceId, "/web/remotecontrol?command=352", evaluateCommandResponse);
+			break;
 		case "MUTE":
 			if (datapoints[boxId + 3] == "false") {
 				getResponse (command, deviceId, "/web/vol?set=mute", evaluateCommandResponse);
@@ -315,7 +370,7 @@ function executeCommand(command, value, deviceId) {
 				setState(boxId, "");
 			}
 			break;
-		case "TOOGLEMUTE":
+		case "MUTE_TOGGLE":
 			getResponse (command, deviceId, "/web/vol?set=mute", evaluateCommandResponse);
 			break;
 		case "VOLUME":
@@ -324,7 +379,7 @@ function executeCommand(command, value, deviceId) {
 				getResponse (command, deviceId, "/web/vol?set=set" + volume, evaluateCommandResponse);
 			}
 			break;
-		case "TOOGLESTANDBY":
+		case "STANDBY_TOGGLE":
 			getResponse (command, deviceId, "/web/powerstate?newstate=0", evaluateCommandResponse);
 			break;
 		case "DEEPSTANDBY":
@@ -340,6 +395,7 @@ function executeCommand(command, value, deviceId) {
 			getResponse (command, deviceId, "/web/powerstate?newstate=4", evaluateCommandResponse);
 			break;
 		case "STANDBY":
+		case "OFF":
 			getResponse (command, deviceId, "/web/powerstate?newstate=5", evaluateCommandResponse);
 			break;
 		default:
