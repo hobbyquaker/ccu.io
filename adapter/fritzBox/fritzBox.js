@@ -386,8 +386,8 @@ function connectToFritzBox () {
                 setState(objRinging, true);
             }
             else {
-                setState(objRingingNumber, "");
-                setState(objRingingNumberImage, "");
+                setState(objRingingNumber, null);
+                setState(objRingingNumberImage, null);
                 setState(objRinging, false);
             }
         }
