@@ -3,16 +3,10 @@
  *      01'2014 BasGo
  *      mail: basgo@gmx.de 
  *
- *      Version 0.1
+ *      Version 0.7
  *
- *      Possible commands:
- *      MESSAGE:Messagetext
- *      REBOOT
- *      RESTART
- *      STANDBY
- *      WAKEUP
- *      MUTE
- *      VOLUME:1-100
+ *      development at https://github.com/BasGo/ccu.io/tree/master/adapter/dream
+ *
  */
 var settings = require(__dirname + '/../../settings.js');
 
