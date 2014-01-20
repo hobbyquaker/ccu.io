@@ -59,12 +59,12 @@ function postRequest (device, path, post_data, callback) {
 }
 
 function displayKey (device) {
-	postRequest (device, "/hdcp/api/auth", "<?xml version=\"1.0\" encoding=\"utf-8\"?><auth><type>AuthKeyReq</type></auth>");
+	postRequest (device, device.is2012 ? "/roap/api/auth" : "/hdcp/api/auth", "<?xml version=\"1.0\" encoding=\"utf-8\"?><auth><type>AuthKeyReq</type></auth>");
 }
 
 function getSessionId (device, paringKey, callb) {
 	postRequest (device,
-	    "/hdcp/api/auth", 
+        device.is2012 ? "/roap/api/auth" : "/hdcp/api/auth",
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?><auth><type>AuthReq</type><value>"+paringKey+"</value></auth>",
 		function (device_, result) {
 			if (result) {
@@ -86,8 +86,9 @@ function getSessionId (device, paringKey, callb) {
 function handleCommand (device, session, cmd, cb) {
 	//echo "<?xml version=\"1.0\" encoding=\"utf-8\"?><command><session>".$session."</session><type>HandleKeyInput</type><value>".$cmd."</value></command>";
 	postRequest (device,
-		"/hdcp/api/dtv_wifirc", 
-		"<?xml version=\"1.0\" encoding=\"utf-8\"?><command><session>"+session+"</session><type>HandleKeyInput</type><value>"+cmd+"</value></command>", 
+        device.is2012 ? "/roap/api/command" : "/hdcp/api/dtv_wifirc",
+		"<?xml version=\"1.0\" encoding=\"utf-8\"?><command><session>"+session+"</session>" +
+            (device.is2012 ? "<name>HandleKeyInput</name>" : "<type>HandleKeyInput</type>")+"<value>"+cmd+"</value></command>",
 		function (device_, result) {
 			if (cb) {
 				cb (device_, result);
