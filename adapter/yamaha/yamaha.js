@@ -15,6 +15,13 @@ var logger = require(__dirname+'/../../logger.js'),
 var datapoints = {}, objects = {};
 var yamahaSettings = settings.adapters.yamaha.settings;
 var yamahaSocket;
+var connecting;
+
+var volume;
+var muting;
+var album = "";
+var artist = "";
+var song = "";
 
 logger.info("Hello Wold");
 
@@ -32,62 +39,281 @@ if (settings.ioListenPort) {
 }
 
 YamahaInit();
+retrieveInitialData();
 connectYamaha();
 
+function closeYamaha(){
+    yamahaSocket.end();
+    logger.info("Socket to Yamaha AV receiver is closed.")
+}
 /**
  * Connection function to send and retrieve data to and from the receiver.
  */
 function connectYamaha(){
-    yamahaSocket = net.connect({port: yamahaSettings.port, host: yamahaSettings.host});
+//    if (connecting) {
+//        clearTimeout (connecting);
+//        connecting = null;
+//    }
+
+    socket.emit("getDatapoint", [2060], function (id, obj) {
+        logger.info(id+". "+obj);
+    });
+
+//    getState (1856, function (id, obj) {
+//        logger.info(id+". "+obj);
+//        if (!obj){
+//            logger.info(obj)
+//        }
+//    });
+
+    yamahaSocket = net.connect(yamahaSettings.port, yamahaSettings.host, function() {
+        logger.info("adapter yamaha connected to Yamaha AV Receiver: " + yamahaSettings.host);
+    });
+
 
     yamahaSocket.on('close', function () {
-        logger.info("adapter yamaha disconnected from Receiver");
+        logger.info("adapter yamaha received 'close'");
+        yamahaSocket.connect(yamahaSettings.port, yamahaSettings.host);
+    });
+
+    yamahaSocket.on('error', function (data) {
+        logger.info("adapter yamaha received 'error':"+data.toString());
+        if(data.code == 'ETIMEDOUT') {
+            closeYamaha();
+        }
+    });
+
+    yamahaSocket.on('end', function () {
+        logger.info("adapter yamaha received 'end'");
+        yamahaSocket.end ();
     });
 
     yamahaSocket.on('data', function (data) {
         logger.info(data.toString());
+        var value = data.toString();
+
+        var item = value.split("@")
+        for (var i=0;i<item.length;i++){
+            var itemdata = item[i].split("=");
+            if (itemdata.length > 1){
+                var key = itemdata[0];
+                var value = itemdata[1].replace("\r\n", "");
+
+                if (key.indexOf(":VOL") >-1){
+                    key = "VOL";
+                }
+                if (key.indexOf(":MUTE") >-1){
+                    key = "MUTE";
+                }
+
+                switch (key){
+                    case "VOL":
+                        if (!isNaN(value.toString())){
+                            volume = value;
+                            setState(yamahaSettings.firstId+1,value);
+                        }
+                        break;
+                    case "MUTE":
+                        muting = ((value == "Off")? false: true);
+                        setState(yamahaSettings.firstId+2,muting);
+                        break;
+                    case "AIRPLAY:ALBUM":
+                        album = value;
+                        setState(yamahaSettings.firstId+3,showNowPlaying(album, artist, song));
+                        break;
+                    case "AIRPLAY:ARTIST":
+                        artist = value;
+                        setState(yamahaSettings.firstId+3,showNowPlaying(album, artist, song));
+                        break;
+                    case "AIRPLAY:SONG":
+                        song = value;
+                        setState(yamahaSettings.firstId+3,showNowPlaying(album, artist, song));
+                        break;
+                    case "NETRADIO:SONG":
+                        song = value;
+                        setState(yamahaSettings.firstId+3,showNowPlaying("", "", song));
+                        break;
+                    case "NETRADIO:AVAIL":
+                        album = "";
+                        artist = "";
+                        song = "";
+                        setState(yamahaSettings.firstId+3,showNowPlaying(album, artist, song));
+                        break;
+                    case "AIRPLAY:AVAIL":
+                        album = "";
+                        artist = "";
+                        song = "";
+                        setState(yamahaSettings.firstId+3,showNowPlaying(album, artist, song));
+                        break;
+                }
+            }
+        }
     });
 
-    setState(yamahaSettings.firstId+1,-44.5);
-    setState(yamahaSettings.firstId+2,true);
+
 
     socket.on('event', function (obj) {
         if (!obj || !obj[0]) {
             return;
         }
+        //logger.info(obj);
+
+
 
         var id = obj[0];
+
+        if (id == "1856"){
+            logger.info("1856: "+obj[1]);
+            var state = obj[1];
+            if (state){
+                setTimeout(function () {
+                    retrieveInitialData();
+                    connectYamaha();
+            }, 20000);
+
+            }else{
+                closeYamaha();
+            }
+            return;
+        }
+
         if (id == yamahaSettings.firstId+1){
             var val = obj[1];
-            var ts = obj[2];
-            var ack = obj[3];
 
-            logger.info("adapter Yamaha Event: "+id+" "+val+" "+ts+" "+ack+" "+obj);
-            talkToYamaha(yamahaSocket, "<Volume><Mute>On/Off</Mute></Volume>", "Main_Zone")
+            if (volume != null && val != volume){
+                logger.info("adapter Yamaha Event: "+id+" "+val);
+
+                var cmd = "<Volume><Lvl><Val>"+(val*10)+"</Val><Exp>1</Exp><Unit>dB</Unit></Lvl></Volume>"
+
+
+                createLocalSocketAndWrite(createHTTPRequest("PUT", cmd, "Main_Zone")).on('data', function(d){
+                    logger.info(d.toString());
+                    this.end();
+                });
+            }
+        }
+
+        if (id == yamahaSettings.firstId+2){
+            var val = obj[1];
+
+            if (muting != null && val != muting){
+                logger.info("Muting")
+                var cmd = "<Volume><Mute>GetParam</Mute></Volume>"
+
+                createLocalSocketAndWrite(createHTTPRequest("GET", cmd, "Main_Zone")).on('data', function(d){
+                    logger.info(d.toString());
+                    cmd = "";
+
+                    var response = d.toString();
+                    if (response.indexOf("<YAMAHA_AV")>-1){
+                        var status = response.substring(response.indexOf("<Mute>")+6, response.indexOf("</Mute>"));
+                        logger.info(status);
+                        logger.info("val="+val);
+                        //if (status != val){
+                            cmd = "<Volume><Mute>"+((status == 'Off')? 'On': 'Off')+"</Mute></Volume>"
+                            logger.info(cmd);
+                            createLocalSocketAndWrite(createHTTPRequest("PUT", cmd, "Main_Zone")).on('data', function(d){
+                                logger.info(d.toString());
+                                this.end();
+                            });
+                        //}
+
+                    }
+                    this.end();
+                });
+            }
+
+
+
+
         }
     });
 }
+
+function retrieveInitialData(){
+    var status;
+    var cmd = "<Volume><Lvl>GetParam</Lvl></Volume>"
+    createLocalSocketAndWrite(createHTTPRequest("GET", cmd, "Main_Zone")).on('data', function(d){
+        var response = d.toString();
+        if (response.indexOf("<YAMAHA_AV")>-1){
+            volume = response.substring(response.indexOf("<Lvl><Val>")+10, response.indexOf("</Val>"))/10;
+            setState(yamahaSettings.firstId+1,volume);
+        }
+    });
+
+
+    cmd = "<Volume><Mute>GetParam</Mute></Volume>"
+    createLocalSocketAndWrite(createHTTPRequest("GET", cmd, "Main_Zone")).on('data', function(d){
+        var response = d.toString();
+        if (response.indexOf("<YAMAHA_AV")>-1){
+            status = response.substring(response.indexOf("<Mute>")+6, response.indexOf("</Mute>"));
+            muting = ((status == "Off")? false: true);
+            setState(yamahaSettings.firstId+2,muting);
+        }
+    });
+}
+
 
 /**
  * Initialize all object this adapter needs to have
  * @constructor
  */
 function YamahaInit() {
-
-    setObject(yamahaSettings.firstId, {
-        Name: "Yamaha_Command",
-        TypeName: "VARDP"
-    });
-
     setObject(yamahaSettings.firstId+1, {
         Name: "Yamaha_Volume",
-        TypeName: "VARDP"
+        TypeName: "VARDP",
+        "ValueType": 4,
+        "ValueSubType": 0
     });
 
     setObject(yamahaSettings.firstId+2, {
         Name: "Yamaha_Mute",
-        TypeName: "VARDP"
+        TypeName: "VARDP",
+        "ValueType": 2,
+        "ValueSubType": 2,
+        "ValueList": ""
     });
+
+    setObject(yamahaSettings.firstId+3, {
+        Name: "Yamaha_Now_Playing",
+        TypeName: "VARDP","ValueUnit": "",
+        "ValueType": 20,
+        "ValueSubType": 11
+    });
+}
+
+function showNowPlaying(album, artist, song){
+    var np = "";
+
+    if (artist != ""){
+        np = artist;
+        if (song != "" || album != ""){
+            np += " - ";
+        }
+    }
+
+    if (song != ""){
+        np += song;
+        if (album != ""){
+            np += " - ";
+        }
+    }
+
+    if (album != ""){
+        np += album;
+    }
+    return np;
+}
+
+function createLocalSocketAndWrite(http_request){
+    var local_socket = net.connect(yamahaSettings.xml_port, yamahaSettings.host);
+    local_socket.on('error', function(e) {
+        if(e.code == 'ETIMEDOUT') {
+            local_socket.end();
+        }
+    });
+    local_socket.write(http_request);
+    return local_socket;
 }
 
 /**
@@ -106,31 +332,24 @@ function YamahaInit() {
  * @param cmd - The cmd you want to execute
  * @param zone - The zone of the Yamaha receiver
  */
-function talkToYamaha(yamahaSocket, http_method, cmd, zone){
+function createHTTPRequest(http_method, cmd, zone){
+    var response = "";
 
     if (zone == undefined){
         zone = 'Main_Zone'
     }
-    var data = '<YAMAHA_AV cmd="PUT"><'+zone+'>'+cmd+'</'+zone+'></YAMAHA_AV>';
+    var data = '<YAMAHA_AV cmd="'+http_method+'"><'+zone+'>'+cmd+'</Main_Zone></YAMAHA_AV>';
     var command_length = data.length;
     var host = yamahaSettings.host;
-    var port = yamahaSettings.port;
+    var port = yamahaSettings.xml_port;
     var http_request;
     http_request = "POST /YamahaRemoteControl/ctrl HTTP/1.1\r\n";
-    http_request += "Host: "+host+"\r\n";
-    http_request += "User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0\r\n";
-    http_request += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\n";
-    http_request += "Accept-Language: de-de,de;q=0.8,en-us;q=0.5,en;q=0.3\r\n";
-    http_request += "Accept-Encoding: gzip, deflate\r\n";
-    http_request += "Connection: keep-alive\r\n";
-    http_request += "Content-Type: text/xml; charset=UTF-8\r\n";
-    http_request += "Referer: http://"+host+"/\r\n";
     http_request += "Content-Length: "+command_length+"\r\n";
     http_request += "Pragma: no-cache\r\n";
     http_request += "Cache-Control: no-cache\r\n\r\n";
     http_request += data;
 
-    yamahaSocket.write(http_request);
+    return http_request;
 }
 
 /**
@@ -142,6 +361,13 @@ function setState(id, val) {
     datapoints[id] = [val];
     logger.verbose("adapter yamaha setState "+id+" "+val);
     socket.emit("setState", [id,val,null,true]);
+}
+
+function getState(id, callback) {
+    logger.info("adapter yamaha getState "+id);
+    socket.emit("getDatapoint", [id], function (id, obj) {
+        callback (id, obj);
+    });
 }
 
 /**
