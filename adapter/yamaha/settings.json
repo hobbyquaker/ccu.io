@@ -3,8 +3,9 @@
     "mock": true,
     "settings": {
         "firstId": 75100,
-        "host": "127.0.0.1",
-        "port": 80
+        "host": "192.168.178.42",
+        "port": 50000,
+        "xml_port": 80
 
     }
 }
