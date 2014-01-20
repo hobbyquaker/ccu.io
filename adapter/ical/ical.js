@@ -2,7 +2,7 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
- *      Version 0.5
+ *      Version 0.6
  *		
  */
 var settings = require(__dirname+'/../../settings.js');
@@ -34,13 +34,6 @@ var colorize = icalSettings.colorize;
 var minoneorange = 0;
 var minonered = 0;
 var arrDates = Array();
-
-/*var warn = fontboldred;
-var warn2 =fontnormalred;
-var prewarn = fontboldorange;
-var prewarn2 = fontnormalorange;
-var normal = fontbold;
-var normal2 = fontnormal;*/
 
 var warn = fontboldred+"<span class='icalWarn'>";
 var warn2 ="</span></span>" + fontnormalred+"<span class='icalWarn2'>";
