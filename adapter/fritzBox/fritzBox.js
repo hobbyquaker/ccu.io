@@ -3,7 +3,7 @@
  *      01'2014 Bluefox
  *      Can store incoming calls into the list.
  *
- *      Version 0.2
+ *      Version 0.3
  *
  *    Wenn man beim Telefon #96*5* eintippt, wird der TCP-Port 1012 geoffnet.
  *    Mit #96*4* wird dieser wieder geschlossen.
@@ -293,11 +293,11 @@ function connectToFritzBox () {
 
                     // Delete oldest entry
                     if (missedList.length >= fritzBoxSettings.maxMissed) {
-                        missedList.split(0,1);
+                        missedList.splice (0,1);
                     }
                     // Delete oldest entry
                     if (allCallsList.length >= fritzBoxSettings.maxAll) {
-                        allCallsList.split(0,1);
+                        allCallsList.splice (0,1);
                     }
 
                     missedList[missedList.length]     = {number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: 0};
@@ -317,7 +317,7 @@ function connectToFritzBox () {
 
                     // Delete oldest entry
                     if (allCallsList.length >= fritzBoxSettings.maxAll) {
-                        allCallsList.split(0,1);
+                        allCallsList.splice (0,1);
                     }
 
                     allCallsList[allCallsList.length] = {type: "IN", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
@@ -335,7 +335,7 @@ function connectToFritzBox () {
 
                 // Delete oldest entry
                 if (allCallsList.length >= fritzBoxSettings.maxAll) {
-                    allCallsList.split(0,1);
+                    allCallsList.splice (0,1);
                 }
 
                 allCallsList[allCallsList.length] = {type: "IN", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
@@ -350,7 +350,7 @@ function connectToFritzBox () {
 
                 // Delete oldest entry
                 if (allCallsList.length >= fritzBoxSettings.maxAll) {
-                    allCallsList.split(0,1);
+                    allCallsList.splice (0,1);
                 }
 
                 allCallsList[allCallsList.length] = {type: "OUT", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
