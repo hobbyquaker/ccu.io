@@ -298,10 +298,6 @@ ccu_socket.on('event', function (obj) {
 function stop() {
     logger.info("adapter lgtv  terminating");
 
-    if (lgtvSettings.webserver.enabled) {
-        sonosSocket.server.close();
-    }
-
     setTimeout(function () {
         process.exit();
     }, 250);
