@@ -3,7 +3,7 @@
  *      12'2013 Bluefox
  *      Lets control the LG TV over ethernet
  *
- *      Version 0.1
+ *      Version 0.2
  *      Information got from http://www.cometvisu.de/wiki/index.php?title=LGconnectd
  */
 var settings = require(__dirname+'/../../settings.js');
@@ -113,40 +113,40 @@ var commands = {
 	"power_off" :                 ["8",   "1"],
 	"power_sleep_timer":          ["14",  -1],
 // Navigation                     
-	"nav_left" :                  ["7",   "3"],
-	"nav_right" :                 ["6",   "4"],
-	"nav_up" :                    ["64",  "1"],
-	"nav_down" :                  ["65",  "2"],
+	"nav_left" :                  ["7",   "14"],
+	"nav_right" :                 ["6",   "15"],
+	"nav_up" :                    ["64",  "12"],
+	"nav_down" :                  ["65",  "13"],
 	"nav_select" :                ["68",  "20"],
 	"nav_back" :                  ["40",  "23"],
 	"nav_exit" :                  ["91",  "412"],
-	"nav_blue" :                  ["97",  "29"],
+	"nav_blue" :                  ["97",  "31"],
 	"nav_green" :                 ["113", "30"],
-	"nav_red" :                   ["114", "31"],
-	"nav_yellow" :                ["99",  "32"],
+	"nav_red" :                   ["114", "32"],
+	"nav_yellow" :                ["99",  "29"],
 // keypad                         
-	"keypad_0" :                  ["16",  -1],
-	"keypad_1" :                  ["17",  "5"],
-	"keypad_2" :                  ["18",  "6"],
-	"keypad_3" :                  ["19",  "7"],
-	"keypad_4" :                  ["20",  "8"],
-	"keypad_5" :                  ["21",  -1],
-	"keypad_6" :                  ["22",  -1],
-	"keypad_7" :                  ["23",  -1],
-	"keypad_8" :                  ["24",  -1],
-	"keypad_9" :                  ["25",  -1],
+	"keypad_0" :                  ["16",  "2"],
+	"keypad_1" :                  ["17",  "3"],
+	"keypad_2" :                  ["18",  "4"],
+	"keypad_3" :                  ["19",  "5"],
+	"keypad_4" :                  ["20",  "6"],
+	"keypad_5" :                  ["21",  "7"],
+	"keypad_6" :                  ["22",  "8"],
+	"keypad_7" :                  ["23",  "9"],
+	"keypad_8" :                  ["24",  "10"],
+	"keypad_9" :                  ["25",  "11"],
 	// Undescore                          
 	"keypad__" :                  ["76",  -1],
 	//Playback controls                   
 	"playback_play" :             ["176", "33"],
 	"playback_pause" :            ["186", "34"],
-	"playback_fast_forward" :     ["142", -1],
-	"playback_rewind" :           ["143", -1],
+	"playback_fast_forward" :     ["142", "36"],
+	"playback_rewind" :           ["143", "37"],
 	"playback_stop" :             ["177", "35"],
-	"playback_record" :           ["189", -1],
+	"playback_record" :           ["189", "40"],
 // Input controls                         
 	"input_tv_radio" :            ["15",  -1],
-	"input_simplink" :            ["126", -1],
+	"input_simplink" :            ["126", "411"],
 	"input_input" :               ["11",  "47"],
 	"input_component_rgb_hdmi" :  ["152", -1],
 	"input_component" :           ["191", -1],
@@ -167,20 +167,20 @@ var commands = {
 	"tv_channel_down" :           ["1",   "28"],
 	"tv_channel_back" :           ["26",  "403"],
 	"tv_favorites" :              ["30",  -1],
-	"tv_teletext" :               ["32",  -1],
+	"tv_teletext" :               ["32",  "51"],
 	"tv_t_opt" :                  ["33",  -1],
-	"tv_channel_list" :           ["83",  -1],
+	"tv_channel_list" :           ["83",  "50"],
 	"tv_greyed_out_add_button" :  ["85",  -1],
-	"tv_guide" :                  ["169", -1],
-	"tv_info" :                   ["170", -1],
-	"tv_live_tv" :                ["158", -1],
+	"tv_guide" :                  ["169", "44"],
+	"tv_info" :                   ["170", "45"],
+	"tv_live_tv" :                ["158", "43"],
   // Picture controls             
-	"picture_av_mode" :           ["48",  -1],
+	"picture_av_mode" :           ["48",  "410"],
 	"picture_mode" :              ["77",  -1],
 	"picture_ratio" :             ["121", -1],
 	"picture_ratio_4_3" :         ["118", -1],
 	"picture_ratio_16_9" :        ["119", -1],
-	"picture_energy_saving" :     ["149", -1],
+	"picture_energy_saving" :     ["149", "409"],
 	"picture_cinema_zoom" :       ["175", -1],
 	"picture_3D" :                ["220", "400"],
 	"picture_factory_check" :     ["252", -1],
@@ -192,7 +192,7 @@ var commands = {
 	"audio_sound_mode" :          ["82",  -1],
 	"audio_factory_sound_check" : ["253", -1],
 	"audio_subtitle_language" :   ["57",  -1],
-	"audio_audio_description" :   ["145", -1]
+	"audio_audio_description" :   ["145", "407"]
 }; 
 
 if (settings.ioListenPort) {
@@ -262,7 +262,7 @@ ccu_socket.on('event', function (obj) {
 	
 	if (dev.sessionKey) {
 		handleCommand (dev, dev.sessionKey, cmd, function (dev_, result) {
-            if (result && result.indexOf ("<HDCPError>401</HDCPError>") != -1){
+            if (result && (result.indexOf ("<HDCPError>401</HDCPError>") != -1 || result.indexOf ("<ROAPError>401</ROAPError>") != -1)){
                 getSessionId (dev_, dev.pairKey, function (dev, sessionKey) {
                     if (sessionKey) {
                         dev.sessionKey = sessionKey;
