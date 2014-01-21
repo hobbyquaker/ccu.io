@@ -19,6 +19,7 @@ if (!settings.adapters.fritzBox || !settings.adapters.fritzBox.enabled) {
     process.exit();
 }
 
+settings.language = settings.language || 'en';
 var fritzBoxSettings = settings.adapters.fritzBox.settings;
 
 fritzBoxSettings.maxAll = fritzBoxSettings.maxAll || 20;
@@ -272,7 +273,8 @@ function connectToFritzBox () {
             logger.error ("adapter fritzBox unknown event type " + item.type);
             return;
         }
-
+        item.calledNumber = item.calledNumber || (settings.language == 'de' ? "Unbekannt" : "Unknown");
+        
         logger.info("adapter fritzBox received event (time: " + item.time +
             ", type: "     + item.type +
             ", ID: "       + item.connectionId +
