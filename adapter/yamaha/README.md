@@ -27,53 +27,21 @@ Settings
 
 The settings following the standard of CCU.IO. There is a *settings.json* with some configuration items you need to change:
 
-<table>
-    <tr>
-        <th>item</th>
-        <th>description</th>
-    </tr>
-    <tr>
-        <td>host</td>
-        <td>The ip address of your Yamaha AV receiver</td>
-    </tr>
-    <tr>
-        <td>port</td>
-        <td>The socket port you listen too (default: 50000)</td>
-    </tr>
-    <tr>
-        <td>xml_port</td>
-        <td>The HTTP port you need to communicate and send commands (default: 80)</td>
-    </tr>
-    <tr>
-        <td>id_for_onlinecheck</td>
-        <td>An id of an HomeMatic device or variable. They must have a state and return ON or OFF, so the adapter reacts on the state
-        change to re-establish the socket connection.</td>
-    </tr>
-</table>
+| item | description |
+| host | The ip address of your Yamaha AV receiver |
+| port | The socket port you listen too (default: 50000) |
+| xml_port | The HTTP port you need to communicate and send commands (default: 80) |
+| id_for_onlinecheck | This is a little bit special. For this see the Features above. |
 
 
 Datapoints
 ----------------------------------------------
 There are 3 datapoints defines:
 
-<table>
-    <tr>
-        <th>name</th>
-        <th>description</th>
-    </tr>
-    <tr>
-        <td>Yamaha_Volume</td>
-        <td>Holds the value for the volume in db</td>
-    </tr>
-    <tr>
-        <td>Yamaha_Mute</td>
-        <td>*true* if muting is on otherwise *false*</td>
-    </tr>
-    <tr>
-        <td>Yamaha_Now_Playing</td>
-        <td>A string containing artist, song and album</td>
-    </tr>
-</table>
+| name | description |
+| Yamaha_Volume | Holds the value for the volume in db |
+| Yamaha_Mute | *true* if muting is on otherwise *false* |
+| Yamaha_Now_Playing | A string containing artist, song and album |
 
 
 Now Playing
