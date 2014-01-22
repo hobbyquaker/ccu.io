@@ -179,6 +179,12 @@ loadPersistentObjects();
 loadDatapoints();
 initWebserver();
 
+// Create language variable
+datapoints[69999] = [settings.language || 'en', formatTimestamp(), true];
+regaObjects[69999] = {Name:"SYSTEM.LANGUAGE", TypeName: "VARDP", DPInfo: "DESC", ValueType: 20, ValueSubType: 11};
+regaIndex.VARDP.push(69999);
+regaIndex.Name[69999] = [13305, "VARDP", null];
+
 var regahss = new rega({
     ccuIp: settings.ccuIp,
     ready: function(err) {
