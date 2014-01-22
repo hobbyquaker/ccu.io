@@ -81,6 +81,23 @@ function translateAll (lang, dictionary) {
             }
         }
     });
+    $(".translateB").each(function (idx) {
+        //<span class="ui-button-text">Save</span>
+        var text    = $( this ).html ();
+        text = text.replace('<span class="ui-button-text">', "").replace("</span>", "");
+        var curlang = $(this).attr ('data-lang');
+        if (curlang != lang) {
+            if (curlang) {
+                text = translateWordBack (text, curlang, dictionary);
+            }
+
+            var transText = translateWord (text, lang, dictionary);
+            if (transText) {
+                $(this).html ('<span class="ui-button-text">' + transText + '</span>');
+                $(this).attr ('data-lang', lang);
+            }
+        }
+    });
 }
 
 $(document).ready(function () {

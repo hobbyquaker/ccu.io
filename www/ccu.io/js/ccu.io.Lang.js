@@ -98,7 +98,7 @@ var ccuWords = {
     "mode"              : {"en": "mode",                  "de": "Modus",              "ru": "Режим"},
     "period"            : {"en": "period",                "de": "Period",             "ru": "Период"},
     "Install Addon"     : {"en": "Install Addon",         "de": "Addon installieren", "ru": "Установить дополнение"},
-    "reload"            : {"en": "reload",                "de": "neu laden",          "ru": "Обновить"},
+    "reload"            : {"en": "reload",                "de": "neu laden",          "ru": "обновить"},
     "configure"         : {"en": "configure",             "de": "konfigurieren",      "ru": "настроить"},
     "periodical"        : {"en": "periodical",            "de": "periodisch",         "ru": "периодичный"}
 };
