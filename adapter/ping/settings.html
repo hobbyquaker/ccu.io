@@ -1,17 +1,15 @@
 <table style="font-size: 12px" id="ping_table">
     <tr>
-        <td>
-            Enabled:
-        </td>
+        <td class="translate">Enabled:</td>
         <td colspan='5'>
             <select id="ping_enabled">
-                <option value="false">false</option>
-                <option value="true">true</option>
+                <option value="false" class="translate">false</option>
+                <option value="true"  class="translate">true</option>
             </select>
         </td>
     </tr>
     <tr>
-        <td>Polling interval:</td>
+        <td class="translate">Polling interval:</td>
         <td colspan='5'><input id="ping_polling_interval" type="text"/></td>
     </tr>
     <tr>
@@ -19,15 +17,21 @@
     </tr>
 
     <tr>
-        <th>IP Address</th>
-        <th>Name</th>
-        <th>Rooms</th>
-        <th>Functions</th>
-        <th>Favorites</th>
-        <th></th>
+        <th class="translate">IP Address</th>
+        <th class="translate">Name</th>
+        <th class="translate">Rooms</th>
+        <th class="translate">Functions</th>
+        <th class="translate">Favorites</th>
+        <th class="translate"></th>
     </tr>
 </table>
-<input type="button" id="add_device" value="add device"/>
+<input type="button" id="add_device"  class="translateV" value="add device"/>
+<p>
+<h1 class="translate">Description</h1>
+<span class="translate">Description text</span>
+</p>
+
+<script src="../adapter/ping/pingLang.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 
@@ -164,5 +168,7 @@
         pingRefreshDevices();
         storeSettings();
     }
+    
+    translateAll (ccuIoSettings.language, adapterWords);
 
 </script>
