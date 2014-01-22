@@ -163,6 +163,7 @@ var socketlist = [],
         DEVICE: [],
         CHANNEL: [],
         HSSDP: [],
+        VARDP: [],
         ALDP: [],
         ALARMDP: [],
         PROGRAM: []
