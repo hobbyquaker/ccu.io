@@ -1,5 +1,19 @@
 /**
- * Created by kamann on 13.01.14.
+ * CCU.IO adapter for Yamaha AV receiver
+ *
+ * Copyright 2013 Thorsten Kamann
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 var settings = require(__dirname+'/../../settings.js');
@@ -23,8 +37,9 @@ var album = "";
 var artist = "";
 var song = "";
 
-logger.info("Hello Wold");
-
+/**
+ * Starting the socket.io
+ */
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
         port: settings.ioListenPort
@@ -42,29 +57,17 @@ YamahaInit();
 retrieveInitialData();
 connectYamaha();
 
+/**
+ * Closes a connection to the Yamaha receiver. This is fired always if the receiver is not responding anymore.
+ */
 function closeYamaha(){
     yamahaSocket.end();
-    logger.info("Socket to Yamaha AV receiver is closed.")
+    logger.verbose("Socket to Yamaha AV receiver is closed.")
 }
 /**
  * Connection function to send and retrieve data to and from the receiver.
  */
 function connectYamaha(){
-//    if (connecting) {
-//        clearTimeout (connecting);
-//        connecting = null;
-//    }
-
-    socket.emit("getDatapoint", [2060], function (id, obj) {
-        logger.info(id+". "+obj);
-    });
-
-//    getState (1856, function (id, obj) {
-//        logger.info(id+". "+obj);
-//        if (!obj){
-//            logger.info(obj)
-//        }
-//    });
 
     yamahaSocket = net.connect(yamahaSettings.port, yamahaSettings.host, function() {
         logger.info("adapter yamaha connected to Yamaha AV Receiver: " + yamahaSettings.host);
@@ -72,24 +75,25 @@ function connectYamaha(){
 
 
     yamahaSocket.on('close', function () {
-        logger.info("adapter yamaha received 'close'");
+        logger.verbose("adapter yamaha received 'close'");
         yamahaSocket.connect(yamahaSettings.port, yamahaSettings.host);
     });
 
     yamahaSocket.on('error', function (data) {
-        logger.info("adapter yamaha received 'error':"+data.toString());
         if(data.code == 'ETIMEDOUT') {
             closeYamaha();
+        }else{
+            logger.error("adapter yamaha received 'error':"+data.toString());
         }
     });
 
     yamahaSocket.on('end', function () {
-        logger.info("adapter yamaha received 'end'");
+        logger.verbose("adapter yamaha received 'end'");
         yamahaSocket.end ();
     });
 
     yamahaSocket.on('data', function (data) {
-        logger.info(data.toString());
+        logger.verbose("Yamaha socket retrieve data: "+data.toString());
         var value = data.toString();
 
         var item = value.split("@")
@@ -156,14 +160,10 @@ function connectYamaha(){
         if (!obj || !obj[0]) {
             return;
         }
-        //logger.info(obj);
-
-
 
         var id = obj[0];
-
-        if (id == "1856"){
-            logger.info("1856: "+obj[1]);
+        var id_for_onlinecheck = yamahaSettings.id_for_onlinecheck
+        if (id_for_onlinecheck != "0" && id == id_for_onlinecheck){
             var state = obj[1];
             if (state){
                 setTimeout(function () {
@@ -230,6 +230,10 @@ function connectYamaha(){
     });
 }
 
+/**
+ * Tries to receive the data vor volume and muting state from the receiver. If this call isn't successfully
+ * the persisted values from the CCU.IO datapoints will be used instead.
+ */
 function retrieveInitialData(){
     var status;
     var cmd = "<Volume><Lvl>GetParam</Lvl></Volume>"
@@ -282,6 +286,13 @@ function YamahaInit() {
     });
 }
 
+/**
+ * Handler for the "Now Playing" information
+ * @param album
+ * @param artist
+ * @param song
+ * @returns {string}
+ */
 function showNowPlaying(album, artist, song){
     var np = "";
 
@@ -305,6 +316,12 @@ function showNowPlaying(album, artist, song){
     return np;
 }
 
+/**
+ * The most data will be returned through the yamaha socket. But if you want to write data to this socket it sometimes
+ * fails. This function create a new socket and send a XML-based command to the Yamaha receiver.
+ * @param http_request
+ * @returns {*}
+ */
 function createLocalSocketAndWrite(http_request){
     var local_socket = net.connect(yamahaSettings.xml_port, yamahaSettings.host);
     local_socket.on('error', function(e) {
@@ -328,7 +345,7 @@ function createLocalSocketAndWrite(http_request){
  *     <li>zone = Main_Zone</li>
  *
  * </ul>
- * @param yamahaSocket - The open socket you want to use
+ * @param http_method - POST or GET
  * @param cmd - The cmd you want to execute
  * @param zone - The zone of the Yamaha receiver
  */
@@ -361,13 +378,6 @@ function setState(id, val) {
     datapoints[id] = [val];
     logger.verbose("adapter yamaha setState "+id+" "+val);
     socket.emit("setState", [id,val,null,true]);
-}
-
-function getState(id, callback) {
-    logger.info("adapter yamaha getState "+id);
-    socket.emit("getDatapoint", [id], function (id, obj) {
-        callback (id, obj);
-    });
 }
 
 /**
