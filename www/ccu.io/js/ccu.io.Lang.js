@@ -1,5 +1,5 @@
 // Translated words
-var langWords = {
+var ccuWords = {
     "CCU.IO"            : null,
     "Addons"            : {"en": "Addons",               "de": "Addons",              "ru": "Дополнения"},
     "Adapter"           : {"en": "Adapter",              "de": "Adapter",             "ru": "Пакеты"},
@@ -75,5 +75,11 @@ var langWords = {
     "refresh"           : {"en": "refresh",              "de": "Neu laden",           "ru": "Обновить"},
     "anonymize"         : {"en": "anonymized",           "de": "anonymisiert",        "ru": "Убрать персональную информацию"},
     "save changes"      : {"en": "save changes",         "de": "Änderungen speichern","ru": "Сохранить изменения"},
-    "install"           : {"en": "install",              "de": "Installieren ",       "ru": "Установить"}
+    "install"           : {"en": "install",              "de": "Installieren",        "ru": "Установить"},
+    "CCU.IO is reloading all CCU data. Please be patient. This page will be automatically reloaded when finished.": {
+        "en": "CCU.IO is reloading all CCU data. Please be patient. This page will be automatically reloaded when finished.",              
+        "de": "CCU.IO lädt alle Daten aus CCU neu. Bitte warten. Die Seite wird automatisch neu geladen, wenn Ladeforgang abgeschlossen wird.",       
+        "ru": "CCU.IO загружает все данные из CCU. Запаситесь терпением. Страница автоматически обновиться по окончании загрузки."
+        },
+    "CCU.IO is restarting.": {"en": "CCU.IO is restarting.", "de": "CCU.IO macht Neustart. ",       "ru": "CCU.IO перезапускается."}
 };
