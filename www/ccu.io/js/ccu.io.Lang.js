@@ -2,7 +2,7 @@
 var ccuWords = {
     "CCU.IO"            : null,
     "Addons"            : {"en": "Addons",               "de": "Addons",              "ru": "Дополнения"},
-    "Adapter"           : {"en": "Adapter",              "de": "Adapter",             "ru": "Пакеты"},
+    "Adapter"           : {"en": "Adapter",              "de": "Adapter",             "ru": "Драйвера"},
     "Info"              : {"en": "Info",                 "de": "Info",                "ru": "Информация"},
     "Control"           : {"en": "Control",              "de": "Kontrolle",           "ru": "Контроль"},
     "Settings"          : {"en": "Settings",             "de": "Einstellüngen",       "ru": "Настройки"},
@@ -62,7 +62,7 @@ var ccuWords = {
     "Polling Trigger"   : {"en": "Polling Trigger",      "de": "Polling-Trigger",     "ru": "Polling-Trigger"},
     "install addon"     : {"en": "install addon",        "de": "Addon installieren",  "ru": "Установить дополнение"},
     "...loading"        : {"en": "...loading",           "de": "...lade",             "ru": "...загрузка"},
-    "adapter configuration" : {"en": "adapter configuration","de": "Adapter-Konfiguration", "ru": "Настройки пакета"},
+    "adapter configuration" : {"en": "adapter configuration","de": "Adapter-Konfiguration", "ru": "Настройки драйвера"},
     "Save"              : {"en": "Save",                 "de": "Speichern",           "ru": "Сохранить"},
     "Save and close"    : {"en": "Save and close",       "de": "Speichern und zumachen", "ru": "Сохранить и выйти"},
     "Discard changes and close": {"en": "Discard changes and close","de": "Änderungen ignorieren und zumachen", "ru": "Выйти без сохранения"},
