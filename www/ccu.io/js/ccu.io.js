@@ -1,8 +1,51 @@
-
 var currentAdapterSettings;
+var ccuIoSettings = null;
 
 function updateAdapterSettings() {
     $("#adapter_config_json").html(JSON.stringify(currentAdapterSettings, null, "    "));
+}
+
+function translateWord (text, lang, dictionary) {
+    if (!dictionary) {
+        return text;
+    }
+    
+    if (dictionary[text]) {
+        var newText = dictionary[text][lang];
+        if (newText){
+            return newText;
+        }
+        else if (lang != 'en') {
+            newText = dictionary[text]['en'];
+            if (newText){
+                return newText;
+            }
+        }
+        
+    }
+    
+    return text;
+}
+
+function translateAll (lang, dictionary) {
+    lang  = lang || ccuIoSettings.language || 'en';
+    dictionary = dictionary || ccuWords;
+    
+    $(".translate").each(function (idx) {
+        var text      = $( this ).html ();
+        var transText = translateWord (text, lang, dictionary);
+        if (transText && transText != text) {
+            $(this).html (transText);
+        }
+    });
+    // translate <input type="button>
+    $(".translateV").each(function (idx) {
+        var text      = $( this ).attr ('value');
+        var transText = translateWord (text, lang, dictionary);
+        if (transText && transText != text) {
+            $(this).attr ('value', transText);
+        }
+    });
 }
 
 $(document).ready(function () {
@@ -83,6 +126,7 @@ $(document).ready(function () {
         $(".ccu-io-logging").html(settings.logging.enabled ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false'>NO</span>");
 
         loadSettings();
+        translateAll();
 
         socket.emit("readdir", ["adapter"], function (data) {
             for (var i = 0; i < data.length; i++) {
@@ -816,6 +860,13 @@ $(document).ready(function () {
     });
 
     function loadSettings() {
+        $("#language [value='"+(ccuIoSettings.language || 'en')+"']").attr("selected", "selected");
+
+        $("#language").change(function () {
+            translateAll ($(this).val());
+        });
+        
+        
         $("#ccuIp").val(ccuIoSettings.ccuIp);
         $("#binrpc_listenIp").val(ccuIoSettings.binrpc.listenIp);
 
@@ -914,7 +965,7 @@ $(document).ready(function () {
 
 
     function saveSettings() {
-
+        ccuIoSettings.language = $("#language").val();
         ccuIoSettings.ccuIp = $("#ccuIp").val();
         ccuIoSettings.binrpc.listenIp = $("#binrpc_listenIp").val();
 
