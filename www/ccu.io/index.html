@@ -23,7 +23,7 @@
         <li><a href="#mainTab2"><span class='translate'>Addons</span></a></li>
         <li><a href="#mainTab3"><span class='translate'>Adapter</span></a></li>
         <!-- <li><a href="#mainTab4"><span>Scripts</span></a></li> -->
-        <li><a href="#mainTab5"><span>Data</span></a></li>
+        <li><a href="#mainTab5"><span class='translate'>Data</span></a></li>
     </ul>
     <div id="mainTab1">
         <div class="jqui-tabs" id="subTabs1">
@@ -46,7 +46,7 @@
                         <td class='translate'>CCU.IO available Version:</td>
                         <td style="width:165px; text-align:right;">
                             <input style="display:none" type="button"  class='translateV' id="update_self" value="update"/>
-                            <input type="button" id="update_self_check" class='translate' value="check"/>
+                            <input type="button" id="update_self_check" class='translateV' value="check"/>
                             <span class="ccu-io-availversion"></span>
 
                         </td>
@@ -150,6 +150,7 @@
                                 <option value='en'>English</option>
                                 <option value='de'>Deutsch</option>
                                 <option value='ru'>Русский</option>
+                                </select>
                             </td>
                             <td class="settings-td4">&nbsp;</td>
                             <td class="settings-td5">&nbsp;</td>
@@ -358,9 +359,9 @@
         </div>
         <div id="adapter_config" style="display: none">
             <h3><span id="adapter_name"></span> <span class='translate'>adapter configuration</span></h3>
-            <button id="adapter_save"   class='translate'>Save</button>
-            <button id="adapter_close"  class='translate'>Save and close</button>
-            <button id="adapter_cancel" class='translate'>Discard changes and close</button>
+            <button id="adapter_save"   class='translateB'>Save</button>
+            <button id="adapter_close"  class='translateB'>Save and close</button>
+            <button id="adapter_cancel" class='translateB'>Discard changes and close</button>
             <br/><br/>
             <textarea id='adapter_config_json'></textarea>
             <div id="adapter_config_container">

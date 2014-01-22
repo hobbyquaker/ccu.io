@@ -6,6 +6,10 @@ function updateAdapterSettings() {
 }
 
 function translateWord (text, lang, dictionary) {
+    if (!ccuIoSettings) return text;
+    if (!dictionary) dictionary = ccuWords;
+    if (!lang)       lang       = ccuIoSettings.language || 'en';
+
     if (!dictionary) {
         return text;
     }
@@ -23,7 +27,22 @@ function translateWord (text, lang, dictionary) {
         }
         
     }
-    
+    console.log ("trans: " + text);
+    return text;
+}
+
+function translateWordBack (text, lang, dictionary) {
+    if (!dictionary) {
+        return text;
+    }
+    for (var word in dictionary) {
+        if (dictionary[word] === null)
+            continue;
+        if (dictionary[word][lang] == text)
+            return word;
+    }
+
+    console.log ("back: " + text);
     return text;
 }
 
@@ -32,18 +51,34 @@ function translateAll (lang, dictionary) {
     dictionary = dictionary || ccuWords;
     
     $(".translate").each(function (idx) {
-        var text      = $( this ).html ();
-        var transText = translateWord (text, lang, dictionary);
-        if (transText && transText != text) {
-            $(this).html (transText);
+        var curlang = $(this).attr ('data-lang');
+        var text    = $(this).html ();
+        if (curlang != lang) {
+            if (curlang) {
+                text = translateWordBack (text, curlang, dictionary);
+            }
+
+            var transText = translateWord (text, lang, dictionary);
+            if (transText) {
+                $(this).html (transText);
+                $(this).attr ('data-lang', lang);
+            }
         }
     });
     // translate <input type="button>
     $(".translateV").each(function (idx) {
-        var text      = $( this ).attr ('value');
-        var transText = translateWord (text, lang, dictionary);
-        if (transText && transText != text) {
-            $(this).attr ('value', transText);
+        var text    = $( this ).attr ('value');
+        var curlang = $(this).attr ('data-lang');
+        if (curlang != lang) {
+            if (curlang) {
+                text = translateWordBack (text, curlang, dictionary);
+            }
+
+            var transText = translateWord (text, lang, dictionary);
+            if (transText) {
+                $(this).attr ('value', transText);
+                $(this).attr ('data-lang', lang);
+            }
         }
     });
 }
@@ -53,8 +88,7 @@ $(document).ready(function () {
     var installedAddons = [];
 
     var regaObjects,
-        regaIndex,
-        ccuIoSettings;
+        regaIndex;
 
     var lastRegaPoll,
         lastRfEvent,
@@ -118,15 +152,27 @@ $(document).ready(function () {
         $("#stringtable").html(JSON.stringify(obj, null, "  "));
     });
 
+    function getYesNo (isTrue, isWarning) {
+        return isTrue ? "<span class='indicator-true translate' data-lang='"+(ccuIoSettings.language || 'en')+"'>"+translateWord("YES")+"</span>"  : "<span class='" + (!isWarning ? "indicator-false" :"indicator-false-warning")+" translate' data-lang='"+(ccuIoSettings.language || 'en')+"'>"+translateWord("NO")+"</span>";
+    }
+    function getTrueFalse (isTrue) {
+        return isTrue ? "<span style='color:green'><b data-lang='"+(ccuIoSettings.language || 'en')+"' class='translate'>"+translateWord('TRUE')+"</b></span>" : "<span data-lang='"+(ccuIoSettings.language || 'en')+"' class='translate'>"+translateWord('false')+"</span>";
+    }
     socket.emit("getSettings", function (settings) {
         ccuIoSettings = settings;
         $(".ccu-io-version").html(settings.version);
-        $(".ccu-io-scriptengine").html((settings.scriptEngineEnabled ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false'>NO</span>"));
-        $(".ccu-io-adapters").html(settings.adaptersEnabled ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false'>NO</span>");
-        $(".ccu-io-logging").html(settings.logging.enabled ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false'>NO</span>");
+        $(".ccu-io-scriptengine").html(getYesNo(settings.scriptEngineEnabled));
+        $(".ccu-io-adapters").html(getYesNo(settings.adaptersEnabled));
+        $(".ccu-io-logging").html(getYesNo(settings.logging.enabled));
 
         loadSettings();
         translateAll();
+
+        $("#install_addon_dialog").dialog({
+            autoOpen: false,
+            title: translateWord ("Install Addon"),
+            modal: true
+        });
 
         socket.emit("readdir", ["adapter"], function (data) {
             for (var i = 0; i < data.length; i++) {
@@ -134,10 +180,10 @@ $(document).ready(function () {
                 if (adapter.match(/^skeleton/) || adapter == ".DS_Store") { continue; }
                 var adapterData = {
                     name:   data[i],
-                    settings:   '<button class="adapter-settings" data-adapter="'+adapter+'">configure</button><button class="adapter-restart" data-adapter="'+adapter+'">reload</button>',
+                    settings:   '<button class="adapter-settings translateB" data-adapter="'+adapter+'" data-lang="'+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+'">'+translateWord('configure')+'</button><button class="adapter-restart translateB" data-lang="'+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+'" data-adapter="'+adapter+'">'+translateWord('reload')+'</button>',
                     confed:     (settings.adapters[data[i]]?"true":"false"),
-                    enabled:    (settings.adapters[data[i]]? (settings.adapters[data[i]].enabled ? "<span style='color:green'><b>TRUE</b></span>" : "false"):""),
-                    mode:       (settings.adapters[data[i]]?settings.adapters[data[i]].mode:""),
+                    enabled:    (settings.adapters[data[i]]?getTrueFalse(settings.adapters[data[i]].enabled):""),
+                    mode:       ((settings.adapters[data[i]] && settings.adapters[data[i]].mode)?getWord(settings.adapters[data[i]].mode):""),
                     period:     (settings.adapters[data[i]]?settings.adapters[data[i]].period:"")
                 }
                 $("#grid_adapter").jqGrid("addRowData", i, adapterData);
@@ -153,17 +199,17 @@ $(document).ready(function () {
     });
 
     socket.emit("getStatus", function (data) {
-        $(".ccu-reachable").html(data.ccuReachable ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-regaup").html(data.ccuRegaUp ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-regadata").html(data.ccuRegaData ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-rpc").html(data.initsDone ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
+        $(".ccu-reachable").html(getYesNo(data.ccuReachable, true));
+        $(".ccu-regaup").html(getYesNo(data.ccuRegaUp, true));
+        $(".ccu-regadata").html(getYesNo(data.ccuRegaData, true));
+        $(".ccu-rpc").html(getYesNo(data.initsDone, true));
     });
 
     socket.on("updateStatus", function (data) {
-        $(".ccu-reachable").html(data.ccuReachable ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-regaup").html(data.ccuRegaUp ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-regadata").html(data.ccuRegaData ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-rpc").html(data.initsDone ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
+        $(".ccu-reachable").html(getYesNo(data.ccuReachable, true));
+        $(".ccu-regaup").html(getYesNo(data.ccuRegaUp, true));
+        $(".ccu-regadata").html(getYesNo(data.ccuRegaData, true));
+        $(".ccu-rpc").html(getYesNo(data.initsDone, true));
     });
 
     socket.on ("readyBackup", function (name) {
@@ -199,7 +245,7 @@ $(document).ready(function () {
                     var addonData = {
                         name:               "<a href='/"+meta.dirname+"' target='_blank'>"+meta.name+"</a>",
                         installedVersion:   meta.version,
-                        availableVersion:   "<input data-update-name='"+meta.name+"' class='updateCheck' data-update-url='"+meta.urlMeta+"' type='button' value='check'/>",
+                        availableVersion:   "<input data-update-name='"+meta.name+"' class='updateCheck translateV' data-update-url='"+meta.urlMeta+"' type='button' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("check")+"'/>",
                         homepage:           "<a href='"+meta.urlHomepage+"' target='_blank'>"+hp[1]+"</a>",
                         download:           "<a href='"+meta.urlDownload+"' target='_blank'>"+dl[1]+"</a>"
                     };
@@ -273,7 +319,7 @@ $(document).ready(function () {
                         var updateAvailable = compareVersion(instVersion, availVersion);
 
                         if (updateAvailable) {
-                            $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' value='update'/>&nbsp;");
+                            $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update translateV' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("update")+"'/>&nbsp;");
                             $("input#update_"+obj.ident).click(function () {
                                 $(this).attr("disabled", true);
                                 var that = this;
@@ -325,7 +371,7 @@ $(document).ready(function () {
                             }
 
                             if (updateAvailable) {
-                                $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' value='update'/>&nbsp;");
+                                $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("update")+"'/>&nbsp;");
                                 $("input#update_"+obj.ident).click(function () {
                                     $(this).attr("disabled", true);
                                     var that = this;
@@ -720,10 +766,13 @@ $(document).ready(function () {
             $("#grid_datapoints").trigger("reloadGrid");
         });
     }
+    function getWord (word) {
+        return "<span class='translate' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"'>"+translateWord(word)+"</span>";
+    }
 
     $("#grid_addons").jqGrid({
         datatype: "local",
-        colNames:['id', 'name', 'installed version', 'available version', 'homepage', 'download'],
+        colNames:['id', getWord('name'), getWord('installed version'), getWord('available version'), getWord('homepage'), getWord('download')],
         colModel:[
             {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
             {name:'name',index:'name', width:340, sorttype: "int"},
@@ -740,20 +789,20 @@ $(document).ready(function () {
         sortname: "id",
         sortorder: "asc",
         viewrecords: true,
-        caption: "Addons"
+        caption: getWord("Addons")
     });
 
     $("#grid_adapter").jqGrid({
         datatype: "local",
-        colNames:['id', 'name', 'settings', 'confed', 'enabled', 'mode', 'period'],
+        colNames:['id', getWord('name'), getWord('settings'), getWord('confed'), getWord('enabled'), getWord('mode'), getWord('period')],
         colModel:[
-            {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
-            {name:'name',index:'name', width:340, sorttype: "int"},
+            {name:'id',      index:'id', width:60, sorttype: "int", hidden: true},
+            {name:'name',    index:'name', width:340, sorttype: "int"},
             {name:'settings',index:'settings', width:80, sorttype: "int"},
-            {name:'confed',index:'confed', width:100, hidden: true},
-            {name:'enabled',index:'enabled', width:100},
-            {name:'mode',index:'mode', width:100},
-            {name:'period',index:'period', width:100}
+            {name:'confed',  index:'confed', width:100, hidden: true},
+            {name:'enabled', index:'enabled', width:100},
+            {name:'mode',    index:'mode', width:100},
+            {name:'period',  index:'period', width:100}
         ],
         autowidth: true,
         width: 1200,
@@ -763,7 +812,7 @@ $(document).ready(function () {
         sortname: "id",
         sortorder: "asc",
         viewrecords: true,
-        caption: "Adapter"
+        caption: getWord("Adapter")
     });
 
     $("#grid_events").jqGrid({
@@ -851,12 +900,6 @@ $(document).ready(function () {
             });
         }
 
-    });
-
-    $("#install_addon_dialog").dialog({
-        autoOpen: false,
-        title: "Install Addon",
-        modal: true
     });
 
     function loadSettings() {
