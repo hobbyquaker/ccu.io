@@ -1169,7 +1169,7 @@ $(document).ready(function () {
         try {
             var adapterSettings = JSON.parse($("#adapter_config_json").val());
             socket.emit("writeFile", "adapter-"+adapter+".json", adapterSettings, function () {
-                showMessage(adapter+" adapter settings saved. Please restart CCU.IO");
+                showMessage(adapter+translateWord(" adapter settings saved. Please restart CCU.IO"));
             });
             return true;
         } catch (e) {
