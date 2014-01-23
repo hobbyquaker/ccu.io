@@ -644,7 +644,7 @@ $(document).ready(function () {
     $("#grid_datapoints").jqGrid({
         datatype: "local",
 
-        colNames:['id', 'TypeName', 'Name', 'Parent Name', 'Value', 'Timestamp', 'ack', 'lastChange'],
+        colNames:['id', getWord('TypeName'), getWord('Name'), getWord('Parent Name'), getWord('Value'), getWord('Timestamp'), getWord('ack'), getWord('lastChange')],
         colModel:[
             {name:'id',index:'id', width:60, sorttype: "int"},
             {name:'type',index:'type', width:80},
@@ -665,7 +665,7 @@ $(document).ready(function () {
         viewrecords: true,
         sortname: "id",
         sortorder: "asc",
-        caption:"datapoints",
+        caption: getWord("datapoints"),
         onSelectRow: function(id){
             if(id && id!==datapointsLastSel){
                 $('#grid_datapoints').restoreRow(datapointsLastSel);
@@ -834,7 +834,7 @@ $(document).ready(function () {
 
     $("#grid_events").jqGrid({
         datatype: "local",
-        colNames:['eventCount','id', 'TypeName', 'Name', 'Parent Name','Value', 'Timestamp', 'ack', 'lastChange'],
+        colNames:[getWord('eventCount'),'id', getWord('TypeName'), getWord('Name'), getWord('Parent Name'),getWord('Value'), getWord('Timestamp'), getWord('ack'), getWord('lastChange')],
         colModel:[
             {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
             {name:'ise_id',index:'ise_id', width:60, sorttype: "int"},
@@ -857,7 +857,7 @@ $(document).ready(function () {
         sortorder: "desc",
         viewrecords: true,
         sortorder: "desc",
-        caption: "Events",
+        caption: getWord("Events"),
         ignoreCase:true
     }).jqGrid('filterToolbar',{
         defaultSearch:'cn',
