@@ -11,6 +11,8 @@
 			"_1": {
 				"ip": "xxx.xxx.xxx.xxx",
 				"name": "",
+				"username": "",
+				"password": "",
 				"rooms": [""],
 				"funcs": [],
 				"favs": [],
