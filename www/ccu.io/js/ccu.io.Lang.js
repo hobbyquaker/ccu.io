@@ -100,5 +100,55 @@ var ccuWords = {
     "Install Addon"     : {"en": "Install Addon",         "de": "Addon installieren", "ru": "Установить дополнение"},
     "reload"            : {"en": "reload",                "de": "neu laden",          "ru": "обновить"},
     "configure"         : {"en": "configure",             "de": "konfigurieren",      "ru": "настроить"},
-    "periodical"        : {"en": "periodical",            "de": "periodisch",         "ru": "периодичный"}
+    "periodical"        : {"en": "periodical",            "de": "periodisch",         "ru": "периодичный"},
+    "Error"             : {"en": "Error",                 "de": "Fehler",             "ru": "Ошибка"},
+    "File saved."       : {"en": "File saved.",           "de": "Datei gespeichert",  "ru": "Файл сохранён."},
+    "CCU.IO disconnected":{"en": "CCU.IO disconnected",   "de": "Verbindung zu CCU.IO getrennt", "ru": "Связь с CCU.IO прервана"},
+    "install started"   : {"en": "install started",       "de": "Installation ist gestartet","ru": "Установка начата"},
+    "CCU.IO settings saved. Please restart CCU.IO" : {
+        "en": "CCU.IO settings saved. Please restart CCU.IO",                 
+        "de": "CCU.IO Einstellüngen sind gespeichert. Bitte CCU.IO neu starten",             
+        "ru": "CCU.IO настройки сохранены. Перезапустите CCU.IO"
+        },
+    "Error: invalid JSON" : {"en": "Error: invalid JSON", "de": "Fehler: ungültiges JSON","ru": "Ошибка: неправильный формат JSON"},
+    " adapter settings saved. Please restart CCU.IO" : {
+        "en": " adapter settings saved. Please restart CCU.IO",                 
+        "de": "-Adpater-Einstellungen sind gespeichert. Bitte CCU.IO neu starten",             
+        "ru": ": настройки сохранены. Перезапустите CCU.IO или драйвер"
+        },
+    "Apply backup started. Please be patient..." : {
+        "en": "Apply backup started. Please be patient...",                 
+        "de": "Apply backup started. Please be patient...",             
+        "ru": "Резервная копия распаковывается. Подождтите..."
+        },
+    "Apply backup done. Restart CCU.IO" : {
+        "en": "Apply backup done. Restart CCU.IO",                 
+        "de": "Apply backup done. Restart CCU.IO",             
+        "ru": "Резервная копия распакована. Перезапустите CCU.IO"
+        },
+    "Error: Backup failed." : {
+        "en": "Error: Backup failed.",                 
+        "de": "Fehler: Sicherheitskopie konnte nicht erzeugt werden",             
+        "ru": "Ошибка: создание резервной копии не удалось."
+        },
+    "Backup started. Please be patient..." : {
+        "en": "Backup started. Please be patient...",                 
+        "de": "Sicherheitskopie wird erstellt. Bitte warten...",             
+        "ru": "Создание резервной копии запущено. Подождтите..."
+        },
+    "Update started. Please be patient..." : {
+        "en": "Update started. Please be patient...",                 
+        "de": "Update ist gestartet. Bitte warten...",             
+        "ru": "Обновление начато. Подождтите..."
+        },
+    "Update done. Restarting..." : {
+        "en": "Update done. Restarting...",                 
+        "de": "Update beendet. Neustart...",             
+        "ru": "Обновление завершено. Перезагрузка..."
+        },
+    "Error: update failed." : {
+        "en": "Error: update failed.",                 
+        "de": "Fehler: update konnte nicht durchgeführt werden.",             
+        "ru": "Ошибка: обновление не удалось."
+        }
 };
