@@ -27,6 +27,13 @@ Settings
 
 The settings following the standard of CCU.IO. There is a *settings.json* with some configuration items you need to change:
 
+<table>
+<tr>
+<th>item</th>
+<th>description</th>
+</tr>
+</table>
+
 | item | description |
 | host | The ip address of your Yamaha AV receiver |
 | port | The socket port you listen too (default: 50000) |
