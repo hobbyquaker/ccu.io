@@ -1,7 +1,7 @@
 Dreambox adapter
 ======
 
-* Aktuelle Version: 0.7
+* Aktuelle Version: 0.8
 * Anzahl verwendeter Variablen in ccu.io: pro konfigurierter Box 7
 * getestet mit CCU.IO 1.0.12 und Dreambox DM800se 
 
@@ -17,7 +17,7 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 * **Polling Interval** - Definition des Abruf-Intervalls (in Sekunden)
 * **Message Type** - Typ der Nachricht, mit dem Meldungen auf dem Bildschirm der Dreambox ausgegeben werden
 * **Message Timeout** - Anzeigedauer einer auszugebenden Nachricht
-* **Debug enabled** - Aktiviert das Loggen von Debug-Informationen
+* **Debug log enabled** - Aktiviert das Loggen von Debug-Informationen
 
 ### Konfiguration pro Box
 * **Adresse** - IP-Adresse
@@ -101,6 +101,10 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 * Weitere Kommando-Auswertungen
 
 ## Changelog
+
+### 0.8
+* Fehler beim Speichern von Zugangsdaten behoben
+* Logging erweitert
 
 ### 0.7
 * Verwendung von Alias-Werten für eine Vielzahl von Fernbedienungscodes
