@@ -75,6 +75,7 @@ var ccuWords = {
     "regaIndex"         : {"en": "regaIndex",            "de": "regaIndex",           "ru": "regaIndex"},
     "datapoints"        : {"en": "datapoints",           "de": "Datenpunkte",         "ru": "Значения"},
     "events"            : {"en": "events",               "de": "Ereignisse",          "ru": "События"},
+    "Events"            : {"en": "Events",               "de": "Ereignisse",          "ru": "События"},
     "stringtable"       : {"en": "stringtable",          "de": "Text-Tabelle",        "ru": "Текст"},
     "datastore"         : {"en": "datastore",            "de": "datastore",           "ru": "datastore"},
     "refresh"           : {"en": "refresh",              "de": "Neu laden",           "ru": "Обновить"},
