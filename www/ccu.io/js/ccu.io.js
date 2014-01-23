@@ -1184,7 +1184,7 @@ $(document).ready(function () {
             return;
         }
         $('#dialogModal').show ();
-        $('#dialogModal').html ("<p>"+text +"</p>").attr('title', caption || "Message");
+        $('#dialogModal').html ("<p>"+translateWord (text) +"</p>").attr('title', translateWord (caption || "Message"));
         $( "#dialogModal" ).dialog({
             height: 200,
             modal: true,
