@@ -3,6 +3,8 @@
     "firstId": 72500,
     "settings": {
         "interval": 60000,
+        "deviceName": "Rasp1",
+        "piface": "false",
         "gpio": {
             "22": {
                 "direction": "in"
