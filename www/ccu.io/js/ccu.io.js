@@ -815,7 +815,7 @@ $(document).ready(function () {
         colModel:[
             {name:'id',      index:'id', width:60, sorttype: "int", hidden: true},
             {name:'name',    index:'name', width:340, sorttype: "int"},
-            {name:'settings',index:'settings', width:80, sorttype: "int"},
+            {name:'settings',index:'settings', width:120, sorttype: "int"},
             {name:'confed',  index:'confed', width:100, hidden: true},
             {name:'enabled', index:'enabled', width:100},
             {name:'mode',    index:'mode', width:100},
