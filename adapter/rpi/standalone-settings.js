@@ -9,6 +9,7 @@ var rpi = {
     "settings": {
         "deviceName": "PI-WHITE",
         "interval": 60000,
+        "piface": false,
         "gpio": {
             "17": {
                 "direction": "out"
