@@ -10,45 +10,43 @@
     <script src="../lib/js/jquery.multiselect-1.13.min.js" type="text/javascript"></script>
     <script src="../lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js" type="text/javascript"></script>
     <script src="../lib/js/jqGrid/i18n/grid.locale-en.js" type="text/javascript"></script>
+    <script src="../lib/js/dropzone.js" type="text/javascript" ></script>
     <script src="/auth/auth.js" type="text/javascript"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="js/ccu.io.Lang.js" type="text/javascript"></script>
     <script src="js/ccu.io.js" type="text/javascript"></script>
 </head>
 <body>
 <div class="jqui-tabs" id="mainTabs">
     <ul>
-        <li><a href="#mainTab1"><span>CCU.IO</span></a></li>
-        <li><a href="#mainTab2"><span>Addons</span></a></li>
-        <li><a href="#mainTab3"><span>Adapter</span></a></li>
+        <li><a href="#mainTab1"><span class='translate'>CCU.IO</span></a></li>
+        <li><a href="#mainTab2"><span class='translate'>Addons</span></a></li>
+        <li><a href="#mainTab3"><span class='translate'>Adapter</span></a></li>
         <!-- <li><a href="#mainTab4"><span>Scripts</span></a></li> -->
-        <li><a href="#mainTab5"><span>Data</span></a></li>
+        <li><a href="#mainTab5"><span class='translate'>Data</span></a></li>
     </ul>
     <div id="mainTab1">
         <div class="jqui-tabs" id="subTabs1">
             <ul>
-                <li><a href="#subTab11">Info</a></li>
-                <li><a href="#subTab12">Control</a></li>
-                <li><a href="#subTab13">Settings</a></li>
+                <li><a href="#subTab11" class='translate'>Info</a></li>
+                <li><a href="#subTab12" class='translate'>Control</a></li>
+                <li><a href="#subTab13" class='translate'>Settings</a></li>
                 <!--<li><a href="#subTab14">Log</a></li>-->
             </ul>
             <div id="subTab11">
 
                 <table style="font-size:12px" id="version_info">
                     <tr>
-                        <td style="width: 200px">
-                            CCU.IO installed Version:
-                        </td>
+                        <td style="width: 200px" class='translate'>CCU.IO installed Version:</td>
                         <td style="width:165px; text-align:right;">
                             <span class="ccu-io-version"></span>
                         </td>
                     </tr>
                     <tr>
-                        <td>
-                            CCU.IO available Version:
-                        </td>
+                        <td class='translate'>CCU.IO available Version:</td>
                         <td style="width:165px; text-align:right;">
-                            <input style="display:none" type="button" id="update_self" value="update"/>
-                            <input type="button" id="update_self_check" value="check"/>
+                            <input style="display:none" type="button"  class='translateV' id="update_self" value="update"/>
+                            <input type="button" id="update_self_check" class='translateV' value="check"/>
                             <span class="ccu-io-availversion"></span>
 
                         </td>
@@ -59,27 +57,27 @@
                 <p>
                 <table style="font-size:12px">
                     <tr>
-                        <td style="width: 200px">CCU reachable:</td><td style="width:165px; text-align:right;" class="ccu-reachable"></td>
+                        <td style="width: 200px" class='translate'>CCU reachable:</td><td style="width:165px; text-align:right;" class="ccu-reachable"></td>
                     </tr>
                     <tr>
-                        <td>ReGa Up:</td><td style="width:165px; text-align:right;" class="ccu-regaup"></td>
+                        <td class='translate'>ReGa Up:</td><td style="width:165px; text-align:right;" class="ccu-regaup"></td>
                     </tr>
                     <tr>
-                        <td>ReGa Data loaded:</td><td style="width:165px; text-align:right;" class="ccu-regadata"></td>
+                        <td class='translate'>ReGa Data loaded:</td><td style="width:165px; text-align:right;" class="ccu-regadata"></td>
                     </tr>
                     <tr>
-                        <td>RPC Inits:</td><td style="width:165px; text-align:right;" class="ccu-rpc"></td>
+                        <td class='translate'>RPC Inits:</td><td style="width:165px; text-align:right;" class="ccu-rpc"></td>
                     </tr>
                 </table>
                 </p>
                 <p>
                 <table style="font-size:12px">
                     <tr>
-                        <td style="width: 200px">script-engine enabled:</td><td style="width:165px; text-align:right;" class="ccu-io-scriptengine"></td>
+                        <td style="width: 200px" class='translate'>script-engine enabled:</td><td style="width:165px; text-align:right;" class="ccu-io-scriptengine"></td>
                     </tr>
 
                     <tr>
-                        <td>logging enabled:</td><td style="width:165px; text-align:right;" class="ccu-io-logging"></td>
+                        <td class='translate'>logging enabled:</td><td style="width:165px; text-align:right;" class="ccu-io-logging"></td>
                     </tr>
                 </table>
                 </p>
@@ -88,16 +86,16 @@
                 <p>
                 <table style="font-size:12px">
                 <tr>
-                    <td style="width: 200px">Last ReGa poll:</td><td style="width:165px; text-align:right;" class="ccu-io-lastrega"></td>
+                    <td style="width: 200px" class='translate'>Last ReGa poll:</td><td style="width:165px; text-align:right;" class="ccu-io-lastrega"></td>
                 </tr>
                 <tr>
-                    <td style="width: 200px">Last rf event:</td><td style="width:165px; text-align:right;" class="ccu-io-lastrf"></td>
+                    <td style="width: 200px" class='translate'>Last rf event:</td><td style="width:165px; text-align:right;" class="ccu-io-lastrf"></td>
                 </tr>
                 <tr>
-                        <td>Last hs485 event:</td><td style="width:165px; text-align:right;" class="ccu-io-lasths485"></td>
+                        <td class='translate'>Last hs485 event:</td><td style="width:165px; text-align:right;" class="ccu-io-lasths485"></td>
                     </tr>
                     <tr>
-                        <td>Last CUx event:</td><td style="width:165px; text-align:right;" class="ccu-io-lastcux"></td>
+                        <td class='translate'>Last CUx event:</td><td style="width:165px; text-align:right;" class="ccu-io-lastcux"></td>
                     </tr>
                 </table>
                 </p>
@@ -107,31 +105,31 @@
                 <table>
                     <tr>
                         <td>
-                            <input type="button" id="restartCCUIO" value="restart CCU.IO"/>
+                            <input type="button" id="restartCCUIO"  class='translateV' value="restart CCU.IO"/>
                         </td>
                         <td>
-                            <input type="button" id="refreshAddons" value="refresh Addons"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="button" id="refreshCCU" value="reload ReGa data"/>
-                        </td>
-                        <td>
-
+                            <input type="button" id="refreshAddons"  class='translateV' value="refresh Addons"/>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <input type="button" id="restartRPC" value="restart RPC inits"/>
+                            <input type="button" id="refreshCCU"  class='translateV' value="reload ReGa data"/>
                         </td>
                         <td>
-
+                            <input type="button" id="createBackup"  class='translateV' value="create Backup"/>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <input type="button" id="reloadScriptEngine" value="restart script-engine"/>
+                            <input type="button" id="restartRPC"  class='translateV' value="restart RPC inits"/>
+                        </td>
+                        <td>
+                            <input type="button" id="applyBackup"  class='translateV' value="apply Backup"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="reloadScriptEngine"  class='translateV' value="restart script-engine"/>
                         </td>
                         <td>
 
@@ -141,12 +139,26 @@
 
             </div>
             <div id="subTab13">
-                <input type="button" id="saveSettings" value="save changes"/><br/><br/>
+                <input type="button" id="saveSettings"  class='translateV' value="save changes"/><br/><br/>
                 <div class="settings-box">
-                    <h3>Base configuration</h3>
+                    <h3 class='translate'>Base configuration</h3>
                     <table class="settings-table">
                         <tr>
-                            <td class="settings-td1">CCU IP-Address</td>
+                            <td class="settings-td1">Language</td>
+                            <td class="settings-td2">&nbsp;</td>
+                            <td class="settings-td3"><select id="language">
+                                <option value='en'>English</option>
+                                <option value='de'>Deutsch</option>
+                                <option value='ru'>Русский</option>
+                                </select>
+                            </td>
+                            <td class="settings-td4">&nbsp;</td>
+                            <td class="settings-td5">&nbsp;</td>
+                            <td class="settings-td6">&nbsp;</td>
+                            <td class="settings-td7">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td1 translate">CCU IP-Address</td>
                             <td class="settings-td2">&nbsp;</td>
                             <td class="settings-td3"><input id="ccuIp" type="text"/></td>
                             <td class="settings-td4">&nbsp;</td>
@@ -155,7 +167,7 @@
                             <td class="settings-td7">&nbsp;</td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">CCU.IO IP-Address</td>
+                            <td class="settings-td1 translate">CCU.IO IP-Address</td>
                             <td class="settings-td2">&nbsp;</td>
                             <td class="settings-td3"><input id="binrpc_listenIp" type="text"/></td>
                             <td class="settings-td4">&nbsp;</td>
@@ -164,69 +176,69 @@
                             <td class="settings-td7">&nbsp;</td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">Stats</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">Stats</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="stats" type="checkbox"/></td>
-                            <td class="settings-td4">Interval (minutes)</td>
+                            <td class="settings-td4 translate">Interval (minutes)</td>
                             <td class="settings-td5"><input id="statsInterval" type="text"/></td>
                             <td class="settings-td6">&nbsp;</td>
                             <td class="settings-td7">&nbsp;</td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">Logging</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">Logging</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="logging_enabled" type="checkbox"/></td>
-                            <td class="settings-td4">Write Interval (s)</td>
+                            <td class="settings-td4 translate">Write Interval (s)</td>
                             <td class="settings-td5"><input id="logging_writeInterval" type="text"/></td>
                             <td class="settings-td6">&nbsp;</td>
                             <td class="settings-td7">&nbsp;</td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">Script-Engine</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">Script-Engine</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="scriptEngineEnabled" type="checkbox"/></td>
-                            <td class="settings-td4">Longitude</td>
+                            <td class="settings-td4 translate">Longitude</td>
                             <td class="settings-td5"><input id="longitude" type="text"/></td>
-                            <td class="settings-td6">Latitude</td>
+                            <td class="settings-td6 translate">Latitude</td>
                             <td class="settings-td7"><input id="latitude" type="text"/></td>
                         </tr>
 
                     </table>
                 </div>
                 <div class="settings-box">
-                    <h3>Webserver</h3>
+                    <h3 class='translate'>Webserver</h3>
                     <table class="settings-table">
                         <tr>
-                            <td class="settings-td1">HTTP</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">HTTP</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="httpEnabled" type="checkbox"/></td>
-                            <td class="settings-td4">Port</td>
+                            <td class="settings-td4 translate">Port</td>
                             <td class="settings-td5"><input id="ioListenPort" data-defaultval="8080" type="text"/></td>
-                            <td class="settings-td6">Authentication</td>
+                            <td class="settings-td6 translate">Authentication</td>
                             <td class="settings-td7"><input id="authentication_enabled" type="checkbox"/></td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">HTTPS</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">HTTPS</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="httpsEnabled" type="checkbox"/></td>
-                            <td class="settings-td4">Port</td>
+                            <td class="settings-td4 translate">Port</td>
                             <td class="settings-td5"><input id="ioListenPortSsl" data-defaultval="8443" type="text"/></td>
-                            <td class="settings-td6">Authentication</td>
+                            <td class="settings-td6 translate">Authentication</td>
                             <td class="settings-td7"><input id="authentication_enabledSsl" type="checkbox"/></td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">Authentication</td>
-                            <td class="settings-td2">Username</td>
+                            <td class="settings-td1 translate">Authentication</td>
+                            <td class="settings-td2 translate">Username</td>
                             <td class="settings-td3"><input id="authentication_user" type="text"/></td>
-                            <td class="settings-td4">Password</td>
+                            <td class="settings-td4 translate">Password</td>
                             <td class="settings-td5"><input id="authentication_password" type="text"/></td>
                             <td class="settings-td6">&nbsp;</td>
                             <td class="settings-td7">&nbsp;</td>
 
                         </tr>
                         <tr>
-                            <td class="settings-td1">Cache</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">Cache</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="useCache" type="checkbox"/></td>
                             <td class="settings-td4">&nbsp;</td>
                             <td class="settings-td5">&nbsp;</td>
@@ -237,20 +249,20 @@
                     </table>
                 </div>
                 <div class="settings-box">
-                    <h3>HomeMatic RPC</h3>
+                    <h3 class='translate'>HomeMatic RPC</h3>
                     <table class="settings-table">
                         <tr>
-                            <td class="settings-td1">CCU.IO RPC Server </td>
+                            <td class="settings-td1 translate">CCU.IO RPC Server </td>
                             <td class="settings-td2">&nbsp;</td>
                             <td class="settings-td3">&nbsp;</td>
-                            <td class="settings-td4">Port</td>
+                            <td class="settings-td4 translate">Port</td>
                             <td class="settings-td5"><input id="binrpc_listenPort" data-defaultval="2100" type="text"/></td>
                             <td class="settings-td6">&nbsp;</td>
                             <td class="settings-td7">&nbsp;</td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">rfd Init</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">rfd Init</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="binrpc_rfdEnabled" type="checkbox"/></td>
                             <td class="settings-td4"></td>
                             <td class="settings-td5"></td>
@@ -258,8 +270,8 @@
                             <td class="settings-td7"></td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">hs485d Init</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">hs485d Init</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="binrpc_hs485dEnabled" type="checkbox"/></td>
                             <td class="settings-td4"></td>
                             <td class="settings-td5"></td>
@@ -267,17 +279,17 @@
                             <td class="settings-td7"></td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">CUxD Init</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">CUxD Init</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="binrpc_cuxdEnabled" type="checkbox"/></td>
-                            <td class="settings-td4">Port</td>
+                            <td class="settings-td4 translate">Port</td>
                             <td class="settings-td5"><input id="binrpc_cuxdPort" type="text"/></td>
                             <td class="settings-td6"></td>
                             <td class="settings-td7"></td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">Check RPC Events</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">Check RPC Events</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="binrpc_checkEvents_enabled" type="checkbox"/></td>
                             <td class="settings-td4"></td>
                             <td class="settings-td5"></td>
@@ -285,18 +297,18 @@
                             <td class="settings-td7"></td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">Check rfd Events</td>
+                            <td class="settings-td1 translate">Check rfd Events</td>
                             <td class="settings-td2"></td>
                             <td class="settings-td3"></td>
-                            <td class="settings-td4">Virtual Key</td>
+                            <td class="settings-td4 translate">Virtual Key</td>
                             <td colspan="2"><input size="50" id="binrpc_checkEvents_rfd" type="text"/></td>
                             <td class="settings-td7"></td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">Check hs485d Events</td>
+                            <td class="settings-td1 translate">Check hs485d Events</td>
                             <td class="settings-td2"></td>
                             <td class="settings-td3"></td>
-                            <td class="settings-td4">Virtual Key</td>
+                            <td class="settings-td4 translate">Virtual Key</td>
                             <td colspan="2"><input size="50" id="binrpc_checkEvents_hs485d" type="text"/></td>
                             <td class="settings-td7"></td>
                         </tr>
@@ -304,22 +316,22 @@
                     </table>
                 </div>
                 <div class="settings-box">
-                    <h3>HomeMatic ReGaHSS</h3>
+                    <h3 class='translate'>HomeMatic ReGaHSS</h3>
                     <table class="settings-table">
                         <tr>
-                            <td class="settings-td1">Polling</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">Polling</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="regahss_pollData" type="checkbox"/></td>
-                            <td class="settings-td4">Interval (ms)</td>
+                            <td class="settings-td4 translate">Interval (ms)</td>
                             <td class="settings-td5"><input id="regahss_pollDataInterval" type="text"/></td>
                             <td class="settings-td6">&nbsp;</td>
                             <td class="settings-td7">&nbsp;</td>
                         </tr>
                         <tr>
-                            <td class="settings-td1">Polling Trigger</td>
-                            <td class="settings-td2">Enabled</td>
+                            <td class="settings-td1 translate">Polling Trigger</td>
+                            <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="regahss_pollDataTriggerEnabled" type="checkbox"/></td>
-                            <td class="settings-td4">Virtual Key</td>
+                            <td class="settings-td4 translate">Virtual Key</td>
                             <td colspan="2"><input id="regahss_pollDataTrigger" size="50" type="text"/></td>
                             <td class="settings-td7">&nbsp;</td>
                         </tr>
@@ -337,21 +349,19 @@
     <div id="mainTab2">
         <table class="" id="grid_addons"></table>
         <div id="pager_addons"></div>
-        <input type="button" id="install_addon" value="install addon"/>
+        <input type="button" id="install_addon"  class='translateV' value="install addon"/>
     </div>
     <div id="mainTab3">
-        <div id="adapter_loading" style="display:none">
-            ...loading
-        </div>
+        <div id="adapter_loading" style="display:none" class='translate'>...loading</div>
         <div id="adapter_overview">
             <table class="gridMain" id="grid_adapter"></table>
             <div id="pager_adapter"></div>
         </div>
         <div id="adapter_config" style="display: none">
-            <h3><span id="adapter_name"></span> adapter configuration</h3>
-            <button id="adapter_save">Save</button>
-            <button id="adapter_close">Save and close</button>
-            <button id="adapter_cancel">Discard changes and close</button>
+            <h3><span id="adapter_name"></span> <span class='translate'>adapter configuration</span></h3>
+            <button id="adapter_save"   class='translateB'>Save</button>
+            <button id="adapter_close"  class='translateB'>Save and close</button>
+            <button id="adapter_cancel" class='translateB'>Discard changes and close</button>
             <br/><br/>
             <textarea id='adapter_config_json'></textarea>
             <div id="adapter_config_container">
@@ -366,22 +376,22 @@
     <div id="mainTab5">
         <div class="jqui-tabs" id="subTabs5">
             <ul>
-                <li><a href="#subTab51">regaObjects</a></li>
-                <li><a href="#subTab52">regaIndex</a></li>
-                <li><a href="#subTab53">datapoints</a></li>
-                <li><a href="#subTab55">events</a></li>
-                <li><a href="#subTab54">stringtable</a></li>
-                <li><a href="#subTab56">datastore</a></li>
+                <li><a href="#subTab51" class='translate'>regaObjects</a></li>
+                <li><a href="#subTab52" class='translate'>regaIndex</a></li>
+                <li><a href="#subTab53" class='translate'>datapoints</a></li>
+                <li><a href="#subTab55" class='translate'>events</a></li>
+                <li><a href="#subTab54" class='translate'>stringtable</a></li>
+                <li><a href="#subTab56" class='translate'>datastore</a></li>
             </ul>
             <div id="subTab51">
-                <input id="metaRefresh" type="button" value="refresh"/>
-                <input id="metaAnonymize" type="button" value="anonymize"/>
+                <input id="metaRefresh"   type="button" class='translateV' value="refresh"/>
+                <input id="metaAnonymize" type="button" class='translateV' value="anonymize"/>
                 <!--<input id="metaSave" type="button" value="apply changes"/>--><br/>
                 <textarea readonly class="data-area ui-widget ui-state-default ui-corner-all" id="meta"></textarea>
             </div>
             <div id="subTab52">
-                <input id="indexRefresh" type="button" value="refresh"/>
-                <input id="indexAnonymize" type="button" value="anonymize"/>
+                <input id="indexRefresh"   type="button" class='translateV' value="refresh"/>
+                <input id="indexAnonymize" type="button" class='translateV' value="anonymize"/>
                 <!--<input id="indexSave" type="button" value="apply changes"/>--><br/>
                 <textarea readonly class="data-area ui-widget ui-state-default ui-corner-all" id="index"></textarea>
             </div>
@@ -403,9 +413,9 @@
             </div>
             <div id="subTab56">
                 <select id="select_datastore">
-                    <option value=""> - none</option>
+                    <option value="" class="translate"> - none</option>
                 </select>
-                <input id="datastoreSave" type="button" value="save changes"/><br>
+                <input id="datastoreSave" type="button" class='translateV' value="save changes"/><br>
                 <textarea class="data-area ui-widget ui-state-default ui-corner-all" id="datastore"></textarea>
             </div>
         </div>
@@ -422,14 +432,19 @@
         <option value="ScriptGUI">ScriptGUI</option>
         <option value="ScriptEditor">ScriptEditor</option>
     </select>
-    <input type="button" id="install_addon_button" value="install"/>
+    <input type="button" id="install_addon_button" class='translateV' value="install"/>
 </div>
 <div id="reloading" style="display: none; position:absolute; top:0px; left:0px; width:100%; height: 100%; background-color:white;">
-    <br/><br/><span style="padding: 50px; font-size: 15px; font-weight: bold;">CCU.IO is reloading all CCU data. Please be patient. This page will be automatically reloaded when finished.</span>
+    <br/><br/><span style="padding: 50px; font-size: 15px; font-weight: bold;" class="translate">CCU.IO is reloading all CCU data. Please be patient. This page will be automatically reloaded when finished.</span>
 </div>
 
 <div id="restarting" style="display: none; position:absolute; top:0px; left:0px; width:100%; height: 100%; background-color:white;">
-    <br/><br/><span style="padding: 50px; font-size: 15px; font-weight: bold;">CCU.IO is restarting.</span>
+    <br/><br/><span style="padding: 50px; font-size: 15px; font-weight: bold;" class="translate">CCU.IO is restarting.</span>
+</div>
+<div style="display: none" id="uploadPreview"></div>
+
+<div id="dialogModal">
+
 </div>
 
 </body>

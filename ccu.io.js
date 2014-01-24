@@ -163,6 +163,7 @@ var socketlist = [],
         DEVICE: [],
         CHANNEL: [],
         HSSDP: [],
+        VARDP: [],
         ALDP: [],
         ALARMDP: [],
         PROGRAM: []
@@ -178,6 +179,12 @@ logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
 loadPersistentObjects();
 loadDatapoints();
 initWebserver();
+
+// Create language variable
+datapoints[69999] = [settings.language || 'en', formatTimestamp(), true];
+regaObjects[69999] = {Name:"SYSTEM.LANGUAGE", TypeName: "VARDP", DPInfo: "DESC", ValueType: 20, ValueSubType: 11};
+regaIndex.VARDP.push(69999);
+regaIndex.Name[69999] = [13305, "VARDP", null];
 
 var regahss = new rega({
     ccuIp: settings.ccuIp,
@@ -1365,6 +1372,72 @@ function initSocketIO(_io) {
             });
         });
 
+        socket.on('createBackup', function () {
+            var path = __dirname + "/backup.js";
+            logger.info("ccu.io        starting "+path);
+            var backupProcess = childProcess.fork(path, ["create"]);
+            var fileName = "";
+            backupProcess.on("message", function (msg) {
+                fileName = msg;
+            });
+            if (io) {
+                io.sockets.emit("ioMessage", "Backup started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Backup started. Please be patient...");
+            }
+            backupProcess.on("close", function (code) {
+                if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("readyBackup", fileName);
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("readyBackup", fileName);
+                    }
+                } else {
+                    logger.error("ccu.io        Backup failed.");
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Error: Backup failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Error: Backup failed.");
+                    }
+                }
+            });
+        });
+
+        socket.on('applyBackup', function (fileName) {
+            var path = __dirname + "/backup.js";
+            logger.info("ccu.io        starting "+path);
+            var backupProcess = childProcess.fork(path, [fileName]);
+            var fileName = "";
+
+            if (io) {
+                io.sockets.emit("ioMessage", "Apply backup started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Apply backup started. Please be patient...");
+            }
+            backupProcess.on("close", function (code) {
+                if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("applyReady", "Apply backup done. Restart CCU.IO");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("applyReady", "Apply backup done. Restart CCU.IO");
+                    }
+                } else {
+                    logger.error("ccu.io        Apply backup failed.");
+                    if (io) {
+                        io.sockets.emit("applyError", "Error: Backup failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("applyError", "Error: Backup failed.");
+                    }
+                }
+            });
+        });
+
         socket.on('refreshAddons', function () {
             if (io) {
                 io.sockets.emit("refreshAddons");
@@ -1728,9 +1801,6 @@ function initSocketIO(_io) {
                 }
                 delete obj.favs;
             }
-
-
-
 
             if (obj.TypeName) {
                 if (!regaIndex[obj.TypeName]) {

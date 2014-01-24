@@ -3,7 +3,7 @@
         <td>
             Enabled:
         </td>
-        <td colspan='5'>
+        <td colspan='6'>
             <select id="lgtv_enabled">
                 <option value="false">false</option>
                 <option value="true">true</option>
@@ -14,6 +14,7 @@
         <th>IP Address</th>
         <th>Name</th>
         <th>Pair Key</th>
+        <th>Is 2012 </th>
         <th>Rooms</th>
         <th>Functions</th>
         <th>Favorites</th>
@@ -28,97 +29,99 @@ To control LG tv over ethernet write variable 73222 with text command or 73223 w
 <br>Following commands are supported:
 <table>
     <tr><td colspan="2"><b>Menus</b>   </td></tr>
-    <tr><td>menu_status_bar           </td><td>35       </td></tr>
-    <tr><td>menu_quick_menu           </td><td>69       </td></tr>
-    <tr><td>menu_home_menu            </td><td>67       </td></tr>
-    <tr><td>menu_premium_menu         </td><td>89       </td></tr>
-    <tr><td>menu_installation_menu    </td><td>207      </td></tr>
-    <tr><td>menu_IN_START             </td><td>251      </td></tr>
-    <tr><td>menu_EZ_ADJUST            </td><td>255      </td></tr>
-    <tr><td>menu_power_only           </td><td>254      </td></tr>
+    <tr><td>menu_status_bar           </td><td>35       </td><td>      </td></tr>
+    <tr><td>menu_quick_menu           </td><td>69       </td><td>      </td></tr>
+    <tr><td>menu_home_menu            </td><td>67       </td><td>21    </td></tr>
+    <tr><td>menu_premium_menu         </td><td>89       </td><td>      </td></tr>
+    <tr><td>menu_installation_menu    </td><td>207      </td><td>      </td></tr>
+    <tr><td>menu_IN_START             </td><td>251      </td><td>      </td></tr>
+    <tr><td>menu_EZ_ADJUST            </td><td>255      </td><td>      </td></tr>
+    <tr><td>menu_power_only           </td><td>254      </td><td>      </td></tr>
+    <tr><td>menu_my_apps              </td><td>         </td><td>417   </td></tr>
+    <tr><td>menu_net_cast             </td><td>         </td><td>408   </td></tr>
     <tr><td colspan="2"><b> Power controls</b>   </td></tr>
-    <tr><td>power_off                 </td><td>8        </td></tr>
-    <tr><td>power_sleep_timer         </td><td>14       </td></tr>
+    <tr><td>power_off                 </td><td>8        </td><td>1     </td></tr>
+    <tr><td>power_sleep_timer         </td><td>14       </td><td>      </td></tr>
     <tr><td colspan="2"><b> Navigation</b>   </td></tr>
-    <tr><td>nav_left                  </td><td>7        </td></tr>
-    <tr><td>nav_right                 </td><td>6        </td></tr>
-    <tr><td>nav_up                    </td><td>64       </td></tr>
-    <tr><td>nav_down                  </td><td>65       </td></tr>
-    <tr><td>nav_select                </td><td>68       </td></tr>
-    <tr><td>nav_back                  </td><td>40       </td></tr>
-    <tr><td>nav_exit                  </td><td>91       </td></tr>
-    <tr><td>nav_red                   </td><td>114      </td></tr>
-    <tr><td>nav_green                 </td><td>113      </td></tr>
-    <tr><td>nav_yellow                </td><td>99       </td></tr>
-    <tr><td>nav_blue                  </td><td>97       </td></tr>
+    <tr><td>nav_left                  </td><td>7        </td><td>3     </td></tr>
+    <tr><td>nav_right                 </td><td>6        </td><td>4     </td></tr>
+    <tr><td>nav_up                    </td><td>64       </td><td>1     </td></tr>
+    <tr><td>nav_down                  </td><td>65       </td><td>2     </td></tr>
+    <tr><td>nav_select                </td><td>68       </td><td>20    </td></tr>
+    <tr><td>nav_back                  </td><td>40       </td><td>23    </td></tr>
+    <tr><td>nav_exit                  </td><td>91       </td><td>412   </td></tr>
+    <tr><td>nav_red                   </td><td>114      </td><td>31    </td></tr>
+    <tr><td>nav_green                 </td><td>113      </td><td>30    </td></tr>
+    <tr><td>nav_yellow                </td><td>99       </td><td>32    </td></tr>
+    <tr><td>nav_blue                  </td><td>97       </td><td>29    </td></tr>
     <tr><td colspan="2"><b> keypad</b>   </td></tr>
-    <tr><td>keypad_0                  </td><td>16       </td></tr>
-    <tr><td>keypad_1                  </td><td>17       </td></tr>
-    <tr><td>keypad_2                  </td><td>18       </td></tr>
-    <tr><td>keypad_3                  </td><td>19       </td></tr>
-    <tr><td>keypad_4                  </td><td>20       </td></tr>
-    <tr><td>keypad_5                  </td><td>21       </td></tr>
-    <tr><td>keypad_6                  </td><td>22       </td></tr>
-    <tr><td>keypad_7                  </td><td>23       </td></tr>
-    <tr><td>keypad_8                  </td><td>24       </td></tr>
-    <tr><td>keypad_9                  </td><td>25       </td></tr>
-    <tr><td>keypad__  (underline)     </td><td>76       </td></tr>
+    <tr><td>keypad_0                  </td><td>16       </td><td>      </td></tr>
+    <tr><td>keypad_1                  </td><td>17       </td><td>5     </td></tr>
+    <tr><td>keypad_2                  </td><td>18       </td><td>6     </td></tr>
+    <tr><td>keypad_3                  </td><td>19       </td><td>7     </td></tr>
+    <tr><td>keypad_4                  </td><td>20       </td><td>8     </td></tr>
+    <tr><td>keypad_5                  </td><td>21       </td><td>      </td></tr>
+    <tr><td>keypad_6                  </td><td>22       </td><td>      </td></tr>
+    <tr><td>keypad_7                  </td><td>23       </td><td>      </td></tr>
+    <tr><td>keypad_8                  </td><td>24       </td><td>      </td></tr>
+    <tr><td>keypad_9                  </td><td>25       </td><td>      </td></tr>
+    <tr><td>keypad__  (underline)     </td><td>76       </td><td>      </td></tr>
     <tr><td colspan="2"><b>Playback controls</b>   </td></tr>
-    <tr><td>playback_play             </td><td>176      </td></tr>
-    <tr><td>playback_pause            </td><td>186      </td></tr>
-    <tr><td>playback_fast_forward     </td><td>142      </td></tr>
-    <tr><td>playback_rewind           </td><td>143      </td></tr>
-    <tr><td>playback_stop             </td><td>177      </td></tr>
-    <tr><td>playback_record           </td><td>189      </td></tr>
+    <tr><td>playback_play             </td><td>176      </td><td>33    </td></tr>
+    <tr><td>playback_pause            </td><td>186      </td><td>34    </td></tr>
+    <tr><td>playback_fast_forward     </td><td>142      </td><td>      </td></tr>
+    <tr><td>playback_rewind           </td><td>143      </td><td>      </td></tr>
+    <tr><td>playback_stop             </td><td>177      </td><td>35    </td></tr>
+    <tr><td>playback_record           </td><td>189      </td><td>      </td></tr>
     <tr><td colspan="2"><b> Input controls</b>   </td></tr>
-    <tr><td>input_tv_radio            </td><td>15       </td></tr>
-    <tr><td>input_simplink            </td><td>126      </td></tr>
-    <tr><td>input_input               </td><td>11       </td></tr>
-    <tr><td>input_component_rgb_hdmi  </td><td>152      </td></tr>
-    <tr><td>input_component           </td><td>191      </td></tr>
-    <tr><td>input_rgb                 </td><td>213      </td></tr>
-    <tr><td>input_hdmi                </td><td>198      </td></tr>
-    <tr><td>input_hdmi1               </td><td>206      </td></tr>
-    <tr><td>input_hdmi2               </td><td>204      </td></tr>
-    <tr><td>input_hdmi3               </td><td>233      </td></tr>
-    <tr><td>input_hdmi4               </td><td>218      </td></tr>
-    <tr><td>input_av1                 </td><td>90       </td></tr>
-    <tr><td>input_av2                 </td><td>208      </td></tr>
-    <tr><td>input_av3                 </td><td>209      </td></tr>
-    <tr><td>input_usb                 </td><td>124      </td></tr>
-    <tr><td>input_slideshow_usb1      </td><td>238      </td></tr>
-    <tr><td>input_slideshow_usb2      </td><td>168      </td></tr>
+    <tr><td>input_tv_radio            </td><td>15       </td><td>      </td></tr>
+    <tr><td>input_simplink            </td><td>126      </td><td>      </td></tr>
+    <tr><td>input_input               </td><td>11       </td><td>47    </td></tr>
+    <tr><td>input_component_rgb_hdmi  </td><td>152      </td><td>      </td></tr>
+    <tr><td>input_component           </td><td>191      </td><td>      </td></tr>
+    <tr><td>input_rgb                 </td><td>213      </td><td>      </td></tr>
+    <tr><td>input_hdmi                </td><td>198      </td><td>      </td></tr>
+    <tr><td>input_hdmi1               </td><td>206      </td><td>      </td></tr>
+    <tr><td>input_hdmi2               </td><td>204      </td><td>      </td></tr>
+    <tr><td>input_hdmi3               </td><td>233      </td><td>      </td></tr>
+    <tr><td>input_hdmi4               </td><td>218      </td><td>      </td></tr>
+    <tr><td>input_av1                 </td><td>90       </td><td>      </td></tr>
+    <tr><td>input_av2                 </td><td>208      </td><td>      </td></tr>
+    <tr><td>input_av3                 </td><td>209      </td><td>      </td></tr>
+    <tr><td>input_usb                 </td><td>124      </td><td>      </td></tr>
+    <tr><td>input_slideshow_usb1      </td><td>238      </td><td>      </td></tr>
+    <tr><td>input_slideshow_usb2      </td><td>168      </td><td>      </td></tr>
     <tr><td colspan="2"><b> TV Controls</b>   </td></tr>
-    <tr><td>tv_channel_up             </td><td>0        </td></tr>
-    <tr><td>tv_channel_down           </td><td>1        </td></tr>
-    <tr><td>tv_channel_back           </td><td>26       </td></tr>
-    <tr><td>tv_favorites              </td><td>30       </td></tr>
-    <tr><td>tv_teletext               </td><td>32       </td></tr>
-    <tr><td>tv_t_opt                  </td><td>33       </td></tr>
-    <tr><td>tv_channel_list           </td><td>83       </td></tr>
-    <tr><td>tv_greyed_out_add_button  </td><td>85       </td></tr>
-    <tr><td>tv_guide                  </td><td>169      </td></tr>
-    <tr><td>tv_info                   </td><td>170      </td></tr>
-    <tr><td>tv_live_tv                </td><td>158      </td></tr>
+    <tr><td>tv_channel_up             </td><td>0        </td><td>27    </td></tr>
+    <tr><td>tv_channel_down           </td><td>1        </td><td>28    </td></tr>
+    <tr><td>tv_channel_back           </td><td>26       </td><td>403   </td></tr>
+    <tr><td>tv_favorites              </td><td>30       </td><td>      </td></tr>
+    <tr><td>tv_teletext               </td><td>32       </td><td>      </td></tr>
+    <tr><td>tv_t_opt                  </td><td>33       </td><td>      </td></tr>
+    <tr><td>tv_channel_list           </td><td>83       </td><td>      </td></tr>
+    <tr><td>tv_greyed_out_add_button  </td><td>85       </td><td>      </td></tr>
+    <tr><td>tv_guide                  </td><td>169      </td><td>      </td></tr>
+    <tr><td>tv_info                   </td><td>170      </td><td>      </td></tr>
+    <tr><td>tv_live_tv                </td><td>158      </td><td>      </td></tr>
     <tr><td colspan="2"><b> Picture controls</b>   </td></tr>
-    <tr><td>picture_av_mode           </td><td>48       </td></tr>
-    <tr><td>picture_mode              </td><td>77       </td></tr>
-    <tr><td>picture_ratio             </td><td>121      </td></tr>
-    <tr><td>picture_ratio_4_3         </td><td>118      </td></tr>
-    <tr><td>picture_ratio_16_9        </td><td>119      </td></tr>
-    <tr><td>picture_energy_saving     </td><td>149      </td></tr>
-    <tr><td>picture_cinema_zoom       </td><td>175      </td></tr>
-    <tr><td>picture_3D                </td><td>220      </td></tr>
-    <tr><td>picture_factory_check     </td><td>252      </td></tr>
+    <tr><td>picture_av_mode           </td><td>48       </td><td>      </td></tr>
+    <tr><td>picture_mode              </td><td>77       </td><td>      </td></tr>
+    <tr><td>picture_ratio             </td><td>121      </td><td>      </td></tr>
+    <tr><td>picture_ratio_4_3         </td><td>118      </td><td>      </td></tr>
+    <tr><td>picture_ratio_16_9        </td><td>119      </td><td>      </td></tr>
+    <tr><td>picture_energy_saving     </td><td>149      </td><td>      </td></tr>
+    <tr><td>picture_cinema_zoom       </td><td>175      </td><td>      </td></tr>
+    <tr><td>picture_3D                </td><td>220      </td><td>400   </td></tr>
+    <tr><td>picture_factory_check     </td><td>252      </td><td>      </td></tr>
     <tr><td colspan="2"><b> Audio controls</b>   </td></tr>
-    <tr><td>audio_volume_up           </td><td>2        </td></tr>
-    <tr><td>audio_volume_down         </td><td>3        </td></tr>
-    <tr><td>audio_mute                </td><td>9        </td></tr>
-    <tr><td>audio_language            </td><td>10       </td></tr>
-    <tr><td>audio_sound_mode          </td><td>82       </td></tr>
-    <tr><td>audio_factory_sound_check</td><td>253      </td></tr>
-    <tr><td>audio_subtitle_language   </td><td>57       </td></tr>
-    <tr><td>audio_audio_description   </td><td>145       </td></tr>
+    <tr><td>audio_volume_up           </td><td>2        </td><td>24    </td></tr>
+    <tr><td>audio_volume_down         </td><td>3        </td><td>25    </td></tr>
+    <tr><td>audio_mute                </td><td>9        </td><td>26    </td></tr>
+    <tr><td>audio_language            </td><td>10       </td><td>      </td></tr>
+    <tr><td>audio_sound_mode          </td><td>82       </td><td>      </td></tr>
+    <tr><td>audio_factory_sound_check </td><td>253      </td><td>      </td></tr>
+    <tr><td>audio_subtitle_language   </td><td>57       </td><td>      </td></tr>
+    <tr><td>audio_audio_description   </td><td>145      </td><td>      </td></tr>
 </table>
 </p>
 <p>Some LG devices have a bug, that network stack is not active at start. To activate network stack on LG device set up network settings one more time.</p>
@@ -136,6 +139,7 @@ To control LG tv over ethernet write variable 73222 with text command or 73223 w
 		sText += '<td><input id="lgtv_ip_'  +id+'" data-lgtv-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.devices[id].ip   || "")+'"/></td>';
 		sText += '<td><input id="lgtv_name_'+id+'" data-lgtv-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.devices[id].name || "")+'"/></td>';
         sText += '<td><input id="lgtv_pair_'+id+'" data-lgtv-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.devices[id].pairKey || "")+'"/></td>';
+        sText += '<td><input id="lgtv_2012_'+id+'" data-lgtv-device="'+id+'" type="checkbox" /></td>';
 
 		var t = "";
         if (currentAdapterSettings.settings.devices[id].rooms) {
@@ -224,6 +228,14 @@ To control LG tv over ethernet write variable 73222 with text command or 73223 w
 
             storeSettings();
         }).keyup(function() { $(this).trigger("change")});
+
+        $("#lgtv_2012_"+id).attr("checked",currentAdapterSettings.settings.devices[id].is2012 ? true : false);
+
+        $("#lgtv_2012_"+id).change(function () {
+            var id = $(this).attr('data-lgtv-device');
+            currentAdapterSettings.settings.devices[id].is2012 = this.checked;
+            storeSettings();
+        });
     }
 	
     function lgtvRefreshDevices() {
@@ -300,9 +312,9 @@ To control LG tv over ethernet write variable 73222 with text command or 73223 w
         });
     }
 
-    function lgtvShowPair(ip) {
+    function lgtvShowPair(ip, is2012) {
         console.log ("SHOW:"+ip);
-        socket.emit('execScript', "/adapter/lgtv/lgtvPair.js", [ip]);
+        socket.emit('execScript', "/adapter/lgtv/lgtvPair.js", [ip, is2012]);
     }
 
 </script>

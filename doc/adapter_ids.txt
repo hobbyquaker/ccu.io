@@ -1,5 +1,7 @@
 66000-66100                     virtuelle Räume und Gewerke
 
+69999                           CCU.IO language
+
 70000                           yr adapter - Wettervorhersage von yr.no 48h Tabelle HTML
 70001                           yr adapter - Regen 24h
 70002                           yr adapter - Regen 48h

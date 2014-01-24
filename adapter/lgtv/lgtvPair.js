@@ -38,6 +38,6 @@ function postRequest (device, path, post_data, callback) {
 
 var arguments = process.argv.splice(2);
 if (arguments.length) {
-    var dev = {"ip": arguments[0]};
-    postRequest (dev, "/hdcp/api/auth", "<?xml version=\"1.0\" encoding=\"utf-8\"?><auth><type>AuthKeyReq</type></auth>");
+    var dev = {"ip": arguments[0], is2012: arguments[1]};
+    postRequest (dev, dev.is2012 ? "/roap/api/auth" : "/hdcp/api/auth", "<?xml version=\"1.0\" encoding=\"utf-8\"?><auth><type>AuthKeyReq</type></auth>");
 }
