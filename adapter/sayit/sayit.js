@@ -273,7 +273,6 @@ function sayItSystem (i_, text, language, volume) {
     var ls = null;
     var file = sayItGetFileName (text);
     setState (objPlaying, true);
-    var oldVolume = null;
 
     if (volume !== null && volume !== undefined) {
         sayItSystemVolume (volume);
@@ -299,6 +298,39 @@ function sayItSystem (i_, text, language, volume) {
     if (ls) {
         ls.on('error', function(e) {
             throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
+        });
+    }
+}
+
+function sayItWindows (i_, text, language, volume) {
+	// If mp3 file
+	if (sayItIsPlayFile (text)) {
+		sayItSystem (i_, text, language, volume);
+		return;
+	}
+	
+    var p = os.platform();
+    var ls = null;
+    var file = sayItGetFileName (text);
+    setState (objPlaying, true);
+
+    if (volume !== null && volume !== undefined) {
+        sayItSystemVolume (volume);
+    }
+
+    if (p.match(/^win/)) {
+        //windows
+        ls = cp.exec (__dirname + '/Say/SayStatic.exe ' + text, function (error, stdout, stderr) {
+            setState (objPlaying, false);
+        });
+    }
+    else {
+    	logger.error ('sayItWindows: only windows OS is supported for Windows default mode');
+    }
+
+    if (ls) {
+        ls.on('error', function(e) {
+            throw new Error('sayIt.play: there was an error while text2speech on window:' + e);
         });
     }
 }
@@ -456,7 +488,8 @@ var sayit_options = {
 	"browser": {name: "Browser",           mp3Required: true,  func: sayItBrowser},
     "mp24ftp": {name: "MediaPlayer24+FTP", mp3Required: true,  func: sayItMP24ftp},
 	"mp24"   : {name: "MediaPlayer24",     mp3Required: false, func: sayItMP24},
-	"system" : {name: "System",            mp3Required: true,  func: sayItSystem}
+	"system" : {name: "System",            mp3Required: true,  func: sayItSystem},
+	"windows": {name: "Windows default",   mp3Required: false, func: sayItWindows}
 };
 
 var sayit_engines = {

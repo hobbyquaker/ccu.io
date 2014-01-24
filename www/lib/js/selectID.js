@@ -85,7 +85,7 @@ var hmSelect = {
 				'HM-Sys-sRP-Pl':     'OM55_DimmerSwitch_thumb.png',
 				'HM-LC-Dim1T-Pl-2':  'OM55_DimmerSwitch_thumb.png',
 				'HM-LC-Sw1-Pl-2':    'OM55_DimmerSwitch_thumb.png',
-				'HM-LC-Sw1-Ba-PCB':  '88_hm-lc-sw4-ba-pcb_thumb.png',
+                'HM-LC-Sw4-Ba-PCB':  '88_hm-lc-sw4-ba-pcb_thumb.png',
 				'HM-Sen-RD-O':       '87_hm-sen-rd-o_thumb.png',
 				'HM-RC-Sec4-2':      '86_hm-rc-sec4-2_thumb.png',
 				'HM-PB-6-WM55':      '86_hm-pb-6-wm55_thumb.png',
@@ -187,8 +187,9 @@ var hmSelect = {
 				'HM-WS550STH-O':     'TH_CS_thumb.png',
 				'HM-WDS30-OT2-SM':   'IP65_G201_thumb.png',
 				'SONOS_ROOT':        'sonos.png',
-				'PING':              'pc.png'
-			};	
+				'PING':              'pc.png',
+                'Alarm':             'alarm.png'
+			};
 		}
 		if (this.images[type]) {
 			return this.deviceImgPath + this.images[type];

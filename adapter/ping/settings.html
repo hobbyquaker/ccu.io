@@ -1,17 +1,15 @@
 <table style="font-size: 12px" id="ping_table">
     <tr>
-        <td>
-            Enabled:
-        </td>
+        <td class="translate">Enabled:</td>
         <td colspan='5'>
             <select id="ping_enabled">
-                <option value="false">false</option>
-                <option value="true">true</option>
+                <option value="false" class="translate">false</option>
+                <option value="true"  class="translate">true</option>
             </select>
         </td>
     </tr>
     <tr>
-        <td>Polling interval:</td>
+        <td class="translate">Polling interval:</td>
         <td colspan='5'><input id="ping_polling_interval" type="text"/></td>
     </tr>
     <tr>
@@ -19,15 +17,52 @@
     </tr>
 
     <tr>
-        <th>IP Address</th>
-        <th>Name</th>
-        <th>Rooms</th>
-        <th>Functions</th>
-        <th>Favorites</th>
-        <th></th>
+        <th class="translate">IP Address</th>
+        <th class="translate">Name</th>
+        <th class="translate">Rooms</th>
+        <th class="translate">Functions</th>
+        <th class="translate">Favorites</th>
+        <th class="translate"></th>
     </tr>
 </table>
-<input type="button" id="add_device" value="add device"/>
+<input type="button" id="add_device"  class="translateV" value="add device"/>
+<p>
+<h1 class="translate">Description</h1>
+<span class="translate">Description text</span>
+</p>
+
+<script type="text/javascript">
+    var adapterWords = {
+        "false":             {"en": "false",             "de": "nein",            "ru": "нет"},
+        "true":              {"en": "true",              "de": "ja",              "ru": "да"},
+        "Enabled:":          {"en": "Enabled:",          "de": "Aktiviert:",      "ru": "Активно:"},
+        "Polling interval:": {"en": "Polling interval (sec):", "de": "Pollintervall (sek):",     "ru": "Интервал сканирования (сек):"},
+        "IP address":        {"en": "IP address",        "de": "IP-Adresse",      "ru": "IP адрес"},
+        "Name":              {"en": "Name",              "de": "Name",            "ru": "Имя"},
+        "Rooms":             {"en": "Rooms",             "de": "Zimmern",         "ru": "Комнаты"},
+        "Functions":         {"en": "Functions",         "de": "Gewerke",         "ru": "Раздел"},
+        "Favorites":         {"en": "Favorites",         "de": "Favorites",       "ru": "Избранное"},
+        "remove device":     {"en": "remove device",     "de": "Gerät löschen",   "ru": "Удалить"},
+        "add device":        {"en": "add device",        "de": "Gerät einfügen",  "ru": "Добавить"},
+        "Description":       {"en": "Description",       "de": "Beschreibung",    "ru": "Описание"},
+        "Description text":  {
+            "en": "Ping adapter allows to scan IP devices in the local network.<br>"
+                    +"From 70100 the Object \"PING.<IP>.STATE\" will be created for every Device in the list. This object consists the state of the device as true or false.<br>"
+                    +"Only operation systems with enabled \"ping\" command are supported as CCU.IO host: Linux, Windows, MacOS."
+                    +"All devices, that support ICMP protocol, can be scaned by this adapter.",
+
+            "de": "Ping adapter allows to scan IP devices in the local network.<br>"
+                    +"Ab 70100 wird für jedes Gerät ein Objekt PING.<IP>.STATE erzeugt, welches den Gerätenzustand als \"true\" oder \"false\" hat.<br>"
+                    +"Es sind die Systeme für CCU.IO, die \"ping\"-Befehl haben, unterstützt: Linux, Windows, MacOS.<br>"
+                    +"Alle Geräte, die ICMP Protokoll unterstützen, können mit diesem Adapter geskännt werden.",
+
+            "ru": "Ping драйвер позволяет сканировать устройства в локальной сети. Для этого используется ICMP протокол.<br>"
+                    +"Начиная с номера 70100 для каждого устройства создается объект \"PING.<IP>.STATE\",содержащий состояние устройства, как true или false.<br>"
+                    +"Только системы с установленной командой ping поддерживаются для CCU.IO: Linux, Windows, MacOS.<br>"
+                    +"Все устройства, поддерживающие ICMP, могут быть просканированны этим драйвером."
+        }
+    };
+</script>
 
 <script type="text/javascript">
 
@@ -66,7 +101,7 @@
         }
         sText += '<td><input id="ping_favs_'+id+'" data-ping-device="'+id+'" type="text" value="'+t+'"/></td>';
 
-        sText += '<td><input data-ping-device="'+id+'" type="button" value="remove device" class="ping-remove"/></td>';
+        sText += '<td><input data-ping-device="'+id+'" type="button" value="remove device" class="ping-remove translateV"/></td>';
 		sText += "</tr>";
 
 		$("#ping_table").append(sText);
@@ -164,5 +199,7 @@
         pingRefreshDevices();
         storeSettings();
     }
+    
+    translateAll (ccuIoSettings.language, adapterWords);
 
 </script>
