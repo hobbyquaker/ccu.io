@@ -13,7 +13,7 @@ function translateWord (text, lang, dictionary) {
     if (!dictionary) {
         return text;
     }
-    
+
     if (dictionary[text]) {
         var newText = dictionary[text][lang];
         if (newText){
@@ -25,7 +25,7 @@ function translateWord (text, lang, dictionary) {
                 return newText;
             }
         }
-        
+
     }
     console.log ("trans: " + text);
     return text;
@@ -49,7 +49,7 @@ function translateWordBack (text, lang, dictionary) {
 function translateAll (lang, dictionary) {
     lang  = lang || ccuIoSettings.language || 'en';
     dictionary = dictionary || ccuWords;
-    
+
     $(".translate").each(function (idx) {
         var curlang = $(this).attr ('data-lang');
         var text    = $(this).html ();
@@ -421,23 +421,23 @@ $(document).ready(function () {
             header: false,
             selectedList: 1
         }).change(function () {
-            var file = ($("#select_datastore option:selected").val());
-            if (file == "") {
-                $("textarea#datastore").val("");
-                $("#datastoreSave").button("disable");
-            } else {
+                var file = ($("#select_datastore option:selected").val());
+                if (file == "") {
+                    $("textarea#datastore").val("");
+                    $("#datastoreSave").button("disable");
+                } else {
 
-                $("textarea#datastore").val("");
-                $("#datastoreSave").button("disable");
+                    $("textarea#datastore").val("");
+                    $("#datastoreSave").button("disable");
 
-                socket.emit("readFile", [file], function (data) {
-                    if (data) {
-                        $("textarea#datastore").val(JSON.stringify(data, null, 2));
-                        $("#datastoreSave").button("enable");
-                    }
-                });
-            }
-        });
+                    socket.emit("readFile", [file], function (data) {
+                        if (data) {
+                            $("textarea#datastore").val(JSON.stringify(data, null, 2));
+                            $("#datastoreSave").button("enable");
+                        }
+                    });
+                }
+            });
     });
 
     $("#datastoreSave").button().button("disable").click(function () {
@@ -485,7 +485,7 @@ $(document).ready(function () {
     });
 
 
-    $("#restartCCUIO").button().css("width", 240).click(function () {
+    $("#restartCCUIO").button().css("width", 300).click(function () {
         socket.emit("restart");
         $("#restarting").show();
         setTimeout(function () {
@@ -493,20 +493,20 @@ $(document).ready(function () {
         }, 30000);
     });
 
-    $("#refreshAddons").button().css("width", 240).click(function () {
+    $("#refreshAddons").button().css("width", 300).click(function () {
         socket.emit("refreshAddons");
     })
 
-    $("#refreshCCU").button().css("width", 240).click(function () {
+    $("#refreshCCU").button().css("width", 300).click(function () {
         socket.emit('reloadData');
         //$("#reloading").show();
     });
-    $("#createBackup").button().css("width", 240).click(function () {
+    $("#createBackup").button().css("width", 300).click(function () {
         $(this).button( "option", "disabled", true );
         socket.emit('createBackup');
     });
 
-    $("#applyBackup").button().css("width", 240).click(function () {
+    $("#applyBackup").button().css("width", 300).click(function () {
         $("#applyBackup").button( "option", "disabled", true );
     });
 
@@ -542,18 +542,18 @@ $(document).ready(function () {
 
     });
 
-    $("#restartRPC").button().css("width", 240).click(function () {
+    $("#restartRPC").button().css("width", 300).click(function () {
         socket.emit('restartRPC');
     });
 
-    $("#reloadScriptEngine").button().css("width", 240).click(function () {
+    $("#reloadScriptEngine").button().css("width", 300).click(function () {
         $("#reloadScriptEngine").button("disable");
         socket.emit('reloadScriptEngine', function () {
             $("#reloadScriptEngine").button("enable");
         });
     });
 
-    $("#dataRefresh").button().css("width", 240).click(function() {
+    $("#dataRefresh").button().css("width", 300).click(function() {
         $("#data").html("");
         socket.emit('getDatapoints', function(obj) {
             $("#data").html(JSON.stringify(obj, null, "  "));
@@ -617,26 +617,26 @@ $(document).ready(function () {
 
 
 
-/*
-    $("#grid_log").jqGrid({
-        colNames:['Timestamp','Severity', 'Message'],
-        colModel:[
-            {name:'timestamp',index:'timestamp', width:100},
-            {name:'severity',index:'severity', width:100},
-            {name:'message',index:'message', width:800}
-        ],
-        rowNum:10,
-        autowidth: true,
-        width: "100%",
-        rowList:[10,20,30],
-        //pager: $('#pager_log'),
-        sortname: 'timestamp',
-        viewrecords: true,
-        sortorder: "desc",
-        caption:"CCU.IO Log"
-    }); //.navGrid('#pager_log',{edit:false,add:false,del:false});
+    /*
+     $("#grid_log").jqGrid({
+     colNames:['Timestamp','Severity', 'Message'],
+     colModel:[
+     {name:'timestamp',index:'timestamp', width:100},
+     {name:'severity',index:'severity', width:100},
+     {name:'message',index:'message', width:800}
+     ],
+     rowNum:10,
+     autowidth: true,
+     width: "100%",
+     rowList:[10,20,30],
+     //pager: $('#pager_log'),
+     sortname: 'timestamp',
+     viewrecords: true,
+     sortorder: "desc",
+     caption:"CCU.IO Log"
+     }); //.navGrid('#pager_log',{edit:false,add:false,del:false});
 
-*/
+     */
 
     var datapointsLastSel;
     var datapointsEditing = false;
@@ -684,13 +684,13 @@ $(document).ready(function () {
             });
         }
     }).jqGrid('filterToolbar',{
-        autosearch: true,
-        searchOnEnter: false,
-        enableClear: false
-    }).navGrid('#pager_datapoints',{search:false, refresh: false, edit:false,add:true,addicon: "ui-icon-refresh", del:false, addfunc: function() {
-        $datapointGrid.jqGrid("clearGridData");
-         loadDatapoints();
-    }});
+            autosearch: true,
+            searchOnEnter: false,
+            enableClear: false
+        }).navGrid('#pager_datapoints',{search:false, refresh: false, edit:false,add:true,addicon: "ui-icon-refresh", del:false, addfunc: function() {
+            $datapointGrid.jqGrid("clearGridData");
+            loadDatapoints();
+        }});
 
 
     socket.emit('getIndex', function(obj) {
@@ -860,15 +860,15 @@ $(document).ready(function () {
         caption: getWord("Events"),
         ignoreCase:true
     }).jqGrid('filterToolbar',{
-        defaultSearch:'cn',
+            defaultSearch:'cn',
 
-        autosearch: true,
-        searchOnEnter: false,
-        enableClear: false
-    }).navGrid('#pager_events',{search:false, refresh:false, edit:false,add:true, addicon: "ui-icon-trash", del:false, addfunc: function () {
-        $eventGrid.jqGrid("clearGridData");
-        eventCounter = 0;
-    }});
+            autosearch: true,
+            searchOnEnter: false,
+            enableClear: false
+        }).navGrid('#pager_events',{search:false, refresh:false, edit:false,add:true, addicon: "ui-icon-trash", del:false, addfunc: function () {
+            $eventGrid.jqGrid("clearGridData");
+            eventCounter = 0;
+        }});
 
     function resizeGrids() {
         var x = $(window).width();
@@ -925,8 +925,8 @@ $(document).ready(function () {
         $("#language").change(function () {
             translateAll ($(this).val());
         });
-        
-        
+
+
         $("#ccuIp").val(ccuIoSettings.ccuIp);
         $("#binrpc_listenIp").val(ccuIoSettings.binrpc.listenIp);
 
