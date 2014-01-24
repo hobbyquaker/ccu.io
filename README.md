@@ -12,6 +12,7 @@ siehe http://ccu.io/
 
 * adapter/skeleton-ipc.js
 * Prozesse überwachen (und evtl abgestürzte Adapter/Script-Engine neu starten?)
+* Log über Weboberfläche ansehen (tail)
 * Logrotate für ccu.io.log
 * settings.html für diverse Adapter
 * diverse Adapter auf ipc umstellen?
@@ -40,7 +41,7 @@ siehe http://ccu.io/
 * (Bluefox) Backup über Weboberfläche
 * (Bluefox) Mehrsprachigkeit
 * (Bluefox) diverse Änderungen/Neuerungen/Bugfixes Adapter Sonos, SayIt, LGTV, Fritzbox, Ping
-* (BasGo) Adapter Dreambox v0.6
+* (BasGo) Adapter Dreambox v0.8
 * (Vader722) Adapter iCal: Style-Anpassungen
 * (Eisbaeeer) Adapter rpi: Unterstützung für PiFace
 * (Thorque) Neuer Adapter: yamaha (AV-Receiver)
