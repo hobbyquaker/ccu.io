@@ -4,7 +4,7 @@
     "settings": {
         "interval": 60000,
         "deviceName": "Rasp1",
-        "piface": "false",
+        "piface": false,
         "gpio": {
             "22": {
                 "direction": "in"
