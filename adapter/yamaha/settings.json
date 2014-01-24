@@ -1,0 +1,11 @@
+{
+    "enabled": false,
+    "settings": {
+        "firstId": 75100,
+        "host": "IP_OF_THE_YAMAHA_RECEIVER",
+        "port": 50000,
+        "xml_port": 80,
+        "id_for_onlinecheck": "0"
+
+    }
+}
