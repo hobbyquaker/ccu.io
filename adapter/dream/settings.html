@@ -41,7 +41,11 @@
 		<td colspan="6"><input id="dream_messageTimeout" type="number" min="1" max="30"/> seconds</td>
 	</tr>
 	<tr>
+<<<<<<< HEAD
 		<td>Debug enabled:</td>
+=======
+		<td>Debug log enabled:</td>
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
 		<td colspan="6">
 			<select id="dream_debugEnabled">
 				<option value="false">false</option>
@@ -55,6 +59,11 @@
 	<tr>
 		<th>IP</th>
 		<th>Port</th>
+<<<<<<< HEAD
+=======
+		<th>Username</th>
+		<th>Password</th>
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
 		<th>Name</th>
 		<th>Rooms</th>
 		<th>Functions</th>
@@ -66,8 +75,19 @@
 <br /><br />
 <h1>Hilfe</h1>
 <table style="font-size: 12px">
+<<<<<<< HEAD
 	<tr><td colspan="3" style="font-size: 14px"><b>Variablen</b></td></tr>
 	<tr><td><b>Datenpunkt-Name</b></td><td><b>Datenpunkt-ID (erste Box)</b></td><td><b>Beschreibung</b></td></tr>
+=======
+	<tr><td colspan="3" style="font-size: 14px"><b>Datenpunkte</b></td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td colspan="3">Die Datenpunkte richten sich nach der oben eingestellten First ID, wobei f&uuml;r jede konfigurierte Box eine Range von bis zu 10 IDs reserviert wird. Da die Berechnung automatisch erfolgt und die ersten 10 IDs f&uuml;r &uuml;bergreifende Zwecke reserviert bleiben, beginnt die Range f&uuml;r die erste konfigurierte Box bei <i>First ID + 10</i>, f&uuml;r die zweite Box <i>First ID + 20</i> usw.</td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td colspan="3" style="font-size: 14px"><b>Variablen</b></td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td><b>Datenpunkt-Name</b></td><td width="200"><b>Datenpunkt-ID (erste Box)</b></td><td><b>Beschreibung</b></td></tr>
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
 	<tr><td>DREAM.<i>Boxname</i>.COMMAND</td><td id="out_id01">95110</td><td>Nimmt Befehle zur Ausf&uuml;hrung entgegen (s.u.)</td></tr>
 	<tr><td>DREAM.<i>Boxname</i>.STANDBY</td><td id="out_id02">95111</td><td>Zeigt an, ob sich die Box im Standby befindet (true) oder nicht (false)</td></tr>
 	<tr><td>DREAM.<i>Boxname</i>.VOLUME</td><td id="out_id03">95112</td><td>Zeigt die aktuell eingestellte Lautst&auml;rke (0 - 100) an</td></tr>
@@ -78,12 +98,17 @@
 	<tr><td colspan="3">&nbsp;</td></tr>
 	<tr><td colspan="3">&nbsp;</td></tr>
 	<tr><td colspan="3" style="font-size: 14px"><b>Kommandos</b></td></tr>
+<<<<<<< HEAD
+=======
+	<tr><td colspan="3">&nbsp;</td></tr>
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
 	<tr><td colspan="3">Kommandos k&ouml;nnen verwendet werden, um Befehle an die Dreambox zu schicken. Hierzu muss einer der nachfolgend aufgelisteten Werte in das Datenfeld <span id=""></span> geschrieben werden. &Uuml;ber eine entsprechende Benachrichtigung nimmt der Adapter den Wert entgegen und sendet ihn an die Dreambox. Es ist egal, ob ein Kommando gro&szlig;- oder kleingeschrieben wird, beide Varianten werden erkannt und umgesetzt. Bei einer erfolgreichen Ausf&uuml;hrung wird der Inhalt des Datenfelds gel&ouml;scht.</td></tr>
 	<tr><td colspan="3">&nbsp;</td></tr>
 	<tr><td><b>Kommando</b></td><td colspan="2"><b>Beschreibung</b></td></tr>
 	<tr><td>MESSAGE:xyz</td><td colspan="2">Sendet eine Nachricht <i>xyz</i> an die Box, die f&uuml;r die in der Konfiguration unter <i>messageTimeout</i> angegebene Zeit auf dem Bildschirm angezeigt wird.</td></tr>
 	<tr><td>MUTE</td><td colspan="2">Stellt die Box auf lautlos.</td></tr>
 	<tr><td>UNMUTE</td><td colspan="2">Stellt die Box auf nicht lautlos.</td></tr>
+<<<<<<< HEAD
 	<tr><td>TOOGLEMUTE</td><td colspan="2">Wechselt zwischen lautlos und nicht lautlos hin und her.</td></tr>
 	<tr><td>VOLUME:xyz</td><td colspan="2">Stellt die Lautst&auml;rke auf den Wert <i>xyz</i>, wobei es sich hier um einen Wert zwischen 0 und 100 handeln darf.</td></tr>
 	<tr><td>WAKEUP</td><td colspan="2">Weckt die Box aus dem Standby.</td></tr>
@@ -92,6 +117,55 @@
 	<tr><td>DEEPSTANDBY</td><td colspan="2">Setzt die Box in den Deep-Standby. <b>Achtung:</b> da in diesem Modus kein Web-Interface verf&uuml;gbar ist, muss die Box per Hand wieder reaktiviert werden!</td></tr>
 	<tr><td>REBOOT</td><td colspan="2">F&uuml;hrt einen Reboot bei der Box durch.<b>Achtung:</b> f&uuml;r die Zeit des Reboots ist die Box nicht durch den Adapter erreichbar!</td></tr>
 	<tr><td>RESTART</td><td colspan="2">F&uuml;hrt einen Neustart des Enigma-Systems durch. <b>Achtung:</b> f&uuml;r die Zeit des Neustarts ist die Box nicht durch den Adapter erreichbar!</td></tr>
+=======
+	<tr><td>MUTE_TOGGLE</td><td colspan="2">Wechselt zwischen lautlos und nicht lautlos hin und her.</td></tr>
+	<tr><td>VOLUME:xyz</td><td colspan="2">Stellt die Lautst&auml;rke auf den Wert <i>xyz</i>, wobei es sich hier um einen Wert zwischen 0 und 100 handeln darf.</td></tr>
+	<tr><td>WAKEUP</td><td colspan="2">Weckt die Box aus dem Standby.</td></tr>
+	<tr><td>STANDBY</td><td colspan="2">Versetzt die Box in den Standby.</td></tr>
+	<tr><td>STANDBY_TOGGLE</td><td colspan="2">Wechselt zwischen Standby und Wakeup hin und her.</td></tr>
+	<tr><td>DEEPSTANDBY</td><td colspan="2">Setzt die Box in den Deep-Standby. <b>Achtung:</b> da in diesem Modus kein Web-Interface verf&uuml;gbar ist, muss die Box per Hand wieder reaktiviert werden!</td></tr>
+	<tr><td>REBOOT</td><td colspan="2">F&uuml;hrt einen Reboot bei der Box durch.<b>Achtung:</b> f&uuml;r die Zeit des Reboots ist die Box nicht durch den Adapter erreichbar!</td></tr>
+	<tr><td>RESTART</td><td colspan="2">F&uuml;hrt einen Neustart des Enigma-Systems durch. <b>Achtung:</b> f&uuml;r die Zeit des Neustarts ist die Box nicht durch den Adapter erreichbar!</td></tr>
+	<tr><td>KEY:xyz</td><td colspan="2">Sendet ein Fernbedienungscode an die Box. Gültige Codes für xyz sind unter dem nachfolgenden Punkt aufgeführt. Ein Beispiel wäre <b>KEY:115</b> um die Lautst&auml;rke zu erh&ouml;hen.Anstelle dessen kann aber auch der Alias <b>VOLUME_UP</b> ohne ein vorangestelltes <b>KEY:</b> verwendet werden.</td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td><b>Fernbedienungscode</b></td><td><b>Beschreibung</b><td><b>Alias-Kommando</b></td></tr>
+	<tr><td>116</td><td>Taste &quot;Power&quot;</td><td>STANDBY_TOGGLE</td></tr>
+	<tr><td>412</td><td>Taste &quot;previous&quot;</td><td>PREV</td></tr>
+	<tr><td>407</td><td>Taste &quot;next&quot;</td><td>NEXT</td></tr>
+	<tr><td>115</td><td>Taste &quot;volume up&quot;</td><td>VOLUME_UP</td></tr>
+	<tr><td>114</td><td>Taste &quot;volume down&quot;</td><td>VOLUME_DOWN</td></tr>
+	<tr><td>402</td><td>Taste &quot;bouquet up&quot;</td><td>BOUQUET_UP</td></tr>
+	<tr><td>403</td><td>Taste &quot;bouquet down&quot;</td><td>BOUQUET_DOWN</td></tr>
+	<tr><td>113</td><td>Taste &quot;mute&quot;</td><td>MUTE_TOOGLE</td></tr>
+	<tr><td>174</td><td>Taste &quot;lame&quot;</td><td>EXIT</td></tr>
+	<tr><td>358</td><td>Taste &quot;info&quot;</td><td>INFO</td></tr>
+	<tr><td>139</td><td>Taste &quot;menu&quot;</td><td>MENU</td></tr>
+	<tr><td>103</td><td>Taste &quot;up&quot;</td><td>UP</td></tr>
+	<tr><td>108</td><td>Taste &quot;down&quot;</td><td>DOWN</td></tr>
+	<tr><td>105</td><td>Taste &quot;left&quot;</td><td>LEFT oder CH_DOWN</td></tr>
+	<tr><td>106</td><td>Taste &quot;right&quot;</td><td>RIGHT oder CH_UP</td></tr>
+	<tr><td>352</td><td>Taste &quot;OK&quot;</td><td>OK</td></tr>
+	<tr><td>2</td><td>Taste &quot;1&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>3</td><td>Taste &quot;2&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>4</td><td>Taste &quot;3&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>5</td><td>Taste &quot;4&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>6</td><td>Taste &quot;5&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>7</td><td>Taste &quot;6&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>8</td><td>Taste &quot;7&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>9</td><td>Taste &quot;8&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>10</td><td>Taste &quot;1&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>11</td><td>Taste &quot;0&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>392</td><td>Taste &quot;audio&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>393</td><td>Taste &quot;video&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>398</td><td>Taste &quot;red&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>399</td><td>Taste &quot;green&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>400</td><td>Taste &quot;yellow&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>401</td><td>Taste &quot;blue&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>377</td><td>Taste &quot;tv&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>385</td><td>Taste &quot;radio&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>388</td><td>Taste &quot;text&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>138</td><td>Taste &quot;help&quot;</td><td>&nbsp;</td></tr>
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
 </table>
 
 <script type="text/javascript">
@@ -109,11 +183,20 @@
 	function storeSettings () {
 		updateAdapterSettings();
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
 	function showDevice (id) {
 	var sText = '<tr class="dream-optdevice">';
 		sText += '<td><input id="dream_ip_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].ip   || "")+'"/></td>';
 		sText += '<td><input id="dream_port_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].port   || "")+'"/></td>';
+<<<<<<< HEAD
+=======
+		sText += '<td><input id="dream_username_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].username   || "")+'"/></td>';
+		sText += '<td><input id="dream_password_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].password   || "")+'"/></td>';
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
 		sText += '<td><input id="dream_name_'+id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].name || "")+'"/></td>';
 		
 		var t = "";
@@ -215,7 +298,11 @@
 		var i = 1;
 		while (currentAdapterSettings.settings.boxes["_"+i]) i++;
 
+<<<<<<< HEAD
 		currentAdapterSettings.settings.boxes["_"+i] = {ip: "0.0.0.1", port: "80", name:"", rooms:[""], funcs:[""]};
+=======
+		currentAdapterSettings.settings.boxes["_"+i] = {ip: "0.0.0.1", port: 80, username: "", password: "", name:"", rooms:[""], funcs:[""]};
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
 		showDevice ("_"+i);
 	});
 
@@ -288,10 +375,15 @@
 
 	$("#dream_firstId").val(currentAdapterSettings.settings.firstId);
 
+<<<<<<< HEAD
 	setHelpValues(currentAdapterSettings.settings.firstId);
 	$("#dream_firstId").change(function () {
 		currentAdapterSettings.settings.firstId = $("#dream_firstId").val();
 		setHelpValues(currentAdapterSettings.settings.firstId);
+=======
+	$("#dream_firstId").change(function () {
+		currentAdapterSettings.settings.firstId = $("#dream_firstId").val();
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
 		storeSettings();
 	});
 </script>
