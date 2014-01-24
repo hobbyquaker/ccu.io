@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.13*
+*aktuelle Version: 1.0.14*
 
 ## Dokumentation
 
@@ -35,6 +35,16 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.14
+* (Bluefox) Backup über Weboberfläche
+* (Bluefox) Mehrsprachigkeit
+* (Bluefox) diverse Änderungen/Neuerungen/Bugfixes Adapter Sonos, SayIt, LGTV, Fritzbox, Ping
+* (BasGo) Adapter Dreambox v0.6
+* (Vader722) Adapter iCal: Style-Anpassungen
+* (Eisbaeeer) Adapter rpi: Unterstützung für PiFace
+* (Thorque) Neuer Adapter: yamaha (AV-Receiver)
+* (Hobbyquaker) Neuer Adapter: growl
 
 ### 1.0.13
 * (Eisbaeeer) adapter Onkyo: Added array to command variable, major changes to variables (split to feedback and set variables)
