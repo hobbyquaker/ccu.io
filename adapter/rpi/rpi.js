@@ -1,17 +1,10 @@
 /**
- *      CCU.IO RaspberryPi Adapter 0.2
+ *      CCU.IO RaspberryPi Adapter 0.3
  *
-<<<<<<< HEAD
- *
-=======
  *      20140123  Eisbaeeer - added PiFace
- *                PiFace need "node_modules/piface-node"
- *                Install with "npm install piface-node" 
- *                https://github.com/darrylhodgins/piface-node
- *                enable|disable PiFace with "piface": "false|true"
- *                in settings.json    
- * 
->>>>>>> 5a8c97f68eda64f7601f9d7d3be357e33acae0de
+ *                enable|disable PiFace with "piface": false|true
+ *                in settings.json
+ *
  */
 
 if (process.argv[2] == "--standalone") {
@@ -26,19 +19,16 @@ if (!settings.adapters.rpi || !settings.adapters.rpi.enabled) {
 }
 
 
-<<<<<<< HEAD
-=======
 //PiFace requirements
-    if (settings.adapters.rpi.settings.piface == "true") {
-        var pfio = require("./node_modules/piface-node");
-        pfio.init();
-        var vars_init = "1";   //Init fuer Inputs
-        var PiFaceIN = [];
-        var inp = [];
-                                               }
+if (settings.adapters.rpi.settings.piface) {
+    var pfio = require("piface-node");
+    pfio.init();
+    var vars_init = "1";   //Init fuer Inputs
+    var PiFaceIN = [];
+    var inp = [];
+}
 //
 
->>>>>>> 5a8c97f68eda64f7601f9d7d3be357e33acae0de
 var adapterSettings = settings.adapters.rpi.settings,
     io =        require('socket.io-client'),
     fs =        require("fs"),
@@ -46,13 +36,7 @@ var adapterSettings = settings.adapters.rpi.settings,
     gpio =      require("gpio"),
     gpioIDs =   {},
     gpioObjs =  {},
-<<<<<<< HEAD
     wireIDs =   {};
-
-
-=======
-    wireIDs =   {};         
->>>>>>> 5a8c97f68eda64f7601f9d7d3be357e33acae0de
 
 
 if (settings.ioListenPort) {
@@ -311,12 +295,6 @@ socket.emit("setObject", dpId, {
     HssType: "RPI-MEM",
     DPs: memDPs,
     Parent: settings.adapters.rpi.firstId
-<<<<<<< HEAD
-});
-
-socket.emit("setObject", dpId+1, {
-    "Name": adapterSettings.deviceName+".MEM.SIZE",
-=======
 });
 
 socket.emit("setObject", dpId+1, {
@@ -383,7 +361,6 @@ socket.emit("setObject", dpId+2, {
 
 socket.emit("setObject", dpId+3, {
     "Name": adapterSettings.deviceName+".SWAP.USAGE",
->>>>>>> 5a8c97f68eda64f7601f9d7d3be357e33acae0de
     "TypeName": "HSSDP",
     "Operations": 5,
     "ValueType": 4,
@@ -391,14 +368,6 @@ socket.emit("setObject", dpId+3, {
     "Parent": dpId
 });
 
-<<<<<<< HEAD
-socket.emit("setObject", dpId+2, {
-    "Name": adapterSettings.deviceName+".MEM.FREE",
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "MB",
-=======
 dpId += 9;
 
 var pifaceinDPs = {
@@ -436,33 +405,10 @@ socket.emit("setObject", dpId+2, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "",
->>>>>>> 5a8c97f68eda64f7601f9d7d3be357e33acae0de
     "Parent": dpId
 });
 
 socket.emit("setObject", dpId+3, {
-<<<<<<< HEAD
-    "Name": adapterSettings.deviceName+".MEM.USAGE",
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "MB",
-    "Parent": dpId
-});
-
-dpId += 4;
-
-var swapDPs = {
-    SIZE:  dpId+1,
-    FREE:  dpId+2,
-    USAGE: dpId+3
-};
-
-socket.emit("setObject", dpId, {
-    Name: adapterSettings.deviceName+".SWAP",
-    TypeName: "CHANNEL",
-    Address: adapterSettings.deviceName+".SWAP",
-=======
     "Name": adapterSettings.deviceName+".PIFACEIN.IN2",
     "TypeName": "HSSDP",
     "Operations": 5,
@@ -533,57 +479,30 @@ socket.emit("setObject", dpId, {
     Name: adapterSettings.deviceName+".PIFACEOUT",
     TypeName: "CHANNEL",
     Address: adapterSettings.deviceName+".PIFACEOUT",
->>>>>>> 5a8c97f68eda64f7601f9d7d3be357e33acae0de
     HssType: "RPI-SWAP",
     DPs: swapDPs,
     Parent: settings.adapters.rpi.firstId
 });
 
 socket.emit("setObject", dpId+1, {
-<<<<<<< HEAD
-    "Name": adapterSettings.deviceName+".SWAP.SIZE",
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "MB",
-=======
     "Name": adapterSettings.deviceName+".PIFACEOUT.OUT0",
     "TypeName": "HSSDP",
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "",
->>>>>>> 5a8c97f68eda64f7601f9d7d3be357e33acae0de
     "Parent": dpId
 });
 
 socket.emit("setObject", dpId+2, {
-<<<<<<< HEAD
-    "Name": adapterSettings.deviceName+".SWAP.FREE",
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "MB",
-=======
     "Name": adapterSettings.deviceName+".PIFACEOUT.OUT1",
     "TypeName": "HSSDP",
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "",
->>>>>>> 5a8c97f68eda64f7601f9d7d3be357e33acae0de
     "Parent": dpId
 });
 
 socket.emit("setObject", dpId+3, {
-<<<<<<< HEAD
-    "Name": adapterSettings.deviceName+".SWAP.USAGE",
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "MB",
-    "Parent": dpId
-});
-
-=======
     "Name": adapterSettings.deviceName+".PIFACEOUT.OUT2",
     "TypeName": "HSSDP",
     "Operations": 5,
@@ -639,185 +558,184 @@ socket.emit("setObject", dpId+8, {
 
 
 //PiFace 
-    if (settings.adapters.rpi.settings.piface == "true") {
+if (settings.adapters.rpi.settings.piface) {
 //Wird aufgerufen bei Änderungen von Objekten in CCU.IO. 
-socket.on('event', function (obj) {
-    if (!obj || !obj[0]) {
-        return;
+    socket.on('event', function (obj) {
+        if (!obj || !obj[0]) {
+            return;
+        }
+
+        //ID des geänderten Objektes
+        var id = obj[0];
+        //Wert des geänderten Objektes
+        var val = obj[1];
+        //Timestamp der letzten Änderung
+        var ts = obj[2];
+        //ACKnowledge der letzten Änderung
+        var ack = obj[3];
+
+        if (obj[0] == pifaceoutDPs.OUT0 || obj[0] == pifaceoutDPs.OUT1 || obj[0] == pifaceoutDPs.OUT2 || obj[0] == pifaceoutDPs.OUT3 || obj[0] == pifaceoutDPs.OUT4 || obj[0] == pifaceoutDPs.OUT5 || obj[0] == pifaceoutDPs.OUT6 || obj[0] == pifaceoutDPs.OUT7 ) {
+            //log("info", "adapter   rpi: OUT event: " );
+
+            if (id == pifaceoutDPs.OUT0 && val == "1" || id == pifaceoutDPs.OUT0 && val == "true" ) {
+                pfio.digital_write(0,1); // (pin, state)
+            }
+            if (id == pifaceoutDPs.OUT0 && val == "0" || id == pifaceoutDPs.OUT0 && val == "false" ) {
+                pfio.digital_write(0,0); // (pin, state)
+            }
+
+            if (id == pifaceoutDPs.OUT1 && val == "1" || id == pifaceoutDPs.OUT1 && val == "true" ){
+                pfio.digital_write(1,1); // (pin, state)
+            }
+            if (id == pifaceoutDPs.OUT1 && val == "0" || id == pifaceoutDPs.OUT1 && val == "false" ){
+                pfio.digital_write(1,0); // (pin, state)
+            }
+
+            if (id == pifaceoutDPs.OUT2 && val == "1" || id == pifaceoutDPs.OUT2 && val == "true" ){
+                pfio.digital_write(2,1); // (pin, state)
+            }
+            if (id == pifaceoutDPs.OUT2 && val == "0" || id == pifaceoutDPs.OUT2 && val == "false" ){
+                pfio.digital_write(2,0); // (pin, state)
+            }
+
+            if (id == pifaceoutDPs.OUT3 && val == "1" || id == pifaceoutDPs.OUT3 && val == "true" ){
+                pfio.digital_write(3,1); // (pin, state)
+            }
+            if (id == pifaceoutDPs.OUT3 && val == "0" || id == pifaceoutDPs.OUT3 && val == "false" ){
+                pfio.digital_write(3,0); // (pin, state)
+            }
+
+            if (id == pifaceoutDPs.OUT4 && val == "1" || id == pifaceoutDPs.OUT4 && val == "true" ){
+                pfio.digital_write(4,1); // (pin, state)
+            }
+            if (id == pifaceoutDPs.OUT4 && val == "0" || id == pifaceoutDPs.OUT4 && val == "false" ){
+                pfio.digital_write(4,0); // (pin, state)
+            }
+
+            if (id == pifaceoutDPs.OUT5 && val == "1" || id == pifaceoutDPs.OUT5 && val == "true" ){
+                pfio.digital_write(5,1); // (pin, state)
+            }
+            if (id == pifaceoutDPs.OUT5 && val == "0" || id == pifaceoutDPs.OUT5 && val == "false" ){
+                pfio.digital_write(5,0); // (pin, state)
+            }
+
+            if (id == pifaceoutDPs.OUT6 && val == "1" || id == pifaceoutDPs.OUT6 && val == "true" ){
+                pfio.digital_write(6,1); // (pin, state)
+            }
+            if (id == pifaceoutDPs.OUT6 && val == "0" || id == pifaceoutDPs.OUT6 && val == "false" ){
+                pfio.digital_write(6,0); // (pin, state)
+            }
+
+            if (id == pifaceoutDPs.OUT7 && val == "1" || id == pifaceoutDPs.OUT7 && val == "true" ){
+                pfio.digital_write(7,1); // (pin, state)
+            }
+            if (id == pifaceoutDPs.OUT7 && val == "0" || id == pifaceoutDPs.OUT7 && val == "false" ){
+                pfio.digital_write(7,0); // (pin, state)
+            }
+
+        }
+    });
+}
+
+if (settings.adapters.rpi.settings.pifac) {
+    function PiFaceGetValues () {
+        PiFaceIN[0] = pfio.digital_read(0); // (pin; returns state)
+        PiFaceIN[1] = pfio.digital_read(1);
+        PiFaceIN[2] = pfio.digital_read(2);
+        PiFaceIN[3] = pfio.digital_read(3);
+        PiFaceIN[4] = pfio.digital_read(4);
+        PiFaceIN[5] = pfio.digital_read(5);
+        PiFaceIN[6] = pfio.digital_read(6);
+        PiFaceIN[7] = pfio.digital_read(7);
+        //log("info", "adapter   rpi: IN: " + PiFaceIN[0]);
+
+        if (vars_init == "1") {
+            //log("info", "adapter rpi INIT Inputs");
+            inp[0] = PiFaceIN[0];
+            inp[1] = PiFaceIN[1];
+            inp[2] = PiFaceIN[2];
+            inp[3] = PiFaceIN[3];
+            inp[4] = PiFaceIN[4];
+            inp[5] = PiFaceIN[5];
+            inp[6] = PiFaceIN[6];
+            inp[7] = PiFaceIN[7];
+
+            if (PiFaceIN[0] == "1" || PiFaceIN[0] == "0") {
+                socket.emit("setState", [pifaceinDPs.IN0, PiFaceIN[0]]);
+            }
+            if (PiFaceIN[1] == "1" || PiFaceIN[0] == "0") {
+                socket.emit("setState", [pifaceinDPs.IN1, PiFaceIN[1]]);
+            }
+            if (PiFaceIN[2] == "1" || PiFaceIN[0] == "0") {
+                socket.emit("setState", [pifaceinDPs.IN2, PiFaceIN[2]]);
+            }
+            if (PiFaceIN[3] == "1" || PiFaceIN[0] == "0") {
+                socket.emit("setState", [pifaceinDPs.IN3, PiFaceIN[3]]);
+            }
+            if (PiFaceIN[4] == "1" || PiFaceIN[0] == "0") {
+                socket.emit("setState", [pifaceinDPs.IN4, PiFaceIN[4]]);
+            }
+            if (PiFaceIN[5] == "1" || PiFaceIN[0] == "0") {
+                socket.emit("setState", [pifaceinDPs.IN5, PiFaceIN[5]]);
+            }
+            if (PiFaceIN[6] == "1" || PiFaceIN[0] == "0") {
+                socket.emit("setState", [pifaceinDPs.IN6, PiFaceIN[6]]);
+            }
+            if (PiFaceIN[7] == "1" || PiFaceIN[0] == "0") {
+                socket.emit("setState", [pifaceinDPs.IN7, PiFaceIN[7]]);
+            }
+            vars_init = "0";             //Ende INIT
+        }
+        else {
+            //log("info", "adapter rpi check inputs to write in ccu.io");
+            //log("info", "adapter rpi " + inp[0]  + PiFaceIN[0] );
+
+            if (PiFaceIN[0] !== inp[0]) {
+                socket.emit("setState", [pifaceinDPs.IN0, PiFaceIN[0]]);
+                inp[0] = PiFaceIN[0];
+            }
+            if (PiFaceIN[1] !== inp[1]) {
+                socket.emit("setState", [pifaceinDPs.IN1, PiFaceIN[1]]);
+                inp[1] = PiFaceIN[1];
+            }
+            if (PiFaceIN[2] !== inp[2]) {
+                socket.emit("setState", [pifaceinDPs.IN2, PiFaceIN[2]]);
+                inp[2] = PiFaceIN[2];
+            }
+            if (PiFaceIN[3] !== inp[3]) {
+                socket.emit("setState", [pifaceinDPs.IN3, PiFaceIN[3]]);
+                inp[3] = PiFaceIN[3];
+            }
+            if (PiFaceIN[4] !== inp[4]) {
+                socket.emit("setState", [pifaceinDPs.IN4, PiFaceIN[4]]);
+                inp[4] = PiFaceIN[4];
+            }
+            if (PiFaceIN[5] !== inp[5]) {
+                socket.emit("setState", [pifaceinDPs.IN5, PiFaceIN[5]]);
+                inp[5] = PiFaceIN[5];
+            }
+            if (PiFaceIN[6] !== inp[6]) {
+                socket.emit("setState", [pifaceinDPs.IN6, PiFaceIN[6]]);
+                inp[6] = PiFaceIN[6];
+            }
+            if (PiFaceIN[7] !== inp[7]) {
+                socket.emit("setState", [pifaceinDPs.IN7, PiFaceIN[7]]);
+                inp[7] = PiFaceIN[7];
+            }
+        }
+        //log("info", "adapter   rpi: IN: " + PiFaceIN());
     }
-	
-	//ID des geänderten Objektes
-    var id = obj[0];
-	//Wert des geänderten Objektes
-    var val = obj[1];
-	//Timestamp der letzten Änderung
-    var ts = obj[2];
-	//ACKnowledge der letzten Änderung
-    var ack = obj[3];
-	
-  if (obj[0] == pifaceoutDPs.OUT0 || obj[0] == pifaceoutDPs.OUT1 || obj[0] == pifaceoutDPs.OUT2 || obj[0] == pifaceoutDPs.OUT3 || obj[0] == pifaceoutDPs.OUT4 || obj[0] == pifaceoutDPs.OUT5 || obj[0] == pifaceoutDPs.OUT6 || obj[0] == pifaceoutDPs.OUT7 ) {
-    //log("info", "adapter   rpi: OUT event: " );
-    
-     if (id == pifaceoutDPs.OUT0 && val == "1" || id == pifaceoutDPs.OUT0 && val == "true" ) {
-          pfio.digital_write(0,1); // (pin, state)
-                                              }   
-     if (id == pifaceoutDPs.OUT0 && val == "0" || id == pifaceoutDPs.OUT0 && val == "false" ) {
-          pfio.digital_write(0,0); // (pin, state)
-                                              }                                                 
-  
-     if (id == pifaceoutDPs.OUT1 && val == "1" || id == pifaceoutDPs.OUT1 && val == "true" ){
-          pfio.digital_write(1,1); // (pin, state)
-                                              }
-     if (id == pifaceoutDPs.OUT1 && val == "0" || id == pifaceoutDPs.OUT1 && val == "false" ){
-          pfio.digital_write(1,0); // (pin, state)
-                                              }
+}
 
-     if (id == pifaceoutDPs.OUT2 && val == "1" || id == pifaceoutDPs.OUT2 && val == "true" ){
-          pfio.digital_write(2,1); // (pin, state)
-                                              }
-     if (id == pifaceoutDPs.OUT2 && val == "0" || id == pifaceoutDPs.OUT2 && val == "false" ){
-          pfio.digital_write(2,0); // (pin, state)
-                                              }
-                                              
-     if (id == pifaceoutDPs.OUT3 && val == "1" || id == pifaceoutDPs.OUT3 && val == "true" ){
-          pfio.digital_write(3,1); // (pin, state)
-                                              }
-     if (id == pifaceoutDPs.OUT3 && val == "0" || id == pifaceoutDPs.OUT3 && val == "false" ){
-          pfio.digital_write(3,0); // (pin, state)
-                                              }
-                                              
-     if (id == pifaceoutDPs.OUT4 && val == "1" || id == pifaceoutDPs.OUT4 && val == "true" ){
-          pfio.digital_write(4,1); // (pin, state)
-                                              }
-     if (id == pifaceoutDPs.OUT4 && val == "0" || id == pifaceoutDPs.OUT4 && val == "false" ){
-          pfio.digital_write(4,0); // (pin, state)
-                                              }
-                                              
-     if (id == pifaceoutDPs.OUT5 && val == "1" || id == pifaceoutDPs.OUT5 && val == "true" ){
-          pfio.digital_write(5,1); // (pin, state)
-                                              }
-     if (id == pifaceoutDPs.OUT5 && val == "0" || id == pifaceoutDPs.OUT5 && val == "false" ){
-          pfio.digital_write(5,0); // (pin, state)
-                                              }
-                                              
-     if (id == pifaceoutDPs.OUT6 && val == "1" || id == pifaceoutDPs.OUT6 && val == "true" ){
-          pfio.digital_write(6,1); // (pin, state)
-                                              }
-     if (id == pifaceoutDPs.OUT6 && val == "0" || id == pifaceoutDPs.OUT6 && val == "false" ){
-          pfio.digital_write(6,0); // (pin, state)
-                                              }
-                                              
-     if (id == pifaceoutDPs.OUT7 && val == "1" || id == pifaceoutDPs.OUT7 && val == "true" ){
-          pfio.digital_write(7,1); // (pin, state)
-                                              }
-     if (id == pifaceoutDPs.OUT7 && val == "0" || id == pifaceoutDPs.OUT7 && val == "false" ){
-          pfio.digital_write(7,0); // (pin, state)
-                                              }
- 
-  }
-});		
-                              }
-
-    if (settings.adapters.rpi.settings.piface == "true") {
-function PiFaceGetValues () {
-    PiFaceIN[0] = pfio.digital_read(0); // (pin; returns state)
-    PiFaceIN[1] = pfio.digital_read(1);
-    PiFaceIN[2] = pfio.digital_read(2);
-    PiFaceIN[3] = pfio.digital_read(3);
-    PiFaceIN[4] = pfio.digital_read(4);
-    PiFaceIN[5] = pfio.digital_read(5);
-    PiFaceIN[6] = pfio.digital_read(6);
-    PiFaceIN[7] = pfio.digital_read(7); 
-    //log("info", "adapter   rpi: IN: " + PiFaceIN[0]); 
-       
-    if (vars_init == "1") {
-        //log("info", "adapter rpi INIT Inputs");
-        inp[0] = PiFaceIN[0];
-        inp[1] = PiFaceIN[1];
-        inp[2] = PiFaceIN[2];
-        inp[3] = PiFaceIN[3];
-        inp[4] = PiFaceIN[4];
-        inp[5] = PiFaceIN[5];
-        inp[6] = PiFaceIN[6];
-        inp[7] = PiFaceIN[7];
-            
-      if (PiFaceIN[0] == "1" || PiFaceIN[0] == "0") {
-          socket.emit("setState", [pifaceinDPs.IN0, PiFaceIN[0]]);
-                                                    }
-      if (PiFaceIN[1] == "1" || PiFaceIN[0] == "0") {
-          socket.emit("setState", [pifaceinDPs.IN1, PiFaceIN[1]]);
-                                                    }
-      if (PiFaceIN[2] == "1" || PiFaceIN[0] == "0") {
-          socket.emit("setState", [pifaceinDPs.IN2, PiFaceIN[2]]);
-                                                    }
-      if (PiFaceIN[3] == "1" || PiFaceIN[0] == "0") {
-          socket.emit("setState", [pifaceinDPs.IN3, PiFaceIN[3]]);
-                                                    }
-      if (PiFaceIN[4] == "1" || PiFaceIN[0] == "0") {
-          socket.emit("setState", [pifaceinDPs.IN4, PiFaceIN[4]]);
-                                                    }
-      if (PiFaceIN[5] == "1" || PiFaceIN[0] == "0") {
-          socket.emit("setState", [pifaceinDPs.IN5, PiFaceIN[5]]);
-                                                    }
-      if (PiFaceIN[6] == "1" || PiFaceIN[0] == "0") {
-          socket.emit("setState", [pifaceinDPs.IN6, PiFaceIN[6]]);
-                                                    }
-      if (PiFaceIN[7] == "1" || PiFaceIN[0] == "0") {
-          socket.emit("setState", [pifaceinDPs.IN7, PiFaceIN[7]]);
-                                                    }        
-          vars_init = "0";             //Ende INIT
-                             }
-                        else {
-         //log("info", "adapter rpi check inputs to write in ccu.io");
-         //log("info", "adapter rpi " + inp[0]  + PiFaceIN[0] );
-                        
-      if (PiFaceIN[0] !== inp[0]) {
-          socket.emit("setState", [pifaceinDPs.IN0, PiFaceIN[0]]);
-          inp[0] = PiFaceIN[0];
-                                                    }
-      if (PiFaceIN[1] !== inp[1]) {
-          socket.emit("setState", [pifaceinDPs.IN1, PiFaceIN[1]]);
-          inp[1] = PiFaceIN[1];
-                                                    }
-      if (PiFaceIN[2] !== inp[2]) {
-          socket.emit("setState", [pifaceinDPs.IN2, PiFaceIN[2]]);
-          inp[2] = PiFaceIN[2];
-                                                    }
-      if (PiFaceIN[3] !== inp[3]) {
-          socket.emit("setState", [pifaceinDPs.IN3, PiFaceIN[3]]);
-          inp[3] = PiFaceIN[3];
-                                                    }
-      if (PiFaceIN[4] !== inp[4]) {
-          socket.emit("setState", [pifaceinDPs.IN4, PiFaceIN[4]]);
-          inp[4] = PiFaceIN[4];
-                                                    }
-      if (PiFaceIN[5] !== inp[5]) {
-          socket.emit("setState", [pifaceinDPs.IN5, PiFaceIN[5]]);
-          inp[5] = PiFaceIN[5];
-                                                    }
-      if (PiFaceIN[6] !== inp[6]) {
-          socket.emit("setState", [pifaceinDPs.IN6, PiFaceIN[6]]);
-          inp[6] = PiFaceIN[6];
-                                                    }
-      if (PiFaceIN[7] !== inp[7]) {
-          socket.emit("setState", [pifaceinDPs.IN7, PiFaceIN[7]]);
-          inp[7] = PiFaceIN[7];
-                                                    }                         
-                        }
-      //log("info", "adapter   rpi: IN: " + PiFaceIN());                                                                                                                                                                                                                                                                                                                                                                                                                              
-                              }                           
-                       }       
-                                                
 
 function sleep(milliseconds) {
-  var start = new Date().getTime();
-  for (var i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds){
-      break;
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+            break;
+        }
     }
-  }
 }
->>>>>>> 5a8c97f68eda64f7601f9d7d3be357e33acae0de
 
 function getDiskUsage () {
     cp.exec('df -h /', function(err, resp) {
@@ -904,18 +822,11 @@ function get1wire() {
 getValues();
 
 setInterval(getValues, settings.adapters.rpi.settings.interval || 180000);
-<<<<<<< HEAD
+
+if (settings.adapters.rpi.settings.piface) {
+    setInterval(PiFaceGetValues, 50);
+}
 
 function log(sev, msg) {
     socket.emit("log", sev, "adapter rpi   "+(adapterSettings.deviceName?"("+adapterSettings.deviceName+") ":"")+msg);
-}
-=======
-    
-    if (settings.adapters.rpi.settings.piface == "true") {
-setInterval(PiFaceGetValues, 50);
-                                                         }
-                                                         
-function log(sev, msg) {
-    socket.emit("log", sev, "adapter rpi   "+(adapterSettings.deviceName?"("+adapterSettings.deviceName+") ":"")+msg);
 }             
->>>>>>> 5a8c97f68eda64f7601f9d7d3be357e33acae0de
