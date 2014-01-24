@@ -1,3 +1,14 @@
+/**
+ *      Growl Adapter v0.1
+ *
+ *      1'2014 Hobbyquaker
+ *
+ * Todo:
+ *      Icons
+ *      Callback-URL
+ *
+ */
+
 var settings = require(__dirname+'/../../settings.js');
 
 if (!settings.adapters.growl || !settings.adapters.growl.enabled) {
