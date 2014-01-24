@@ -172,30 +172,45 @@ function connectOnkyo() {
     string_nlt_nav = parseInt(string_nlt_nav, 16) + 1;              //this start at zero, we need start at one and convert hex to decimal
     var string_nlt_nav_summ = string.substr(10,2);              //2 digits navigation summary
     string_nlt_nav_summ = parseInt(string_nlt_nav_summ, 16);    //convert hex to decimal    
-    setState(onkyoSettings.firstId+45,string_nlt_nav)
     setState(onkyoSettings.firstId+46,string_nlt_nav+"/"+string_nlt_nav_summ);
                           }  
   //Rückgabe NSL-U0 ibs U9 in Variable schreiben
   if (chunk == 'NLS')  {
     var string_nls = string.substr(0,2);
     var string_menu = string.substr(3,40);
+    var string_cursor = string.substr(0,1);         //Cursor
+    var string_position = string.substr(1,1);       //Cursor position
+    var string_update = string.substr(2,1);         //Cursor position update (clear list)
         if (onkyoSettings.debug == true) {
             logger.info("adapter Onkyo Event Receiver NLS:"+string_nls);
                                             }
+    //Clear Menu when update is need
+    if (string_update == 'P') {                            
+            setState(onkyoSettings.firstId+35,"");
+            setState(onkyoSettings.firstId+36,"");
+            setState(onkyoSettings.firstId+37,"");
+            setState(onkyoSettings.firstId+38,"");
+            setState(onkyoSettings.firstId+39,"");
+            setState(onkyoSettings.firstId+40,"");
+            setState(onkyoSettings.firstId+41,"");
+            setState(onkyoSettings.firstId+42,"");
+            setState(onkyoSettings.firstId+43,"");
+                      }
+    
+    //Set Curso position in var
+    if (string_cursor == 'C') {
+            string_position = parseInt(string_position) + 1;     
+            setState(onkyoSettings.firstId+45,string_position) 
+                              }
+    //Debug                          
+    if (onkyoSettings.debug == true) {
+    logger.info("adapter Onkyo Nav: "+string_cursor+" "+string_position+" "+string_update);
+		                                    }                          
     
     switch (string_nls)
                     {
             case "U0":
-                      setState(onkyoSettings.firstId+34,string_menu);
-                      setState(onkyoSettings.firstId+35,"");
-                      setState(onkyoSettings.firstId+36,"");
-                      setState(onkyoSettings.firstId+37,"");
-                      setState(onkyoSettings.firstId+38,"");
-                      setState(onkyoSettings.firstId+39,"");
-                      setState(onkyoSettings.firstId+40,"");
-                      setState(onkyoSettings.firstId+41,"");
-                      setState(onkyoSettings.firstId+42,"");
-                      setState(onkyoSettings.firstId+43,"");
+                      setState(onkyoSettings.firstId+34,string_menu);                      
                       break;
             case "U1":
                       setState(onkyoSettings.firstId+35,string_menu);
@@ -241,7 +256,16 @@ function connectOnkyo() {
   //Listening Mode
   if (chunk == 'IFV')  {
     setState(onkyoSettings.firstId+49,string);
-                    }                    
+                    }  
+  //Net Play Status
+  if (chunk == 'NST')  {
+    var nst_play = string.substr(0,1);         //Play status
+    var nst_repeat = string.substr(1,1);       //Repeat status
+    var nst_shuffle = string.substr(2,1);      //Shuffle status
+    setState(onkyoSettings.firstId+50,nst_play);
+    setState(onkyoSettings.firstId+51,nst_repeat);
+    setState(onkyoSettings.firstId+52,nst_shuffle);
+                    }                                    
 });
 
 //Wird beim Socket Fehler aufgerugen
@@ -493,7 +517,14 @@ socket.on('event', function (obj) {
         //setState(id, "");
 		}    
   //AMT
-  if (id == onkyoSettings.firstId +23) { 
+  if (id == onkyoSettings.firstId +23) {
+        //add support of "true|false"
+        if (val == true) {
+            val = 1;
+            }
+        if  (val == false) {
+            val = 0;
+            } 
         command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211AMT0"+val+"\x0D");
           if (onkyoSettings.debug == true) {
 				      logger.info("adapter Onkyo send:"+command);
@@ -504,6 +535,13 @@ socket.on('event', function (obj) {
 		}  
   //ZMT
   if (id == onkyoSettings.firstId +25) { 
+        //add support of "true|false"
+        if (val == true) {
+            val = 1;
+            }
+        if  (val == false) {
+            val = 0;
+            } 
         command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211ZMT0"+val+"\x0D");
           if (onkyoSettings.debug == true) {
 				      logger.info("adapter Onkyo send:"+command);
@@ -552,6 +590,13 @@ socket.on('event', function (obj) {
 		}   
   //PWR
   if (id == onkyoSettings.firstId +31) { 
+        //add support of "true|false"
+        if (val == true) {
+            val = 1;
+            }
+        if  (val == false) {
+            val = 0;
+            }   
         command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211PWR0"+val+"\x0D");
           if (onkyoSettings.debug == true) {
 				      logger.info("adapter Onkyo send:"+command);
@@ -563,6 +608,13 @@ socket.on('event', function (obj) {
   //ZPW
   //if (id == onkyoSettings.firstId +33 && val != "") {
   if (id == onkyoSettings.firstId +33) { 
+        //add support of "true|false"
+        if (val == true) {
+            val = 1;
+            }
+        if  (val == false) {
+            val = 0;
+            }   
         command = new Buffer("ISCP\x00\x00\x00\x10\x00\x00\x00\x08\x01\x00\x00\x00\x211ZPW0"+val+"\x0D");
           if (onkyoSettings.debug == true) {
 				      logger.info("adapter Onkyo send:"+command);
@@ -833,6 +885,18 @@ function OnkyoInit() {
 	});  
 	setObject(onkyoSettings.firstId+49, {
 	  Name: "Onkyo_Video_Information",
+	  TypeName: "VARDP"
+	});  
+	setObject(onkyoSettings.firstId+50, {
+	  Name: "Onkyo_NET_Play_Status",
+	  TypeName: "VARDP"
+	});  
+	setObject(onkyoSettings.firstId+51, {
+	  Name: "Onkyo_NET_Repeat_Status",
+	  TypeName: "VARDP"
+	});  
+	setObject(onkyoSettings.firstId+52, {
+	  Name: "Onkyo_NET_Shuffle_Status",
 	  TypeName: "VARDP"
 	});  
 
