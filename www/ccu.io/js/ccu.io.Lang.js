@@ -123,8 +123,8 @@ var ccuWords = {
         },
     "Error: invalid JSON" : {"en": "Error: invalid JSON", "de": "Fehler: ungültiges JSON","ru": "Ошибка: неправильный формат JSON"},
     " adapter settings saved. Please restart CCU.IO" : {
-        "en": " adapter settings saved. Please restart CCU.IO",                 
-        "de": "-Adpater-Einstellungen sind gespeichert. Bitte CCU.IO neu starten",             
+        "en": " adapter settings saved. Please reload adapter",
+        "de": "-Adpater-Einstellungen sind gespeichert. Bitte Adapter neu laden",
         "ru": ": настройки сохранены. Перезапустите CCU.IO или драйвер"
         },
     "Apply backup started. Please be patient..." : {
