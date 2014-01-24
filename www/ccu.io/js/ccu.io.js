@@ -27,7 +27,6 @@ function translateWord (text, lang, dictionary) {
         }
 
     }
-    console.log ("trans: " + text);
     return text;
 }
 
@@ -465,7 +464,7 @@ $(document).ready(function () {
 
     socket.on('disconnect', function() {
         setTimeout(function () {
-            showMessage ("CCU.IO disconnected");
+            showMessage("CCU.IO disconnected");
             setInterval(function () {
                 //console.log("trying to force reconnect...");
                 $.ajax({
