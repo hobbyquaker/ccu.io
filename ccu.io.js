@@ -1000,7 +1000,11 @@ function initWebserver() {
                 res.send("var socketSession='nokey';");
             }
         });
-    }
+        app.get('/lang/*', function (req, res) {
+            res.set('Content-Type', 'text/javascript');
+			res.send("var ccuIoLang='"+ (settings.language || 'en') +"';");
+        });    
+	}
 
     if (appSsl) {
         if (settings.useCache) {
@@ -1027,6 +1031,10 @@ function initWebserver() {
                 res.send("var socketSession='nokey';");
             }
         });
+        appSsl.get('/lang/*', function (req, res) {
+            res.set('Content-Type', 'text/javascript');
+			res.send("var ccuIoLang='"+ (settings.language || 'en') +"';");
+        });    
     }
 
     if (settings.authentication && settings.authentication.enabled) {
