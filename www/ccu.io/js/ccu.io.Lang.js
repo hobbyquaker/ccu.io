@@ -10,7 +10,7 @@ var ccuWords = {
     "Data"              : {"en": "Data",                 "de": "Daten",               "ru": "Данные"},
     "Info"              : {"en": "Info",                 "de": "Info",                "ru": "Информация"},
     "Control"           : {"en": "Control",              "de": "Kontrolle",           "ru": "Контроль"},
-    "Settings"          : {"en": "Settings",             "de": "Einstellüngen",       "ru": "Настройки"},
+    "Settings"          : {"en": "Settings",             "de": "Einstellungen",       "ru": "Настройки"},
     "CCU.IO installed Version:" : {"en": "CCU.IO installed Version:", "de": "Installierte CCU.IO Version:", "ru": "Локальная версия CCU.IO"},
     "CCU.IO available Version:" : {"en": "CCU.IO available Version:", "de": "Verfügbare CCU.IO Version:", "ru": "Доступная версия CCU.IO"},
     "update"            : {"en": "update",               "de": "update",              "ru": "обновить"},
