@@ -2,7 +2,7 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
- *      Version 0.5
+ *      Version 0.6
  *		
  */
 var settings = require(__dirname+'/../../settings.js');
@@ -28,18 +28,20 @@ var fontboldorange = '<span style="font-weight:bold;color:orange">';
 var fontnormalorange = '<span style="font-weight:normal;color:orange">';
 var fontboldred = '<span style="font-weight:bold;color:red">';
 var fontnormalred = '<span style="font-weight:normal;color:red">';
+
 var fullTime = icalSettings.fulltime;
 var colorize = icalSettings.colorize;
 var minoneorange = 0;
 var minonered = 0;
 var arrDates = Array();
 
-var warn = fontboldred;
-var warn2 =fontnormalred;
-var prewarn = fontboldorange;
-var prewarn2 = fontnormalorange;
-var normal = fontbold;
-var normal2 = fontnormal;
+var warn = fontboldred+"<span class='icalWarn'>";
+var warn2 ="</span></span>" + fontnormalred+"<span class='icalWarn2'>";
+var prewarn = fontboldorange+"<span class='icalPreWarn'>";
+var prewarn2 = "</span></span>" + fontnormalorange+"<span class='icalPreWarn2'>";
+var normal = fontbold+"<span class='icalNormal'>";
+var normal2 = "</span></span>" + fontnormal+"<span class='icalNormal2'>";
+
 var debug = icalSettings.debug;
 
 var prefix;
@@ -317,9 +319,9 @@ function parseDate(input) {
 //Sortierfunktion für arr.sort
 function SortDates(a,b) {
     //Datum aus dem HTML extrahieren
-    var firstindex = a.indexOf(">");
-    var lastindex = a.lastIndexOf("<");
-    var a1 = a.substr(firstindex+1,(lastindex-firstindex)-1);
+    var firstindex = a.indexOf("'>");
+    var lastindex = a.indexOf("</span");
+    var a1 = a.substr(firstindex+2,(lastindex-firstindex)-2);
     var da1 = a1.split(' ')[0];
     var ti1 = a1.split(' ')[1];
     var d = da1 ;
@@ -328,9 +330,9 @@ function SortDates(a,b) {
     date1.setHours(ti1.split(":")[0]);
     date1.setMinutes(ti1.split(":")[1])
 
-    firstindex = b.indexOf(">");
-    lastindex = b.lastIndexOf("<");
-    b1 = b.substr(firstindex+1,(lastindex-firstindex)-1);
+    firstindex = b.indexOf("'>");
+    lastindex = b.indexOf("</span");
+    b1 = b.substr(firstindex+2,(lastindex-firstindex)-2);
     var da2 = b1.split(' ')[0];
     var ti2 = b1.split(' ')[1];
     var d2 = da2;
@@ -350,14 +352,14 @@ function brSeparatedList(arr) {
         var first = true;
         for (var i=0; i<length; i++) {
             if (!first) {
-                text = text + "<br/>";
+               text = text + "<br/>";
             } else {
                 first = false;
             }
-            text = text + arr[i];
+            text = text + arr[i] + "</span></span>";
         }
     }
-	//Wenn fullTime gesetzt dann 00:00 ersetzen durch String
+	//Wenn fullTime gesetzt, dann 00:00 ersetzen durch String
     if (fullTime != "") {
 	   text = text.replace(/00:00/g, fullTime);
     }
