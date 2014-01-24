@@ -60,6 +60,7 @@
 
 95100-?                         dreambox adapter
 
+96000-?                         Growl adapter
 
 
 100000-299999                   reserviert für eigene Scripte

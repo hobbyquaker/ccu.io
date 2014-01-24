@@ -1,0 +1,9 @@
+{
+    "enabled": false,
+    "firstId": 96000,
+    "settings": {
+        "host": "172.16.23.134",
+        "password": "growl1!",
+        "appName": "CCU.IO"
+    }
+}
