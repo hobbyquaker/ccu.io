@@ -1014,7 +1014,7 @@ function initWebserver() {
         }
 
         // File Uploads
-        appSsl.use(express.bodyParser());
+        appSsl.use(express.bodyParser({uploadDir:__dirname+'/tmp'}));
         appSsl.post('/upload', uploadParser);
 
         appSsl.get('/api/*', restApi);
