@@ -11,6 +11,17 @@
         </td>
     </tr>
     <tr>
+        <td>
+            SSL:
+        </td>
+        <td>
+            <select id="geofency_ssl">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
         <td>Port:</td>
         <td><input id="geofency_settings_port" type="text"/></td>
     </tr>
@@ -58,8 +69,21 @@
         $("#geofency_enabled option[value='false']").attr("selected", true);
     }
 
-    $("#geofency_enabled").change(function () {
-        currentAdapterSettings.enabled = ($("#geofency_enabled option:selected").val() == "false" ? false : true);
+    $("#geofency_ssl").change(function () {
+        currentAdapterSettings.settings.ssl = ($("#geofency_ssl option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+    if (currentAdapterSettings.settings.ssl) {
+        $("#geofency_ssl option[value='false']").removeAttr("selected");
+        $("#geofency_ssl option[value='true']").attr("selected", true);
+    } else {
+        $("#geofency_ssl option[value='true']").removeAttr("selected");
+        $("#geofency_ssl option[value='false']").attr("selected", true);
+    }
+
+    $("#geofency_ssl").change(function () {
+        currentAdapterSettings.settings.ssl = ($("#geofency_ssl option:selected").val() == "false" ? false : true);
         updateAdapterSettings();
     });
 

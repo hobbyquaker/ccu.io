@@ -2,7 +2,7 @@
  *      CCU.IO Geofency Adapter
  *      11'2013 Hobbyquaker
  *
- *      Version 0.3
+ *      Version 0.4
  *
  *
  */
@@ -18,7 +18,7 @@ var geoSettings = settings.adapters.geofency.settings,
     express =   require('express'),
     logger =    require(__dirname+'/../../logger.js'),
     io =        require('socket.io-client'),
-    app = express();
+    app =       express();
 
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
@@ -59,7 +59,16 @@ process.on('SIGTERM', function () {
 
 app.use(express.basicAuth(geoSettings.user, geoSettings.pass));
 
-var server = require('http').createServer(app);
+if (geoSettings.ssl) {
+    var fs = require('fs');
+    var server = require('https').createServer({
+        key: fs.readFileSync(__dirname+'/cert/privatekey.pem'),
+        cert: fs.readFileSync(__dirname+'/cert/certificate.pem')
+    }, app);
+} else {
+    var server = require('http').createServer(app);
+}
+
 server.listen(geoSettings.port);
 
 for (var i = 0; i < geoSettings.devices.length; i++) {
