@@ -4,6 +4,7 @@
 		"IP": "192.168.1.100",
 		"port": 60128,
 <<<<<<< HEAD
+<<<<<<< HEAD
         "firstId": 73300,
         "debug": false
     }
@@ -12,4 +13,9 @@
     "debug": false
 		}
 >>>>>>> 5a8c97f68eda64f7601f9d7d3be357e33acae0de
+=======
+        "firstId": 73300,
+        "debug": false
+    }
+>>>>>>> ccde0588956bb47039b42f21e612f5c301948513
 }	
