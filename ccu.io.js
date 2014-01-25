@@ -1923,7 +1923,11 @@ function restartAdapter(adapter) {
         default:
             logger.info("ccu.io        killing adapter "+adapter);
 
-            childrenAdapter[adapter].process.kill();
+            try {
+                childrenAdapter[adapter].process.kill();
+            } catch (e) {
+
+            }
             setTimeout(function (_path, _adapter) {
                 logger.info("ccu.io        starting adapter "+_path);
                 childrenAdapter[_adapter] = childProcess.fork(_path);
