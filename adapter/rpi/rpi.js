@@ -637,7 +637,7 @@ if (settings.adapters.rpi.settings.piface) {
     });
 }
 
-if (settings.adapters.rpi.settings.pifac) {
+if (settings.adapters.rpi.settings.piface) {
     function PiFaceGetValues () {
         PiFaceIN[0] = pfio.digital_read(0); // (pin; returns state)
         PiFaceIN[1] = pfio.digital_read(1);
@@ -728,14 +728,6 @@ if (settings.adapters.rpi.settings.pifac) {
 }
 
 
-function sleep(milliseconds) {
-    var start = new Date().getTime();
-    for (var i = 0; i < 1e7; i++) {
-        if ((new Date().getTime() - start) > milliseconds){
-            break;
-        }
-    }
-}
 
 function getDiskUsage () {
     cp.exec('df -h /', function(err, resp) {
