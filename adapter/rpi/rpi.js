@@ -24,7 +24,7 @@ if (!settings.adapters.rpi || !settings.adapters.rpi.enabled) {
 
 //PiFace requirements
     if (settings.adapters.rpi.settings.piface == "true") {
-        var pfio = require("./node_modules/piface-node");
+        var pfio = require("../../node_modules/piface-node");
         pfio.init();
         var vars_init = "1";   //Init fuer Inputs
         var PiFaceIN = [];
