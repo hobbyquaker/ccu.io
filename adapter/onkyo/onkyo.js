@@ -3,7 +3,7 @@
  *      01'2014 Eisbaeeer
  *      mail: Eisbaeeer@gmail.com 
  *
- *      Version 0.9.1
+ *      Version 0.9.2
  *      
  *      getestet mit:
  *      CCU.IO ver. 1.0.9
