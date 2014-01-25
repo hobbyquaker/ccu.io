@@ -494,6 +494,14 @@ function loadRegaData(index, err, rebuild, triggerReload) {
                 if (typeof data[id][key] == "string" && key !== "Channels" && key !== "DPs") {
                     data[id][key] = unescape(data[id][key]);
                 }
+                // Datenpunkt-Namen dekodieren
+                if (key == "DPs") {
+                    for (var subkey in data[id][key]) {
+                        var val = data[id][key][subkey];
+                        delete data[id][key][subkey];
+                        data[id][key][unescape(subkey)] = val;
+                    }
+                }
             }
 
             // Index erzeugen
