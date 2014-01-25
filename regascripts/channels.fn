@@ -1,8 +1,8 @@
-!# channels.fn 1.6 CCU.IO
+!# channels.fn 1.7 CCU.IO
 !#
 !# Dieses Homematic-Script gibt alle Kanaele als JSON String aus
 !#
-!# 3'2013-7'2013 hobbyquaker https://github.com/hobbyquaker
+!# 3'2013-1'2014 hobbyquaker https://github.com/hobbyquaker
 !#
 
 string sDevId;
