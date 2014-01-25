@@ -37,6 +37,11 @@ siehe http://ccu.io/
 
 ## Changelog
 
+### 1.0.15
+* (Hobbyquaker) Bugfix File Uploads via https
+* (Hobbyquaker) Update Highstock 1.3.9
+* (Eisbaeeer) Adapter Onkyo: Update 0.9.2
+
 ### 1.0.14
 * (Bluefox) Backup über Weboberfläche
 * (Bluefox) Mehrsprachigkeit
