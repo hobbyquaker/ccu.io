@@ -39,7 +39,10 @@ siehe http://ccu.io/
 
 ### 1.0.17
 * (Hobbyquaker) neue SimpleAPI Methode: getBulk
-
+* (Hobbyquaker) SlimUI zu Addon-Install hinzugefügt
+* (Bluefox) Add /lang/lang.js to get CCU.IO language
+* (Bluefox) Translate jsGrid
+* (Thorque) Refactored yamaha adapter. Contains now out of a service with a small api and some tests.
 
 ### 1.0.16
 * (Eisbaeeer) Node Modul piface-node hinzugefügt
