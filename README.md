@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.16*
+*aktuelle Version: 1.0.17*
 
 ## Dokumentation
 
@@ -36,6 +36,10 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.17
+* (Hobbyquaker) neue SimpleAPI Methode: getBulk
+
 
 ### 1.0.16
 * (Eisbaeeer) Node Modul piface-node hinzugefügt
@@ -450,7 +454,7 @@ siehe http://ccu.io/
 
 ## Lizenz
 
-Copyright (c) 2013 hobbyquaker [http://hobbyquaker.github.io](http://hobbyquaker.github.io)
+Copyright (c) 2013-2014 hobbyquaker [http://hobbyquaker.github.io](http://hobbyquaker.github.io)
 
 Lizenz: [CC BY-NC 3.0](http://creativecommons.org/licenses/by-nc/3.0/de/)
 
