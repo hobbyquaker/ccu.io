@@ -892,6 +892,7 @@ $(document).ready(function () {
 
     var addonInstall = {
         "dashui":           "https://github.com/hobbyquaker/DashUI/archive/master.zip",
+        "slimui":           "https://github.com/hobbyquaker/SlimUI/archive/master.zip",
         "yahui":            "https://github.com/hobbyquaker/yahui/archive/master.zip",
         "eventlist":        "https://github.com/GermanBluefox/CCU-IO.Eventlist/archive/master.zip",
         "charts":           "https://github.com/hobbyquaker/CCU-IO-Highcharts/archive/master.zip",
