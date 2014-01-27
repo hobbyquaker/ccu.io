@@ -24,137 +24,30 @@ if (!settings.adapters.yamaha || !settings.adapters.yamaha.enabled) {
 
 var logger = require(__dirname+'/../../logger.js'),
     io     = require('socket.io-client'),
-    net    = require('net');
+    net    = require('net'),
+    yservice = require('./lib/yamaha_service');
 
 var datapoints = {}, objects = {};
 var yamahaSettings = settings.adapters.yamaha.settings;
-var yamahaSocket;
-var connecting;
+var input_mapping = yamahaSettings.input_mapping;
+var socket;
+var intervals = [];
 
-var volume;
-var muting;
-var album = "";
-var artist = "";
-var song = "";
+var current_volume = -1000;
+var current_mute = "";
 
-/**
- * Starting the socket.io
- */
-if (settings.ioListenPort) {
-    var socket = io.connect("127.0.0.1", {
-        port: settings.ioListenPort
-    });
-} else if (settings.ioListenPortSsl) {
-    var socket = io.connect("127.0.0.1", {
-        port: settings.ioListenPortSsl,
-        secure: true
-    });
-} else {
-    process.exit();
-}
-
-YamahaInit();
-retrieveInitialData();
-connectYamaha();
+yamaha_init();
+yamaha();
 
 /**
- * Closes a connection to the Yamaha receiver. This is fired always if the receiver is not responding anymore.
+ * Main function to handle logic of this adpater.
  */
-function closeYamaha(){
-    yamahaSocket.end();
-    logger.verbose("Socket to Yamaha AV receiver is closed.")
-}
-/**
- * Connection function to send and retrieve data to and from the receiver.
- */
-function connectYamaha(){
+function yamaha(){
+    var i_now_playing = start_now_playing_listener();
+    var i_mute = start_muting_listener();
+    var i_volume = start_volume_listener();
 
-    yamahaSocket = net.connect(yamahaSettings.port, yamahaSettings.host, function() {
-        logger.info("adapter yamaha connected to Yamaha AV Receiver: " + yamahaSettings.host);
-    });
-
-
-    yamahaSocket.on('close', function () {
-        logger.verbose("adapter yamaha received 'close'");
-        yamahaSocket.connect(yamahaSettings.port, yamahaSettings.host);
-    });
-
-    yamahaSocket.on('error', function (data) {
-        if(data.code == 'ETIMEDOUT') {
-            closeYamaha();
-        }else{
-            logger.error("adapter yamaha received 'error':"+data.toString());
-        }
-    });
-
-    yamahaSocket.on('end', function () {
-        logger.verbose("adapter yamaha received 'end'");
-        yamahaSocket.end ();
-    });
-
-    yamahaSocket.on('data', function (data) {
-        logger.verbose("Yamaha socket retrieve data: "+data.toString());
-        var value = data.toString();
-
-        var item = value.split("@")
-        for (var i=0;i<item.length;i++){
-            var itemdata = item[i].split("=");
-            if (itemdata.length > 1){
-                var key = itemdata[0];
-                var value = itemdata[1].replace("\r\n", "");
-
-                if (key.indexOf(":VOL") >-1){
-                    key = "VOL";
-                }
-                if (key.indexOf(":MUTE") >-1){
-                    key = "MUTE";
-                }
-
-                switch (key){
-                    case "VOL":
-                        if (!isNaN(value.toString())){
-                            volume = value;
-                            setState(yamahaSettings.firstId+1,value);
-                        }
-                        break;
-                    case "MUTE":
-                        muting = ((value == "Off")? false: true);
-                        setState(yamahaSettings.firstId+2,muting);
-                        break;
-                    case "AIRPLAY:ALBUM":
-                        album = value;
-                        setState(yamahaSettings.firstId+3,showNowPlaying(album, artist, song));
-                        break;
-                    case "AIRPLAY:ARTIST":
-                        artist = value;
-                        setState(yamahaSettings.firstId+3,showNowPlaying(album, artist, song));
-                        break;
-                    case "AIRPLAY:SONG":
-                        song = value;
-                        setState(yamahaSettings.firstId+3,showNowPlaying(album, artist, song));
-                        break;
-                    case "NETRADIO:SONG":
-                        song = value;
-                        setState(yamahaSettings.firstId+3,showNowPlaying("", "", song));
-                        break;
-                    case "NETRADIO:AVAIL":
-                        album = "";
-                        artist = "";
-                        song = "";
-                        setState(yamahaSettings.firstId+3,showNowPlaying(album, artist, song));
-                        break;
-                    case "AIRPLAY:AVAIL":
-                        album = "";
-                        artist = "";
-                        song = "";
-                        setState(yamahaSettings.firstId+3,showNowPlaying(album, artist, song));
-                        break;
-                }
-            }
-        }
-    });
-
-
+    intervals = {mute: i_mute, "now playing": i_now_playing, volume: i_volume};
 
     socket.on('event', function (obj) {
         if (!obj || !obj[0]) {
@@ -165,104 +58,143 @@ function connectYamaha(){
         var id_for_onlinecheck = yamahaSettings.id_for_onlinecheck
         if (id_for_onlinecheck != "0" && id == id_for_onlinecheck){
             var state = obj[1];
+            logger.info("adapter yamaha detects a status change of device "+ id_for_onlinecheck+"["+state+"]");
             if (state){
                 setTimeout(function () {
-                    retrieveInitialData();
-                    connectYamaha();
-            }, 20000);
+                    i_now_playing = start_now_playing_listener();
+                    i_mute = start_muting_listener();
+                    i_volume = start_volume_listener();
+                    intervals = {mute: i_mute, "now playing": i_now_playing, volume: i_volume};
+                }, 20000);
 
             }else{
-                closeYamaha();
-            }
-            return;
+                for (var key in intervals){
+                    clearInterval(intervals[key]);
+                    logger.info("adapter yamaha stopping '"+key+"' listener");
+                }
+                setState(yamahaSettings.firstId+3, "");
+            };
         }
 
         if (id == yamahaSettings.firstId+1){
             var val = obj[1];
+            var ack = obj[3];
 
-            if (volume != null && val != volume){
-                logger.info("adapter Yamaha Event: "+id+" "+val);
-
-                var cmd = "<Volume><Lvl><Val>"+(val*10)+"</Val><Exp>1</Exp><Unit>dB</Unit></Lvl></Volume>"
+            logger.info(obj+ "---"+ack);
 
 
-                createLocalSocketAndWrite(createHTTPRequest("PUT", cmd, "Main_Zone")).on('data', function(d){
-                    logger.info(d.toString());
-                    this.end();
+            if (ack == null || !ack){
+                var volume = val*10;
+                yservice.set_volume(volume, 1, "dB", function(success){
+                    logger.info("setting: "+success);
+                    if (!success){
+                        logger.error("Could not set volume to Yamaha AV receiver.")
+                    }
                 });
             }
         }
 
         if (id == yamahaSettings.firstId+2){
             var val = obj[1];
+            var ack = obj[3];
+            var mute_value = "Off";
 
-            if (muting != null && val != muting){
-                logger.info("Muting")
-                var cmd = "<Volume><Mute>GetParam</Mute></Volume>"
-
-                createLocalSocketAndWrite(createHTTPRequest("GET", cmd, "Main_Zone")).on('data', function(d){
-                    logger.info(d.toString());
-                    cmd = "";
-
-                    var response = d.toString();
-                    if (response.indexOf("<YAMAHA_AV")>-1){
-                        var status = response.substring(response.indexOf("<Mute>")+6, response.indexOf("</Mute>"));
-                        logger.info(status);
-                        logger.info("val="+val);
-                        //if (status != val){
-                            cmd = "<Volume><Mute>"+((status == 'Off')? 'On': 'Off')+"</Mute></Volume>"
-                            logger.info(cmd);
-                            createLocalSocketAndWrite(createHTTPRequest("PUT", cmd, "Main_Zone")).on('data', function(d){
-                                logger.info(d.toString());
-                                this.end();
-                            });
-                        //}
-
-                    }
-                    this.end();
-                });
+            if (val == true || val == "1" || val == "On"){
+                mute_value = "On";
             }
 
-
-
-
+            if (ack == null || !ack){
+                yservice.set_mute(mute_value, function(success){
+                    if (!success){
+                        logger.error("Could not set muting to Yamaha AV receiver.")
+                    }
+                });
+            }
         }
     });
 }
 
 /**
- * Tries to receive the data vor volume and muting state from the receiver. If this call isn't successfully
- * the persisted values from the CCU.IO datapoints will be used instead.
+ * Starts the listener for the now_playing feature
+ * @returns {number} The instance of this listener
  */
-function retrieveInitialData(){
-    var status;
-    var cmd = "<Volume><Lvl>GetParam</Lvl></Volume>"
-    createLocalSocketAndWrite(createHTTPRequest("GET", cmd, "Main_Zone")).on('data', function(d){
-        var response = d.toString();
-        if (response.indexOf("<YAMAHA_AV")>-1){
-            volume = response.substring(response.indexOf("<Lvl><Val>")+10, response.indexOf("</Val>"))/10;
-            setState(yamahaSettings.firstId+1,volume);
-        }
-    });
-
-
-    cmd = "<Volume><Mute>GetParam</Mute></Volume>"
-    createLocalSocketAndWrite(createHTTPRequest("GET", cmd, "Main_Zone")).on('data', function(d){
-        var response = d.toString();
-        if (response.indexOf("<YAMAHA_AV")>-1){
-            status = response.substring(response.indexOf("<Mute>")+6, response.indexOf("</Mute>"));
-            muting = ((status == "Off")? false: true);
-            setState(yamahaSettings.firstId+2,muting);
-        }
-    });
+function start_now_playing_listener(){
+    logger.info("adapter yamaha starting 'now playing' listener");
+    return setInterval(function(){
+        yservice.now_playing(function(data){
+            var np = data;
+            for (var key in input_mapping){
+                if (key == np.trim()){
+                  np = input_mapping[key];
+                }
+            }
+            setState(yamahaSettings.firstId+3, np);
+        });
+    }, 10000);
 }
 
+/**
+ * Starts the listener for the muting feature
+ * @returns {number} The instance of this listener
+ */
+function start_muting_listener(){
+    logger.info("adapter yamaha starting 'muting' listener");
+    return setInterval(function(){
+        yservice.mute(function(data){
+            if (data != current_mute){
+                setState(yamahaSettings.firstId+2, ((data.toLowerCase() == "on")? true: false));
+                current_mute = data;
+            }
+        });
+    }, 5000);
+}
+
+/**
+ * Starts the listener for the volume feature
+ * @returns {number} The instance of this listener
+ */
+function start_volume_listener(){
+    logger.info("adapter yamaha starting 'volume' listener");
+    return setInterval(function(){
+        yservice.volume(function(data){
+            var volume = data.replace(" dB", "");
+            if (volume != current_volume){
+                setState(yamahaSettings.firstId+1, volume);
+                current_volume = volume;
+            }
+        });
+    }, 2000);
+}
+
+/**
+ * Starts the socket.io listener
+ */
+function socketio_init(){
+    if (settings.ioListenPort) {
+        socket = io.connect("127.0.0.1", {
+            port: settings.ioListenPort
+        });
+    } else if (settings.ioListenPortSsl) {
+        socket = io.connect("127.0.0.1", {
+            port: settings.ioListenPortSsl,
+            secure: true
+        });
+    } else {
+        process.exit();
+    }
+}
 
 /**
  * Initialize all object this adapter needs to have
  * @constructor
  */
-function YamahaInit() {
+function yamaha_init() {
+    socketio_init();
+
+    logger.info("adapter yamaha is setup ["+yamahaSettings.host+":"+yamahaSettings.port+":"+yamahaSettings.zone+"]");
+    yservice.inject_logger(logger);
+    yservice.setup(yamahaSettings.host, yamahaSettings.port, yamahaSettings.zone);
+
     setObject(yamahaSettings.firstId+1, {
         Name: "Yamaha_Volume",
         TypeName: "VARDP",
@@ -284,89 +216,6 @@ function YamahaInit() {
         "ValueType": 20,
         "ValueSubType": 11
     });
-}
-
-/**
- * Handler for the "Now Playing" information
- * @param album
- * @param artist
- * @param song
- * @returns {string}
- */
-function showNowPlaying(album, artist, song){
-    var np = "";
-
-    if (artist != ""){
-        np = artist;
-        if (song != "" || album != ""){
-            np += " - ";
-        }
-    }
-
-    if (song != ""){
-        np += song;
-        if (album != ""){
-            np += " - ";
-        }
-    }
-
-    if (album != ""){
-        np += album;
-    }
-    return np;
-}
-
-/**
- * The most data will be returned through the yamaha socket. But if you want to write data to this socket it sometimes
- * fails. This function create a new socket and send a XML-based command to the Yamaha receiver.
- * @param http_request
- * @returns {*}
- */
-function createLocalSocketAndWrite(http_request){
-    var local_socket = net.connect(yamahaSettings.xml_port, yamahaSettings.host);
-    local_socket.on('error', function(e) {
-        if(e.code == 'ETIMEDOUT') {
-            local_socket.end();
-        }
-    });
-    local_socket.write(http_request);
-    return local_socket;
-}
-
-/**
- * Central function to talk with the Yamaha AV Receiver.
- * <br/>
- * For a reference for all commands see: http://www.google.de/url?sa=t&rct=j&q=yamaha%20rx-vx67_ethernet_if_spec&source=web&cd=1&ved=0CDAQFjAA&url=http%3A%2F%2Fwww.avhifiresources.co.uk%2Fcontent%2FDealer%2520News-Info%2FCustom%2520Installer%2520Info%2FRX%2520AX10%2520VX71%2520Series%2520Function%2520Tree.xls&ei=yN_4TuyJHpGA8gO00eWsAQ&usg=AFQjCNHbx60435avSmn_xl8V69exhoTUSw
- * <br/>
- * <br/>
- * Samples for cmd and zone:
- * <ul>
- *     <li>cmd = <Volume><Mute>On/Off</Mute></Volume></li>
- *     <li>zone = Main_Zone</li>
- *
- * </ul>
- * @param http_method - POST or GET
- * @param cmd - The cmd you want to execute
- * @param zone - The zone of the Yamaha receiver
- */
-function createHTTPRequest(http_method, cmd, zone){
-    var response = "";
-
-    if (zone == undefined){
-        zone = 'Main_Zone'
-    }
-    var data = '<YAMAHA_AV cmd="'+http_method+'"><'+zone+'>'+cmd+'</Main_Zone></YAMAHA_AV>';
-    var command_length = data.length;
-    var host = yamahaSettings.host;
-    var port = yamahaSettings.xml_port;
-    var http_request;
-    http_request = "POST /YamahaRemoteControl/ctrl HTTP/1.1\r\n";
-    http_request += "Content-Length: "+command_length+"\r\n";
-    http_request += "Pragma: no-cache\r\n";
-    http_request += "Cache-Control: no-cache\r\n\r\n";
-    http_request += data;
-
-    return http_request;
 }
 
 /**
@@ -407,8 +256,8 @@ function setObject(id, obj) {
  * the process exited.
  */
 function stop() {
-    logger.info("adapter yamaha terminating");
-    yamahaSocket.end;
+    logger.info("adapter yamaha is terminating");
+    setState(yamahaSettings.firstId+3, "");
     setTimeout(function () {
         process.exit();
     }, 250);
