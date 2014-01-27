@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.17*
+*aktuelle Version: 1.0.18*
 
 ## Dokumentation
 
@@ -36,6 +36,9 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.18
+* (Hobbyquaker) Bugfix SlimUI Install
 
 ### 1.0.17
 * (Hobbyquaker) neue SimpleAPI Methode: getBulk
