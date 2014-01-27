@@ -852,6 +852,7 @@ function restApi(req, res) {
             responseType = "plain";
             if (!tmpArr[1]) {
                 response = "error: no datapoint given";
+                break;
             }
             var dp = findDatapoint(tmpArr[1], tmpArr[2]);
             if (!dp || !datapoints[dp]) {
@@ -865,6 +866,7 @@ function restApi(req, res) {
 
             if (!tmpArr[1]) {
                 response = {error: "no object/datapoint given"};
+                break;
             }
             var dp = findDatapoint(tmpArr[1], tmpArr[2]);
             if (!dp) {
@@ -882,6 +884,21 @@ function restApi(req, res) {
                     for (var attr in regaObjects[dp]) {
                         response[attr] = regaObjects[dp][attr];
                     }
+                }
+            }
+            break;
+        case "getBulk":
+            if (!tmpArr[1]) {
+                response = {error: "no datapoints given"};
+                break;
+            }
+            status = 200;
+            response = {};
+            var dps = tmpArr[1].split(",");
+            for (var i = 0; i < dps.length; i++) {
+                dp = findDatapoint(dps[i]);
+                if (dp) {
+                    response[dp] = datapoints[dp][0];
                 }
             }
             break;
