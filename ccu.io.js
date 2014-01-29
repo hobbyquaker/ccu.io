@@ -1970,7 +1970,7 @@ function startAdapters () {
     }
     var i = 0;
     for (adapter in settings.adapters) {
-        if (!settings.adapters[adapter].enabled) {
+        if (!settings.adapters[adapter] || !settings.adapters[adapter].enabled) {
             continue;
         }
         //logger.info("ccu.io        found adapter "+adapter);
