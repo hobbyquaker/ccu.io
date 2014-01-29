@@ -976,9 +976,9 @@ function initExtensions() {
 function initWebserver() {
     if (app) {
         if (settings.useCache) {
-            var oneDay = 86400000;
-            app.use('/', express.static(__dirname + '/www', { maxAge: oneDay }));
-            app.use('/log', express.static(__dirname + '/log', { maxAge: oneDay }));
+            var oneWeek = 604800000;
+            app.use('/', express.static(__dirname + '/www', { maxAge: oneWeek }));
+            app.use('/log', express.static(__dirname + '/log', { maxAge: oneWeek }));
         }
         else {
             app.use('/', express.static(__dirname + '/www'));
@@ -1008,9 +1008,9 @@ function initWebserver() {
 
     if (appSsl) {
         if (settings.useCache) {
-            var oneDay = 86400000;
-            appSsl.use('/', express.static(__dirname + '/www', { maxAge: oneDay }));
-            appSsl.use('/log', express.static(__dirname + '/log', { maxAge: oneDay }));
+            var oneWeek = 604800000;
+            appSsl.use('/', express.static(__dirname + '/www', { maxAge: oneWeek }));
+            appSsl.use('/log', express.static(__dirname + '/log', { maxAge: oneWeek }));
         }
         else {
             appSsl.use('/', express.static(__dirname + '/www'));
