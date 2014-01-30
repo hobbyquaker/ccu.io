@@ -829,7 +829,7 @@ function email(obj) {
 }
 
 function findDatapoint(needle, hssdp) {
-    if (!datapoints[needle]) {
+    if (datapoints[needle] === undefined) {
         if (regaIndex.Name[needle]) {
             // Get by Name
             needle = regaIndex.Name[needle][0];
