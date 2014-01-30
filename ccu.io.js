@@ -1512,7 +1512,7 @@ function initSocketIO(_io) {
 
         socket.on('readdir', function (path, callback) {
             path = __dirname+"/"+path;
-            logger.info("socket.io <-- readdir "+path);
+            logger.verbose("socket.io <-- readdir "+path);
             fs.readdir(path, function (err, data) {
                 if (err) {
                     callback(undefined);
