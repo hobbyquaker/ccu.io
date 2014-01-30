@@ -1524,7 +1524,7 @@ function initSocketIO(_io) {
 
         socket.on('readdirStat', function(path, callback) {
             path = __dirname + "/" + path;
-            logger.info("socket.io <-- readdir_stat " + path);
+            logger.verbose("socket.io <-- readdir_stat " + path);
 
             fs.readdir(path, function(err, files) {
                 var data = [];
