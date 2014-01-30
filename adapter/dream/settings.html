@@ -1,121 +1,389 @@
+<table style="font-size: 12px" id="dream_table">
+	<tr>
+		<td>Enabled:</td>
+		<td colspan="6">
+			<select id="dream_enabled">
+				<option value="false">false</option>
+				<option value="true">true</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>First ID:</td>
+		<td colspan="6"><input id="dream_firstId" type="number"/></td>
+	</tr>
+	<tr>
+		<td>Polling enabled:</td>
+		<td colspan="6">
+			<select id="dream_pollingEnabled">
+				<option value="false">false</option>
+				<option value="true">true</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>Polling Interval:</td>
+		<td colspan="6"><input id="dream_pollingInterval" type="number" min="5" max="86400"/> seconds</td>
+	</tr>
+	<tr>
+		<td>Message Type:</td>
+		<td>
+			<select id="dream_messageType">
+				<option value="0">Yes/No</option>
+				<option value="1">Info</option>
+				<option value="2">Message</option>
+				<option value="3">Attention</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td>Message Timeout:</td>
+		<td colspan="6"><input id="dream_messageTimeout" type="number" min="1" max="30"/> seconds</td>
+	</tr>
+	<tr>
+<<<<<<< HEAD
+		<td>Debug enabled:</td>
+=======
+		<td>Debug log enabled:</td>
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
+		<td colspan="6">
+			<select id="dream_debugEnabled">
+				<option value="false">false</option>
+				<option value="true">true</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="7" style="height:20px"></td>
+	</tr>
+	<tr>
+		<th>IP</th>
+		<th>Port</th>
+<<<<<<< HEAD
+=======
+		<th>Username</th>
+		<th>Password</th>
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
+		<th>Name</th>
+		<th>Rooms</th>
+		<th>Functions</th>
+		<th>Favorites</th>
+		<th></th>
+	</tr>
+</table>
+<input type="button" id="add_device" value="add device"/>
+<br /><br />
+<h1>Hilfe</h1>
 <table style="font-size: 12px">
-    <tr>
-        <td>Enabled:</td>
-        <td>
-            <select id="dream_enabled">
-                <option value="false">false</option>
-                <option value="true">true</option>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td>First ID:</td>
-        <td><input id="dream_firstId" type="number"/></td>
-    </tr>
-    <tr>
-        <td>Dreambox (IP):</td>
-        <td><input id="dream_ip" type="text"/></td>
-    </tr>
-    <tr>
-        <td>Dreambox (Port):</td>
-        <td><input id="dream_port" type="number" min="10" max="65535"/></td>
-    </tr>
-    <tr>
-        <td>Polling enabled:</td>
-        <td>
-            <select id="dream_pollingEnabled">
-                <option value="false">false</option>
-                <option value="true">true</option>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td>Polling Interval:</td>
-        <td><input id="dream_pollingInterval" type="number" min="5" max="86400"/> seconds</td>
-    </tr>
-    <tr>
-        <td>Message Type:</td>
-        <td>
-            <select id="dream_messageType">
-                <option value="0">Yes/No</option>
-                <option value="1">Info</option>
-                <option value="2">Message</option>
-                <option value="3">Attention</option>
-            </select>
-        </td>
-    </tr>
-    <tr>
-        <td>Message Timeout:</td>
-        <td><input id="dream_messageTimeout" type="number" min="1" max="30"/> seconds</td>
-    </tr>
+<<<<<<< HEAD
+	<tr><td colspan="3" style="font-size: 14px"><b>Variablen</b></td></tr>
+	<tr><td><b>Datenpunkt-Name</b></td><td><b>Datenpunkt-ID (erste Box)</b></td><td><b>Beschreibung</b></td></tr>
+=======
+	<tr><td colspan="3" style="font-size: 14px"><b>Datenpunkte</b></td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td colspan="3">Die Datenpunkte richten sich nach der oben eingestellten First ID, wobei f&uuml;r jede konfigurierte Box eine Range von bis zu 10 IDs reserviert wird. Da die Berechnung automatisch erfolgt und die ersten 10 IDs f&uuml;r &uuml;bergreifende Zwecke reserviert bleiben, beginnt die Range f&uuml;r die erste konfigurierte Box bei <i>First ID + 10</i>, f&uuml;r die zweite Box <i>First ID + 20</i> usw.</td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td colspan="3" style="font-size: 14px"><b>Variablen</b></td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td><b>Datenpunkt-Name</b></td><td width="200"><b>Datenpunkt-ID (erste Box)</b></td><td><b>Beschreibung</b></td></tr>
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
+	<tr><td>DREAM.<i>Boxname</i>.COMMAND</td><td id="out_id01">95110</td><td>Nimmt Befehle zur Ausf&uuml;hrung entgegen (s.u.)</td></tr>
+	<tr><td>DREAM.<i>Boxname</i>.STANDBY</td><td id="out_id02">95111</td><td>Zeigt an, ob sich die Box im Standby befindet (true) oder nicht (false)</td></tr>
+	<tr><td>DREAM.<i>Boxname</i>.VOLUME</td><td id="out_id03">95112</td><td>Zeigt die aktuell eingestellte Lautst&auml;rke (0 - 100) an</td></tr>
+	<tr><td>DREAM.<i>Boxname</i>.MUTED</td><td id="out_id04">95113</td><td>Zeigt an, ob die Box lautlos gestellt ist oder nicht (unabh&auml;ngig von der eingestellten Lautst&auml;rke!)</td></tr>
+	<tr><td>DREAM.<i>Boxname</i>.CHANNEL</td><td id="out_id05">95114</td><td>Zeigt den aktuell eingestellten Sender an, sofern sich die Box nicht im Standby befindet</td></tr>
+	<tr><td>DREAM.<i>Boxname</i>.HDD.CAPACITY</td><td id="out_id06">95115</td><td>Zeigt die Kapazit&auml;t der eingebauten Festplatte an</td></tr>
+	<tr><td>DREAM.<i>Boxname</i>.HDD.FREE</td><td id="out_id07">95116</td><td>Zeigt an, wieviel Platz noch auf der eingebauten Festplatte verf&uuml;gbar ist</td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td colspan="3" style="font-size: 14px"><b>Kommandos</b></td></tr>
+<<<<<<< HEAD
+=======
+	<tr><td colspan="3">&nbsp;</td></tr>
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
+	<tr><td colspan="3">Kommandos k&ouml;nnen verwendet werden, um Befehle an die Dreambox zu schicken. Hierzu muss einer der nachfolgend aufgelisteten Werte in das Datenfeld <span id=""></span> geschrieben werden. &Uuml;ber eine entsprechende Benachrichtigung nimmt der Adapter den Wert entgegen und sendet ihn an die Dreambox. Es ist egal, ob ein Kommando gro&szlig;- oder kleingeschrieben wird, beide Varianten werden erkannt und umgesetzt. Bei einer erfolgreichen Ausf&uuml;hrung wird der Inhalt des Datenfelds gel&ouml;scht.</td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td><b>Kommando</b></td><td colspan="2"><b>Beschreibung</b></td></tr>
+	<tr><td>MESSAGE:xyz</td><td colspan="2">Sendet eine Nachricht <i>xyz</i> an die Box, die f&uuml;r die in der Konfiguration unter <i>messageTimeout</i> angegebene Zeit auf dem Bildschirm angezeigt wird.</td></tr>
+	<tr><td>MUTE</td><td colspan="2">Stellt die Box auf lautlos.</td></tr>
+	<tr><td>UNMUTE</td><td colspan="2">Stellt die Box auf nicht lautlos.</td></tr>
+<<<<<<< HEAD
+	<tr><td>TOOGLEMUTE</td><td colspan="2">Wechselt zwischen lautlos und nicht lautlos hin und her.</td></tr>
+	<tr><td>VOLUME:xyz</td><td colspan="2">Stellt die Lautst&auml;rke auf den Wert <i>xyz</i>, wobei es sich hier um einen Wert zwischen 0 und 100 handeln darf.</td></tr>
+	<tr><td>WAKEUP</td><td colspan="2">Weckt die Box aus dem Standby.</td></tr>
+	<tr><td>STANDBY</td><td colspan="2">Versetzt die Box in den Standby.</td></tr>
+	<tr><td>TOOGLESTANDBY</td><td colspan="2">Wechselt zwischen Standby und Wakeup hin und her.</td></tr>
+	<tr><td>DEEPSTANDBY</td><td colspan="2">Setzt die Box in den Deep-Standby. <b>Achtung:</b> da in diesem Modus kein Web-Interface verf&uuml;gbar ist, muss die Box per Hand wieder reaktiviert werden!</td></tr>
+	<tr><td>REBOOT</td><td colspan="2">F&uuml;hrt einen Reboot bei der Box durch.<b>Achtung:</b> f&uuml;r die Zeit des Reboots ist die Box nicht durch den Adapter erreichbar!</td></tr>
+	<tr><td>RESTART</td><td colspan="2">F&uuml;hrt einen Neustart des Enigma-Systems durch. <b>Achtung:</b> f&uuml;r die Zeit des Neustarts ist die Box nicht durch den Adapter erreichbar!</td></tr>
+=======
+	<tr><td>MUTE_TOGGLE</td><td colspan="2">Wechselt zwischen lautlos und nicht lautlos hin und her.</td></tr>
+	<tr><td>VOLUME:xyz</td><td colspan="2">Stellt die Lautst&auml;rke auf den Wert <i>xyz</i>, wobei es sich hier um einen Wert zwischen 0 und 100 handeln darf.</td></tr>
+	<tr><td>WAKEUP</td><td colspan="2">Weckt die Box aus dem Standby.</td></tr>
+	<tr><td>STANDBY</td><td colspan="2">Versetzt die Box in den Standby.</td></tr>
+	<tr><td>STANDBY_TOGGLE</td><td colspan="2">Wechselt zwischen Standby und Wakeup hin und her.</td></tr>
+	<tr><td>DEEPSTANDBY</td><td colspan="2">Setzt die Box in den Deep-Standby. <b>Achtung:</b> da in diesem Modus kein Web-Interface verf&uuml;gbar ist, muss die Box per Hand wieder reaktiviert werden!</td></tr>
+	<tr><td>REBOOT</td><td colspan="2">F&uuml;hrt einen Reboot bei der Box durch.<b>Achtung:</b> f&uuml;r die Zeit des Reboots ist die Box nicht durch den Adapter erreichbar!</td></tr>
+	<tr><td>RESTART</td><td colspan="2">F&uuml;hrt einen Neustart des Enigma-Systems durch. <b>Achtung:</b> f&uuml;r die Zeit des Neustarts ist die Box nicht durch den Adapter erreichbar!</td></tr>
+	<tr><td>KEY:xyz</td><td colspan="2">Sendet ein Fernbedienungscode an die Box. Gültige Codes für xyz sind unter dem nachfolgenden Punkt aufgeführt. Ein Beispiel wäre <b>KEY:115</b> um die Lautst&auml;rke zu erh&ouml;hen.Anstelle dessen kann aber auch der Alias <b>VOLUME_UP</b> ohne ein vorangestelltes <b>KEY:</b> verwendet werden.</td></tr>
+	<tr><td colspan="3">&nbsp;</td></tr>
+	<tr><td><b>Fernbedienungscode</b></td><td><b>Beschreibung</b><td><b>Alias-Kommando</b></td></tr>
+	<tr><td>116</td><td>Taste &quot;Power&quot;</td><td>STANDBY_TOGGLE</td></tr>
+	<tr><td>412</td><td>Taste &quot;previous&quot;</td><td>PREV</td></tr>
+	<tr><td>407</td><td>Taste &quot;next&quot;</td><td>NEXT</td></tr>
+	<tr><td>115</td><td>Taste &quot;volume up&quot;</td><td>VOLUME_UP</td></tr>
+	<tr><td>114</td><td>Taste &quot;volume down&quot;</td><td>VOLUME_DOWN</td></tr>
+	<tr><td>402</td><td>Taste &quot;bouquet up&quot;</td><td>BOUQUET_UP</td></tr>
+	<tr><td>403</td><td>Taste &quot;bouquet down&quot;</td><td>BOUQUET_DOWN</td></tr>
+	<tr><td>113</td><td>Taste &quot;mute&quot;</td><td>MUTE_TOOGLE</td></tr>
+	<tr><td>174</td><td>Taste &quot;lame&quot;</td><td>EXIT</td></tr>
+	<tr><td>358</td><td>Taste &quot;info&quot;</td><td>INFO</td></tr>
+	<tr><td>139</td><td>Taste &quot;menu&quot;</td><td>MENU</td></tr>
+	<tr><td>103</td><td>Taste &quot;up&quot;</td><td>UP</td></tr>
+	<tr><td>108</td><td>Taste &quot;down&quot;</td><td>DOWN</td></tr>
+	<tr><td>105</td><td>Taste &quot;left&quot;</td><td>LEFT oder CH_DOWN</td></tr>
+	<tr><td>106</td><td>Taste &quot;right&quot;</td><td>RIGHT oder CH_UP</td></tr>
+	<tr><td>352</td><td>Taste &quot;OK&quot;</td><td>OK</td></tr>
+	<tr><td>2</td><td>Taste &quot;1&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>3</td><td>Taste &quot;2&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>4</td><td>Taste &quot;3&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>5</td><td>Taste &quot;4&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>6</td><td>Taste &quot;5&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>7</td><td>Taste &quot;6&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>8</td><td>Taste &quot;7&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>9</td><td>Taste &quot;8&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>10</td><td>Taste &quot;1&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>11</td><td>Taste &quot;0&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>392</td><td>Taste &quot;audio&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>393</td><td>Taste &quot;video&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>398</td><td>Taste &quot;red&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>399</td><td>Taste &quot;green&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>400</td><td>Taste &quot;yellow&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>401</td><td>Taste &quot;blue&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>377</td><td>Taste &quot;tv&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>385</td><td>Taste &quot;radio&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>388</td><td>Taste &quot;text&quot;</td><td>&nbsp;</td></tr>
+	<tr><td>138</td><td>Taste &quot;help&quot;</td><td>&nbsp;</td></tr>
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
 </table>
 
 <script type="text/javascript">
-    if (currentAdapterSettings.enabled) {
-        $("#dream_enabled option[value='false']").removeAttr("selected");
-        $("#dream_enabled option[value='true']").attr("selected", true);
-    } else {
-        $("#dream_enabled option[value='true']").removeAttr("selected");
-        $("#dream_enabled option[value='false']").attr("selected", true);
-    }
+	function setHelpValues (firstId) {
+		var val = parseInt(firstId) + 10;
+		$("#out_id01").html(val);
+		$("#out_id02").html(val+1);
+		$("#out_id03").html(val+2);
+		$("#out_id04").html(val+3);
+		$("#out_id05").html(val+4);
+		$("#out_id06").html(val+5);
+		$("#out_id07").html(val+6);
+	}
 
-    $("#dream_enabled").change(function () {
-        currentAdapterSettings.enabled = ($("#dream_enabled option:selected").val() == "false" ? false : true);
-        updateAdapterSettings();
-    });
+	function storeSettings () {
+		updateAdapterSettings();
+	}
+<<<<<<< HEAD
+	
+=======
 
-    if (currentAdapterSettings.settings.pollingEnabled) {
-        $("#dream_pollingEnabled option[value='false']").removeAttr("selected");
-        $("#dream_pollingEnabled option[value='true']").attr("selected", true);
-    } else {
-        $("#dream_pollingEnabled option[value='true']").removeAttr("selected");
-        $("#dream_pollingEnabled option[value='false']").attr("selected", true);
-    }
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
+	function showDevice (id) {
+	var sText = '<tr class="dream-optdevice">';
+		sText += '<td><input id="dream_ip_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].ip   || "")+'"/></td>';
+		sText += '<td><input id="dream_port_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].port   || "")+'"/></td>';
+<<<<<<< HEAD
+=======
+		sText += '<td><input id="dream_username_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].username   || "")+'"/></td>';
+		sText += '<td><input id="dream_password_'  +id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].password   || "")+'"/></td>';
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
+		sText += '<td><input id="dream_name_'+id+'" data-dream-device="'+id+'" type="text" value="'+(currentAdapterSettings.settings.boxes[id].name || "")+'"/></td>';
+		
+		var t = "";
+		if (currentAdapterSettings.settings.boxes[id].rooms) {
+			for (var i = 0; i < currentAdapterSettings.settings.boxes[id].rooms.length; i++) {
+				t += ((t == "") ? "":", ") + currentAdapterSettings.settings.boxes[id].rooms[i];
+			}
+		}
+		sText += '<td><input id="dream_rooms_'+id+'" data-dream-device="'+id+'" type="text" value="'+t+'"/></td>';
+		
+		t = "";
+		if (currentAdapterSettings.settings.boxes[id].funcs) {
+			for (var i = 0; i < currentAdapterSettings.settings.boxes[id].funcs.length; i++) {
+				t += ((t == "") ? "":", ") + currentAdapterSettings.settings.boxes[id].funcs[i];
+			}
+		}
+		sText += '<td><input id="dream_funcs_'+id+'" data-dream-device="'+id+'" type="text" value="'+t+'"/></td>';
+		
+		t = "";
+		if (currentAdapterSettings.settings.boxes[id].favs) {
+			for (var i = 0; i < currentAdapterSettings.settings.boxes[id].favs.length; i++) {
+				t += ((t == "") ? "":", ") + currentAdapterSettings.settings.boxes[id].favs[i];
+			}
+		}
+		sText += '<td><input id="dream_favs_'+id+'" data-dream-device="'+id+'" type="text" value="'+t+'"/></td>';
+		sText += '<td><input data-dream-device="'+id+'" type="button" value="remove device" class="dream-remove"/></td>';
+		sText += "</tr>";
+		
+		$("#dream_table").append(sText);
+		
+		$(".dream-remove:last").button().click(function () {
+			dreamRemoveDevice($(this).attr("data-dream-device"));
+			storeSettings();
+		});
+		$("#dream_name_"+id).change(function () {
+			currentAdapterSettings.settings.boxes[$(this).attr('data-dream-device')].name = $(this).val();
+			storeSettings();
+		}).keyup(function() { $(this).trigger("change")});
+		
+		$("#dream_ip_"+id).change(function () {
+			currentAdapterSettings.settings.boxes[$(this).attr('data-dream-device')].ip = $(this).val();
+			storeSettings();
+		}).keyup(function() { $(this).trigger("change")});
+		
+		$("#dream_port_"+id).change(function () {
+			currentAdapterSettings.settings.boxes[$(this).attr('data-dream-device')].port = $(this).val();
+			storeSettings();
+		}).keyup(function() { $(this).trigger("change")});
+		
+		$("#dream_rooms_"+id).change(function () {
+			var arr = $(this).val().split(',');
+			
+			for (var t = 0; t < arr.length; t++) {
+				arr[t] = arr[t].trim();
+			}
+			
+			currentAdapterSettings.settings.boxes[$(this).attr('data-dream-device')].rooms = arr;
+			
+			storeSettings();
+		}).keyup(function() { $(this).trigger("change")});
+		
+		$("#dream_funcs_"+id).change(function () {
+			var arr = $(this).val().split(',');
+			
+			for (var t = 0; t < arr.length; t++) {
+				arr[t] = arr[t].trim();
+			}
+			
+			currentAdapterSettings.settings.boxes[$(this).attr('data-dream-device')].funcs = arr;
+			
+			storeSettings();
+		}).keyup(function() { $(this).trigger("change")});
+		
+		$("#dream_favs_"+id).change(function () {
+			var arr = $(this).val().split(',');
+			
+			for (var t = 0; t < arr.length; t++) {
+				arr[t] = arr[t].trim();
+			}
+			
+			currentAdapterSettings.settings.boxes[$(this).attr('data-dream-device')].favs = arr;
 
-    $("#dream_pollingEnabled").change(function () {
-        currentAdapterSettings.settings.pollingEnabled = ($("#dream_pollingEnabled option:selected").val() == "false" ? false : true);
-        updateAdapterSettings();
-    });
+			storeSettings();
+		}).keyup(function() { $(this).trigger("change")});
+	}
 
-    $("#dream_messageType option[value='"+currentAdapterSettings.settings.messageType+"']").attr("selected", true);
+	function dreamRefreshDevices() {
+		for (var id in currentAdapterSettings.settings.boxes) {
+			showDevice (id);
+		}
+		$(".dream-remove").button().click(function () {
+			var j = $(this).attr("data-dream-device");
+			dreamRemoveDevice(j);
+		});
+	}
+	dreamRefreshDevices();
 
-    $("#dream_messageType").change(function () {
-        currentAdapterSettings.settings.messageType = $("#dream_messageType option:selected").val();
-        updateAdapterSettings();
-    });
+	$("#add_device").button().click(function () {
+		var i = 1;
+		while (currentAdapterSettings.settings.boxes["_"+i]) i++;
 
-    $("#dream_messageTimeout").val(currentAdapterSettings.settings.messageTimeout);
+<<<<<<< HEAD
+		currentAdapterSettings.settings.boxes["_"+i] = {ip: "0.0.0.1", port: "80", name:"", rooms:[""], funcs:[""]};
+=======
+		currentAdapterSettings.settings.boxes["_"+i] = {ip: "0.0.0.1", port: 80, username: "", password: "", name:"", rooms:[""], funcs:[""]};
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
+		showDevice ("_"+i);
+	});
 
-    $("#dream_messageTimeout").change(function () {
-        currentAdapterSettings.settings.messageTimeout = $("#dream_messageTimeout").val();
-        updateAdapterSettings();
-    });
+	function dreamRemoveDevice(j) {
+		$("tr.dream-optdevice").remove();
+		delete currentAdapterSettings.settings.boxes[j];
+		dreamRefreshDevices();
+		storeSettings();
+	}
 
-    $("#dream_pollingInterval").val(currentAdapterSettings.settings.pollingInterval/1000);
+	if (currentAdapterSettings.enabled) {
+		$("#dream_enabled option[value='false']").removeAttr("selected");
+		$("#dream_enabled option[value='true']").attr("selected", true);
+	} else {
+		$("#dream_enabled option[value='true']").removeAttr("selected");
+		$("#dream_enabled option[value='false']").attr("selected", true);
+	}
 
-    $("#dream_pollingInterval").change(function () {
-        currentAdapterSettings.settings.pollingInterval = $("#dream_pollingInterval").val() * 1000;
-        updateAdapterSettings();
-    });
+	$("#dream_enabled").change(function () {
+		currentAdapterSettings.enabled = ($("#dream_enabled option:selected").val() == "false" ? false : true);
+		storeSettings();
+	});
 
-    $("#dream_firstId").val(currentAdapterSettings.settings.firstId);
+	if (currentAdapterSettings.settings.pollingEnabled) {
+		$("#dream_pollingEnabled option[value='false']").removeAttr("selected");
+		$("#dream_pollingEnabled option[value='true']").attr("selected", true);
+	} else {
+		$("#dream_pollingEnabled option[value='true']").removeAttr("selected");
+		$("#dream_pollingEnabled option[value='false']").attr("selected", true);
+	}
 
-    $("#dream_firstId").change(function () {
-        currentAdapterSettings.settings.firstId = $("#dream_firstId").val();
-        updateAdapterSettings();
-    });
+	$("#dream_pollingEnabled").change(function () {
+		currentAdapterSettings.settings.pollingEnabled = ($("#dream_pollingEnabled option:selected").val() == "false" ? false : true);
+		storeSettings();
+	});
 
-    $("#dream_ip").val(currentAdapterSettings.settings.ip);
+	if (currentAdapterSettings.settings.debugEnabled) {
+		$("#dream_debugEnabled option[value='false']").removeAttr("selected");
+		$("#dream_debugEnabled option[value='true']").attr("selected", true);
+	} else {
+		$("#dream_debugEnabled option[value='true']").removeAttr("selected");
+		$("#dream_debugEnabled option[value='false']").attr("selected", true);
+	}
 
-    $("#dream_ip").change(function () {
-        currentAdapterSettings.settings.ip = $("#dream_ip").val();
-        updateAdapterSettings();
-    });
+	$("#dream_debugEnabled").change(function () {
+		currentAdapterSettings.settings.debugEnabled = ($("#dream_debugEnabled option:selected").val() == "false" ? false : true);
+		storeSettings();
+	});
 
-    $("#dream_port").val(currentAdapterSettings.settings.port);
+	$("#dream_messageType option[value='"+currentAdapterSettings.settings.messageType+"']").attr("selected", true);
 
-    $("#dream_port").change(function () {
-        currentAdapterSettings.settings.port = $("#dream_port").val();
-        updateAdapterSettings();
-    });
+	$("#dream_messageType").change(function () {
+		currentAdapterSettings.settings.messageType = $("#dream_messageType option:selected").val();
+		storeSettings();
+	});
+
+	$("#dream_messageTimeout").val(currentAdapterSettings.settings.messageTimeout);
+
+	$("#dream_messageTimeout").change(function () {
+		currentAdapterSettings.settings.messageTimeout = $("#dream_messageTimeout").val();
+		storeSettings();
+	});
+
+	$("#dream_pollingInterval").val(currentAdapterSettings.settings.pollingInterval/1000);
+
+	$("#dream_pollingInterval").change(function () {
+		currentAdapterSettings.settings.pollingInterval = $("#dream_pollingInterval").val() * 1000;
+		storeSettings();
+	});
+
+	$("#dream_firstId").val(currentAdapterSettings.settings.firstId);
+
+<<<<<<< HEAD
+	setHelpValues(currentAdapterSettings.settings.firstId);
+	$("#dream_firstId").change(function () {
+		currentAdapterSettings.settings.firstId = $("#dream_firstId").val();
+		setHelpValues(currentAdapterSettings.settings.firstId);
+=======
+	$("#dream_firstId").change(function () {
+		currentAdapterSettings.settings.firstId = $("#dream_firstId").val();
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
+		storeSettings();
+	});
 </script>

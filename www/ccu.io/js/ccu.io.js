@@ -1,8 +1,102 @@
-
 var currentAdapterSettings;
+var ccuIoSettings = null;
 
 function updateAdapterSettings() {
     $("#adapter_config_json").html(JSON.stringify(currentAdapterSettings, null, "    "));
+}
+
+function translateWord (text, lang, dictionary) {
+    if (!ccuIoSettings) return text;
+    if (!dictionary) dictionary = ccuWords;
+    if (!lang)       lang       = ccuIoSettings.language || 'en';
+
+    if (!dictionary) {
+        return text;
+    }
+
+    if (dictionary[text]) {
+        var newText = dictionary[text][lang];
+        if (newText){
+            return newText;
+        }
+        else if (lang != 'en') {
+            newText = dictionary[text]['en'];
+            if (newText){
+                return newText;
+            }
+        }
+
+    }
+    return text;
+}
+
+function translateWordBack (text, lang, dictionary) {
+    if (!dictionary) {
+        return text;
+    }
+    for (var word in dictionary) {
+        if (dictionary[word] === null)
+            continue;
+        if (dictionary[word][lang] == text)
+            return word;
+    }
+
+    console.log ("back: " + text);
+    return text;
+}
+
+function translateAll (lang, dictionary) {
+    lang  = lang || ccuIoSettings.language || 'en';
+    dictionary = dictionary || ccuWords;
+
+    $(".translate").each(function (idx) {
+        var curlang = $(this).attr ('data-lang');
+        var text    = $(this).html ();
+        if (curlang != lang) {
+            if (curlang) {
+                text = translateWordBack (text, curlang, dictionary);
+            }
+
+            var transText = translateWord (text, lang, dictionary);
+            if (transText) {
+                $(this).html (transText);
+                $(this).attr ('data-lang', lang);
+            }
+        }
+    });
+    // translate <input type="button>
+    $(".translateV").each(function (idx) {
+        var text    = $( this ).attr ('value');
+        var curlang = $(this).attr ('data-lang');
+        if (curlang != lang) {
+            if (curlang) {
+                text = translateWordBack (text, curlang, dictionary);
+            }
+
+            var transText = translateWord (text, lang, dictionary);
+            if (transText) {
+                $(this).attr ('value', transText);
+                $(this).attr ('data-lang', lang);
+            }
+        }
+    });
+    $(".translateB").each(function (idx) {
+        //<span class="ui-button-text">Save</span>
+        var text    = $( this ).html ();
+        text = text.replace('<span class="ui-button-text">', "").replace("</span>", "");
+        var curlang = $(this).attr ('data-lang');
+        if (curlang != lang) {
+            if (curlang) {
+                text = translateWordBack (text, curlang, dictionary);
+            }
+
+            var transText = translateWord (text, lang, dictionary);
+            if (transText) {
+                $(this).html ('<span class="ui-button-text">' + transText + '</span>');
+                $(this).attr ('data-lang', lang);
+            }
+        }
+    });
 }
 
 $(document).ready(function () {
@@ -10,8 +104,7 @@ $(document).ready(function () {
     var installedAddons = [];
 
     var regaObjects,
-        regaIndex,
-        ccuIoSettings;
+        regaIndex;
 
     var lastRegaPoll,
         lastRfEvent,
@@ -75,14 +168,27 @@ $(document).ready(function () {
         $("#stringtable").html(JSON.stringify(obj, null, "  "));
     });
 
+    function getYesNo (isTrue, isWarning) {
+        return isTrue ? "<span class='indicator-true translate' data-lang='"+(ccuIoSettings.language || 'en')+"'>"+translateWord("YES")+"</span>"  : "<span class='" + (!isWarning ? "indicator-false" :"indicator-false-warning")+" translate' data-lang='"+(ccuIoSettings.language || 'en')+"'>"+translateWord("NO")+"</span>";
+    }
+    function getTrueFalse (isTrue) {
+        return isTrue ? "<span style='color:green'><b data-lang='"+(ccuIoSettings.language || 'en')+"' class='translate'>"+translateWord('TRUE')+"</b></span>" : "<span data-lang='"+(ccuIoSettings.language || 'en')+"' class='translate'>"+translateWord('false')+"</span>";
+    }
     socket.emit("getSettings", function (settings) {
         ccuIoSettings = settings;
         $(".ccu-io-version").html(settings.version);
-        $(".ccu-io-scriptengine").html((settings.scriptEngineEnabled ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false'>NO</span>"));
-        $(".ccu-io-adapters").html(settings.adaptersEnabled ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false'>NO</span>");
-        $(".ccu-io-logging").html(settings.logging.enabled ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false'>NO</span>");
+        $(".ccu-io-scriptengine").html(getYesNo(settings.scriptEngineEnabled));
+        $(".ccu-io-adapters").html(getYesNo(settings.adaptersEnabled));
+        $(".ccu-io-logging").html(getYesNo(settings.logging.enabled));
 
         loadSettings();
+        translateAll();
+
+        $("#install_addon_dialog").dialog({
+            autoOpen: false,
+            title: translateWord ("Install Addon"),
+            modal: true
+        });
 
         socket.emit("readdir", ["adapter"], function (data) {
             for (var i = 0; i < data.length; i++) {
@@ -90,10 +196,10 @@ $(document).ready(function () {
                 if (adapter.match(/^skeleton/) || adapter == ".DS_Store") { continue; }
                 var adapterData = {
                     name:   data[i],
-                    settings:   '<button class="adapter-settings" data-adapter="'+adapter+'">configure</button><button class="adapter-restart" data-adapter="'+adapter+'">reload</button>',
+                    settings:   '<button class="adapter-settings translateB" data-adapter="'+adapter+'" data-lang="'+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+'">'+translateWord('configure')+'</button><button class="adapter-restart translateB" data-lang="'+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+'" data-adapter="'+adapter+'">'+translateWord('reload')+'</button>',
                     confed:     (settings.adapters[data[i]]?"true":"false"),
-                    enabled:    (settings.adapters[data[i]]? (settings.adapters[data[i]].enabled ? "<span style='color:green'><b>TRUE</b></span>" : "false"):""),
-                    mode:       (settings.adapters[data[i]]?settings.adapters[data[i]].mode:""),
+                    enabled:    (settings.adapters[data[i]]?getTrueFalse(settings.adapters[data[i]].enabled):""),
+                    mode:       ((settings.adapters[data[i]] && settings.adapters[data[i]].mode)?getWord(settings.adapters[data[i]].mode):""),
                     period:     (settings.adapters[data[i]]?settings.adapters[data[i]].period:"")
                 }
                 $("#grid_adapter").jqGrid("addRowData", i, adapterData);
@@ -109,20 +215,36 @@ $(document).ready(function () {
     });
 
     socket.emit("getStatus", function (data) {
-        $(".ccu-reachable").html(data.ccuReachable ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-regaup").html(data.ccuRegaUp ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-regadata").html(data.ccuRegaData ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-rpc").html(data.initsDone ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
+        $(".ccu-reachable").html(getYesNo(data.ccuReachable, true));
+        $(".ccu-regaup").html(getYesNo(data.ccuRegaUp, true));
+        $(".ccu-regadata").html(getYesNo(data.ccuRegaData, true));
+        $(".ccu-rpc").html(getYesNo(data.initsDone, true));
     });
 
     socket.on("updateStatus", function (data) {
-        $(".ccu-reachable").html(data.ccuReachable ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-regaup").html(data.ccuRegaUp ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-regadata").html(data.ccuRegaData ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
-        $(".ccu-rpc").html(data.initsDone ? "<span class='indicator-true'>YES</span>"  : "<span class='indicator-false-warning'>NO</span>");
+        $(".ccu-reachable").html(getYesNo(data.ccuReachable, true));
+        $(".ccu-regaup").html(getYesNo(data.ccuRegaUp, true));
+        $(".ccu-regadata").html(getYesNo(data.ccuRegaData, true));
+        $(".ccu-rpc").html(getYesNo(data.initsDone, true));
+    });
+
+    socket.on ("readyBackup", function (name) {
+        showMessage ();
+        $('#createBackup').button( "option", "disabled", false);
+        location.replace(name);
+    });
+    socket.on ("applyReady", function (text) {
+        $('#applyBackup').button( "option", "disabled", false);
+        showMessage ();
+        showMessage (text);
+    });
+    socket.on ("applyError", function (text) {
+        $('#applyBackup').button( "option", "disabled", false);
+        showMessage ();
+        showMessage (text, "Error");
     });
     socket.on("ioMessage", function (data) {
-        alert(data);
+        showMessage (data);
     });
 
 
@@ -139,7 +261,7 @@ $(document).ready(function () {
                     var addonData = {
                         name:               "<a href='/"+meta.dirname+"' target='_blank'>"+meta.name+"</a>",
                         installedVersion:   meta.version,
-                        availableVersion:   "<input data-update-name='"+meta.name+"' class='updateCheck' data-update-url='"+meta.urlMeta+"' type='button' value='check'/>",
+                        availableVersion:   "<input data-update-name='"+meta.name+"' class='updateCheck translateV' data-update-url='"+meta.urlMeta+"' type='button' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("check")+"'/>",
                         homepage:           "<a href='"+meta.urlHomepage+"' target='_blank'>"+hp[1]+"</a>",
                         download:           "<a href='"+meta.urlDownload+"' target='_blank'>"+dl[1]+"</a>"
                     };
@@ -213,13 +335,13 @@ $(document).ready(function () {
                         var updateAvailable = compareVersion(instVersion, availVersion);
 
                         if (updateAvailable) {
-                            $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' value='update'/>&nbsp;");
+                            $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update translateV' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("update")+"'/>&nbsp;");
                             $("input#update_"+obj.ident).click(function () {
                                 $(this).attr("disabled", true);
                                 var that = this;
                                 socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
                                     if (err) {
-                                        alert(err);
+                                        showMessage (err);
                                     } else {
                                         $(that).remove();
                                     }
@@ -265,13 +387,13 @@ $(document).ready(function () {
                             }
 
                             if (updateAvailable) {
-                                $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' value='update'/>&nbsp;");
+                                $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("update")+"'/>&nbsp;");
                                 $("input#update_"+obj.ident).click(function () {
                                     $(this).attr("disabled", true);
                                     var that = this;
                                     socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
                                         if (err) {
-                                            alert(err);
+                                            showMessage(err);
                                         } else {
                                             $(that).remove();
                                         }
@@ -298,23 +420,23 @@ $(document).ready(function () {
             header: false,
             selectedList: 1
         }).change(function () {
-            var file = ($("#select_datastore option:selected").val());
-            if (file == "") {
-                $("textarea#datastore").val("");
-                $("#datastoreSave").button("disable");
-            } else {
+                var file = ($("#select_datastore option:selected").val());
+                if (file == "") {
+                    $("textarea#datastore").val("");
+                    $("#datastoreSave").button("disable");
+                } else {
 
-                $("textarea#datastore").val("");
-                $("#datastoreSave").button("disable");
+                    $("textarea#datastore").val("");
+                    $("#datastoreSave").button("disable");
 
-                socket.emit("readFile", [file], function (data) {
-                    if (data) {
-                        $("textarea#datastore").val(JSON.stringify(data, null, 2));
-                        $("#datastoreSave").button("enable");
-                    }
-                });
-            }
-        });
+                    socket.emit("readFile", [file], function (data) {
+                        if (data) {
+                            $("textarea#datastore").val(JSON.stringify(data, null, 2));
+                            $("#datastoreSave").button("enable");
+                        }
+                    });
+                }
+            });
     });
 
     $("#datastoreSave").button().button("disable").click(function () {
@@ -324,14 +446,14 @@ $(document).ready(function () {
 
             socket.emit("writeFile", file, data, function (res) {
                 //if (res) {
-                    alert("File saved.");
+                showMessage ("File saved.");
                 //} else {
                 //    alert("Error: can't save file");
                 //}
             });
 
         } catch (e) {
-            alert("Error: "+e);
+            showMessage ("Error: "+e);
 
         }
     });
@@ -342,8 +464,16 @@ $(document).ready(function () {
 
     socket.on('disconnect', function() {
         setTimeout(function () {
-            alert("CCU.IO disconnected");
-            window.location.reload();
+            showMessage("CCU.IO disconnected");
+            setInterval(function () {
+                //console.log("trying to force reconnect...");
+                $.ajax({
+                    url: "/ccu.io/index.html",
+                    success: function () {
+                        window.location.reload();
+                    }
+                });
+            }, 90000);
         }, 100);
 
     });
@@ -354,7 +484,7 @@ $(document).ready(function () {
     });
 
 
-    $("#restartCCUIO").button().css("width", 240).click(function () {
+    $("#restartCCUIO").button().css("width", 300).click(function () {
         socket.emit("restart");
         $("#restarting").show();
         setTimeout(function () {
@@ -362,25 +492,67 @@ $(document).ready(function () {
         }, 30000);
     });
 
-    $("#refreshAddons").button().css("width", 240).click(function () {
+    $("#refreshAddons").button().css("width", 300).click(function () {
         socket.emit("refreshAddons");
     })
 
-    $("#refreshCCU").button().css("width", 240).click(function () {
+    $("#refreshCCU").button().css("width", 300).click(function () {
         socket.emit('reloadData');
         //$("#reloading").show();
     });
-    $("#restartRPC").button().css("width", 240).click(function () {
+    $("#createBackup").button().css("width", 300).click(function () {
+        $(this).button( "option", "disabled", true );
+        socket.emit('createBackup');
+    });
+
+    $("#applyBackup").button().css("width", 300).click(function () {
+        $("#applyBackup").button( "option", "disabled", true );
+    });
+
+    $("#applyBackup").dropzone({
+        url: "/upload?path=./www/_",
+        acceptedFiles: "application/x-gzip",
+        uploadMultiple: false,
+        previewTemplate: '<div class="dz-preview dz-file-preview"><div class="dz-details"><div class="dz-filename"><span data-dz-name></span></div><br/>' +
+            '<div class="dz-size" data-dz-size></div><br/><img data-dz-thumbnail /></div><div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>' +
+            '<div class="dz-error-message"><span data-dz-errormessage></span></div></div>',
+        previewsContainer: "#uploadPreview",
+        clickable: true,
+        dragover: function (e) {
+            var el = $(e.toElement);
+            $(e.toElement).closest("li.ui-li").addClass("upload-start");
+        },
+        dragleave: function (e) {
+            $(e.toElement).closest("li.ui-li").removeClass("upload-start");
+        },
+        drop: function (e, ui) {
+            var closest = $(e.toElement).closest("li.ui-li");
+            closest.removeClass("upload-start");
+
+        },
+        complete: function (e) {
+            socket.emit('applyBackup', "_" + e.name);
+        },
+        init: function () {
+            this.on("processing", function() {
+                this.options.url = "/upload?path=./www/_";
+            });
+        }
+
+    });
+
+    $("#restartRPC").button().css("width", 300).click(function () {
         socket.emit('restartRPC');
     });
-    $("#reloadScriptEngine").button().css("width", 240).click(function () {
+
+    $("#reloadScriptEngine").button().css("width", 300).click(function () {
         $("#reloadScriptEngine").button("disable");
         socket.emit('reloadScriptEngine', function () {
             $("#reloadScriptEngine").button("enable");
         });
     });
 
-    $("#dataRefresh").button().css("width", 240).click(function() {
+    $("#dataRefresh").button().css("width", 300).click(function() {
         $("#data").html("");
         socket.emit('getDatapoints', function(obj) {
             $("#data").html(JSON.stringify(obj, null, "  "));
@@ -444,26 +616,26 @@ $(document).ready(function () {
 
 
 
-/*
-    $("#grid_log").jqGrid({
-        colNames:['Timestamp','Severity', 'Message'],
-        colModel:[
-            {name:'timestamp',index:'timestamp', width:100},
-            {name:'severity',index:'severity', width:100},
-            {name:'message',index:'message', width:800}
-        ],
-        rowNum:10,
-        autowidth: true,
-        width: "100%",
-        rowList:[10,20,30],
-        //pager: $('#pager_log'),
-        sortname: 'timestamp',
-        viewrecords: true,
-        sortorder: "desc",
-        caption:"CCU.IO Log"
-    }); //.navGrid('#pager_log',{edit:false,add:false,del:false});
+    /*
+     $("#grid_log").jqGrid({
+     colNames:['Timestamp','Severity', 'Message'],
+     colModel:[
+     {name:'timestamp',index:'timestamp', width:100},
+     {name:'severity',index:'severity', width:100},
+     {name:'message',index:'message', width:800}
+     ],
+     rowNum:10,
+     autowidth: true,
+     width: "100%",
+     rowList:[10,20,30],
+     //pager: $('#pager_log'),
+     sortname: 'timestamp',
+     viewrecords: true,
+     sortorder: "desc",
+     caption:"CCU.IO Log"
+     }); //.navGrid('#pager_log',{edit:false,add:false,del:false});
 
-*/
+     */
 
     var datapointsLastSel;
     var datapointsEditing = false;
@@ -471,7 +643,7 @@ $(document).ready(function () {
     $("#grid_datapoints").jqGrid({
         datatype: "local",
 
-        colNames:['id', 'TypeName', 'Name', 'Parent Name', 'Value', 'Timestamp', 'ack', 'lastChange'],
+        colNames:['id', getWord('TypeName'), getWord('Name'), getWord('Parent Name'), getWord('Value'), getWord('Timestamp'), getWord('ack'), getWord('lastChange')],
         colModel:[
             {name:'id',index:'id', width:60, sorttype: "int"},
             {name:'type',index:'type', width:80},
@@ -492,7 +664,7 @@ $(document).ready(function () {
         viewrecords: true,
         sortname: "id",
         sortorder: "asc",
-        caption:"datapoints",
+        caption: getWord("datapoints"),
         onSelectRow: function(id){
             if(id && id!==datapointsLastSel){
                 $('#grid_datapoints').restoreRow(datapointsLastSel);
@@ -511,13 +683,13 @@ $(document).ready(function () {
             });
         }
     }).jqGrid('filterToolbar',{
-        autosearch: true,
-        searchOnEnter: false,
-        enableClear: false
-    }).navGrid('#pager_datapoints',{search:false, refresh: false, edit:false,add:true,addicon: "ui-icon-refresh", del:false, addfunc: function() {
-        $datapointGrid.jqGrid("clearGridData");
-         loadDatapoints();
-    }});
+            autosearch: true,
+            searchOnEnter: false,
+            enableClear: false
+        }).navGrid('#pager_datapoints',{search:false, refresh: false, edit:false,add:true,addicon: "ui-icon-refresh", del:false, addfunc: function() {
+            $datapointGrid.jqGrid("clearGridData");
+            loadDatapoints();
+        }});
 
 
     socket.emit('getIndex', function(obj) {
@@ -610,10 +782,13 @@ $(document).ready(function () {
             $("#grid_datapoints").trigger("reloadGrid");
         });
     }
+    function getWord (word) {
+        return "<span class='translate' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"'>"+translateWord(word)+"</span>";
+    }
 
     $("#grid_addons").jqGrid({
         datatype: "local",
-        colNames:['id', 'name', 'installed version', 'available version', 'homepage', 'download'],
+        colNames:['id', getWord('name'), getWord('installed version'), getWord('available version'), getWord('homepage'), getWord('download')],
         colModel:[
             {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
             {name:'name',index:'name', width:340, sorttype: "int"},
@@ -630,20 +805,20 @@ $(document).ready(function () {
         sortname: "id",
         sortorder: "asc",
         viewrecords: true,
-        caption: "Addons"
+        caption: getWord("Addons")
     });
 
     $("#grid_adapter").jqGrid({
         datatype: "local",
-        colNames:['id', 'name', 'settings', 'confed', 'enabled', 'mode', 'period'],
+        colNames:['id', getWord('name'), getWord('settings'), getWord('confed'), getWord('enabled'), getWord('mode'), getWord('period')],
         colModel:[
-            {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
-            {name:'name',index:'name', width:340, sorttype: "int"},
-            {name:'settings',index:'settings', width:80, sorttype: "int"},
-            {name:'confed',index:'confed', width:100, hidden: true},
-            {name:'enabled',index:'enabled', width:100},
-            {name:'mode',index:'mode', width:100},
-            {name:'period',index:'period', width:100}
+            {name:'id',      index:'id', width:60, sorttype: "int", hidden: true},
+            {name:'name',    index:'name', width:340, sorttype: "int"},
+            {name:'settings',index:'settings', width:120, sorttype: "int"},
+            {name:'confed',  index:'confed', width:100, hidden: true},
+            {name:'enabled', index:'enabled', width:100},
+            {name:'mode',    index:'mode', width:100},
+            {name:'period',  index:'period', width:100}
         ],
         autowidth: true,
         width: 1200,
@@ -653,12 +828,12 @@ $(document).ready(function () {
         sortname: "id",
         sortorder: "asc",
         viewrecords: true,
-        caption: "Adapter"
+        caption: getWord("Adapter")
     });
 
     $("#grid_events").jqGrid({
         datatype: "local",
-        colNames:['eventCount','id', 'TypeName', 'Name', 'Parent Name','Value', 'Timestamp', 'ack', 'lastChange'],
+        colNames:[getWord('eventCount'),'id', getWord('TypeName'), getWord('Name'), getWord('Parent Name'),getWord('Value'), getWord('Timestamp'), getWord('ack'), getWord('lastChange')],
         colModel:[
             {name:'id',index:'id', width:60, sorttype: "int", hidden: true},
             {name:'ise_id',index:'ise_id', width:60, sorttype: "int"},
@@ -681,18 +856,18 @@ $(document).ready(function () {
         sortorder: "desc",
         viewrecords: true,
         sortorder: "desc",
-        caption: "Events",
+        caption: getWord("Events"),
         ignoreCase:true
     }).jqGrid('filterToolbar',{
-        defaultSearch:'cn',
+            defaultSearch:'cn',
 
-        autosearch: true,
-        searchOnEnter: false,
-        enableClear: false
-    }).navGrid('#pager_events',{search:false, refresh:false, edit:false,add:true, addicon: "ui-icon-trash", del:false, addfunc: function () {
-        $eventGrid.jqGrid("clearGridData");
-        eventCounter = 0;
-    }});
+            autosearch: true,
+            searchOnEnter: false,
+            enableClear: false
+        }).navGrid('#pager_events',{search:false, refresh:false, edit:false,add:true, addicon: "ui-icon-trash", del:false, addfunc: function () {
+            $eventGrid.jqGrid("clearGridData");
+            eventCounter = 0;
+        }});
 
     function resizeGrids() {
         var x = $(window).width();
@@ -734,22 +909,23 @@ $(document).ready(function () {
             $("#install_addon_dialog").dialog("close");
             socket.emit("updateAddon", addonInstall[addon], addon, function (err) {
                 if (err) {
-                    alert(err);
+                    showMessage (err);
                 } else {
-                    alert("install started");
+                    showMessage ("install started");
                 }
             });
         }
 
     });
 
-    $("#install_addon_dialog").dialog({
-        autoOpen: false,
-        title: "Install Addon",
-        modal: true
-    });
-
     function loadSettings() {
+        $("#language [value='"+(ccuIoSettings.language || 'en')+"']").attr("selected", "selected");
+
+        $("#language").change(function () {
+            translateAll ($(this).val());
+        });
+
+
         $("#ccuIp").val(ccuIoSettings.ccuIp);
         $("#binrpc_listenIp").val(ccuIoSettings.binrpc.listenIp);
 
@@ -848,7 +1024,7 @@ $(document).ready(function () {
 
 
     function saveSettings() {
-
+        ccuIoSettings.language = $("#language").val();
         ccuIoSettings.ccuIp = $("#ccuIp").val();
         ccuIoSettings.binrpc.listenIp = $("#binrpc_listenIp").val();
 
@@ -950,13 +1126,13 @@ $(document).ready(function () {
         var settingsWithoutAdapters = JSON.parse(JSON.stringify(ccuIoSettings));
         delete settingsWithoutAdapters.adapters;
         socket.emit("writeFile", "io-settings.json", settingsWithoutAdapters, function () {
-            alert("CCU.IO settings saved. Please restart CCU.IO");
+            showMessage ("CCU.IO settings saved. Please restart CCU.IO");
         });
     }
 
     function restartAdapter(adapter) {
         socket.emit("restartAdapter", adapter, function (res) {
-            alert(res);
+            showMessage (res);
         });
     }
 
@@ -992,13 +1168,31 @@ $(document).ready(function () {
         try {
             var adapterSettings = JSON.parse($("#adapter_config_json").val());
             socket.emit("writeFile", "adapter-"+adapter+".json", adapterSettings, function () {
-                alert(adapter+" adapter settings saved. Please restart CCU.IO");
+                showMessage(adapter+translateWord(" adapter settings saved. Please restart CCU.IO"));
             });
             return true;
         } catch (e) {
-            alert("Error: invalid JSON");
+            showMessage ("Error: invalid JSON");
             return false;
         }
+    }
+
+    function showMessage (text, caption) {
+        if (!text) {
+            $('#dialogModal').dialog("close");
+            return;
+        }
+        $('#dialogModal').show ();
+        $('#dialogModal').html ("<p>"+translateWord (text) +"</p>").attr('title', translateWord (caption || "Message"));
+        $( "#dialogModal" ).dialog({
+            height: 200,
+            modal: true,
+            buttons: {
+                "Ok": function() {
+                    $( this ).dialog( "close" );
+                }
+            }
+        });
     }
 
     $("#adapter_save").button().click(saveAdapterSettings);

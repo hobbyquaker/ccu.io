@@ -1,12 +1,26 @@
 {
-    "enabled": false,
-    "settings": {
-        "ip": "192.168.1.50",
-        "port": 80,
-        "messageTimeout": 5,
-        "pollingInterval": 10000,
-        "firstId": 95100,
-        "messageType": 1,
-        "pollingEnabled": false
-    }
+	"enabled": false,
+	"settings": {
+		"messageTimeout": 5,
+		"pollingInterval": 10000,
+		"firstId": 95100,
+		"messageType": 1,
+		"pollingEnabled": true,
+		"debugEnabled": true,
+		"boxes": {
+			"_1": {
+				"ip": "xxx.xxx.xxx.xxx",
+				"name": "",
+<<<<<<< HEAD
+=======
+				"username": "",
+				"password": "",
+>>>>>>> 40a82c0b3568f5f5b22ce3a539b506bda167f8d4
+				"rooms": [""],
+				"funcs": [],
+				"favs": [],
+				"port": "80"
+			}
+		}
+	}
 }

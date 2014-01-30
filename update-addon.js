@@ -21,8 +21,8 @@ logger.info("update-addon  download and unzip "+url);
 // Download and Unzip
 request(url).pipe(unzip.Extract({path: __dirname+"/tmp"})).on("close", function () {
     logger.info("update-addon  unzip done");
-    var sourcedir =        __dirname+"/tmp/"+tmpDir,
-        destination =   __dirname+"/www/"+name;
+    var sourcedir   = __dirname+"/tmp/"+tmpDir,
+        destination = __dirname+"/www/"+name;
 
     var source = sourcedir;
 

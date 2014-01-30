@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.12*
+*aktuelle Version: 1.0.14*
 
 ## Dokumentation
 
@@ -10,11 +10,25 @@ siehe http://ccu.io/
 
 ## Todo/Roadmap
 
-* Script-Engine Addins
 * adapter/skeleton-ipc.js
+* Prozesse überwachen (und evtl abgestürzte Adapter/Script-Engine neu starten?)
+* Log über Weboberfläche ansehen (tail)
+* Logrotate für ccu.io.log
+* settings.html für diverse Adapter
+* diverse Adapter auf ipc umstellen?
+* Pushover Callbacks (Nachrichten bestätigen, callback Methode aufrufen)
+* Weboberfläche Ladeanzeige
+* Weboberfläche Datenpunkte anlegen, löschen
+* Weboberfläche Devices in Baumstruktur anzeigen
+* Weboberfläche Objekte neu laden wenn CCU.IO neue Objekte von Adaptern/Scripts erhalten hat
+* Persistente Objekte in regaIndex aufnehmen!
 * ArtNet (DMX) Adapter
+* Rocket LED Adapter
+* iTunes Adapter
+* Script-Engine Addins (von Addons "mitgebrachte" Methoden)?
 * Anymote Adapter (control Google TV)
 * Doku, Doku, Doku
+* CMS für Homepage?
 * CCU2-Paket für einfache Installation
 * .msi für einfache Installation unter Windows (ccu.io als Service registrieren)
 * .pkg für einfache Installation unter Mac OS X
@@ -22,6 +36,26 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.14
+* (Bluefox) Backup über Weboberfläche
+* (Bluefox) Mehrsprachigkeit
+* (Bluefox) diverse Änderungen/Neuerungen/Bugfixes Adapter Sonos, SayIt, LGTV, Fritzbox, Ping
+* (BasGo) Adapter Dreambox v0.8
+* (Vader722) Adapter iCal: Style-Anpassungen
+* (Eisbaeeer) Adapter rpi: Unterstützung für PiFace
+* (Thorque) Neuer Adapter: yamaha (AV-Receiver)
+* (Hobbyquaker) Neuer Adapter: growl
+
+### 1.0.13
+* (Eisbaeeer) adapter Onkyo: Added array to command variable, major changes to variables (split to feedback and set variables)
+* (Eisbaeeer) adapter Onkyo: Small bugfix setVar, Remove function to empty set var
+* (Vader722) adapter iCal: bugfix for fulltime dates
+* (Vader722) adapter iCal: new code for processing dates, now full-time dates working
+* (BasGo) adapter Dreambox: fixed issue that some objects are stored
+* (BasGo) adapter Dreambox: fixed error and added documentation
+* (BasGo) adapter Dreambox: fixed bool recognition for openwebif
+* (BasGo) adapter Dreambox: multiple boxes and some small fixes
 
 ### 1.0.12
 * (Bluefox) new listen adapter (not finished yet)

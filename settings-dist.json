@@ -56,6 +56,6 @@
     "scriptEngineEnabled": false,
 
     "longitude": 9.1833,
-    "latitude": 48.7667
-
+    "latitude": 48.7667,
+    "language": "en"
 }

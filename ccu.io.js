@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.12";
+settings.version = "1.0.14";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -163,6 +163,7 @@ var socketlist = [],
         DEVICE: [],
         CHANNEL: [],
         HSSDP: [],
+        VARDP: [],
         ALDP: [],
         ALARMDP: [],
         PROGRAM: []
@@ -178,6 +179,12 @@ logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
 loadPersistentObjects();
 loadDatapoints();
 initWebserver();
+
+// Create language variable
+datapoints[69999] = [settings.language || 'en', formatTimestamp(), true];
+regaObjects[69999] = {Name:"SYSTEM.LANGUAGE", TypeName: "VARDP", DPInfo: "DESC", ValueType: 20, ValueSubType: 11};
+regaIndex.VARDP.push(69999);
+regaIndex.Name[69999] = [13305, "VARDP", null];
 
 var regahss = new rega({
     ccuIp: settings.ccuIp,
@@ -969,9 +976,9 @@ function initExtensions() {
 function initWebserver() {
     if (app) {
         if (settings.useCache) {
-            var oneDay = 86400000;
-            app.use('/', express.static(__dirname + '/www', { maxAge: oneDay }));
-            app.use('/log', express.static(__dirname + '/log', { maxAge: oneDay }));
+            var oneYear = 30758400000;
+            app.use('/', express.static(__dirname + '/www', { maxAge: oneYear }));
+            app.use('/log', express.static(__dirname + '/log', { maxAge: oneYear }));
         }
         else {
             app.use('/', express.static(__dirname + '/www'));
@@ -993,13 +1000,17 @@ function initWebserver() {
                 res.send("var socketSession='nokey';");
             }
         });
-    }
+        app.get('/lang/*', function (req, res) {
+            res.set('Content-Type', 'text/javascript');
+			res.send("var ccuIoLang='"+ (settings.language || 'en') +"';");
+        });    
+	}
 
     if (appSsl) {
         if (settings.useCache) {
-            var oneDay = 86400000;
-            appSsl.use('/', express.static(__dirname + '/www', { maxAge: oneDay }));
-            appSsl.use('/log', express.static(__dirname + '/log', { maxAge: oneDay }));
+            var oneYear = 30758400000;
+            appSsl.use('/', express.static(__dirname + '/www', { maxAge: oneYear }));
+            appSsl.use('/log', express.static(__dirname + '/log', { maxAge: oneYear }));
         }
         else {
             appSsl.use('/', express.static(__dirname + '/www'));
@@ -1020,6 +1031,10 @@ function initWebserver() {
                 res.send("var socketSession='nokey';");
             }
         });
+        appSsl.get('/lang/*', function (req, res) {
+            res.set('Content-Type', 'text/javascript');
+			res.send("var ccuIoLang='"+ (settings.language || 'en') +"';");
+        });    
     }
 
     if (settings.authentication && settings.authentication.enabled) {
@@ -1362,6 +1377,72 @@ function initSocketIO(_io) {
                     }
                 }
 
+            });
+        });
+
+        socket.on('createBackup', function () {
+            var path = __dirname + "/backup.js";
+            logger.info("ccu.io        starting "+path);
+            var backupProcess = childProcess.fork(path, ["create"]);
+            var fileName = "";
+            backupProcess.on("message", function (msg) {
+                fileName = msg;
+            });
+            if (io) {
+                io.sockets.emit("ioMessage", "Backup started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Backup started. Please be patient...");
+            }
+            backupProcess.on("close", function (code) {
+                if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("readyBackup", fileName);
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("readyBackup", fileName);
+                    }
+                } else {
+                    logger.error("ccu.io        Backup failed.");
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Error: Backup failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Error: Backup failed.");
+                    }
+                }
+            });
+        });
+
+        socket.on('applyBackup', function (fileName) {
+            var path = __dirname + "/backup.js";
+            logger.info("ccu.io        starting "+path);
+            var backupProcess = childProcess.fork(path, [fileName]);
+            var fileName = "";
+
+            if (io) {
+                io.sockets.emit("ioMessage", "Apply backup started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Apply backup started. Please be patient...");
+            }
+            backupProcess.on("close", function (code) {
+                if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("applyReady", "Apply backup done. Restart CCU.IO");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("applyReady", "Apply backup done. Restart CCU.IO");
+                    }
+                } else {
+                    logger.error("ccu.io        Apply backup failed.");
+                    if (io) {
+                        io.sockets.emit("applyError", "Error: Backup failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("applyError", "Error: Backup failed.");
+                    }
+                }
             });
         });
 
@@ -1728,9 +1809,6 @@ function initSocketIO(_io) {
                 }
                 delete obj.favs;
             }
-
-
-
 
             if (obj.TypeName) {
                 if (!regaIndex[obj.TypeName]) {
