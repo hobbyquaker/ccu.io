@@ -758,7 +758,7 @@ function setState(id, val, callback) {
 
 function getState(id, dpType) {
     var dp = datapoints[findDatapoint(id, dpType)];
-    if (dp && dp[0]) {
+    if (dp) {
         return dp[0];
     } else {
         return null;
@@ -860,7 +860,6 @@ function findDatapoint(needle, hssdp) {
         }
     }
     return needle;
-
 }
 
 process.on('SIGINT', function () {
