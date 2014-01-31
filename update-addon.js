@@ -14,7 +14,8 @@ var arguments = process.argv.slice(2),
     name = arguments[1],
     urlParts = url.split("/"),
     nameArr = urlParts.splice(-3),
-    tmpDir = nameArr[0]+"-master";
+    _tmpDir = nameArr[0] || url.split("?")[1],
+    tmpDir = _tmpDir + "-master";
 
 logger.info("update-addon  download and unzip "+url);
 
