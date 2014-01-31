@@ -236,7 +236,7 @@ rega.prototype = {
             var data = "";
             res.setEncoding('utf8');
             res.on('data', function (chunk) {
-                data += chunk;
+                data += chunk.toString();
             });
             res.on('end', function () {
                 that.pendingRequests -= 1;
@@ -246,7 +246,13 @@ rega.prototype = {
                 parser.parseString(xml, function (err, result) {
                     logger.verbose('rega      <-- ' + stdout);
                     if (callback) {
-                        callback(stdout, result.xml);
+                        if (result && result.xml) {
+                            callback(stdout, result.xml);
+                        } else {
+                            logger.error('rega          invalid response:');
+                            logger.error(JSON.stringify(data));
+                            callback(stdout);
+                        }
                     }
                 });
 
