@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.18*
+*aktuelle Version: 1.0.19*
 
 ## Dokumentation
 
@@ -36,6 +36,14 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.19
+* (Hobbyquaker) Bugfix Script-Engine getState()
+* (Hobbyquaker) Bugfix Adapter start
+* (Hobbyquaker) Log invalid Rega responses
+* (Hobbyquaker) Adapter dream: removed merge conflict
+* (Thorque) Adding an analyzer script to get the basic status of the Yamaha AV receiver
+* (Smiling-Jack) Linktrack support for addon updates
 
 ### 1.0.18
 * (Hobbyquaker) Bugfix SlimUI Install
