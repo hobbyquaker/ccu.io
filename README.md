@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.19*
+*aktuelle Version: 1.0.20*
 
 ## Dokumentation
 
@@ -36,6 +36,13 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.20
+* (BlueEssi) Neuer Adapter: Denon
+* (Bluefox) Adapter SayIt: Clear value after saying it.
+* (Bluefox) http server: cache maxAge 1y
+* (Bluefox) Adapter Ping: fix
+* (Hobbyquaker) Adapter rpi: setObjects _persistent
 
 ### 1.0.19
 * (Hobbyquaker) Bugfix Script-Engine getState()
