@@ -1,8 +1,8 @@
 /**
  *      CCU.IO SayIt Adapter
- *      12'2013 Bluefox
+ *      12'2013-2014 Bluefox
  *
- *      Version 0.3
+ *      Version 0.4
  *      
  *      It uses unofficial Google Translate TTS and it can be closed any time.
  *      
@@ -67,6 +67,8 @@ socket.on('event', function (obj) {
 	
 	if (obj[0] == objPlayAll || (obj[0] > objPlaying && obj[0] <= (sayitSettings.firstId + 21) && obj[1])) {
 		sayIt (obj[0], obj[1]);
+		// Clear value
+		setTimeout (function (id) { setState (id, "")}, 50, obj[0]);
 	} else
     // Volume on Raspbery PI
     if (obj[0] == objVolume) {
