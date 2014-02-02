@@ -1,0 +1,90 @@
+<h1>DENON-Adapter</h1>
+<P>
+
+<table style="font-size: 12px">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td>
+            <select id="denon_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Denon IP:</td>
+        <td><input id="denon_settings_IP" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Denon Port:</td>
+        <td><input id="denon_settings_port" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Erste ID:</td>
+        <td><input id="denon_settings_firstId" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Enable debug log:</td>
+        <td>
+            <select id="denon_settings_debug">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+
+    if (currentAdapterSettings.enabled) {
+        $("#denon_enabled option[value='false']").removeAttr("selected");
+        $("#denon_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#denon_enabled option[value='true']").removeAttr("selected");
+        $("#denon_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#denon_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#denon_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+
+    $("#denon_settings_IP").val(currentAdapterSettings.settings.IP);
+
+    $("#denon_settings_IP").change(function () {
+        currentAdapterSettings.settings.IP = $("#denon_settings_IP").val();
+        updateAdapterSettings();
+    });
+
+    $("#denon_settings_port").val(currentAdapterSettings.settings.port);
+
+    $("#denon_settings_port").change(function () {
+        currentAdapterSettings.settings.port = $("#denon_settings_port").val();
+        updateAdapterSettings();
+    });
+
+    $("#denon_settings_firstId").val(currentAdapterSettings.settings.firstId);
+
+    $("#denon_settings_firstId").change(function () {
+        currentAdapterSettings.settings.firstId = $("#denon_settings_firstId").val();
+        updateAdapterSettings();
+    });
+
+    if (currentAdapterSettings.settings.debug) {
+        $("#denon_settings_debug option[value='false']").removeAttr("selected");
+        $("#denon_settings_debug option[value='true']").attr("selected", true);
+    } else {
+        $("#denon_settings_debug option[value='true']").removeAttr("selected");
+        $("#denon_settings_debug option[value='false']").attr("selected", true);
+    }
+
+    $("#denon_settings_debug").change(function () {
+        currentAdapterSettings.settings.debug = ($("#denon_settings_debug option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+</script>
+
