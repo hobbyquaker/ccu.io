@@ -896,7 +896,7 @@ function restApi(req, res) {
             response = {};
             var dps = tmpArr[1].split(",");
             for (var i = 0; i < dps.length; i++) {
-                var parts = dps[i].split(";")
+                var parts = dps[i].split(";");
                 dp = findDatapoint(parts[0], parts[1]);
                 if (dp) {
                     response[dp] = {"val":datapoints[dp][0], "ts":datapoints[dp][3]};
@@ -926,6 +926,19 @@ function restApi(req, res) {
                 status = 200;
                 response = {id:dp,value:value};
             }
+            break;
+        case "toggle":
+            if (!tmpArr[1]) {
+                response = {error: "object/datapoint not given"};
+            }
+            var dp = findDatapoint(tmpArr[1], tmpArr[2]);
+                var value = datapoints[dp][0];
+                if (value === true) value = 1;
+                if (value === false) value = 0;
+                value = 1 - parseInt(value, 10);
+                setState(dp, value);
+                status = 200;
+                response = {id:dp,value:value};
             break;
         case "setBulk":
             response = [];
