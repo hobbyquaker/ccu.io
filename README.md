@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.20*
+*aktuelle Version: 1.0.21*
 
 ## Dokumentation
 
@@ -36,6 +36,11 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.21
+* (BlueEssi) Adapter Denon: settings.html hinzugefügt
+* (Hobbyquaker) SimpleAPI getBulk liefert nun auch Timestamps zurück und kann Datenpunkte auch über Namen adressieren
+* (Hobbyquaker) SimpleAPI neue Methode toggle
 
 ### 1.0.20
 * (BlueEssi) Neuer Adapter: Denon

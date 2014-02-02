@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.20";
+settings.version = "1.0.21";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -899,7 +899,7 @@ function restApi(req, res) {
                 var parts = dps[i].split(";");
                 dp = findDatapoint(parts[0], parts[1]);
                 if (dp) {
-                    response[dp] = {"val":datapoints[dp][0], "ts":datapoints[dp][3]};
+                    response[dps[i]] = {"val":datapoints[dp][0], "ts":datapoints[dp][3]};
                 }
             }
             break;
