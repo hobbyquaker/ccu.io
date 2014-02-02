@@ -896,9 +896,10 @@ function restApi(req, res) {
             response = {};
             var dps = tmpArr[1].split(",");
             for (var i = 0; i < dps.length; i++) {
-                dp = findDatapoint(dps[i]);
+                var parts = dps[i].split(";")
+                dp = findDatapoint(parts[0], parts[1]);
                 if (dp) {
-                    response[dp] = datapoints[dp][0];
+                    response[dp] = {"val":datapoints[dp][0], "ts":datapoints[dp][3]};
                 }
             }
             break;
