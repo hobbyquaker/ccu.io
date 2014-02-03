@@ -70,7 +70,7 @@ ccu_socket.on('event', function (obj) {
     if (!dev)
         return;
 
-    // We can control CONTROL, STATE, VOLUME and MUTE
+    // We can control CONTROL, STATE, FAVORITE_SET, VOLUME and MUTE
     var val = obj[1];
     var ts  = obj[2];
     var ack = obj[3];
@@ -128,6 +128,11 @@ ccu_socket.on('event', function (obj) {
             if (val == "unmute") {
                 player.mute (false);
             }
+        }
+        else (id == dev.DPs.FAVORITE_SET) {
+            player.replaceWithFavorite(val, function (success) {
+                if (success) player.play();
+            });
         }
         else
             logger.warn("adapter sonos  try to control unknown id "+id);
@@ -225,6 +230,15 @@ function takeSonosState (ip, ids, sonosState) {
         setState (ids.DPs.MUTED,       sonosState.groupState.mute);
 }
 
+function takeSonosFavorites (ip, ids, favorites) {
+	var sFavorites = "";
+	for (var favorite in favorites){
+		sFavorites = ((sFavorites) ? ", ": "") + favorites[favorite].title;
+	};
+	
+    setState (ids.DPs.FAVORITES, sFavorites);
+}
+
 function processSonosEvents (event, data) {
     if (event == "topology-change") {
         if (data.length > 1) {
@@ -253,6 +267,15 @@ function processSonosEvents (event, data) {
                 setState (ids.DPs.MUTED,  data.groupState.mute);
                 ids.uuid = s;
             }
+        }
+    } else
+    if (event == "favorites") {
+        // Go through all players
+        for (var uuid in discovery.players) {
+			var ids = devices[discovery.players[uuid].address];
+        	if (ids) {
+            	takeSonosFavorites (devices[discovery.players[uuid].address], ids, data);
+    	 	}
         }
     }
     else
@@ -292,7 +315,9 @@ function sonosInit () {
                 CONTROL:           dp+9,
                 ALIVE:             dp+10,
                 ELAPSED_TIME:      dp+11,
-                ELAPSED_TIME_S:    dp+12
+                ELAPSED_TIME_S:    dp+12,
+                FAVORITES:         dp+13,
+                FAVORITE_SET:      dp+14
             }
         };
 
@@ -421,7 +446,22 @@ function sonosInit () {
             Value:        "00:00",
             Parent:       chnDp
         });
-
+        setObject(devices[ip].DPs.FAVORITES, {
+            Name:         chObject.Address+".FAVORITES",
+            ValueType:    20,
+            ValueSubType: 11,
+            TypeName:     "HSSDP",
+            Value:        "",
+            Parent:       chnDp
+        });
+        setObject(devices[ip].DPs.FAVORITE_SET, {
+            Name:         chObject.Address+".FAVORITE_SET",
+            ValueType:    20,
+            ValueSubType: 11,
+            TypeName:     "HSSDP",
+            Value:        "",
+            Parent:       chnDp
+        });
         i++;
     }
 
