@@ -509,6 +509,7 @@ if (sonosSettings.webserver.enabled) {
                 }
             }
 
+			fs.exists = fs.exists || require('path').exists;
             fs.exists(fileName, function (exists) {
                 if (exists) {
                     var readCache = fs.createReadStream(fileName);
