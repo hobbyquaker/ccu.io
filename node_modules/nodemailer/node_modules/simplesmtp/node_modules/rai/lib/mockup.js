@@ -40,7 +40,7 @@ function runClientMockup(port, host, commands, callback, debug){
     port = port || 25;
     commands = Array.isArray(commands) ? commands : [];
 
-    var command, ignore_data = false, sslcontext, pair;
+    var command, ignore_data = false, responses = [], sslcontext, pair;
 
     var socket = net.connect(port, host);
     socket.on("connect", function(){
@@ -54,9 +54,12 @@ function runClientMockup(port, host, commands, callback, debug){
             if(!commands.length){
                 socket.end();
                 if(typeof callback == "function"){
-                    callback(chunk);
+                    responses.push(chunk);
+                    callback(chunk, responses);
                 }
                 return;
+            }else{
+                responses.push(chunk);
             }
             
             if(["STARTTLS", "STLS"].indexOf((command || "").trim().toUpperCase())>=0){
@@ -89,9 +92,12 @@ function runClientMockup(port, host, commands, callback, debug){
                         if(!commands.length){
                             pair.cleartext.end();
                             if(typeof callback == "function"){
-                                callback(chunk);
+                                responses.push(chunk);
+                                callback(chunk, responses);
                             }
                             return;
+                        }else{
+                            responses.push(chunk);
                         }
                         command = commands.shift();
                         pair.cleartext.write(command+"\r\n");
