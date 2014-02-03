@@ -1,8 +1,8 @@
 /**
  *      CCU.IO Sonos Adapter
- *      12'2013 Bluefox
+ *      12'2013-2014 Bluefox
  *
- *      Version 0.1
+ *      Version 0.2
  *      party derived from https://github.com/jishi/node-sonos-web-controller by Jimmy Shimizu
  */
 var settings = require(__dirname+'/../../settings.js');
