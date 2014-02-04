@@ -139,7 +139,7 @@ function checkiCal(loc) {
 			if (err != undefined) {
 				logger.info("adapter ical Error Reading from URL: " + err.toString());
 			}
-           logger.info("adapter ical processing URL" + loc);
+           logger.info("adapter ical processing URL: " + loc);
             //Variable ablöschen
             setState(icalSettings.firstId + 1, "");
            /* for (var k in data) {
@@ -279,21 +279,26 @@ function colorizeDates(ev,heute,tomorrow) {
 //Alle Kalender einlesen
 function readAll() {
 	arrDates = new Array();
-	if ((icalSettings.defURL != "") && (icalSettings.defURL != undefined)) {
-	 	if (debug) {logger.info("adapter ical reading Calendar from URL1"+icalSettings.defURL);}
-		checkiCal(icalSettings.defURL);
-	}
-	if ((icalSettings.defURL2 != "") && (icalSettings.defURL2 != undefined)) {
-		if (debug) {logger.info("adapter ical reading Calendar from URL2"+icalSettings.defURL2);}
-	 	checkiCal(icalSettings.defURL2);
-	}
-	if ((icalSettings.defURL3 != "") && (icalSettings.defURL3 != undefined)) {
-		if (debug) {logger.info("adapter ical reading Calendar from URL3"+icalSettings.defURL3);}
-	 	checkiCal(icalSettings.defURL3);
-	}
-	//10 Sek warten bis alle eingelesen wurden (hoffentlich)
-	 setTimeout(displayDates,10000);
+	var count = 0;
 	
+	//neue Notation
+	if (icalSettings["Calendar"]) {
+		for (var cal in icalSettings["Calendar"]) {
+			if ((icalSettings["Calendar"][cal] != "") && (icalSettings["Calendar"][cal] != undefined)) {
+				count +=1;
+			 	if (debug) {logger.info("adapter ical reading Calendar from URL: " + icalSettings["Calendar"][cal]);}
+				checkiCal(icalSettings["Calendar"][cal]);
+			} 
+		}
+	}
+	//alte Notation
+	if ((icalSettings.defURL != "") && (icalSettings.defURL != undefined)) {
+			counter +=1;
+		 	if (debug) {logger.info("adapter ical reading Calendar from URL: "+icalSettings.defURL);}
+			checkiCal(icalSettings.defURL);
+	}
+	//pro Kalender 5 sekunden warten
+	 setTimeout(displayDates,count * 5000);
 }
 
 //Einen Kalender einlesen
