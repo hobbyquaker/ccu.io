@@ -8,7 +8,7 @@
 			"debug": false,
 			"defColor": "white",
 			"fulltime": " ",
-			"Calender": {
+			"Calendar": {
 				"URL1": "http://11111.ics",
 				"URL2": "http://22222.ics"
 			}
