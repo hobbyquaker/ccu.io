@@ -2,7 +2,7 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
- *      Version 0.6
+ *      Version 0.7
  *		
  */
 var settings = require(__dirname+'/../../settings.js');
