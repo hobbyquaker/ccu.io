@@ -134,13 +134,16 @@ By default it's `"."` which is suitable for SMTP and POP3.
 ## Testing
 
 There is a possibility to set up a mockup client which sends a batch of commands
-one by one to the server and returns the last response.
+one by one to the server and returns the last response and an array of all responses(except the TLS negotiation).
 
     var runClientMockup = require("rai").runClientMockup;
     
     var cmds = ["EHLO FOOBAR", "STARTTLS", "QUIT"];
-    runClientMockup(25, "mail.hot.ee", cmds, function(resp){
-        console.log("Final:", resp.toString("utf-8").trim());
+    runClientMockup(25, "mail.hot.ee", cmds, function(lastResponse, allResponses){
+        console.log("Final:", lastResponse.toString("utf-8").trim());
+        console.log("All:", allResponses.map(function(e){
+            return e.toString("utf-8").trim()
+        }).join(', '));
     });
 
 `runClientMockup` has he following parameters in the following order:
@@ -152,7 +155,7 @@ one by one to the server and returns the last response.
   * **debug** - if set to true log all input/output
 
 Response from the callback function is a Buffer and contains the
-last data received from the server
+last data received from the server and an array of Buffers with all data received from the server.
 
 ## License
 
