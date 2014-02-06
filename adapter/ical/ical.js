@@ -2,7 +2,7 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
- *      Version 0.7
+ *      Version 0.8
  *		
  */
 var settings = require(__dirname+'/../../settings.js');
@@ -217,6 +217,10 @@ function checkiCal(loc) {
 function checkDates(ev,endpreview,heute,tomorrow,realnow,rule) {
     var ft = false;
     //Check ob ganztägig
+
+    //Wenn es kein Starttermin gibt --> ignorieren
+    if (ev.start == undefined) {return}
+
     if(ev.start.getHours() == "0" && ev.start.getMinutes() == "0" && ev.start.getSeconds() == "0" && ev.end.getHours() == "0" && ev.end.getMinutes() == "0" && ev.end.getSeconds() == "0" ) {
         ft = true;
     }
