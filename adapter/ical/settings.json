@@ -8,9 +8,19 @@
 			"debug": false,
 			"defColor": "white",
 			"fulltime": " ",
+			"replaceDates": true,
+			"todayString": "Heute",
+			"tomorrowString": "Morgen",
+			"everyCalOneColor": false,
 			"Calendar": {
-				"URL1": "http://11111.ics",
-				"URL2": "http://22222.ics"
+				"Calendar1": {
+					"calURL": "http://11111.ics",
+					"calColor": "white"
+				},
+				"Calendar2": {
+					"calURL": "http://22222.ics",
+					"calColor": "grey"
+				}
 			}
 		}
 }	
