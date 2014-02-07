@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.21";
+settings.version = "1.0.23";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -1304,14 +1304,14 @@ function initSocketIO(_io) {
         if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
             // do not check if localhost
             if(handshakeData.address.address.toString() == "127.0.0.1") {
-                logger.verbose("ccu.io        local authetication " + handshakeData.address.address);
+                logger.verbose("ccu.io        local authentication " + handshakeData.address.address);
                 callback(null, true);
             } else
             if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
-                logger.warn("ccu.io        authetication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                logger.warn("ccu.io        authentication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
                 callback ("Invalid session key", false);
             } else{
-                logger.verbose("ccu.io        authetication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                logger.verbose("ccu.io        authentication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
                 callback(null, true);
             }
         }

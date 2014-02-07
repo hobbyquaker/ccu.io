@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.21*
+*aktuelle Version: 1.0.23*
 
 ## Dokumentation
 
@@ -36,6 +36,15 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.23
+* (Hobbyquaker) reverted Thorques "Clean dependencies"
+
+
+### 1.0.22
+* (Thorque) Clean dependencies
+* (Vader722) Adapter iCal: now unlimited Calendars possible
+
 
 ### 1.0.21
 * (BlueEssi) Adapter Denon: settings.html hinzugefügt
