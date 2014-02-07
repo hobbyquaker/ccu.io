@@ -2,7 +2,7 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
- *      Version 0.8
+ *      Version 0.9
  *		
  */
 var settings = require(__dirname+'/../../settings.js');
@@ -31,8 +31,9 @@ var fontnormalred = '<span style="font-weight:normal;color:red">';
 
 var fullTime = icalSettings.fulltime;
 var colorize = icalSettings.colorize;
-var minoneorange = 0;
-var minonered = 0;
+var replaceDates = icalSettings.replaceDates;
+var todayString = icalSettings.todayString;
+var tomorrowString = icalSettings.tomorrowString;
 var arrDates = Array();
 
 var warn = fontboldred+"<span class='icalWarn'>";
@@ -43,9 +44,12 @@ var normal = fontbold+"<span class='icalNormal'>";
 var normal2 = "</span></span>" + fontnormal+"<span class='icalNormal2'>";
 
 var debug = icalSettings.debug;
+var everyCalOneColor = icalSettings.everyCalOneColor;
 
 var prefix;
 var suffix;
+
+var calCol;
 
 
 if (settings.ioListenPort) {
@@ -131,15 +135,15 @@ Date.prototype.compare = function(b) {
         );
 };
 
+function checkiCal(loc,col) {
 
-
-function checkiCal(loc) {
-
-        ical.fromURL(loc, {}, function (err, data) {
+    //Benötigt eine angepasste Version von node-ical, damit die übergebenden Opts auch wieder zurückkommen
+    // Syntax ical.fromURL(URL,opts,callback) returns err,opts,data
+        ical.fromURL(loc, col, function (err, opts, data) {
 			if (err != undefined) {
 				logger.info("adapter ical Error Reading from URL: " + err.toString());
 			}
-           logger.info("adapter ical processing URL: " + loc);
+           logger.info("adapter ical processing URL: " + opts+ " "+ loc);
             //Variable ablöschen
             setState(icalSettings.firstId + 1, "");
            /* for (var k in data) {
@@ -174,9 +178,9 @@ function checkiCal(loc) {
                     tomorrow.setDate(heute.getDate() + 1);
                     tomorrow.setHours(0,0,0,0);
                     tomorrow2 = new Date();
-					
-                    //es interessieren nur Termine mit einer Summary
-                    if (ev.summary != undefined) {
+
+                    //es interessieren nur Termine mit einer Summary und nur Einträge vom Typ VEVENT
+                    if ((ev.summary != undefined) && (ev.type == "VEVENT") ) {
                     //aha, eine RRULE in dem Termin --> auswerten
                         if (ev.rrule != undefined) {
                             var options = RRule.parseString(ev.rrule.toString());
@@ -188,7 +192,7 @@ function checkiCal(loc) {
                             if (dates.length > 0) {
                                 for (var i = 0; i < dates.length; i++) {
                                     //Datum ersetzen für jeden einzelnen Termin in RRule
-                                    //TODO: funktioniert nur mit Terminen innerhalt eines Tages, da auch das EndDate ersetzt wird
+                                    //TODO: funktioniert nur mit Terminen innerhalb eines Tages, da auch das EndDate ersetzt wird
                                     ev.start.setDate(dates[i].getDate());
                                     ev.start.setMonth(dates[i].getMonth());
                                     ev.start.setFullYear(dates[i].getFullYear());
@@ -196,25 +200,24 @@ function checkiCal(loc) {
                                     ev.end.setMonth(dates[i].getMonth());
                                     ev.end.setFullYear(dates[i].getFullYear());
                                     //Termin auswerten
-                                    checkDates(ev,endpreview,heute,tomorrow,realnow," rrule ");
+                                    checkDates(ev,endpreview,heute,tomorrow,realnow," rrule ",col);
                                 }
                             } else {
                                 if (debug) {logger.info("Keine RRule Termine innerhalb des Zeitfensters");}
                             }
                         } else {
                             //Kein RRule Termin
-                            checkDates(ev,endpreview,heute,tomorrow,realnow," ");
+                            checkDates(ev,endpreview,heute,tomorrow,realnow," ",col);
 
                         }
                     }
                 }
             }
-           
         })
 
 }
 
-function checkDates(ev,endpreview,heute,tomorrow,realnow,rule) {
+function checkDates(ev,endpreview,heute,tomorrow,realnow,rule,col) {
     var ft = false;
     //Check ob ganztägig
 
@@ -229,7 +232,7 @@ function checkDates(ev,endpreview,heute,tomorrow,realnow,rule) {
         //Terminstart >= heute  && < previewzeit ---> anzeigen
         if (ev.start < endpreview && ev.start >= heute) {
             var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
-            colorizeDates(ev,heute,tomorrow);
+            colorizeDates(ev,heute,tomorrow,col);
             var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + ev.summary;
             if (debug) {logger.info("Termin (ganztägig) hinzugefügt : " +rule + ev.summary + " am " + singleDate);}
             arrDates.push(singleDate);
@@ -244,7 +247,7 @@ function checkDates(ev,endpreview,heute,tomorrow,realnow,rule) {
         if (ev.start >= heute && ev.start < endpreview && ev.end >= realnow) {
           //  logger.info("Termin mit Uhrzeit: " +rule + ev.start + " end: " + ev.end + " realnow:" +realnow);
             var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
-            colorizeDates(ev,heute,tomorrow);
+            colorizeDates(ev,heute,tomorrow,col);
             var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + ev.summary;
             if (debug) {logger.info("Termin mit Uhrzeit hinzugefügt : "+rule + ev.summary + " am " + singleDate);}
             arrDates.push(singleDate);
@@ -254,9 +257,10 @@ function checkDates(ev,endpreview,heute,tomorrow,realnow,rule) {
         }
     }
 }
-function colorizeDates(ev,heute,tomorrow) {
+function colorizeDates(ev,heute,tomorrow,col) {
     var com = ev.start;
     com.setHours(0,0,0,0);
+
     //Colorieren wenn gewünscht
     if (colorize) {
         //Heute
@@ -275,8 +279,15 @@ function colorizeDates(ev,heute,tomorrow) {
             suffix = normal2;
         }
     } else {
-        prefix = normal;
-        suffix = normal2;
+        //Wenn gewünscht jeder Kalender eigene Farbe
+        if (everyCalOneColor) {
+         console.log("Farbe:"+col);
+          prefix = '<span style=\"font-weight:bold;color:' + col + '\">'+"<span class='icalNormal'>";
+          suffix = "</span></span>" + '<span style=\"font-weight:normal;color:' + col + '\">'+"<span class='icalNormal2'>";
+         } else {
+            prefix = normal;
+            suffix = normal2;
+        }
     }
 }
 
@@ -288,19 +299,15 @@ function readAll() {
 	//neue Notation
 	if (icalSettings["Calendar"]) {
 		for (var cal in icalSettings["Calendar"]) {
-			if ((icalSettings["Calendar"][cal] != "") && (icalSettings["Calendar"][cal] != undefined)) {
+			if ((icalSettings["Calendar"][cal]["calURL"] != "") && (icalSettings["Calendar"][cal]["calURL"] != undefined)) {
 				count +=1;
-			 	if (debug) {logger.info("adapter ical reading Calendar from URL: " + icalSettings["Calendar"][cal]);}
-				checkiCal(icalSettings["Calendar"][cal]);
-			} 
+			 	if (debug) {logger.info("adapter ical reading Calendar from URL: " + icalSettings["Calendar"][cal] + " color: " +icalSettings["Calendar"][cal]["calColor"] );}
+                calCol = icalSettings["Calendar"][cal]["calColor"];
+				checkiCal(icalSettings["Calendar"][cal]["calURL"],calCol);
+			}
 		}
 	}
-	//alte Notation
-	if ((icalSettings.defURL != "") && (icalSettings.defURL != undefined)) {
-			counter +=1;
-		 	if (debug) {logger.info("adapter ical reading Calendar from URL: "+icalSettings.defURL);}
-			checkiCal(icalSettings.defURL);
-	}
+
 	//pro Kalender 5 sekunden warten
 	 setTimeout(displayDates,count * 5000);
 }
@@ -315,10 +322,17 @@ function readOne(url) {
 
 //Darstellen nachdem alle eingelesen wurden
 function displayDates() {
+
+    var tomorrowd = new Date();
+    tomorrowd.setDate(tomorrowd.getDate() + 1);
+    var todayd = new Date();
+    var tomorrow = tomorrowd.getDate()+"."+(tomorrowd.getMonth()+1)+"."+tomorrowd.getFullYear();
+    var today = todayd.getDate()+"."+(todayd.getMonth()+1)+"."+todayd.getFullYear();
     if (arrDates.length > 0) {
-        setState(icalSettings.firstId + 1, brSeparatedList(arrDates));
+        setState(icalSettings.firstId + 1, brSeparatedList(arrDates,today,tomorrow));
     }
 }
+
 function parseDate(input) {
     var parts = input.match(/(\d+)/g);
     // note parts[1]-1
@@ -352,7 +366,7 @@ function SortDates(a,b) {
     return date1.compare(date2);
 }
 
-function brSeparatedList(arr) {
+function brSeparatedList(arr,today,tomorrow) {
     var text = "";
     //Sortieren nach eigener Methode
     arr.sort(SortDates);
@@ -371,6 +385,11 @@ function brSeparatedList(arr) {
 	//Wenn fullTime gesetzt, dann 00:00 ersetzen durch String
     if (fullTime != "") {
 	   text = text.replace(/00:00/g, fullTime);
+    }
+    //Wenn replaceDates gesetzt, dann ersetze Datum durch String
+    if (replaceDates != "") {
+        text = text.replace( new RegExp( today, 'g' ), todayString );
+        text = text.replace( new RegExp( tomorrow, 'g' ), tomorrowString );
     }
     return text;
 }
