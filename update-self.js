@@ -38,7 +38,7 @@ request(url).pipe(fs.createWriteStream(tmpFile)).on("close", function () {
             logger.info('update-ccu.io delete tmp folder '+__dirname+"/tmp/"+tmpDir);
             deleteFolderRecursive(__dirname+"/tmp/"+tmpDir);
             logger.info('update-ccu.io done');
-            //process.exit(0);
+            process.exit(0);
         }, 2000);
 
     });
