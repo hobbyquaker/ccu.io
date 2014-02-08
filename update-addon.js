@@ -1,26 +1,29 @@
 var request =   require("request"),
     logger =    require(__dirname+'/logger.js'),
     fs =        require("fs"),
-    unzip =     require("unzip"),
+    AdmZip =     require("adm-zip"),
     ncp =       require('ncp').ncp;
 
 ncp.limit = 16;
 
 logger.info("update-addon  started");
 
-
 var arguments = process.argv.slice(2),
     url = arguments[0],
     name = arguments[1],
     urlParts = url.split("/"),
     nameArr = urlParts.splice(-3),
-    _tmpDir = nameArr[0] || url.split("?")[1],
-    tmpDir = _tmpDir + "-master";
+    tmpDir = nameArr[0]+"-master";
+    tmpFile = __dirname+"/tmp/"+nameArr[0]+"master.zip";
 
 logger.info("update-addon  download and unzip "+url);
 
 // Download and Unzip
-request(url).pipe(unzip.Extract({path: __dirname+"/tmp"})).on("close", function () {
+request(url).pipe(fs.createWriteStream(tmpFile)).on("close", function () {
+
+    var zip = new AdmZip(tmpFile);
+    zip.extractAllTo(__dirname+"/tmp", true);
+
     logger.info("update-addon  unzip done");
     var sourcedir   = __dirname+"/tmp/"+tmpDir,
         destination = __dirname+"/www/"+name;
@@ -39,7 +42,6 @@ request(url).pipe(unzip.Extract({path: __dirname+"/tmp"})).on("close", function 
 
     }
 
-
     logger.info("update-addon  copying "+source+" to "+destination);
 
     ncp(source, destination, function (err) {
@@ -49,14 +51,12 @@ request(url).pipe(unzip.Extract({path: __dirname+"/tmp"})).on("close", function 
         }
 
         setTimeout(function () {
-            // Ordner im tmp Verzeichnis löschen
+            // Ordner im tmp Verzeichnis lÃ¶schen
             logger.info('update-addon  delete tmp folder '+__dirname+"/tmp/"+tmpDir);
             deleteFolderRecursive(__dirname+"/tmp/"+tmpDir);
             logger.info('update-addon  done');
-            //process.exit(0);
+            process.exit(0);
         }, 2000);
-
-
     });
 });
 
