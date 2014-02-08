@@ -1,7 +1,7 @@
 var request =   require("request"),
     logger =    require(__dirname+'/logger.js'),
     fs =        require("fs"),
-    unzip =     require("unzip"),
+    AdmZip =     require("adm-zip"),
     ncp =       require('ncp').ncp;
 
 ncp.limit = 16;
@@ -9,12 +9,18 @@ ncp.limit = 16;
 logger.info("update-ccu.io started");
 
 var url = "https://github.com/hobbyquaker/ccu.io/archive/master.zip",
-    tmpDir = "ccu.io-master";
+    tmpDir = "ccu.io-master",
+    tmpFile = __dirname+"/tmp/master.zip";
 
 logger.info("update-ccu.io download and unzip "+url);
 
 // Download and Unzip
-request(url).pipe(unzip.Extract({path: __dirname+"/tmp"})).on("close", function () {
+// reading archives
+request(url).pipe(fs.createWriteStream(tmpFile)).on("close", function () {
+
+    var zip = new AdmZip(tmpFile);
+    zip.extractAllTo(__dirname+"/tmp", true);
+
     logger.info("update-ccu.io unzip done");
     var source =        __dirname+"/tmp/"+tmpDir,
         destination =   __dirname;
@@ -28,7 +34,7 @@ request(url).pipe(unzip.Extract({path: __dirname+"/tmp"})).on("close", function 
         }
 
         setTimeout(function () {
-            // Ordner im tmp Verzeichnis löschen
+            // Ordner im tmp Verzeichnis lÃ¶schen
             logger.info('update-ccu.io delete tmp folder '+__dirname+"/tmp/"+tmpDir);
             deleteFolderRecursive(__dirname+"/tmp/"+tmpDir);
             logger.info('update-ccu.io done');
@@ -36,7 +42,6 @@ request(url).pipe(unzip.Extract({path: __dirname+"/tmp"})).on("close", function 
         }, 2000);
 
     });
-
 });
 
 var deleteFolderRecursive = function(path) {
