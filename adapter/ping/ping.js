@@ -17,8 +17,7 @@ var logger = require(__dirname+'/../../logger.js'),
     io     = require('socket.io-client'),
 	ping   = require("ping");
 
-var objects = {},
-    datapoints = {},
+var stateIDs = {},
     curIP = null;
 
 if (settings.ioListenPort) {
@@ -59,10 +58,6 @@ process.on('SIGTERM', function () {
 });
 
 function setObject(id, obj) {
-    objects[id] = obj;
-    if (obj.Value) {
-        datapoints[obj.Name] = [obj.Value];
-    }
     socket.emit("setObject", id, obj);
 }
 
@@ -107,6 +102,9 @@ function pingInit () {
             Value:     false,
             Parent:    (pingSettings.firstId + 1) + (id * 2)
         });
+
+        stateIDs["PING."+ip_+".STATE"] = (pingSettings.firstId + 1) + (id * 2) + 1;
+
         i++;
     }
 		
@@ -132,9 +130,9 @@ function pingInit () {
 }
 
 function setState(id, val) {
-	datapoints[id] = [val];
-	logger.verbose("adapter ping  setState "+id+" "+val);
-	socket.emit("setState", [id,val,null,true]);
+    id = stateIDs[id];
+    logger.verbose("adapter ping  setState "+id+" "+val);
+    socket.emit("setState", [id,val,null,true]);
 }
 
 function pollIp(ip) {
