@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.24";
+settings.version = "1.0.25";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -1681,8 +1681,6 @@ function initSocketIO(_io) {
             callback(status);
         });
 
-
-
         socket.on('getNextId', function (start, callback) {
             while (regaObjects[start]) {
                 start++;
@@ -1882,8 +1880,10 @@ function initSocketIO(_io) {
             }
         });
 
-
-
+        // Eine Homematic Servicemeldung bestätigen
+        socket.on('alarmReceipt', function (id) {
+            regahss.script("dom.GetObject("+id+").AlReceipt();");
+        });
 
         socket.on('setState', function(arr, callback) {
             // Todo Delay!

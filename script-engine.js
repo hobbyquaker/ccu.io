@@ -787,6 +787,10 @@ function execCmd(cmd, callback) {
     })
 }
 
+function alarmReceipt(id) {
+    scriptEngine.socket.emit("alarmReceipt", id);
+}
+
 function setObject(id, obj, callback) {
     scriptEngine.socket.emit("setObject", id, obj, function () {
         if (callback) {
