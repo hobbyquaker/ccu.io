@@ -71,7 +71,7 @@ rega.prototype = {
             if (res.statusCode == 200) {
                 try {
                     var HMIdentifier = {}, langJSON = {};
-                    var str = iconv.decode(body, 'ISO-8859-1');
+                    var str = unescape(iconv.decode(body, 'ISO-8859-1'));
                     var jscode = str.replace(/jQuery\./g, "");
 
                     eval(jscode);
@@ -81,7 +81,7 @@ rega.prototype = {
 
                     request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/'+lang+'/translate.lang.stringtable.js', encoding: null }, function(err, res, body) {
                         if (res.statusCode == 200) {
-                            var str = iconv.decode(body, 'ISO-8859-1');
+                            var str = unescape(iconv.decode(body, 'ISO-8859-1'));
                             var jscode = str.replace(/jQuery\./g, "");
 
                             try {
@@ -100,7 +100,7 @@ rega.prototype = {
 
                         request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/'+lang+'/translate.lang.extensionV.js', encoding: null }, function(err, res, body) {
                             if (res.statusCode == 200) {
-                                var str = iconv.decode(body, 'ISO-8859-1');
+                                var str = unescape(iconv.decode(body, 'ISO-8859-1'));
                                 var jscode = str.replace(/jQuery\./g, "");
 
                                 try {
