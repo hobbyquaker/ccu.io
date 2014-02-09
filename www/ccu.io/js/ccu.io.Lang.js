@@ -149,7 +149,7 @@ var ccuWords = {
         },
     "Update started. Please be patient..." : {
         "en": "Update started. Please be patient...",                 
-        "de": "Update ist gestartet. Bitte warten...",             
+        "de": "Update gestartet. Bitte warten...",
         "ru": "Обновление начато. Подождтите..."
         },
     "Update done. Restarting..." : {
