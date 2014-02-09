@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.23*
+*aktuelle Version: 1.0.24*
 
 ## Dokumentation
 
@@ -36,6 +36,13 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.24
+* (Hobbyquaker) Methode execCmd() in Script-Engine implementiert
+* (Thorque) Adapter yamaha: Fixing useless error message
+* (Vader722) Adapter iCal: ignoring dates without startdate
+* (Vader722) Adapter iCal: new Functions: OneColor per Calendar, Replacing Date with "Today" "Tomorrow"
+* (online-junkie) using adm-zip module für update-self.js and update-addon.js - should fix update problems
 
 ### 1.0.23
 * (Hobbyquaker) reverted Thorques "Clean dependencies"
