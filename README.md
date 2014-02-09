@@ -38,7 +38,8 @@ siehe http://ccu.io/
 ## Changelog
 
 ### 1.0.24
-* (Hobbyquaker) Methode execCmd() in Script-Engine implementiert
+* (Hobbyquaker) Script-Engine: implemented method execCmd()
+* (Hobbyquaker) Adapter ping: setState by ID
 * (Thorque) Adapter yamaha: Fixing useless error message
 * (Vader722) Adapter iCal: ignoring dates without startdate
 * (Vader722) Adapter iCal: new Functions: OneColor per Calendar, Replacing Date with "Today" "Tomorrow"
