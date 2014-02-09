@@ -2,7 +2,7 @@
 		"enabled": false,
 		"settings": {
 		"IP": "DENON-IP",
-		"port": DENON-PORT,
+		"port": "DENON-PORT",
 		"firstId": 110101,
 		"debug": false
 		}
