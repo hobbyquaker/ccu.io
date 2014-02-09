@@ -10,7 +10,7 @@ Es werden 2 Variablen angelegt
 - iCalEvents
 
 Die Variable iCalReadTrigger dient zum Triggern des Einlesevorgangs. 
-In den Settings können bis zu 3 defaultURLs hintelegt werden, von welchen der Kalender eingelesen wird.  Die Kalender werden dann nacheinander eingelesen und das Ergebnis zusammengefasst.
+In den Settings können mehrere URLs hinterlegt werden, von welchen der Kalender eingelesen wird.  Die Kalender werden dann nacheinander eingelesen und das Ergebnis zusammengefasst.
 Alternativ kann dem Lesebefehl auch eine URL mitgegeben werden, um z.B. zeitweilig einen anderen Kalender einzulesen.
 
 - zum Einlesen von den defaultURLs muss der String "read" in die Variable iCalReadTrigger geschrieben werden.
@@ -25,7 +25,19 @@ Das automatische Einlesen kann durch schreiben des Strings "stop" on die Variabl
 In den Settings wird durch die Angabe der "preview" Option festgelegt wie viele Tage im voraus Termine mit einbezogen werden, also z.B. durch die Angabe der Zahl "2" werden Termine von heute und morgen angezeigt. Durch Angabe der "1" werden nur Termine vom heutigen Tag angezeigt.
 
 Mit der Option „colorize“ wird der Termin am Tag vor dem Ereignis gelb gefärbt und beim aktuellen Tag rot gefärbt. Die Option debug schreibt mehr Informationen in das CCU.IO LogFile.
-Durch setzen der Option „fulltime“ kann bei ganztägigen Terminen die Uhrzeit 00:00 durch einen String (z.B. ganztägig) ersetzt werden. mit “ “ wird die Uhrzeit weggelassen. 
+Durch setzen der Option „fulltime“ kann bei ganztägigen Terminen die Uhrzeit 00:00 durch einen String (z.B. ganztägig) ersetzt werden. mit “ “ wird die Uhrzeit weggelassen.
+
+Neu hinzugekommen sind die Optionen:
+
+- replaceDates (wenn true, dann wird bei heutigen Terminen das Datum durch den String -->todayString ersetzt und bei morgigen Terminen durch den String --> tomorrowString)
+- todayString (z.B. "heute")
+- tomorrowString (z.B. "morgen")
+- calColor im Unterpunkt Calendar
+- everyCalOneColor (durch setzten der Variablen auf true, wird jedem Kalender eine eigene Farbe zugeordnet (calColor)
+
+Die Option "colorize" überstimmt die Option "everyCalOneColor", d.h. wenn Einträge für "heute" oder "morgen" farbig dargestellt werden, dann werden die Kalender nicht eingefärbt.
+
+
 
 Kalender:
 =========
@@ -54,3 +66,6 @@ NEU:
 - bis zu 3 Kalender per defaultURL möglich
 - Farbe der Schrift mit der Option defColor einstellbar
 - mit der Option „fulltime“ kann bei ganztägigen Terminen die Uhrzeit 00:00 durch einen String (z.B. ganztägig) ersetzt werden. mit “ “ wird die Uhrzeit weggelassen. 
+- beliebig viele Kalender möglich
+- per css können die Styles vorgegeben werden
+  
