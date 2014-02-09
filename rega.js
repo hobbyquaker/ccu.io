@@ -59,24 +59,30 @@ rega.prototype = {
             callback(0, err);
         });
     },
-    loadTranslation: function (callback) {
+    loadTranslation: function (lang, callback) {
         var that = this;
 
-        request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.js', encoding: null }, function(err, res, body) {
+        if (!(lang == "de" || lang == "en" || lang == "tr")) {
+            lang = "de";
+        }
+
+
+        request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/'+lang+'/translate.lang.js', encoding: null }, function(err, res, body) {
             if (res.statusCode == 200) {
                 try {
-                    var HMidentifier, langJSON;
-                    var jscode = iconv.decode(body, 'ISO-8859-1');
+                    var HMIdentifier = {}, langJSON = {};
+                    var str = iconv.decode(body, 'ISO-8859-1');
+                    var jscode = str.replace(/jQuery\./g, "");
 
                     eval(jscode);
 
                     logger.verbose(langJSON);
                     logger.info("ccu.io        loaded translate.lang.js");
 
-                    request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.stringtable.js', encoding: null }, function(err, res, body) {
+                    request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/'+lang+'/translate.lang.stringtable.js', encoding: null }, function(err, res, body) {
                         if (res.statusCode == 200) {
                             var str = iconv.decode(body, 'ISO-8859-1');
-                            var jscode = str.replace(/^jQuery\./, "");
+                            var jscode = str.replace(/jQuery\./g, "");
 
                             try {
                                 eval(jscode);
@@ -92,10 +98,10 @@ rega.prototype = {
                         }
 
 
-                        request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/translate.lang.extensionV.js', encoding: null }, function(err, res, body) {
+                        request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/'+lang+'/translate.lang.extensionV.js', encoding: null }, function(err, res, body) {
                             if (res.statusCode == 200) {
                                 var str = iconv.decode(body, 'ISO-8859-1');
-                                var jscode = str.replace(/^jQuery\./, "");
+                                var jscode = str.replace(/jQuery\./g, "");
 
                                 try {
                                     eval(jscode);
@@ -127,7 +133,7 @@ rega.prototype = {
         var that = this;
         language = language || "de";
 
-        that.loadTranslation(function (translation) {
+        that.loadTranslation(language, function (translation) {
             request.get({ url: 'http://' + that.options.ccuIp + '/config/stringtable_de.txt', encoding: null }, function(err, res, body) {
                 var data = body;
                 var str = iconv.decode(data, 'ISO-8859-1');
