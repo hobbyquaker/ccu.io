@@ -40,6 +40,7 @@ siehe http://ccu.io/
 ### 1.0.24
 * (Hobbyquaker) Script-Engine: implemented method execCmd()
 * (Hobbyquaker) Adapter ping: setState by ID
+* (Hobbyquaker) added jQuery 1.11.0 to lib
 * (Thorque) Adapter yamaha: Fixing useless error message
 * (Vader722) Adapter iCal: ignoring dates without startdate
 * (Vader722) Adapter iCal: new Functions: OneColor per Calendar, Replacing Date with "Today" "Tomorrow"
