@@ -221,6 +221,7 @@ connect_to_yamaha = (function(data_callback){
             err_message.indexOf("EHOSTUNREACH") >-1 ||
             err_message.indexOf("ECONNREFUSED") >-1 ||
             err_message.indexOf("ECONNRESET") >-1 ||
+            err_message.indexOf("EMFILE") >-1 ||
             err_message.indexOf("ENETUNREACH") >-1){
             logger.debug("Connection to Yamaha AV Receiver was broken: "+err_message);
         }else{
