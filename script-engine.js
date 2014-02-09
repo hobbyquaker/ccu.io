@@ -779,6 +779,14 @@ function executeProgram(id, callback) {
     });
 }
 
+function execCmd(cmd, callback) {
+    scriptEngine.socket.emit("execCmd", function(err, stdout, stdin) {
+        if (callback) {
+            callback(err, stdout, stdin);
+        }
+    })
+}
+
 function setObject(id, obj, callback) {
     scriptEngine.socket.emit("setObject", id, obj, function () {
         if (callback) {
