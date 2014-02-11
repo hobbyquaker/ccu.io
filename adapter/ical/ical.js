@@ -2,9 +2,14 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
- *      Version 0.9
- *		
+ *      Version 1.0
+ *
+ *      + now waiting for callback before displaying Calendar instead of fixed Timer
+ *      + processing [val] statement in ev.summarys
+ *      + fixed bug when dates starting before today
+ *
  */
+
 var settings = require(__dirname+'/../../settings.js');
 
 if (!settings.adapters.ical || !settings.adapters.ical.enabled) {
@@ -50,6 +55,7 @@ var prefix;
 var suffix;
 
 var calCol;
+var runningParser = new Array();
 
 
 if (settings.ioListenPort) {
@@ -135,7 +141,7 @@ Date.prototype.compare = function(b) {
         );
 };
 
-function checkiCal(loc,col) {
+function checkiCal(loc,col,count,cb) {
 
     //Benötigt eine angepasste Version von node-ical, damit die übergebenden Opts auch wieder zurückkommen
     // Syntax ical.fromURL(URL,opts,callback) returns err,opts,data
@@ -213,14 +219,24 @@ function checkiCal(loc,col) {
                     }
                 }
             }
-        })
-
+            //wir sind fertig callback aufrufen
+            cb(count);
+        });
 }
 
 function checkDates(ev,endpreview,heute,tomorrow,realnow,rule,col) {
     var ft = false;
-    //Check ob ganztägig
+    var betreff;
 
+    //Check ob ganztägig
+// Für Outlook schauen ob ev.summary eventuell Unterparameter enthält
+    if (ev.summary.hasOwnProperty("val")) {
+        //Ja, also Betreff auslesen
+        betreff = ev.summary["val"];
+    } else {
+        //Nein
+        betreff = ev.summary;
+    }
     //Wenn es kein Starttermin gibt --> ignorieren
     if (ev.start == undefined) {return}
 
@@ -229,31 +245,30 @@ function checkDates(ev,endpreview,heute,tomorrow,realnow,rule,col) {
     }
     //Wenn ganztätig
     if (ft) {
-        //Terminstart >= heute  && < previewzeit ---> anzeigen
-        if (ev.start < endpreview && ev.start >= heute) {
+        //Terminstart >= heute  && < previewzeit  oder endzeitpunkt > heute && < previewzeit ---> anzeigen
+        if ((ev.start < endpreview && ev.start >= heute) || (ev.end > heute && ev.end <= endpreview)) {
             var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
             colorizeDates(ev,heute,tomorrow,col);
-            var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + ev.summary;
-            if (debug) {logger.info("Termin (ganztägig) hinzugefügt : " +rule + ev.summary + " am " + singleDate);}
+            var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + betreff;
+            if (debug) {logger.info("Termin (ganztägig) hinzugefügt : " +rule + betreff + " am " + singleDate);}
             arrDates.push(singleDate);
         } else {
             //Termin ausserhalb des Zeitfensters
-            if (debug) {logger.info("Termin (ganztägig)" + rule +  ev.summary.toString() + " am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
+            if (debug) {logger.info("Termin (ganztägig)" + rule +  betreff + " am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
         }
-
     } else {
-        //Termin mit Uhrzeit (werden nicht coloriert)
+        //Termin mit Uhrzeit
         //Startzeitpunk >= heute && Startzeitpunkt < previewzeit && EndZeitpunkt >= jetzt
-        if (ev.start >= heute && ev.start < endpreview && ev.end >= realnow) {
+        if ((ev.start >= heute && ev.start < endpreview && ev.end >= realnow) || (ev.end >= realnow && ev.end <= endpreview) ) {
           //  logger.info("Termin mit Uhrzeit: " +rule + ev.start + " end: " + ev.end + " realnow:" +realnow);
             var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
             colorizeDates(ev,heute,tomorrow,col);
-            var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + ev.summary;
-            if (debug) {logger.info("Termin mit Uhrzeit hinzugefügt : "+rule + ev.summary + " am " + singleDate);}
+            var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + betreff;
+            if (debug) {logger.info("Termin mit Uhrzeit hinzugefügt : "+rule + betreff + " am " + singleDate);}
             arrDates.push(singleDate);
         } else {
             //Termin ausserhalb des Zeitfensters
-            if (debug) {logger.info("Termin " +ev.summary + rule +" am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
+            if (debug) {logger.info("Termin " + betreff + rule +" am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
         }
     }
 }
@@ -278,6 +293,11 @@ function colorizeDates(ev,heute,tomorrow,col) {
             prefix = normal;
             suffix = normal2;
         }
+        //Starttermin in der Vergangenheit
+        if (com.compare(heute) == -1) {
+            prefix = normal;
+            suffix = normal2;
+        }
     } else {
         //Wenn gewünscht jeder Kalender eigene Farbe
         if (everyCalOneColor) {
@@ -298,26 +318,46 @@ function readAll() {
 	
 	//neue Notation
 	if (icalSettings["Calendar"]) {
+        //eigene Instanz hinzufügen, falls die Kalender schnell abgearbeitet werden
+        runningParser.push(0);
 		for (var cal in icalSettings["Calendar"]) {
 			if ((icalSettings["Calendar"][cal]["calURL"] != "") && (icalSettings["Calendar"][cal]["calURL"] != undefined)) {
 				count +=1;
 			 	if (debug) {logger.info("adapter ical reading Calendar from URL: " + icalSettings["Calendar"][cal] + " color: " +icalSettings["Calendar"][cal]["calColor"] );}
                 calCol = icalSettings["Calendar"][cal]["calColor"];
-				checkiCal(icalSettings["Calendar"][cal]["calURL"],calCol);
+                //merker für Kalender hinzufügen
+                runningParser.push(count);
+                checkiCal(icalSettings["Calendar"][cal]["calURL"],calCol,count, function (count) {
+                    //diese Instanz aus Liste löschen
+                    runningParser.pop();
+                    //Wenn diese Instanz die letzte ist, dann darstellen
+                    if (runningParser.length == 0) {
+                        if (debug) {logger.info("displaying dates because of callback");}
+                        displayDates();
+                    }
+                });
 			}
 		}
+        //unsere Instanz löschen
+        runningParser.pop();
+        //Wenn es die letzte Instanz war, dann darstellen
+        if (runningParser.length == 0) {
+            if (debug) {logger.info("displaying dates");}
+            displayDates();
+        }
 	}
-
-	//pro Kalender 5 sekunden warten
-	 setTimeout(displayDates,count * 5000);
 }
 
 //Einen Kalender einlesen
 
 function readOne(url) {
 	arrDates = new Array();
-	checkiCal(url);
-	setTimeout(displayDates,4000);
+	checkiCal(url,icalSettings.defColor,1,function (count) {
+        //Returnwert egal, da nur ein Kalender
+        //Auswertung fertig --> Darstellen
+        displayDates();
+    });
+
 }
 
 //Darstellen nachdem alle eingelesen wurden
@@ -328,6 +368,7 @@ function displayDates() {
     var todayd = new Date();
     var tomorrow = tomorrowd.getDate()+"."+(tomorrowd.getMonth()+1)+"."+tomorrowd.getFullYear();
     var today = todayd.getDate()+"."+(todayd.getMonth()+1)+"."+todayd.getFullYear();
+
     if (arrDates.length > 0) {
         setState(icalSettings.firstId + 1, brSeparatedList(arrDates,today,tomorrow));
     }
@@ -451,7 +492,6 @@ function iCalInit() {
         //intervalID = setInterval(function() {checkiCal(icalSettings.defURL)},runeveryminutes);
         intervallID = setInterval(readAll,runeveryminutes);
 	}
-
 }
 
 logger.info("adapter ical start");
