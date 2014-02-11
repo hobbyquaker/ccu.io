@@ -22,21 +22,28 @@ Alternativ kann der Adapter auch automatisch in einem definierbaren Intervall di
 
 Das automatische Einlesen kann durch schreiben des Strings "stop" on die Variable iCalReadTrigger gestoppt und mit "start" wieder gestartet werden. 
 
-In den Settings wird durch die Angabe der "preview" Option festgelegt wie viele Tage im voraus Termine mit einbezogen werden, also z.B. durch die Angabe der Zahl "2" werden Termine von heute und morgen angezeigt. Durch Angabe der "1" werden nur Termine vom heutigen Tag angezeigt.
+Bedeutung der Optionen im Konfigfile:
 
-Mit der Option „colorize“ wird der Termin am Tag vor dem Ereignis gelb gefärbt und beim aktuellen Tag rot gefärbt. Die Option debug schreibt mehr Informationen in das CCU.IO LogFile.
-Durch setzen der Option „fulltime“ kann bei ganztägigen Terminen die Uhrzeit 00:00 durch einen String (z.B. ganztägig) ersetzt werden. mit “ “ wird die Uhrzeit weggelassen.
+- "firstID": 80100 legt fest ab welcher ID die Datenpunkte des iCal Adapters starten
+- "preview" : 7 heisst, dass Termine 7 Tage im voraus angezeigt werden
+- "runEveryMinutes": 30 bedeutet dass der Adapter automatisch alle 30min den Kalender neu einliesst. Bei 0 wird nicht automatisch eingelesen
+- "colorize": true Termine am heutigen Tag werden rot gefärbt, Termine am morgigen Tag orange, diese Option überstimmt die Option everyCalOneColor
+- "debug": false bei true werden werden erweiterte Ausgaben ins CCU.IO Log geschrieben
+- "defColor": "white" legt die Standardfarbe der Kalendereinträge fest 
+- "fulltime": " " legt fest durch welchen String bei ganztägigen Terminen die Uhrzeit 00:00 ersetzt wird. Bei Leerzeichen (zwischen den Hochkommas) wird dir Uhrzeit bei ganztägigen Terminen weggelassen
+- "replaceDates": true Bei true wird bei heutigen Terminen das heutige Datum durch den String todayString ersetzt (z.B. "Heute"). Bei morgigen Terminen durch den String tomorrowString
+- "everyCalOneColor": " false Bei true wird bei mehreren Kalendern jeder Kalender in einer festzulegenden Farbe eingefärbt. Ist die Option colorize gesetzt, funktioniert dies nicht!
+- "Calendar1": {
+	"calURL": "http://11111.ics", URL des Kalenders
+	"calColor": "white" Farbe des Kalenders, wenn die Option "everyCalOneColor" gesetzt ist
+   } es können beliebig viele Kalender eingetragen werden. Im Standard Konfigfile sind 2 Kalender eingetragen.
 
-Neu hinzugekommen sind die Optionen:
 
-- replaceDates (wenn true, dann wird bei heutigen Terminen das Datum durch den String -->todayString ersetzt und bei morgigen Terminen durch den String --> tomorrowString)
-- todayString (z.B. "heute")
-- tomorrowString (z.B. "morgen")
-- calColor im Unterpunkt Calendar
-- everyCalOneColor (durch setzten der Variablen auf true, wird jedem Kalender eine eigene Farbe zugeordnet (calColor)
-
-Die Option "colorize" überstimmt die Option "everyCalOneColor", d.h. wenn Einträge für "heute" oder "morgen" farbig dargestellt werden, dann werden die Kalender nicht eingefärbt.
-
+Durch Anpassen der dashui-user.css können die Styles von heutigen (Standard rot) und morgigen Terminen (Standard Orange) festegelegt werden:
+iCalWarn (Zeilenanfang Kalendereintrag heute)
+iCalPreWarn (Zeilenanfang Kalendereintrag morgen)
+iCalNormal (Zeilenende von heute)
+iCalNormal2 (Zeilenende von morgen)
 
 
 Kalender:
@@ -61,11 +68,3 @@ Diese URL dann entweder in den Settings bei defaultURL eintragen, oder sie bei "
 
 Known BUGS: Probleme mit gleichen UUIDs von iCal Einträgen (bedingt durch Bibliothek)
 
-NEU:
-
-- bis zu 3 Kalender per defaultURL möglich
-- Farbe der Schrift mit der Option defColor einstellbar
-- mit der Option „fulltime“ kann bei ganztägigen Terminen die Uhrzeit 00:00 durch einen String (z.B. ganztägig) ersetzt werden. mit “ “ wird die Uhrzeit weggelassen. 
-- beliebig viele Kalender möglich
-- per css können die Styles vorgegeben werden
-  
