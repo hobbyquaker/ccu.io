@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.24*
+*aktuelle Version: 1.0.25*
 
 ## Dokumentation
 
@@ -36,6 +36,16 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.25
+* (Hobbyquaker) loadTranslation (stringtable) an neue CCU2-Firmware angepasst
+* (Hobbyquaker) Loader für CCU.IO Oberfläche
+* (Hobbyquaker) Bugfix Addon-Update-Check
+* (Hobbyquaker) neue Methode alarmReceipt (bestätigen von Servicemeldungen)
+* (Anli) Adapter Fritzbox: Standard-IP von 192.168.1.1 auf fritz.box geändert - so sollte das bei den Standard-Homeinstallationen out-of-the-box funktionieren
+* (Anli) Adapter Fritzbox: mehr Infos bei Nichtverbindung des Fritzbox Adapters (Hinweis zu Aktivierung Anrufmonitor)
+* (Anli) Adapter Fritzbox: kleinere syntaktische Fehlerkorrekturen
+* (Thorque) Script-Engine: Adding device, url and url_title to pushover notifications
 
 ### 1.0.24
 * (Hobbyquaker) Script-Engine: implemented method execCmd()
