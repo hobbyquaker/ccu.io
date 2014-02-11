@@ -103,14 +103,14 @@ var ccuWords = {
     "configure"         : {"en": "configure",             "de": "konfigurieren",      "ru": "настроить"},
     "periodical"        : {"en": "periodical",            "de": "periodisch",         "ru": "периодичный"},
     "Timestamp"         : {"en": "Timestamp",             "de": "Zeitstempel",        "ru": "Время"},
-    "Severity"          : {"en": "Severity",              "de": "Gewicht",            "ru": "Приоритет"},
+    "Severity"          : {"en": "Severity",              "de": "Stufe",              "ru": "Приоритет"},
     "Message"           : {"en": "Message",               "de": "Meldung",            "ru": "Сообщение"},
     "TypeName"          : {"en": "TypeName",              "de": "Typname",            "ru": "Тип"},
     "Name"              : {"en": "Name",                  "de": "Name",               "ru": "Имя"},
-    "Parent Name"       : {"en": "Parent Name",           "de": "Kanal",         "ru": "Имя родителя"},
+    "Parent Name"       : {"en": "Parent Name",           "de": "Kanal",              "ru": "Имя родителя"},
     "Value"             : {"en": "Value",                 "de": "Wert",               "ru": "Значение"},
     "ack"               : {"en": "ack",                   "de": "Best.",              "ru": "Подтв."},
-    "lastChange"        : {"en": "lastChange",            "de": "Letzte Änderung",     "ru": "Последнее изменение"},
+    "lastChange"        : {"en": "lastChange",            "de": "Letzte Änderung",    "ru": "Последнее изменение"},
     "eventCount"        : {"en": "eventCount",            "de": "Anzahl Meldungen",   "ru": "Кол-во сообщений"},
     "Error"             : {"en": "Error",                 "de": "Fehler",             "ru": "Ошибка"},
     "File saved."       : {"en": "File saved.",           "de": "Datei gespeichert",  "ru": "Файл сохранён."},
@@ -118,13 +118,13 @@ var ccuWords = {
     "install started"   : {"en": "install started",       "de": "Installation gestartet","ru": "Установка начата"},
     "CCU.IO settings saved. Please restart CCU.IO" : {
         "en": "CCU.IO settings saved. Please restart CCU.IO",                 
-        "de": "CCU.IO Einstellüngen sind gespeichert. Bitte CCU.IO neu starten",             
+        "de": "CCU.IO Einstellungen gespeichert. Bitte CCU.IO neu starten",
         "ru": "CCU.IO настройки сохранены. Перезапустите CCU.IO"
         },
     "Error: invalid JSON" : {"en": "Error: invalid JSON", "de": "Fehler: ungültiges JSON","ru": "Ошибка: неправильный формат JSON"},
     " adapter settings saved. Please restart CCU.IO" : {
         "en": " adapter settings saved. Please reload adapter",
-        "de": "-Adpater-Einstellungen sind gespeichert. Bitte Adapter neu laden",
+        "de": " Adpater-Einstellungen gespeichert. Bitte Adapter neu laden",
         "ru": ": настройки сохранены. Перезапустите CCU.IO или драйвер"
         },
     "Apply backup started. Please be patient..." : {
@@ -134,7 +134,7 @@ var ccuWords = {
         },
     "Apply backup done. Restart CCU.IO" : {
         "en": "Apply backup done. Restart CCU.IO",                 
-        "de": "Apply backup done. Restart CCU.IO",             
+        "de": "Sicherung eingespielt. Bitte CCU.IO neu starten.",
         "ru": "Резервная копия распакована. Перезапустите CCU.IO"
         },
     "Error: Backup failed." : {
@@ -144,7 +144,7 @@ var ccuWords = {
         },
     "Backup started. Please be patient..." : {
         "en": "Backup started. Please be patient...",                 
-        "de": "Sicherheitskopie wird erstellt. Bitte warten...",             
+        "de": "Sicherung wird erstellt. Bitte warten...",
         "ru": "Создание резервной копии запущено. Подождтите..."
         },
     "Update started. Please be patient..." : {

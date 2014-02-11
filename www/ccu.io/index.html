@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="../lib/css/jqGrid/ui.jqgrid-4.5.4.css" type="text/css"/>
     <link rel="stylesheet" href="../lib/css/jquery.multiselect-1.13.css" type="text/css"/>
     <link rel="stylesheet" href="css/ccu.io.css" type="text/css"/>
-    <script src="../lib/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="../lib/js/jquery-1.11.0.min.js" type="text/javascript"></script>
     <script src="../lib/js/jquery-ui-1.10.3.full.min.js" type="text/javascript"></script>
     <script src="../lib/js/jquery.multiselect-1.13.min.js" type="text/javascript"></script>
     <script src="../lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js" type="text/javascript"></script>
@@ -458,7 +458,18 @@
 <div style="display: none" id="uploadPreview"></div>
 
 <div id="dialogModal">
+</div>
 
+<div id="loader" class="">
+    <div id="loader_window" class="ui-widget ui-widget-content ui-corner-all">
+        <div class="ui-widget ui-widget-header ui-corner-top" style="width:480px; height: 29px; position:relative; left: -1px; top:-1px;">
+            <span style="font-size: 14px; position: relative; top: 6px; left: 12px;" class="ui-jqgrid-title">CCU.IO<span class="hq-version"></span></span>
+        </div>
+        <div id="loader_message" style="padding-left: 25px; padding-top: 15px;">
+
+        </div>
+
+    </div>
 </div>
 
 </body>

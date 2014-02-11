@@ -5,7 +5,7 @@ function updateAdapterSettings() {
     $("#adapter_config_json").html(JSON.stringify(currentAdapterSettings, null, "    "));
 }
 
-function translateWord (text, lang, dictionary) {
+function translateWord(text, lang, dictionary) {
     if (!ccuIoSettings) return text;
     if (!dictionary) dictionary = ccuWords;
     if (!lang)       lang       = ccuIoSettings.language || 'en';
@@ -30,7 +30,7 @@ function translateWord (text, lang, dictionary) {
     return text;
 }
 
-function translateWordBack (text, lang, dictionary) {
+function translateWordBack(text, lang, dictionary) {
     if (!dictionary) {
         return text;
     }
@@ -41,65 +41,67 @@ function translateWordBack (text, lang, dictionary) {
             return word;
     }
 
-    console.log ("back: " + text);
+    console.log("back: " + text);
     return text;
 }
 
-function translateAll (lang, dictionary) {
+function translateAll(lang, dictionary) {
     lang  = lang || ccuIoSettings.language || 'en';
     dictionary = dictionary || ccuWords;
 
     $(".translate").each(function (idx) {
-        var curlang = $(this).attr ('data-lang');
-        var text    = $(this).html ();
+        var curlang = $(this).attr('data-lang');
+        var text    = $(this).html();
         if (curlang != lang) {
             if (curlang) {
-                text = translateWordBack (text, curlang, dictionary);
+                text = translateWordBack(text, curlang, dictionary);
             }
 
-            var transText = translateWord (text, lang, dictionary);
+            var transText = translateWord(text, lang, dictionary);
             if (transText) {
-                $(this).html (transText);
-                $(this).attr ('data-lang', lang);
+                $(this).html(transText);
+                $(this).attr('data-lang', lang);
             }
         }
     });
     // translate <input type="button>
     $(".translateV").each(function (idx) {
-        var text    = $( this ).attr ('value');
-        var curlang = $(this).attr ('data-lang');
+        var text    = $( this ).attr('value');
+        var curlang = $(this).attr('data-lang');
         if (curlang != lang) {
             if (curlang) {
-                text = translateWordBack (text, curlang, dictionary);
+                text = translateWordBack(text, curlang, dictionary);
             }
 
-            var transText = translateWord (text, lang, dictionary);
+            var transText = translateWord(text, lang, dictionary);
             if (transText) {
-                $(this).attr ('value', transText);
-                $(this).attr ('data-lang', lang);
+                $(this).attr('value', transText);
+                $(this).attr('data-lang', lang);
             }
         }
     });
     $(".translateB").each(function (idx) {
         //<span class="ui-button-text">Save</span>
-        var text    = $( this ).html ();
+        var text    = $( this ).html();
         text = text.replace('<span class="ui-button-text">', "").replace("</span>", "");
-        var curlang = $(this).attr ('data-lang');
+        var curlang = $(this).attr('data-lang');
         if (curlang != lang) {
             if (curlang) {
-                text = translateWordBack (text, curlang, dictionary);
+                text = translateWordBack(text, curlang, dictionary);
             }
 
-            var transText = translateWord (text, lang, dictionary);
+            var transText = translateWord(text, lang, dictionary);
             if (transText) {
-                $(this).html ('<span class="ui-button-text">' + transText + '</span>');
-                $(this).attr ('data-lang', lang);
+                $(this).html('<span class="ui-button-text">' + transText + '</span>');
+                $(this).attr('data-lang', lang);
             }
         }
     });
 }
 
 $(document).ready(function () {
+
+
 
     var installedAddons = [];
 
@@ -147,6 +149,108 @@ $(document).ready(function () {
 
     }
 
+    function updateAddonHandler(id) {
+        $("input#"+id).click(function () {
+
+            var $this = $(this);
+            $this.attr("disabled", true);
+            var url = $this.attr("data-update-url");
+            var name = $this.attr("data-update-name");
+            var id = $this.attr("id");
+
+            socket.emit("getUrl", url, function(res) {
+                try {
+                    var obj = JSON.parse(res);
+                    $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
+
+                    var instVersion = $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html();
+                    instVersion = instVersion.replace(/beta/,".");
+
+                    var availVersion = obj.version;
+                    availVersion = availVersion.replace(/beta/,".");
+
+                    var updateAvailable = compareVersion(instVersion, availVersion);
+
+                    if (updateAvailable) {
+                        $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update translateV' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("update")+"'/>&nbsp;");
+                        $("input#update_"+obj.ident).click(function () {
+                            $(this).attr("disabled", true);
+                            var that = this;
+                            socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
+                                if (err) {
+                                    showMessage(err);
+                                } else {
+                                    $(that).remove();
+                                }
+                            });
+
+                        });
+                    }
+                    $("input.updateCheck[data-update-name='"+obj.name+"']").hide();
+                } catch (e) {
+                    url = url.replace(/[^\/]+\/io-addon.json/,"io-addon.json");
+                    socket.emit("getUrl", url, function(res) {
+                        obj = JSON.parse(res);
+                        $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
+
+                        var instVersion = $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html();
+                        instVersion = instVersion.replace(/beta/,".");
+
+                        var availVersion = obj.version;
+                        availVersion = availVersion.replace(/beta/,".");
+
+                        var updateAvailable = compareVersion(instVersion, availVersion);
+
+                        if (updateAvailable) {
+                            $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("update")+"'/>&nbsp;");
+                            $("input#update_"+obj.ident).click(function () {
+                                $(this).attr("disabled", true);
+                                var that = this;
+                                socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
+                                    if (err) {
+                                        showMessage(err);
+                                    } else {
+                                        $(that).remove();
+                                    }
+                                });
+
+                            });
+                        }
+                        $("input.updateCheck[data-update-name='"+obj.name+"']").hide();
+                    });
+                }
+
+            });
+        });
+    }
+
+    function compareVersion(instVersion, availVersion) {
+        var instVersionArr = instVersion.replace(/beta/,".").split(".");
+        var availVersionArr = availVersion.replace(/beta/,".").split(".");
+
+        var updateAvailable = false;
+
+        for (var k = 0; k<3; k++) {
+            instVersionArr[k] = parseInt(instVersionArr[k], 10);
+            if (isNaN(instVersionArr[k])) { instVersionArr[k] = -1; }
+            availVersionArr[k] = parseInt(availVersionArr[k], 10);
+            if (isNaN(availVersionArr[k])) { availVersionArr[k] = -1; }
+        }
+
+        if (availVersionArr[0] > instVersionArr[0]) {
+            updateAvailable = true;
+        } else if (availVersionArr[0] == instVersionArr[0]) {
+            if (availVersionArr[1] > instVersionArr[1]) {
+                updateAvailable = true;
+            } else if (availVersionArr[1] == instVersionArr[1]) {
+                if (availVersionArr[2] > instVersionArr[2]) {
+                    updateAvailable = true;
+                }
+            }
+        }
+        return updateAvailable;
+    }
+
     $(".jqui-tabs").tabs();
 
     var eventCounter = 0;
@@ -162,7 +266,11 @@ $(document).ready(function () {
     var $datapointGrid = $("#grid_datapoints");
     var $eventGrid = $("#grid_events");
 
+    $("#loader_message").append(translateWord("connecting to CCU.IO") + " ... <br/>");
+
     var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host') + "?key="+socketSession);
+
+    $("#loader_message").append(translateWord("loading stringtable") + " ... <br/>");
 
     socket.emit('getStringtable', function(obj) {
         $("#stringtable").html(JSON.stringify(obj, null, "  "));
@@ -174,6 +282,8 @@ $(document).ready(function () {
     function getTrueFalse (isTrue) {
         return isTrue ? "<span style='color:green'><b data-lang='"+(ccuIoSettings.language || 'en')+"' class='translate'>"+translateWord('TRUE')+"</b></span>" : "<span data-lang='"+(ccuIoSettings.language || 'en')+"' class='translate'>"+translateWord('false')+"</span>";
     }
+    $("#loader_message").append(translateWord("loading settings") + " ... <br/>");
+
     socket.emit("getSettings", function (settings) {
         ccuIoSettings = settings;
         $(".ccu-io-version").html(settings.version);
@@ -189,6 +299,7 @@ $(document).ready(function () {
             title: translateWord ("Install Addon"),
             modal: true
         });
+        $("#loader_message").append("<span id='loader_adapter'>"+translateWord("loading adapters") + " </span><br/>");
 
         socket.emit("readdir", ["adapter"], function (data) {
             for (var i = 0; i < data.length; i++) {
@@ -203,6 +314,7 @@ $(document).ready(function () {
                     period:     (settings.adapters[data[i]]?settings.adapters[data[i]].period:"")
                 }
                 $("#grid_adapter").jqGrid("addRowData", i, adapterData);
+                $("#loader_adapter").append(".");
             }
             $(".adapter-settings").click(function () {
                 editAdapterSettings($(this).attr("data-adapter"));
@@ -211,8 +323,8 @@ $(document).ready(function () {
                 restartAdapter($(this).attr("data-adapter"));
             });
         });
-
     });
+    $("#loader_message").append(translateWord("loading status") + " ... <br/>");
 
     socket.emit("getStatus", function (data) {
         $(".ccu-reachable").html(getYesNo(data.ccuReachable, true));
@@ -247,13 +359,16 @@ $(document).ready(function () {
         showMessage (data);
     });
 
+    $("#loader_message").append("<span id='loader_addons'>"+translateWord("loading addons") + " </span><br/>");
 
     socket.emit("readdir", ["www"], function (data) {
 
         for (var i = 0; i < data.length; i++) {
             var addon = data[i];
             if (addon == "lib" || addon == "ccu.io" || addon == "index.html") { continue; }
+
             socket.emit("readJsonFile", "www/"+addon+"/io-addon.json", function(meta) {
+
                 if (meta) {
                     var hp = meta.urlHomepage.match(/[http|https]:\/\/(.*)/);
                     var dl = meta.urlDownload.match(/\/([^/]+)$/);
@@ -261,43 +376,21 @@ $(document).ready(function () {
                     var addonData = {
                         name:               "<a href='/"+meta.dirname+"' target='_blank'>"+meta.name+"</a>",
                         installedVersion:   meta.version,
-                        availableVersion:   "<input data-update-name='"+meta.name+"' class='updateCheck translateV' data-update-url='"+meta.urlMeta+"' type='button' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("check")+"'/>",
+                        availableVersion:   "<input id='update_addon_"+meta.name+"'data-update-name='"+meta.name+"' class='updateCheck translateV' data-update-url='"+meta.urlMeta+"' type='button' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("check")+"'/>",
                         homepage:           "<a href='"+meta.urlHomepage+"' target='_blank'>"+hp[1]+"</a>",
                         download:           "<a href='"+meta.urlDownload+"' target='_blank'>"+dl[1]+"</a>"
                     };
                     $("#grid_addons").jqGrid('addRowData', i, addonData);
+                    $("#loader_addons").append(".");
+
+                    updateAddonHandler("update_addon_"+meta.name);
+
+
                     installedAddons.push(meta.dirname+"="+meta.version);
                     $("#install_addon_select option[value='"+meta.dirname+"']").remove();
 
                 }
             });
-        }
-
-        function compareVersion(instVersion, availVersion) {
-            var instVersionArr = instVersion.replace(/beta/,".").split(".");
-            var availVersionArr = availVersion.replace(/beta/,".").split(".");
-
-            var updateAvailable = false;
-
-            for (var k = 0; k<3; k++) {
-                instVersionArr[k] = parseInt(instVersionArr[k], 10);
-                if (isNaN(instVersionArr[k])) { instVersionArr[k] = -1; }
-                availVersionArr[k] = parseInt(availVersionArr[k], 10);
-                if (isNaN(availVersionArr[k])) { availVersionArr[k] = -1; }
-            }
-
-            if (availVersionArr[0] > instVersionArr[0]) {
-                updateAvailable = true;
-            } else if (availVersionArr[0] == instVersionArr[0]) {
-                if (availVersionArr[1] > instVersionArr[1]) {
-                    updateAvailable = true;
-                } else if (availVersionArr[1] == instVersionArr[1]) {
-                    if (availVersionArr[2] > instVersionArr[2]) {
-                        updateAvailable = true;
-                    }
-                }
-            }
-            return updateAvailable;
         }
 
         $("input#update_self_check").click(function () {
@@ -313,102 +406,9 @@ $(document).ready(function () {
                 }
             });
         });
-
-        setTimeout(function() {
-            $("input.updateCheck").click(function () {
-                var $this = $(this);
-                $this.attr("disabled", true);
-                var url = $this.attr("data-update-url");
-                var name = $this.attr("data-update-name");
-                var id = $this.attr("id");
-                socket.emit("getUrl", url, function(res) {
-                    try {
-                        var obj = JSON.parse(res);
-                        $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
-
-                        var instVersion = $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html();
-                        instVersion = instVersion.replace(/beta/,".");
-
-                        var availVersion = obj.version;
-                        availVersion = availVersion.replace(/beta/,".");
-
-                        var updateAvailable = compareVersion(instVersion, availVersion);
-
-                        if (updateAvailable) {
-                            $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update translateV' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("update")+"'/>&nbsp;");
-                            $("input#update_"+obj.ident).click(function () {
-                                $(this).attr("disabled", true);
-                                var that = this;
-                                socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
-                                    if (err) {
-                                        showMessage (err);
-                                    } else {
-                                        $(that).remove();
-                                    }
-                                });
-
-                            });
-                        }
-                        $("input.updateCheck[data-update-name='"+obj.name+"']").hide();
-                    } catch (e) {
-                        url = url.replace(/[^\/]+\/io-addon.json/,"io-addon.json");
-                        socket.emit("getUrl", url, function(res) {
-                            obj = JSON.parse(res);
-                            $("input.updateCheck[data-update-name='"+obj.name+"']").parent().append(obj.version);
-
-                            var instVersion = $("input.updateCheck[data-update-name='"+obj.name+"']").parent().parent().find("td[aria-describedby='grid_addons_installedVersion']").html();
-                            instVersion = instVersion.replace(/beta/,".");
-
-                            var availVersion = obj.version;
-                            availVersion = availVersion.replace(/beta/,".");
-
-                            var instVersionArr = instVersion.split(".");
-                            var availVersionArr = availVersion.split(".");
-
-                            var updateAvailable = false;
-
-                            for (var k = 0; k<3; k++) {
-                                instVersionArr[k] = parseInt(instVersionArr[k], 10);
-                                if (isNaN(instVersionArr[k])) { instVersionArr[k] = -1; }
-                                availVersionArr[k] = parseInt(availVersionArr[k], 10);
-                                if (isNaN(availVersionArr[k])) { availVersionArr[k] = -1; }
-                            }
-
-                            if (availVersionArr[0] > instVersionArr[0]) {
-                                updateAvailable = true;
-                            } else if (availVersionArr[0] == instVersionArr[0]) {
-                                if (availVersionArr[1] > instVersionArr[1]) {
-                                    updateAvailable = true;
-                                } else if (availVersionArr[1] == instVersionArr[1]) {
-                                    if (availVersionArr[2] > instVersionArr[2]) {
-                                        updateAvailable = true;
-                                    }
-                                }
-                            }
-
-                            if (updateAvailable) {
-                                $("input.updateCheck[data-update-name='"+obj.name+"']").parent().prepend("<input type='button' id='update_"+obj.ident+"' class='addon-update' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"' value='"+translateWord("update")+"'/>&nbsp;");
-                                $("input#update_"+obj.ident).click(function () {
-                                    $(this).attr("disabled", true);
-                                    var that = this;
-                                    socket.emit("updateAddon", obj.urlDownload, obj.dirname, function (err) {
-                                        if (err) {
-                                            showMessage(err);
-                                        } else {
-                                            $(that).remove();
-                                        }
-                                    });
-
-                                });
-                            }
-                            $("input.updateCheck[data-update-name='"+obj.name+"']").hide();
-                        });
-                    }
-
-                });
-            });
-        }, 2500);
     });
+
+    $("#loader_message").append(translateWord("loading datastore") + " ... <br/>");
 
     socket.emit("readdir", ["datastore"], function (data) {
         for (var i = 0; i < data.length; i++) {
@@ -640,6 +640,7 @@ $(document).ready(function () {
     var datapointsLastSel;
     var datapointsEditing = false;
 
+
     $("#grid_datapoints").jqGrid({
         datatype: "local",
 
@@ -691,10 +692,13 @@ $(document).ready(function () {
             loadDatapoints();
         }});
 
+    $("#loader_message").append(translateWord("loading index") + " ... <br/>");
 
     socket.emit('getIndex', function(obj) {
         $("#index").html(JSON.stringify(obj, null, "  "));
         regaIndex = obj;
+        $("#loader_message").append(translateWord("loading objects") + " ... <br/>");
+
         socket.emit('getObjects', function(obj) {
             regaObjects = obj;
             $("#meta").html(JSON.stringify(obj, null, "  "));
@@ -763,6 +767,8 @@ $(document).ready(function () {
     });
 
     function loadDatapoints() {
+        $("#loader_message").append(translateWord("loading datapoints") + " ... <br/>");
+
         socket.emit('getDatapoints', function(obj) {
             var i = 1;
             for (var id in obj) {
@@ -779,6 +785,7 @@ $(document).ready(function () {
                 };
                 $("#grid_datapoints").jqGrid('addRowData',id,data);
             }
+            $("#loader").remove();
             $("#grid_datapoints").trigger("reloadGrid");
         });
     }
