@@ -806,6 +806,9 @@ function pushover(obj) {
         msg.title = obj.title || scriptEngine.poSettings.title;
         msg.sound = obj.sound || scriptEngine.poSettings.sound;
         msg.priority = obj.priority || scriptEngine.poSettings.priority;
+        msg.url = obj.url || scriptEngine.poSettings.url;
+        msg.url_title = obj.url_title || scriptEngine.poSettings.url_title;
+        msg.device = obj.device || scriptEngine.poSettings.device;
         scriptEngine.pushover.send( msg, function( err, result ) {
             if (err) {
                 scriptEngine.logger.error("script-engine pushover error "+JSON.stringify(err));
