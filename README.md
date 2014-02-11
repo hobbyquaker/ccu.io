@@ -46,6 +46,9 @@ siehe http://ccu.io/
 * (Anli) Adapter Fritzbox: mehr Infos bei Nichtverbindung des Fritzbox Adapters (Hinweis zu Aktivierung Anrufmonitor)
 * (Anli) Adapter Fritzbox: kleinere syntaktische Fehlerkorrekturen
 * (Thorque) Script-Engine: Adding device, url and url_title to pushover notifications
+* (Vader722) now waiting for callback before displaying Calendar instead of fixed Timer
+* (Vader722) processing [val] statement in ev.summarys
+* (Vader722) fixed bug when dates starting before today
 
 ### 1.0.24
 * (Hobbyquaker) Script-Engine: implemented method execCmd()
