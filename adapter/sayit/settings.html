@@ -1,17 +1,15 @@
 <table style="font-size: 12px">
     <tr>
-        <td>
-            Enabled:
-        </td>
+        <td class="translate">Enabled:</td>
         <td>
             <select id="sayit_enabled">
-                <option value="false">false</option>
-                <option value="true">true</option>
+                <option value="false" class="translate">false</option>
+                <option value="true" class="translate">true</option>
             </select>
         </td>
     </tr>
     <tr>
-        <td>Language:</td>
+        <td class="translate">Language:</td>
         <td><select id="sayit_settings_language">
             <option value="en">Google-English</option>
             <option value="de">Google-Deutsch</option>
@@ -21,68 +19,136 @@
         </select></td>
     </tr>
     <tr>
-        <td>Output on Raspberry PI:</td>
+        <td class="translate">Output on Raspberry PI:</td>
         <td><select id="sayit_settings_rasp_output">
             <option value="0">Auto</option>
             <option value="1">Analog</option>
             <option value="2">HDMI</option>
         </select></td>
-    </tr>    <tr>
-        <td>Home24-Mediaplayer IP:</td>
+    </tr>
+    <tr>
+        <td class="translate">Start volume 0 - 100:</td>
+        <td><input id="sayit_settings_start_volume" type="text" /></td>
+    </tr>
+    <tr>
+        <td class="translate">Home24-Mediaplayer IP:</td>
         <td><input id="sayit_settings_mediaplayer" type="text" /></td>
     </tr>
     <tr>
-        <td>Use FTP server for Mediaplayer. FTP Port:</td>
+        <td class="translate">Use FTP server for Mediaplayer. FTP Port:</td>
         <td><input id="sayit_settings_ftp_port" size='4' type="text" /></td>
     </tr>
     <tr>
-        <td>FTP login:</td>
+        <td class="translate">FTP login:</td>
         <td><input id="sayit_settings_ftp_login" type="text" /></td>
     </tr>
     <tr>
-        <td>FTP password:</td>
+        <td class="translate">FTP password:</td>
         <td><input id="sayit_settings_ftp_pass" type="text" /></td>
     </tr>
 </table><br>
 <table style="font-size: 12px; border: 1px solid black" id="sayit_table">
     <tr>
-        <th style="border: 1px solid black">Object ID</th>
-        <th style="border: 1px solid black">Name</th>
-        <th style="border: 1px solid black">Browser</th>
-        <th style="border: 1px solid black">MP24</th>
-        <th style="border: 1px solid black">MP24+FTP</th>
-        <th style="border: 1px solid black">System</th>
-        <th style="border: 1px solid black">MP24 IP</th>
-        <th style="border: 1px solid black">FTP Port</th>
-        <th style="border: 1px solid black">FTP User</th>
-        <th style="border: 1px solid black">FTP Pass</th>
+        <th style="border: 1px solid black" class="translate">Object ID</th>
+        <th style="border: 1px solid black" class="translate">Name</th>
+        <th style="border: 1px solid black" class="translate">Browser</th>
+        <th style="border: 1px solid black" class="translate">MP24</th>
+        <th style="border: 1px solid black" class="translate">MP24+FTP</th>
+        <th style="border: 1px solid black" class="translate">System</th>
+        <th style="border: 1px solid black" class="translate">Windows</th>
+        <th style="border: 1px solid black" class="translate">MP24 IP</th>
+        <th style="border: 1px solid black" class="translate">FTP Port</th>
+        <th style="border: 1px solid black" class="translate">FTP User</th>
+        <th style="border: 1px solid black" class="translate">FTP Pass</th>
 		<th></th>
     </tr>
 </table>
 <input type="button" id="add_variable" value="add variable"/>
 <p>
-    <h1>Hilfe</h1>
-        SayIt Adapter kann den Text in die Sprache umwandeln. Man muss mit dem Skript die eingestellte Variable beschreiben, damit man was hören kann.<br>
-        Z.B. falls die Variable 72910 ist, dann kann man die mit dem Text "Sag es im Browser" beschreiben.<br>
-        Die Variable <b>72903</b> schreibt den Text in allen eingestellten Variablen automatisch rein.<br>
-        Für jede Variable kann es eingestellt sein, wo die abgespielt wird. Momentan sind folgende Ausgänge unterstützt:
-        <ul>
-            <li><b>Browser</b> - der Text wird im Browser abgespiel. Fast in allen modernen Desktop-Browsern und fast in <span style="color:red">keinem</span> mobilen Browser unterstützt.</li>
-            <li><b><a href="http://www.home-24.net/index.php?app=media">Home24- MediaPlayer</a></b> - der Text wird am Gerät, wo Home24 - MediaPlayer installiert ist, abgespielt. Dabei wird das Text2Speech-Engine von dem Gerät (Tablet) benutzt. Port ist fest auf 50000 eingestellt.</li>
-            <li><b><a href="https://play.google.com/store/apps/details?id=lutey.FTPServer">Home24 - MediaPlayer und FTP Server</a></b> - der Text wird am Gerät, wo Home24 - MediaPlayer installiert ist, abgespielt. Dabei wird das bessere Text2Speech-Engine vom Google oder Acapela benutzt. Generierte MP3 Datei wird über FTP zum Gerät kopiert und dann mit Home24 - MediaPlayer abgespielt.
-                Es müss nur in beiden Apps das gleiche Home-Verzeichnis eingestellen sein. (Z.B. Root-Verzeichnis von "sd card" benutzen).</li>
-            <li><b>System</b> - der Text wird am CCU.IO Server abgespielt. Es sind folgende OS unterstützt: Windows, linux</li>
-        </ul>
-        Um abspielen auf dem Raspberry PI zu ermöglichen, sollte man einmal aufrufen "sudo apt-get -y install mpg321" um mpg321 zu installieren.<br>
-        Man kann auch andere mp3 Dateien abspielen in dem man die Variable mit dem Dateiname beschreibt. (z.B. "dashui/img/door-bell.mp3")<br>
-        Falls ie Variable keine MP24_IP oder FTP Einstellungen hat, dann werden die allgemeine Einstellungen benutzt.
+    <h1 class="translate">Description</h1>
+    <span class="translate">Description text</span>
 </p>
 <script type="text/javascript">
+    var adapterWords = {
+        "false":             {"en": "false",             "de": "nein",            "ru": "нет"},
+        "true":              {"en": "true",              "de": "ja",              "ru": "да"},
+        "Enabled:":          {"en": "Enabled:",          "de": "Aktiviert:",      "ru": "Активно:"},
+        "Output on Raspberry PI:": {"en": "Output on Raspberry PI:", "de": "Ausgabe auf Raspberry PI:", "ru": "Вывод на Raspberry PI:"},
+        "Start volume 0 - 100:": {"en": "Start volume 0 - 100:", "de": "Initial-Lautstärke 0 - 100:", "ru": "Начальная громкость 0 - 100:"},
+        "Home24-Mediaplayer IP:":{"en": "Home24-Mediaplayer IP:", "de": "Home24-Mediaplayer IP:",  "ru": "Home24-Mediaplayer IP:"},
+        "Use FTP server for Mediaplayer. FTP Port:": {"en": "Use FTP server for Mediaplayer. FTP Port:", "de": "Benutze FTP Server für Mediaplayer. FTP Port:", "ru": "Использовать FTP сервер для Mediaplayer. FTP Port:"},
+        "FTP login:":        {"en": "FTP login:",        "de": "FTP Login:",      "ru": "FTP логин:"},
+        "FTP password:":     {"en": "FTP password:",     "de": "FTP Kennwort:",   "ru": "FTP пароль:"},
+        "Object ID":         {"en": "Object ID",         "de": "Object ID",       "ru": "ID объекта"},
+        "Name":              {"en": "Name",              "de": "Name",            "ru": "Имя"},
+        "Browser":           {"en": "Browser",           "de": "Browser",         "ru": "Browser"},
+        "MP24":              {"en": "MP24",              "de": "MP24",            "ru": "MP24"},
+        "MP24+FTP":          {"en": "MP24+FTP",          "de": "MP24+FTP",        "ru": "MP24+FTP"},
+        "System":            {"en": "System",            "de": "System",          "ru": "System"},
+        "Windows":           {"en": "Windows",           "de": "Windows",         "ru": "Windows"},
+        "MP24 IP":           {"en": "MP24 IP",           "de": "MP24 IP",         "ru": "MP24 IP"},
+        "FTP Port":          {"en": "FTP Port",          "de": "FTP Port",        "ru": "FTP порт"},
+        "FTP User":          {"en": "FTP User",          "de": "FTP Login",       "ru": "FTP логин"},
+        "FTP Pass":          {"en": "FTP Pass",          "de": "FTP Kennwort",    "ru": "FTP пароль"},
+        "Description":       {"en": "Description",       "de": "Beschreibung",    "ru": "Описание"},
+        "Description text":  {
+        	"en": "SayIt Adapter can convert text to speech and play it on some device or different devices. The specific variable should be written with the script to hear the voice.<br>"
+        		 +"E.g. if the variable has ID 72910, it can be written with text \"Say it in browser\".<br>"
+        		 +"The Variable <b>72903</b> writes automatically the given text into all conifuged outputs, the same as you write all configured variables with the same text.<br>"
+       		     +"For every variable/Object can be setup where the text will be played. Actuall following outputs are supported:"
+        		 +"<ul>"
+            	 +"<li><b>Browser</b> - the text will be played by browser with opened DashUI page. It is almost by every desktop browser supported and by <span style=\"color:red\">few</span> mobily Browsers.</li>"
+        		 +"    <li><b><a href=\"http://www.home-24.net/index.php?app=media\">Home24- MediaPlayer</a></b> - the text will be sent and played to the Android device with Home24 - MediaPlayer installed. For this will be used build in Android text to speech engine. The port cannot be changed and set to 50000.</li>"
+        		 +"    <li><b><a href=\"https://play.google.com/store/apps/details?id=lutey.FTPServer\">Home24 - MediaPlayer and FTP Server</a></b> - the text will be sent and played to the Android device with Home24 - MediaPlayer installed. For this will be used the Google text to speech engine. Generated mp3 file will be copied over FTP to android device and played with Home24 - MediaPlayer.<br>"
+        		 +"        Both apps have to have same home directories. (E.g. root directory of \"sd card\").</li>"
+        		 +"    <li><b>System</b> - the text will be played by OS, where the CCU.IO runs. Following OS are supported: Windows, linux, Mac OSx</li>"
+        		 +"    <li><b>Windows engine</b> - the text will be played by windows, where the CCU.IO runs. For this will be used windows text to speech engine, that should be preconfigured by user.</li>"
+        		 +"</ul>"
+        		 +"To enable the text to speech on RaspberryPI or linux system call one time following command \"sudo apt-get -y install mpg321\" to install mpg321.<br>"
+        		 +"The mp3/wav files can be played to by wrinting its name into the object. (e.g. \"dashui/img/door-bell.mp3\")<br>"
+        		 +"If the variable has no specific setings for MP24_IP or FTP the common adapter settings will be used.",
+
+        	"du": "SayIt Adapter kann den Text in die Sprache umwandeln. Man muss mit dem Skript die eingestellte Variable beschreiben, damit man was hören kann.<br>"
+        		 +"Z.B. falls die Variable 72910 ist, dann kann man die mit dem Text \"Sag es im Browser\" beschreiben.<br>"
+        		 +"Die Variable <b>72903</b> schreibt den Text in allen eingestellten Variablen automatisch rein.<br>"
+       		     +" Für jede Variable kann es eingestellt sein, wo die abgespielt wird. Momentan sind folgende Ausgänge unterstützt:"
+        		 +"<ul>"
+            	 +"<li><b>Browser</b> - der Text wird im Browser mit DashUI abgespiel. Fast in allen modernen Desktop-Browsern und fast in <span style=\"color:red\">keinem</span> mobilen Browser unterstützt.</li>"
+        		 +"    <li><b><a href=\"http://www.home-24.net/index.php?app=media\">Home24- MediaPlayer</a></b> - der Text wird am Gerät, wo Home24 - MediaPlayer installiert ist, abgespielt. Dabei wird das Text2Speech-Engine von dem Gerät (Tablet) benutzt. Port ist fest auf 50000 eingestellt.</li>"
+        		 +"    <li><b><a href=\"https://play.google.com/store/apps/details?id=lutey.FTPServer\">Home24 - MediaPlayer und FTP Server</a></b> - der Text wird am Gerät, wo Home24 - MediaPlayer installiert ist, abgespielt. Dabei wird das bessere Text2Speech-Engine vom Google oder Acapela benutzt. Generierte MP3 Datei wird über FTP zum Gerät kopiert und dann mit Home24 - MediaPlayer abgespielt."
+        		 +"        Es müss nur in beiden Apps das gleiche Home-Verzeichnis eingestellen sein. (Z.B. Root-Verzeichnis von \"sd card\" benutzen).</li>"
+        		 +"    <li><b>System</b> - der Text wird am CCU.IO Server abgespielt. Es sind folgende OS unterstützt: Windows, linux, Mac OSx</li>"
+        		 +"    <li><b>Windows engine</b> - der Text wird am CCU.IO Server unter Windows abgespielt. Dabei das Windows TTS engine wird benutzt. TTS muss vom Anwender im Windows vorkonfiguriert werden.</li>"
+        		 +"</ul>"
+        		 +"Um abspielen auf dem Raspberry PI zu ermöglichen, sollte man einmal aufrufen \"sudo apt-get -y install mpg321\" um mpg321 zu installieren.<br>"
+        		 +"Man kann auch andere mp3 Dateien abspielen in dem man die Variable mit dem Dateiname beschreibt. (z.B. \"dashui/img/door-bell.mp3\")<br>"
+        		 +"Falls die Variable keine MP24_IP oder FTP Einstellungen hat, dann werden die allgemeine Einstellungen benutzt.",
+        		 
+        	"ru": "SayIt драйвер служит для произношения текста. При записи текста в переменную/объект, этот текст будет произнесен на соответствующем устройстве.<br>"
+        		 +"Например, если переменная имеет номер 72910, то записав текст \"Скажи это в браузере\", текст будет произнесен на всех сконфигурированных для этой перемнной устройствах.<br>"
+        		 +"При использовании переменной <b>72903</b> текст будет произнесен на всех устройствах, как будто один и тот же текст записали во все сконфигурированные перемнные.<br>"
+       		     +"Для каждой созданной переменной можно установить где текст должен проигрыватся, если в эту переменную записать тексь. На данный момент поддерживаются следующие системы:"
+        		 +"<ul>"
+            	 +"<li><b>Browser</b> - текст будет проигран в броузере, где открыта DashUI. Почти все десктопные браузеры и <span style=\"color:red\">очень мало</span> мобильных броузеров поддерживают эту функцию.</li>"
+        		 +"    <li><b><a href=\"http://www.home-24.net/index.php?app=media\">Home24- MediaPlayer</a></b> - текст будет отправлен и проигран на Android устройстве, где установлен Home24 - MediaPlayer. При этом используется андроидовский TTS движок. Порт не может быть изменен и установлен на 50000.</li>"
+        		 +"    <li><b><a href=\"https://play.google.com/store/apps/details?id=lutey.FTPServer\">Home24 - MediaPlayer и FTP Server</a></b> - текст будет отправлен и проигран на Android устройстве, где установлен Home24 - MediaPlayer. При этом используется Google Speach API, т.е. данные отсылаются на Google. Сгенерированные MP3 файлы пересылаются через FTP на андроид устройство и проигрываюься там при помощи Home24 - MediaPlayer."
+        		 +"        Оба Es müss nur in beiden Apps das gleiche Home-Verzeichnis eingestellen sein. (Z.B. Root-Verzeichnis von \"sd card\" benutzen).</li>"
+        		 +"    <li><b>System</b> - текст будет проигрываться на системе, где установлен CCU.IO. Поддерживаются следующие системы: Windows, linux, Mac OSx</li>"
+        		 +"    <li><b>Windows engine</b> - текст будет проигрываться на системе, где установлен CCU.IO. При этом будет использоваться встроенный Windows TTS engine. В Windows все должно быть настроено зараниее пользователем.</li>"
+        		 +"</ul>"
+        		 +"Для произношения на Raspberry PI или Linux необходимо установить mpg321 путем вызова в коммандной строке один раз \"sudo apt-get -y install mpg321\" .<br>"
+        		 +"Можно проигрывать mp3 файлы если записать путь к ним в переменную (например \"dashui/img/door-bell.mp3\")<br>"
+        		 +"Если для переменной на настроены индивидуальные MP24_IP или FTP, то для неё будут использоватся настройки драйвера."
+        }
+    };
+</script>
+<script type="text/javascript">
 	var sayit_options = {
-		"browser": "Browser",
-		"mp24"   : "MediaPlayer24",
-		"mp24ftp": "MediaPlayer24+FTP",
-		"system" : "System"
+		"browser" : "Browser",
+		"mp24"    : "MediaPlayer24",
+		"mp24ftp" : "MediaPlayer24+FTP",
+		"system"  : "System",
+		"windows" : "Windows engine"
 	};
 	var sayit_count = 10;
 	
@@ -118,6 +184,12 @@
         storeSettings();
     });
 
+    $("#sayit_settings_start_volume [value='"+((currentAdapterSettings.settings.start_volume === undefined) ? 100 : currentAdapterSettings.settings.start_volume) + "']").attr("selected", "selected");
+
+    $("#sayit_settings_start_volume").change(function () {
+        currentAdapterSettings.settings.start_volume = $("#sayit_settings_start_volume").val();
+        storeSettings();
+    });
     $("#sayit_settings_mediaplayer").val(currentAdapterSettings.settings.mediaPlayer || "");
 
     $("#sayit_settings_mediaplayer").change(function () {
@@ -325,5 +397,6 @@
     }
 	
 	sayitRefreshVariables ();
+	translateAll (ccuIoSettings.language, adapterWords);
 	
 </script>

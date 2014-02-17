@@ -1,23 +1,23 @@
 {
-	"enabled": false,
-	"settings": {
-		"messageTimeout": 5,
-		"pollingInterval": 10000,
-		"firstId": 95100,
-		"messageType": 1,
-		"pollingEnabled": true,
-		"debugEnabled": true,
-		"boxes": {
-			"_1": {
-				"ip": "xxx.xxx.xxx.xxx",
-				"name": "",
-				"username": "",
-				"password": "",
-				"rooms": [""],
-				"funcs": [],
-				"favs": [],
-				"port": "80"
-			}
-		}
-	}
+    "enabled": false,
+    "settings": {
+        "messageTimeout": 5,
+        "pollingInterval": 10000,
+        "firstId": 95100,
+        "messageType": 1,
+        "pollingEnabled": true,
+        "debugEnabled": true,
+        "boxes": {
+            "_1": {
+                "ip": "xxx.xxx.xxx.xxx",
+                "name": "",
+                "username": "",
+                "password": "",
+                "rooms": [""],
+                "funcs": [],
+                "favs": [],
+                "port": "80"
+            }
+        }
+    }
 }

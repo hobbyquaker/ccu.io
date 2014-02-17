@@ -1,11 +1,26 @@
 {
 		"enabled": false,
 		"settings": {
-		"firstId": 80100,
-		"preview": 2,
-		"runEveryMinutes": 30,
-		"colorize": true,
-		"debugging": false,
-		"defURL": "http://XXXXXX"
+			"firstId": 80100,
+			"preview": 7,
+			"runEveryMinutes": 30,
+			"colorize": true,
+			"debug": false,
+			"defColor": "white",
+			"fulltime": " ",
+			"replaceDates": true,
+			"todayString": "Heute",
+			"tomorrowString": "Morgen",
+			"everyCalOneColor": false,
+			"Calendar": {
+				"Calendar1": {
+					"calURL": "http://11111.ics",
+					"calColor": "white"
+				},
+				"Calendar2": {
+					"calURL": "http://22222.ics",
+					"calColor": "grey"
+				}
+			}
 		}
 }	

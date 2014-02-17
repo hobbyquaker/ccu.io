@@ -1,0 +1,12 @@
+{
+    "enabled": false,
+    "settings": {
+        "firstId": 75100,
+        "host": "IP_OF_THE_YAMAHA_RECEIVER",
+        "port": 80,
+        "id_for_onlinecheck": "0",
+        "zone": "Main_Zone",
+        "input_mapping": {"HDMI1": "HDMI1", "HDMI2": "HDMI2", "HDMI3": "HDMI3", "HDMI4": "HDMI4", "NET RADIO": "NetRadio", "AIRPLAY": "Airplay" }
+
+    }
+}

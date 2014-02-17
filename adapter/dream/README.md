@@ -7,12 +7,12 @@ Dreambox adapter
 
 ## Dokumentation
 
-Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslesen aktueller Werte der Dreambox (Stand-By, Lautstärke, Programm) und das Absetzen von ausgewählten Kommandos. Die erste eingerichtete Variable (DREAM.COMMAND) kann zur Bedienung der Dreambox verwendet werden, alle anderen Variablen dienen lediglich der Information bzw. der Verwendung mit Hilfe von weiteren CCU.IO-Mechanismen. Die Konfiguration des Adapters kann durch ein HTML-Formular vorgenommen werden.
+Dieser Adapter ermÃ¶glicht die Anbindung einer Dreambox an CCU.IO fÃ¼r das Auslesen aktueller Werte der Dreambox (Stand-By, LautstÃ¤rke, Programm) und das Absetzen von ausgewÃ¤hlten Kommandos. Die erste eingerichtete Variable (DREAM.COMMAND) kann zur Bedienung der Dreambox verwendet werden, alle anderen Variablen dienen lediglich der Information bzw. der Verwendung mit Hilfe von weiteren CCU.IO-Mechanismen. Die Konfiguration des Adapters kann durch ein HTML-Formular vorgenommen werden.
 
 ### Konfiguration
 
 * **Enabled** - Aktiviert den Adapter 
-* **First ID** - Erste ID, die für die Datenvariablen genutzt wird
+* **First ID** - Erste ID, die fÃ¼r die Datenvariablen genutzt wird
 * **Polling enabled** - Aktiviert das zyklische Abrufen von Status-Informationen
 * **Polling Interval** - Definition des Abruf-Intervalls (in Sekunden)
 * **Message Type** - Typ der Nachricht, mit dem Meldungen auf dem Bildschirm der Dreambox ausgegeben werden
@@ -22,40 +22,40 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 ### Konfiguration pro Box
 * **Adresse** - IP-Adresse
 * **Port** - Port
-* **Name** - Name der Box, wird auch für den Namen der Datenpunkte verwendet
+* **Name** - Name der Box, wird auch fÃ¼r den Namen der Datenpunkte verwendet
 * **Username** - Benutzername (sofern Authentifizierung aktiviert, sonst leer)
 * **Password** - Passwort (sofern Authentifizierung aktiviert, sonst leer)
-* **Rooms** - Räume
+* **Rooms** - RÃ¤ume
 * **Functions** - Gewerke
 * **Favorites** - Favoriten
 
 ### Variablen
 
-* **DREAM.COMMAND** - Nimmt Befehle zur Ausführung entgegen (s.u.)
+* **DREAM.COMMAND** - Nimmt Befehle zur AusfÃ¼hrung entgegen (s.u.)
 * **DREAM.STANDBY** - Zeigt an, ob sich die Box im Standby befindet (true) oder nicht (false)
-* **DREAM.VOLUME** - Zeigt die aktuell eingestellte Lautstärke (0 - 100) an
-* **DREAM.MUTED** - Zeigt an, ob die Box lautlos gestellt ist oder nicht (unabhängig von der eingestellten Lautstärke!)
+* **DREAM.VOLUME** - Zeigt die aktuell eingestellte LautstÃ¤rke (0 - 100) an
+* **DREAM.MUTED** - Zeigt an, ob die Box lautlos gestellt ist oder nicht (unabhÃ¤ngig von der eingestellten LautstÃ¤rke!)
 * **DREAM.CHANNEL** - Zeigt den aktuell eingestellten Sender an, sofern sich die Box nicht im Standby befindet
-* **DREAM.HDD.CAPACITY** - Zeigt die Kapazität der eingebauten Festplatte an
-* **DREAM.HDD.FREE** - Zeigt an, wieviel Platz noch auf der eingebauten Festplatte verfügbar ist
+* **DREAM.HDD.CAPACITY** - Zeigt die KapazitÃ¤t der eingebauten Festplatte an
+* **DREAM.HDD.FREE** - Zeigt an, wieviel Platz noch auf der eingebauten Festplatte verfÃ¼gbar ist
 
 ### Kommandos
 
-**Information:** Bei einer erfolgreichen Ausführung wird der Inhalt der Variable DREAM.COMMAND gelöscht.
+**Information:** Bei einer erfolgreichen AusfÃ¼hrung wird der Inhalt der Variable DREAM.COMMAND gelÃ¶scht.
 
-* **MESSAGE:xyz** - Sendet eine Nachricht xyz an die Box, die für die in der Konfiguration unter messageTimeout angegebene Zeit auf dem Bildschirm angezeigt wird.
-* **MUTE | UNMUTE | MUTE_TOGGLE** - Stellt die Box auf lautlos oder nicht lautlos bzw. wechselt zwischen beiden Möglichkeiten.
-* **VOLUME:xy** - Stellt die Lautstärke auf den Wert xy, wobei es sich hier um einen Wert zwischen 0 und 100 handeln darf.
-* **WAKEUP | STANDBY | STANDBY_TOGGLE** - Weckt die Box aus dem Standby oder versetzt sie dorthin. Mit TOOGLESTANDBY ist ein entsprechender Wechsel möglich.
-* **DEEPSTANDBY** - Setzt die Box in den Deep-Standby. Achtung: da in diesem Modus kein Web-Interface verfügbar ist, muss die Box per Hand wieder reaktiviert werden!
-* **REBOOT** - Führt einen Reboot bei der Box durch. Achtung: für die Zeit des Reboots ist die Box nicht durch den Adapter erreichbar!
-* **RESTART** - Führt einen Neustart des Enigma-Systems durch. Achtung: für die Zeit des Neustarts ist die Box nicht durch den Adapter erreichbar!
+* **MESSAGE:xyz** - Sendet eine Nachricht xyz an die Box, die fÃ¼r die in der Konfiguration unter messageTimeout angegebene Zeit auf dem Bildschirm angezeigt wird.
+* **MUTE | UNMUTE | MUTE_TOGGLE** - Stellt die Box auf lautlos oder nicht lautlos bzw. wechselt zwischen beiden MÃ¶glichkeiten.
+* **VOLUME:xy** - Stellt die LautstÃ¤rke auf den Wert xy, wobei es sich hier um einen Wert zwischen 0 und 100 handeln darf.
+* **WAKEUP | STANDBY | STANDBY_TOGGLE** - Weckt die Box aus dem Standby oder versetzt sie dorthin. Mit TOOGLESTANDBY ist ein entsprechender Wechsel mÃ¶glich.
+* **DEEPSTANDBY** - Setzt die Box in den Deep-Standby. Achtung: da in diesem Modus kein Web-Interface verfÃ¼gbar ist, muss die Box per Hand wieder reaktiviert werden!
+* **REBOOT** - FÃ¼hrt einen Reboot bei der Box durch. Achtung: fÃ¼r die Zeit des Reboots ist die Box nicht durch den Adapter erreichbar!
+* **RESTART** - FÃ¼hrt einen Neustart des Enigma-Systems durch. Achtung: fÃ¼r die Zeit des Neustarts ist die Box nicht durch den Adapter erreichbar!
 
-* **KEY:xyz** - Sendet ein Fernbedienungscode an die Box. Gültige Codes für xyz sind unter dem nachfolgenden Punkt aufgeführt. Ein Beispiel wäre 'KEY:115', der für 'Volume up' steht.
+* **KEY:xyz** - Sendet ein Fernbedienungscode an die Box. GÃ¼ltige Codes fÃ¼r xyz sind unter dem nachfolgenden Punkt aufgefÃ¼hrt. Ein Beispiel wÃ¤re 'KEY:115', der fÃ¼r 'Volume up' steht.
 
-### Gültige Fernbedienungscodes
+### GÃ¼ltige Fernbedienungscodes
 
-** Aliase:** Die in den Klammern angegebenen Kommandos dienen als Aliase, d.h. man braucht nicht zwingend die Syntax KEY:Code einzuhalten, sondern man hat direkte Kommandos. Als Beispiel: anstelle des Kommandos "KEY:115" kann auch direkt "VOLUME_UP" (ohne ein vorangestelltes "KEY:") verwendet werden, beides würde dazu führen, dass die Lautstärke erhöht wird.
+** Aliase:** Die in den Klammern angegebenen Kommandos dienen als Aliase, d.h. man braucht nicht zwingend die Syntax KEY:Code einzuhalten, sondern man hat direkte Kommandos. Als Beispiel: anstelle des Kommandos "KEY:115" kann auch direkt "VOLUME_UP" (ohne ein vorangestelltes "KEY:") verwendet werden, beides wÃ¼rde dazu fÃ¼hren, dass die LautstÃ¤rke erhÃ¶ht wird.
 
 * **116** - Taste "Power" ("STANDBY_TOGGLE")
 * **412** - Taste "previous" ("PREV")
@@ -107,35 +107,35 @@ Dieser Adapter ermöglicht die Anbindung einer Dreambox an CCU.IO für das Auslese
 * Logging erweitert
 
 ### 0.7
-* Verwendung von Alias-Werten für eine Vielzahl von Fernbedienungscodes
+* Verwendung von Alias-Werten fÃ¼r eine Vielzahl von Fernbedienungscodes
 * Toggle-Kommandos vereinheitlicht (sind nun STANDBY_TOGGLE und MOTE_TOGGLE)
 
 ### 0.6
-* Emulation der kompletten Fernbedienung. Im Moment werden nur die Zahlencodes verarbeitet, eventuell Aliase kommen später ggf. im Zuge einer Vereinheitlichung aller CCU.IO-Medienadapter (LGTV, Sonos, Onkyo, Dreambox etc.)
+* Emulation der kompletten Fernbedienung. Im Moment werden nur die Zahlencodes verarbeitet, eventuell Aliase kommen spÃ¤ter ggf. im Zuge einer Vereinheitlichung aller CCU.IO-Medienadapter (LGTV, Sonos, Onkyo, Dreambox etc.)
 
 ### 0.5
-* Authentifizierung hinzugefügt (ggf. Löschen der datastore\adapter-dream.json notwendig)
-* Fehler für VU+ und Geräte mit openwebif behoben (nun richtige Korrektur von Linefeeds)
+* Authentifizierung hinzugefÃ¼gt (ggf. LÃ¶schen der datastore\adapter-dream.json notwendig)
+* Fehler fÃ¼r VU+ und GerÃ¤te mit openwebif behoben (nun richtige Korrektur von Linefeeds)
 
 ### 0.4
 * Fehler beim Speichern von Werten behoben (war object anstatt bool oder string)
-* Konfiguration mehrerer Boxen ermöglicht
+* Konfiguration mehrerer Boxen ermÃ¶glicht
 * Debug-Modus implementiert
-* Fix für VU+ und Geräte mit openwebif implementiert (Linefeed bei Bools)
+* Fix fÃ¼r VU+ und GerÃ¤te mit openwebif implementiert (Linefeed bei Bools)
 
 ### 0.3
 * Umstellung der Konfiguration (JSON -> Formular)
-* weitere Konfigurationsmöglichkeiten (Nachrichtentyp, Polling aktivieren/deaktivieren)
+* weitere KonfigurationsmÃ¶glichkeiten (Nachrichtentyp, Polling aktivieren/deaktivieren)
 * Implementierung weiterer Kommandos (TOOGLESTANDBY, TOOGLEMUTE, etc.)
 * Ausbau der Dokumentation
 
 ### 0.2
 * Neue Variablen DREAM.VOLUME, DREAM.MUTED, DREAM.CHANNEL, DREAM.HDD.CAPACITY und DREAM.HDD.FREE
-* Änderung des Requests, der zur Box geschickt wird
+* Ã„nderung des Requests, der zur Box geschickt wird
 * Tausch der Kommando-Variablen (war firstId + 1, nun firstId)
 
 ### 0.1
-* Erste Version mit Grundfunktionalitäten
+* Erste Version mit GrundfunktionalitÃ¤ten
 
 ## Lizenz
 
@@ -143,16 +143,16 @@ Copyright (c) 2014 BasGo
 
 Lizenz: [CC BY-NC 3.0](http://creativecommons.org/licenses/by-nc/3.0/de/)
 
-Sie dürfen das Werk bzw. den Inhalt vervielfältigen, verbreiten und öffentlich zugänglich machen,
+Sie dÃ¼rfen das Werk bzw. den Inhalt vervielfÃ¤ltigen, verbreiten und Ã¶ffentlich zugÃ¤nglich machen,
 Abwandlungen und Bearbeitungen des Werkes bzw. Inhaltes anfertigen zu den folgenden Bedingungen:
 
-  * **Namensnennung** - Sie müssen den Namen des Autors/Rechteinhabers in der von ihm festgelegten Weise nennen.
-  * **Keine kommerzielle Nutzung** - Dieses Werk bzw. dieser Inhalt darf nicht für kommerzielle Zwecke verwendet werden.
+  * **Namensnennung** - Sie mÃ¼ssen den Namen des Autors/Rechteinhabers in der von ihm festgelegten Weise nennen.
+  * **Keine kommerzielle Nutzung** - Dieses Werk bzw. dieser Inhalt darf nicht fÃ¼r kommerzielle Zwecke verwendet werden.
 
-###Verzichtserklärung
+###VerzichtserklÃ¤rung
 
-Jede der vorgenannten Bedingungen kann aufgehoben werden, sofern Sie die ausdrückliche Einwilligung des Rechteinhabers dazu erhalten.
+Jede der vorgenannten Bedingungen kann aufgehoben werden, sofern Sie die ausdrÃ¼ckliche Einwilligung des Rechteinhabers dazu erhalten.
 
-###Gewährleistungsausschluss
+###GewÃ¤hrleistungsausschluss
 
-Die Veröffentlichung dieser Software erfolgt in der Hoffnung, daß sie Ihnen von Nutzen sein wird, aber **ohne irgendeine implizite oder explizite Garantie** der **Marktreife** oder der **Verwendbarkeit für einen bestimmten Zweck**. Jegliche Nutzung dieser Software erfolgt **auf eigenes Risiko**!
+Die VerÃ¶ffentlichung dieser Software erfolgt in der Hoffnung, daÃŸ sie Ihnen von Nutzen sein wird, aber **ohne irgendeine implizite oder explizite Garantie** der **Marktreife** oder der **Verwendbarkeit fÃ¼r einen bestimmten Zweck**. Jegliche Nutzung dieser Software erfolgt **auf eigenes Risiko**!

@@ -1,8 +1,8 @@
 /**
  *      CCU.IO SayIt Adapter
- *      12'2013 Bluefox
+ *      12'2013-2014 Bluefox
  *
- *      Version 0.3
+ *      Version 0.4
  *      
  *      It uses unofficial Google Translate TTS and it can be closed any time.
  *      
@@ -39,8 +39,14 @@ var logger      = require(__dirname+'/../../logger.js'),
     os          = require('os');
 
 
-sayitSettings.language = sayitSettings.language || 'de';
+sayitSettings.language     = sayitSettings.language || 'de';
+sayitSettings.start_volume = (sayitSettings.start_volume === undefined) ? 100: sayitSettings.start_volume;
 
+var objTrigger  = sayitSettings.firstId;
+var objFileName = sayitSettings.firstId + 1;
+var objVolume   = sayitSettings.firstId + 2;
+var objPlayAll  = sayitSettings.firstId + 3;
+var objPlaying  = sayitSettings.firstId + 4;
 
 if (settings.ioListenPort) {
 	var socket = io.connect("127.0.0.1", {
@@ -59,11 +65,13 @@ socket.on('event', function (obj) {
         return;
     }
 	
-	if (obj[0] >= sayitSettings.firstId+3 && obj[0] <= sayitSettings.firstId+21 && obj[1]) {
+	if (obj[0] == objPlayAll || (obj[0] > objPlaying && obj[0] <= (sayitSettings.firstId + 21) && obj[1])) {
 		sayIt (obj[0], obj[1]);
+		// Clear value
+		setTimeout (function (id) { setState (id, "")}, 50, obj[0]);
 	} else
     // Volume on Raspbery PI
-    if (obj[0] == sayitSettings.firstId+2) {
+    if (obj[0] == objVolume) {
         sayItSystemVolume (obj[1]);
     }
 });
@@ -100,7 +108,7 @@ function setState(id, val) {
 	socket.emit("setState", [id,val,null,true]);
 }
 
-function sayItGetSpeechGoogle (i_, text, language, callback) {
+function sayItGetSpeechGoogle (i_, text, language, volume, callback) {
     var options = {
         host: 'translate.google.com',
         //port: 80,
@@ -130,7 +138,7 @@ function sayItGetSpeechGoogle (i_, text, language, callback) {
                     logger.error ('File error:' + err);
                 else {
                     if (callback) {
-                        callback (i_, text, language);
+                        callback (i_, text, language, volume);
                     }
                 }
             });
@@ -138,7 +146,7 @@ function sayItGetSpeechGoogle (i_, text, language, callback) {
     });
 }
 
-function sayItGetSpeechAcapela (i_, text, language, callback) {
+function sayItGetSpeechAcapela (i_, text, language, volume, callback) {
     var options = {
         host: 'vaassl3.acapela-group.com',
         path: '/Services/Synthesizer?prot_vers=2&req_voice='+language+'22k&cl_env=FLASH_AS_3.0&req_text=%5Cvct%3D100%5C+%5Cspd%3D180%5C+' +
@@ -161,7 +169,7 @@ function sayItGetSpeechAcapela (i_, text, language, callback) {
                 else {
                     console.log('File saved.');
                     if (callback) {
-                        callback (i_, text, language);
+                        callback (i_, text, language, volume);
                     }
                 }
             });
@@ -169,34 +177,34 @@ function sayItGetSpeechAcapela (i_, text, language, callback) {
     });
 }
 
-function sayItGetSpeech (i_, text, language, callback) {
+function sayItGetSpeech (i_, text, language, volume, callback) {
     if (sayit_engines[language] && sayit_engines[language].engine) {
         if (sayit_engines[language].engine == "google") {
-            sayItGetSpeechGoogle (i_, text, language, callback);
+            sayItGetSpeechGoogle (i_, text, language, volume, callback);
         }
         else
         if (sayit_engines[language].engine == "acapela") {
-            sayItGetSpeechAcapela (i_, text, language, callback);
+            sayItGetSpeechAcapela (i_, text, language, volume, callback);
         }
     }
     else {
-        sayItGetSpeechGoogle (i_, text, language, callback);
+        sayItGetSpeechGoogle (i_, text, language, volume, callback);
     }
 }
 
-function sayItBrowser (i_, text, language) {
+function sayItBrowser (i_, text, language, volume) {
 	sayIndex++;
     if (sayItIsPlayFile (text)) {
-        setState (sayitSettings.firstId + 1, text);
+        setState (objFileName, text);
     }
     else {
-        setState (sayitSettings.firstId + 1, "say.mp3");
+        setState (objFileName, "say.mp3");
     }
 
-	setState (sayitSettings.firstId, sayIndex);
+	setState (objTrigger, sayIndex);
 }
 
-function sayItMP24 (i_, text, language) {
+function sayItMP24 (i_, text, language, volume) {
     var mediaPlayer = sayitSettings.vars[i_].mediaPlayer || sayitSettings.mediaPlayer;
 	if (mediaPlayer && !sayItIsPlayFile (text)) {
 		request ("http://"+mediaPlayer+":50000/tts="+querystring.escape(text),
@@ -208,7 +216,7 @@ function sayItMP24 (i_, text, language) {
 	}		
 }
 
-function sayItMP24ftp (i_, text, language) {
+function sayItMP24ftp (i_, text, language, volume) {
     var ftp_port    = sayitSettings.vars[i_].ftp_port    || sayitSettings.ftp_port;
     var mediaPlayer = sayitSettings.vars[i_].mediaPlayer || sayitSettings.mediaPlayer;
 
@@ -262,25 +270,69 @@ function sayItGetFileName (text) {
     return __dirname+"/../../www/say.mp3";
 }
 
-function sayItSystem (i_, text, language) {
+function sayItSystem (i_, text, language, volume) {
     var p = os.platform();
     var ls = null;
     var file = sayItGetFileName (text);
+    setState (objPlaying, true);
+
+    if (volume !== null && volume !== undefined) {
+        sayItSystemVolume (volume);
+    }
 
     if (p == 'linux') {
         //linux
-        ls = cp.spawn('mpg321', [file]);
+        ls = cp.exec('mpg321 ' + file, function (error, stdout, stderr) {
+            setState (objPlaying, false);
+        });
     } else if (p.match(/^win/)) {
         //windows
-        ls = cp.spawn (__dirname + '/cmdmp3/cmdmp3.exe', [file]);
+        ls = cp.exec (__dirname + '/cmdmp3/cmdmp3.exe ' + file, function (error, stdout, stderr) {
+            setState (objPlaying, false);
+        });
     } else if (p == 'darwin') {
         //mac osx
-        ls = cp.spawn('/usr/bin/afplay', [file]);
+        ls = cp.exec('/usr/bin/afplay '+ file, function (error, stdout, stderr) {
+            setState (objPlaying, false);
+        });
     }
 
     if (ls) {
         ls.on('error', function(e) {
             throw new Error('sayIt.play: there was an error while playing the mp3 file:' + e);
+        });
+    }
+}
+
+function sayItWindows (i_, text, language, volume) {
+	// If mp3 file
+	if (sayItIsPlayFile (text)) {
+		sayItSystem (i_, text, language, volume);
+		return;
+	}
+	
+    var p = os.platform();
+    var ls = null;
+    var file = sayItGetFileName (text);
+    setState (objPlaying, true);
+
+    if (volume !== null && volume !== undefined) {
+        sayItSystemVolume (volume);
+    }
+
+    if (p.match(/^win/)) {
+        //windows
+        ls = cp.exec (__dirname + '/Say/SayStatic.exe ' + text, function (error, stdout, stderr) {
+            setState (objPlaying, false);
+        });
+    }
+    else {
+    	logger.error ('sayItWindows: only windows OS is supported for Windows default mode');
+    }
+
+    if (ls) {
+        ls.on('error', function(e) {
+            throw new Error('sayIt.play: there was an error while text2speech on window:' + e);
         });
     }
 }
@@ -293,6 +345,8 @@ function sayItSystemVolume (level) {
     if (level === sayLastVolume) {
 		return;
 	}
+
+    setState(objVolume, level);
 	
 	sayLastVolume = level;
 	
@@ -319,7 +373,7 @@ function sayItSystemVolume (level) {
     }
 }
 
-function sayItExecute (i_, text, language) {
+function sayItExecute (i_, text, language, volume) {
 	var options     = sayitSettings.vars[i_].options.split(',');
     var ftp_port    = sayitSettings.vars[i_].ftp_port    || sayitSettings.ftp_port;
     var mediaPlayer = sayitSettings.vars[i_].mediaPlayer || sayitSettings.mediaPlayer;
@@ -331,7 +385,7 @@ function sayItExecute (i_, text, language) {
             if (opt == "mp24" && ftp_port && mediaPlayer) {
                 continue;
             }
-			sayit_options[opt].func (i_, text, language);
+			sayit_options[opt].func (i_, text, language, volume);
 		}
 	}
 	else {
@@ -344,14 +398,15 @@ function sayItExecute (i_, text, language) {
                     ftp_port && mediaPlayer) {
                         continue;
                 }
-				sayit_options[options[q]].func (i_, text, language);
+				sayit_options[options[q]].func (i_, text, language, volume);
 			}
 		}
 	}
 }
 
 function sayIt (objId, text, language) {
-	var volume = null;
+	var volume    = null;
+    var oldVolume = null;
     logger.info("adapter sayIt saying: " + text);
 
     // Extract language from "en;Text to say"
@@ -382,14 +437,10 @@ function sayIt (objId, text, language) {
 			text = arr[2];
 		}
     }
-	
-	if (volume !== null) {
-		sayItSystemVolume (volume);
-	}
 
 	var i = null;
     // If say on all possible variables
-    if (objId == sayitSettings.firstId + 3) {
+    if (objId == objPlayAll) {
         for (var t in sayitSettings.vars) {
             sayIt (sayitSettings.vars[t].id, text, language);
         }
@@ -427,10 +478,10 @@ function sayIt (objId, text, language) {
         }
 		if (isGenerate && sayLastGeneratedText != "["+language+"]"+text) {
             sayLastGeneratedText = "["+language+"]"+text;
-			sayItGetSpeech (i, text, language, sayItExecute);
+			sayItGetSpeech (i, text, language, volume, sayItExecute);
 		}
 		else {
-			sayItExecute (i, text, language);
+			sayItExecute (i, text, language, volume);
 		}
 	}
 }
@@ -439,7 +490,8 @@ var sayit_options = {
 	"browser": {name: "Browser",           mp3Required: true,  func: sayItBrowser},
     "mp24ftp": {name: "MediaPlayer24+FTP", mp3Required: true,  func: sayItMP24ftp},
 	"mp24"   : {name: "MediaPlayer24",     mp3Required: false, func: sayItMP24},
-	"system" : {name: "System",            mp3Required: true,  func: sayItSystem}
+	"system" : {name: "System",            mp3Required: true,  func: sayItSystem},
+	"windows": {name: "Windows default",   mp3Required: false, func: sayItWindows}
 };
 
 var sayit_engines = {
@@ -451,7 +503,7 @@ var sayit_engines = {
     "alyona": {name: "Acapela - Russian Алёна",  engine: "acapela"}
 };
 
-createObject(sayitSettings.firstId, {
+createObject(objTrigger, {
     "Name": "SayIt.Trigger",
     "TypeName": "VARDP",
     "DPInfo": "SayIt",
@@ -463,7 +515,7 @@ createObject(sayitSettings.firstId, {
     "ValueList": ""
 });
 
-createObject(sayitSettings.firstId + 1, {
+createObject(objFileName, {
     "Name": "SayIt.FileName",
     "TypeName": "VARDP",
     "DPInfo": "SayIt",
@@ -474,7 +526,7 @@ createObject(sayitSettings.firstId + 1, {
     "ValueSubType": 11,
     "ValueList": ""
 });
-createObject(sayitSettings.firstId + 2, {
+createObject(objVolume, {
     "Name": "SayIt.VOLUME",
     "TypeName": "VARDP",
     "DPInfo": "SayIt",
@@ -485,7 +537,20 @@ createObject(sayitSettings.firstId + 2, {
     "ValueSubType": 0,
     "ValueList": ""
 });
-createObject(sayitSettings.firstId + 3, {
+
+createObject(objPlaying, {
+    "Name": "SayIt.Playing",
+    "TypeName": "VARDP",
+    "DPInfo": "SayIt",
+    "ValueMin": null,
+    "ValueMax": null,
+    "ValueUnit": "",
+    "ValueType": 4,
+    "ValueSubType": 0,
+    "ValueList": ""
+});
+
+createObject(objPlayAll, {
     "Name": "SayIt.ALL",
     "TypeName": "VARDP",
     "DPInfo": "SayIt",
@@ -523,3 +588,6 @@ for (var id in sayitSettings.vars) {
         }
     }
 }
+
+// Init volume
+sayItSystemVolume(sayitSettings.start_volume);

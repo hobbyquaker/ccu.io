@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.10";
+settings.version = "1.0.25";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -75,7 +75,6 @@ if (settings.ioListenPort) {
     }
 
     server =    require('http').createServer(app)
-
 }
 
 // Create md5 hash of user and password
@@ -164,6 +163,7 @@ var socketlist = [],
         DEVICE: [],
         CHANNEL: [],
         HSSDP: [],
+        VARDP: [],
         ALDP: [],
         ALARMDP: [],
         PROGRAM: []
@@ -179,6 +179,12 @@ logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
 loadPersistentObjects();
 loadDatapoints();
 initWebserver();
+
+// Create language variable
+datapoints[69999] = [settings.language || 'en', formatTimestamp(), true];
+regaObjects[69999] = {Name:"SYSTEM.LANGUAGE", TypeName: "VARDP", DPInfo: "DESC", ValueType: 20, ValueSubType: 11};
+regaIndex.VARDP.push(69999);
+regaIndex.Name[69999] = [13305, "VARDP", null];
 
 var regahss = new rega({
     ccuIp: settings.ccuIp,
@@ -487,6 +493,14 @@ function loadRegaData(index, err, rebuild, triggerReload) {
                 // Nur Strings und auf keinen Fall Kanal- oder Datenpunkt-Arrays
                 if (typeof data[id][key] == "string" && key !== "Channels" && key !== "DPs") {
                     data[id][key] = unescape(data[id][key]);
+                }
+                // Datenpunkt-Namen dekodieren
+                if (key == "DPs") {
+                    for (var subkey in data[id][key]) {
+                        var val = data[id][key][subkey];
+                        delete data[id][key][subkey];
+                        data[id][key][unescape(subkey)] = val;
+                    }
                 }
             }
 
@@ -838,6 +852,7 @@ function restApi(req, res) {
             responseType = "plain";
             if (!tmpArr[1]) {
                 response = "error: no datapoint given";
+                break;
             }
             var dp = findDatapoint(tmpArr[1], tmpArr[2]);
             if (!dp || !datapoints[dp]) {
@@ -851,6 +866,7 @@ function restApi(req, res) {
 
             if (!tmpArr[1]) {
                 response = {error: "no object/datapoint given"};
+                break;
             }
             var dp = findDatapoint(tmpArr[1], tmpArr[2]);
             if (!dp) {
@@ -868,6 +884,22 @@ function restApi(req, res) {
                     for (var attr in regaObjects[dp]) {
                         response[attr] = regaObjects[dp][attr];
                     }
+                }
+            }
+            break;
+        case "getBulk":
+            if (!tmpArr[1]) {
+                response = {error: "no datapoints given"};
+                break;
+            }
+            status = 200;
+            response = {};
+            var dps = tmpArr[1].split(",");
+            for (var i = 0; i < dps.length; i++) {
+                var parts = dps[i].split(";");
+                dp = findDatapoint(parts[0], parts[1]);
+                if (dp) {
+                    response[dps[i]] = {"val":datapoints[dp][0], "ts":datapoints[dp][3]};
                 }
             }
             break;
@@ -894,6 +926,19 @@ function restApi(req, res) {
                 status = 200;
                 response = {id:dp,value:value};
             }
+            break;
+        case "toggle":
+            if (!tmpArr[1]) {
+                response = {error: "object/datapoint not given"};
+            }
+            var dp = findDatapoint(tmpArr[1], tmpArr[2]);
+                var value = datapoints[dp][0];
+                if (value === true) value = 1;
+                if (value === false) value = 0;
+                value = 1 - parseInt(value, 10);
+                setState(dp, value);
+                status = 200;
+                response = {id:dp,value:value};
             break;
         case "setBulk":
             response = [];
@@ -969,8 +1014,15 @@ function initExtensions() {
 
 function initWebserver() {
     if (app) {
-        app.use('/', express.static(__dirname + '/www'));
-        app.use('/log', express.static(__dirname + '/log'));
+        if (settings.useCache) {
+            var oneYear = 30758400000;
+            app.use('/', express.static(__dirname + '/www', { maxAge: oneYear }));
+            app.use('/log', express.static(__dirname + '/log', { maxAge: oneYear }));
+        }
+        else {
+            app.use('/', express.static(__dirname + '/www'));
+            app.use('/log', express.static(__dirname + '/log'));
+        }
 
         // File Uploads
         app.use(express.bodyParser({uploadDir:__dirname+'/tmp'}));
@@ -987,14 +1039,25 @@ function initWebserver() {
                 res.send("var socketSession='nokey';");
             }
         });
-    }
+        app.get('/lang/*', function (req, res) {
+            res.set('Content-Type', 'text/javascript');
+			res.send("var ccuIoLang='"+ (settings.language || 'en') +"';");
+        });    
+	}
 
     if (appSsl) {
-        appSsl.use('/', express.static(__dirname + '/www'));
-        appSsl.use('/log', express.static(__dirname + '/log'));
+        if (settings.useCache) {
+            var oneYear = 30758400000;
+            appSsl.use('/', express.static(__dirname + '/www', { maxAge: oneYear }));
+            appSsl.use('/log', express.static(__dirname + '/log', { maxAge: oneYear }));
+        }
+        else {
+            appSsl.use('/', express.static(__dirname + '/www'));
+            appSsl.use('/log', express.static(__dirname + '/log'));
+        }
 
         // File Uploads
-        appSsl.use(express.bodyParser());
+        appSsl.use(express.bodyParser({uploadDir:__dirname+'/tmp'}));
         appSsl.post('/upload', uploadParser);
 
         appSsl.get('/api/*', restApi);
@@ -1007,6 +1070,10 @@ function initWebserver() {
                 res.send("var socketSession='nokey';");
             }
         });
+        appSsl.get('/lang/*', function (req, res) {
+            res.set('Content-Type', 'text/javascript');
+			res.send("var ccuIoLang='"+ (settings.language || 'en') +"';");
+        });    
     }
 
     if (settings.authentication && settings.authentication.enabled) {
@@ -1235,11 +1302,16 @@ function initSocketIO(_io) {
 	  this.set('authorization', function (handshakeData, callback) {
         var isHttps = (serverSsl !== undefined && this.server == serverSsl);
         if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
+            // do not check if localhost
+            if(handshakeData.address.address.toString() == "127.0.0.1") {
+                logger.verbose("ccu.io        local authentication " + handshakeData.address.address);
+                callback(null, true);
+            } else
             if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
-                logger.info("ccu.io        authetication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
-                callback ("Invalid session key", false)
+                logger.warn("ccu.io        authentication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                callback ("Invalid session key", false);
             } else{
-                logger.info("ccu.io        authetication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                logger.verbose("ccu.io        authentication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
                 callback(null, true);
             }
         }
@@ -1254,6 +1326,19 @@ function initSocketIO(_io) {
         var address = socket.handshake.address;
         logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
 
+        socket.on('log', function (sev, msg) {
+           switch (sev) {
+               case "info":
+                   logger.info(msg);
+                   break;
+               case "warn":
+                   logger.warn(msg);
+                   break;
+               case "error":
+                   logger.error(msg);
+           }
+        });
+
         socket.on('execCmd', function (cmd, callback) {
             logger.info("ccu.io        exec "+cmd);
             childProcess.exec(cmd, callback);
@@ -1261,15 +1346,17 @@ function initSocketIO(_io) {
 
         socket.on('execScript', function (script, arg, callback) {
             logger.info("ccu.io        script "+script + "["+arg+"]");
-            var scr_prc = childProcess.fork (script, arg);
+            var scr_prc = childProcess.fork (__dirname + script, arg);
             var result = null;
             scr_prc.on('message', function(obj) {
                 // Receive results from child process
                 console.log ("Message: " + obj);
+				logger.debug("ccu.io        script result: " + obj);
                 result = obj;
             });
             scr_prc.on ("exit", function (code, signal) {
                 if (callback) {
+					logger.debug("ccu.io        script end result: " + result);
                     callback (script, arg, result);
                 }
             });
@@ -1332,6 +1419,72 @@ function initSocketIO(_io) {
             });
         });
 
+        socket.on('createBackup', function () {
+            var path = __dirname + "/backup.js";
+            logger.info("ccu.io        starting "+path);
+            var backupProcess = childProcess.fork(path, ["create"]);
+            var fileName = "";
+            backupProcess.on("message", function (msg) {
+                fileName = msg;
+            });
+            if (io) {
+                io.sockets.emit("ioMessage", "Backup started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Backup started. Please be patient...");
+            }
+            backupProcess.on("close", function (code) {
+                if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("readyBackup", fileName);
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("readyBackup", fileName);
+                    }
+                } else {
+                    logger.error("ccu.io        Backup failed.");
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Error: Backup failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Error: Backup failed.");
+                    }
+                }
+            });
+        });
+
+        socket.on('applyBackup', function (fileName) {
+            var path = __dirname + "/backup.js";
+            logger.info("ccu.io        starting "+path);
+            var backupProcess = childProcess.fork(path, [fileName]);
+            var fileName = "";
+
+            if (io) {
+                io.sockets.emit("ioMessage", "Apply backup started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Apply backup started. Please be patient...");
+            }
+            backupProcess.on("close", function (code) {
+                if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("applyReady", "Apply backup done. Restart CCU.IO");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("applyReady", "Apply backup done. Restart CCU.IO");
+                    }
+                } else {
+                    logger.error("ccu.io        Apply backup failed.");
+                    if (io) {
+                        io.sockets.emit("applyError", "Error: Backup failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("applyError", "Error: Backup failed.");
+                    }
+                }
+            });
+        });
+
         socket.on('refreshAddons', function () {
             if (io) {
                 io.sockets.emit("refreshAddons");
@@ -1373,7 +1526,7 @@ function initSocketIO(_io) {
 
         socket.on('readdir', function (path, callback) {
             path = __dirname+"/"+path;
-            logger.info("socket.io <-- readdir "+path);
+            logger.verbose("socket.io <-- readdir "+path);
             fs.readdir(path, function (err, data) {
                 if (err) {
                     callback(undefined);
@@ -1385,7 +1538,7 @@ function initSocketIO(_io) {
 
         socket.on('readdirStat', function(path, callback) {
             path = __dirname + "/" + path;
-            logger.info("socket.io <-- readdir_stat " + path);
+            logger.verbose("socket.io <-- readdirStat " + path);
 
             fs.readdir(path, function(err, files) {
                 var data = [];
@@ -1528,8 +1681,6 @@ function initSocketIO(_io) {
             callback(status);
         });
 
-
-
         socket.on('getNextId', function (start, callback) {
             while (regaObjects[start]) {
                 start++;
@@ -1551,6 +1702,12 @@ function initSocketIO(_io) {
             callback(datapoints);
         });
 
+        socket.on('getDatapoint', function(id, callback) {
+            logger.verbose("socket.io <-- getDatapoint " + id);
+
+            callback(id, datapoints[id]);
+        });
+		
         socket.on('getObjects', function(callback) {
             logger.verbose("socket.io <-- getObjects");
             callback(regaObjects);
@@ -1690,9 +1847,6 @@ function initSocketIO(_io) {
                 delete obj.favs;
             }
 
-
-
-
             if (obj.TypeName) {
                 if (!regaIndex[obj.TypeName]) {
                     regaIndex[obj.TypeName] = [];
@@ -1726,8 +1880,10 @@ function initSocketIO(_io) {
             }
         });
 
-
-
+        // Eine Homematic Servicemeldung bestätigen
+        socket.on('alarmReceipt', function (id) {
+            regahss.script("dom.GetObject("+id+").AlReceipt();");
+        });
 
         socket.on('setState', function(arr, callback) {
             // Todo Delay!
@@ -1806,7 +1962,11 @@ function restartAdapter(adapter) {
         default:
             logger.info("ccu.io        killing adapter "+adapter);
 
-            childrenAdapter[adapter].process.kill();
+            try {
+                childrenAdapter[adapter].process.kill();
+            } catch (e) {
+
+            }
             setTimeout(function (_path, _adapter) {
                 logger.info("ccu.io        starting adapter "+_path);
                 childrenAdapter[_adapter] = childProcess.fork(_path);
@@ -1824,7 +1984,7 @@ function startAdapters () {
     }
     var i = 0;
     for (adapter in settings.adapters) {
-        if (!settings.adapters[adapter].enabled) {
+        if (!settings.adapters[adapter] || !settings.adapters[adapter].enabled) {
             continue;
         }
         //logger.info("ccu.io        found adapter "+adapter);

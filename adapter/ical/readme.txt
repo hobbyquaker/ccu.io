@@ -9,21 +9,42 @@ Es werden 2 Variablen angelegt
 - iCalReadTrigger
 - iCalEvents
 
-Die Variable iCalReadTrigger dient zum Triggern des Einlesevorgangs. In den Settings kann eine defaultURL hintelegt werden, von welcher der Kalender eingelesen wird. 
+Die Variable iCalReadTrigger dient zum Triggern des Einlesevorgangs. 
+In den Settings können mehrere URLs hinterlegt werden, von welchen der Kalender eingelesen wird.  Die Kalender werden dann nacheinander eingelesen und das Ergebnis zusammengefasst.
 Alternativ kann dem Lesebefehl auch eine URL mitgegeben werden, um z.B. zeitweilig einen anderen Kalender einzulesen.
 
-- zum Einlesen von der defaultURL muss der String "read" in die Variable iCalReadTrigger geschrieben werden.
+- zum Einlesen von den defaultURLs muss der String "read" in die Variable iCalReadTrigger geschrieben werden.
 - zum Einlesen von einer beliebigen URL muss der String "readURL <URL>" in die Variable iCalReadTrigger geschrieben werden.
 
 Das Ergebnis liefert der iCal Adapter in die Variable iCalEvents.
 
-Alternativ kann der Adapter auch automatisch in einem definierbaren Intervall den Kalender abfragen (nur mit der defaultURL). Dazu in den Settings mit der Variablen runEveryMinutes das Abfrageintervall (in Minuten) einstellen.
+Alternativ kann der Adapter auch automatisch in einem definierbaren Intervall die Kalender abfragen (nur mit der defaultURL). Dazu in den Settings mit der Variablen runEveryMinutes das Abfrageintervall (in Minuten) einstellen.
 
 Das automatische Einlesen kann durch schreiben des Strings "stop" on die Variable iCalReadTrigger gestoppt und mit "start" wieder gestartet werden. 
 
-In den Settings wird durch die Angabe der "preview" Option festgelegt wie viele Tage im voraus Termine mit einbezogen werden, also z.B. durch die Angabe der Zahl "2" werden Termine von heute und morgen angezeigt. Durch Angabe der "1" werden nur Termine vom heutigen Tag angezeigt.
+Bedeutung der Optionen im Konfigfile:
 
-Mit der Option „colorize“ wird der Termin am Tag vor dem Ereignis gelb gefärbt und beim aktuellen Tag rot gefärbt. Die Option debug schreibt mehr Informationen in das CCU.IO LogFile.
+- "firstID": 80100 legt fest ab welcher ID die Datenpunkte des iCal Adapters starten
+- "preview" : 7 heisst, dass Termine 7 Tage im voraus angezeigt werden
+- "runEveryMinutes": 30 bedeutet dass der Adapter automatisch alle 30min den Kalender neu einliesst. Bei 0 wird nicht automatisch eingelesen
+- "colorize": true Termine am heutigen Tag werden rot gefärbt, Termine am morgigen Tag orange, diese Option überstimmt die Option everyCalOneColor
+- "debug": false bei true werden werden erweiterte Ausgaben ins CCU.IO Log geschrieben
+- "defColor": "white" legt die Standardfarbe der Kalendereinträge fest 
+- "fulltime": " " legt fest durch welchen String bei ganztägigen Terminen die Uhrzeit 00:00 ersetzt wird. Bei Leerzeichen (zwischen den Hochkommas) wird dir Uhrzeit bei ganztägigen Terminen weggelassen
+- "replaceDates": true Bei true wird bei heutigen Terminen das heutige Datum durch den String todayString ersetzt (z.B. "Heute"). Bei morgigen Terminen durch den String tomorrowString
+- "everyCalOneColor": " false Bei true wird bei mehreren Kalendern jeder Kalender in einer festzulegenden Farbe eingefärbt. Ist die Option colorize gesetzt, funktioniert dies nicht!
+- "Calendar1": {
+	"calURL": "http://11111.ics", URL des Kalenders
+	"calColor": "white" Farbe des Kalenders, wenn die Option "everyCalOneColor" gesetzt ist
+   } es können beliebig viele Kalender eingetragen werden. Im Standard Konfigfile sind 2 Kalender eingetragen.
+
+
+Durch Anpassen der dashui-user.css können die Styles von heutigen (Standard rot) und morgigen Terminen (Standard Orange) festegelegt werden:
+iCalWarn (Zeilenanfang Kalendereintrag heute)
+iCalPreWarn (Zeilenanfang Kalendereintrag morgen)
+iCalNormal (Zeilenende von heute)
+iCalNormal2 (Zeilenende von morgen)
+
 
 Kalender:
 =========
@@ -45,4 +66,5 @@ Zum Einbinden eines Google Kalenders muss die Kalendereinstellung des Google Kal
 Diese URL dann entweder in den Settings bei defaultURL eintragen, oder sie bei "read URL" angeben, also z.B. "readURL https://www.google.com/calendar/ical/xxxxxxxx/basic.ics".
 
 
-Known BUGS: zur Zeit werden ganztägige Termine macnhmal nicht angezeigt, nur Termine mit einer Uhrzeit.
+Known BUGS: Probleme mit gleichen UUIDs von iCal Einträgen (bedingt durch Bibliothek)
+

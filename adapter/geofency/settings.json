@@ -3,6 +3,7 @@
     "firstId": 70060,
     "settings": {
         "port": 7999,
+        "ssl": false,
         "user": "geo",
         "pass": "geo",
         "devices": [

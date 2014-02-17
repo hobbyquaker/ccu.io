@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.10*
+*aktuelle Version: 1.0.25*
 
 ## Dokumentation
 
@@ -10,12 +10,25 @@ siehe http://ccu.io/
 
 ## Todo/Roadmap
 
-* Script-Engine Addins
 * adapter/skeleton-ipc.js
-* RPI Adapter: 1-Wire Unterstützung
+* Prozesse überwachen (und evtl abgestürzte Adapter/Script-Engine neu starten?)
+* Log über Weboberfläche ansehen (tail)
+* Logrotate für ccu.io.log
+* settings.html für diverse Adapter
+* diverse Adapter auf ipc umstellen?
+* Pushover Callbacks (Nachrichten bestätigen, callback Methode aufrufen)
+* Weboberfläche Ladeanzeige
+* Weboberfläche Datenpunkte anlegen, löschen
+* Weboberfläche Devices in Baumstruktur anzeigen
+* Weboberfläche Objekte neu laden wenn CCU.IO neue Objekte von Adaptern/Scripts erhalten hat
+* Persistente Objekte in regaIndex aufnehmen!
 * ArtNet (DMX) Adapter
+* Rocket LED Adapter
+* iTunes Adapter
+* Script-Engine Addins (von Addons "mitgebrachte" Methoden)?
 * Anymote Adapter (control Google TV)
 * Doku, Doku, Doku
+* CMS für Homepage?
 * CCU2-Paket für einfache Installation
 * .msi für einfache Installation unter Windows (ccu.io als Service registrieren)
 * .pkg für einfache Installation unter Mac OS X
@@ -23,6 +36,122 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.25
+* (Hobbyquaker) loadTranslation (stringtable) an neue CCU2-Firmware angepasst
+* (Hobbyquaker) Loader für CCU.IO Oberfläche
+* (Hobbyquaker) Bugfix Addon-Update-Check
+* (Hobbyquaker) neue Methode alarmReceipt (bestätigen von Servicemeldungen)
+* (Anli) Adapter Fritzbox: Standard-IP von 192.168.1.1 auf fritz.box geändert - so sollte das bei den Standard-Homeinstallationen out-of-the-box funktionieren
+* (Anli) Adapter Fritzbox: mehr Infos bei Nichtverbindung des Fritzbox Adapters (Hinweis zu Aktivierung Anrufmonitor)
+* (Anli) Adapter Fritzbox: kleinere syntaktische Fehlerkorrekturen
+* (Thorque) Script-Engine: Adding device, url and url_title to pushover notifications
+* (Vader722) now waiting for callback before displaying Calendar instead of fixed Timer
+* (Vader722) processing [val] statement in ev.summarys
+* (Vader722) fixed bug when dates starting before today
+
+### 1.0.24
+* (Hobbyquaker) Script-Engine: implemented method execCmd()
+* (Hobbyquaker) Adapter ping: setState by ID
+* (Hobbyquaker) added jQuery 1.11.0 to lib
+* (Thorque) Adapter yamaha: Fixing useless error message
+* (Vader722) Adapter iCal: ignoring dates without startdate
+* (Vader722) Adapter iCal: new Functions: OneColor per Calendar, Replacing Date with "Today" "Tomorrow"
+* (online-junkie) using adm-zip module für update-self.js and update-addon.js - should fix update problems
+
+### 1.0.23
+* (Hobbyquaker) reverted Thorques "Clean dependencies"
+
+
+### 1.0.22
+* (Thorque) Clean dependencies
+* (Vader722) Adapter iCal: now unlimited Calendars possible
+
+
+### 1.0.21
+* (BlueEssi) Adapter Denon: settings.html hinzugefügt
+* (Hobbyquaker) SimpleAPI getBulk liefert nun auch Timestamps zurück und kann Datenpunkte auch über Namen adressieren
+* (Hobbyquaker) SimpleAPI neue Methode toggle
+
+### 1.0.20
+* (BlueEssi) Neuer Adapter: Denon
+* (Bluefox) Adapter SayIt: Clear value after saying it.
+* (Bluefox) http server: cache maxAge 1y
+* (Bluefox) Adapter Ping: fix
+* (Hobbyquaker) Adapter rpi: setObjects _persistent
+
+### 1.0.19
+* (Hobbyquaker) Bugfix Script-Engine getState()
+* (Hobbyquaker) Bugfix Adapter start
+* (Hobbyquaker) Log invalid Rega responses
+* (Hobbyquaker) Adapter dream: removed merge conflict
+* (Thorque) Adding an analyzer script to get the basic status of the Yamaha AV receiver
+* (Smiling-Jack) Linktrack support for addon updates
+
+### 1.0.18
+* (Hobbyquaker) Bugfix SlimUI Install
+
+### 1.0.17
+* (Hobbyquaker) neue SimpleAPI Methode: getBulk
+* (Hobbyquaker) SlimUI zu Addon-Install hinzugefügt
+* (Hobbyquaker) Bugfix: Adapter-Restart wenn Beenden des Prozesses fehlschlägt
+* (Bluefox) Add /lang/lang.js to get CCU.IO language
+* (Bluefox) Translate jsGrid
+* (Thorque) Refactored yamaha adapter. Contains now out of a service with a small api and some tests.
+
+### 1.0.16
+* (Eisbaeeer) Node Modul piface-node hinzugefügt
+* (Hobbyquaker) Bugfix: Encoding von Datenpunkt-Namen
+
+### 1.0.15
+* (Hobbyquaker) Bugfix File Uploads via https
+* (Hobbyquaker) Update Highstock 1.3.9
+* (Eisbaeeer) Adapter Onkyo: Update 0.9.2
+
+### 1.0.14
+* (Bluefox) Backup über Weboberfläche
+* (Bluefox) Mehrsprachigkeit
+* (Bluefox) diverse Änderungen/Neuerungen/Bugfixes Adapter Sonos, SayIt, LGTV, Fritzbox, Ping
+* (BasGo) Adapter Dreambox v0.8
+* (Vader722) Adapter iCal: Style-Anpassungen
+* (Eisbaeeer) Adapter rpi: Unterstützung für PiFace
+* (Thorque) Neuer Adapter: yamaha (AV-Receiver)
+* (Hobbyquaker) Neuer Adapter: growl
+
+### 1.0.13
+* (Eisbaeeer) adapter Onkyo: Added array to command variable, major changes to variables (split to feedback and set variables)
+* (Eisbaeeer) adapter Onkyo: Small bugfix setVar, Remove function to empty set var
+* (Vader722) adapter iCal: bugfix for fulltime dates
+* (Vader722) adapter iCal: new code for processing dates, now full-time dates working
+* (BasGo) adapter Dreambox: fixed issue that some objects are stored
+* (BasGo) adapter Dreambox: fixed error and added documentation
+* (BasGo) adapter Dreambox: fixed bool recognition for openwebif
+* (BasGo) adapter Dreambox: multiple boxes and some small fixes
+
+### 1.0.12
+* (Bluefox) new listen adapter (not finished yet)
+* (Bluefox) new textCommand adapter (not finished yet)
+* (Bluefox) Add hmSelectDialog to www/lib/js
+* (Bluefox) Listen and textCommand adapters improving. (not yet finished)
+* (Bluefox) Changes for sayIt and listen adapters.
+* (Bluefox) Add cache properties for Web Server of ccu.io.js
+* (Bluefox) Remove warnings if security for non SSL enabled
+* (Bluefox) Adapter Fritzbox: Add HTML table for missed calls
+* (Bluefox) Adapter Fritzbox: Add new data point ringing number.
+* (Bluefox) Adapter Fritzbox: Add description for RINGING_NUMBER.
+* (Bluefox) Edit adapter_ids.txt
+
+### 1.0.11
+* (Hobbyquaker) Adapter rpi: Standalone-Modus
+* (Hobbyquaker) Adapter rpi: Datenpunkte für RAM und Swap Usage
+* (Hobbyquaker) Adapter rpi: Unterstützung für 1-Wire Temperatur-Sensoren
+* (Hobbyquaker) Neue Socket.IO Methode "log" für standalone-adapter logging
+* (Vader722) Adapter iCal: now reading up to 3 calendar, custom font color, changeable fulltime
+* (Vader722) Adapter iCal: fixed syntax
+* (Vader722) Adapter iCal: another syntax fix
+* (Vader722) Adapter iCal: logging in case of error
+* (BasGo) added new adapters for Dreambox and Fritzbox
+* (Eisbaeeer) Adapter Onkyo: Added array to command variable, major changes to variables (split to feedback and set variables)
 
 ### 1.0.10
 * (Hobbyquaker) Neuer Adapter: Telnet-Client
@@ -383,7 +512,7 @@ siehe http://ccu.io/
 
 ## Lizenz
 
-Copyright (c) 2013 hobbyquaker [http://hobbyquaker.github.io](http://hobbyquaker.github.io)
+Copyright (c) 2013-2014 hobbyquaker [http://hobbyquaker.github.io](http://hobbyquaker.github.io)
 
 Lizenz: [CC BY-NC 3.0](http://creativecommons.org/licenses/by-nc/3.0/de/)
 
