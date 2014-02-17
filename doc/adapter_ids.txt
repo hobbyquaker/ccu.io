@@ -41,8 +41,6 @@
 
 73200-73295                     Fritz.box! call monitor adapter
 
-73300-73395                     dreamBox adapter
-
 80000-?                         itrans adapter
 
 80100-?                         iCal adapter
@@ -57,6 +55,8 @@
 80000-?                         IRTrans adapter
 
 90000-90549                     hue adapter
+
+95100-95105                     openweathermap adapter
 
 95100-?                         dreambox adapter
 
