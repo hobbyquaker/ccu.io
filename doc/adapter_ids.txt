@@ -58,6 +58,8 @@
 
 90000-90549                     hue adapter
 
+95100-95105                     openweathermap adapter
+
 95100-?                         dreambox adapter
 
 96000-?                         Growl adapter

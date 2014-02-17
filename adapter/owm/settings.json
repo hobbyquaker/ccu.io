@@ -1,0 +1,10 @@
+{
+    "enabled": true,
+    "mode": "periodical",
+    "period": 20,
+    "settings": {
+        "cityCode": 2950159,
+        "firstId": 95000,
+        "debugEnabled": true
+    }
+}
