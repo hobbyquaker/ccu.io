@@ -1140,7 +1140,7 @@ $(document).ready(function () {
 
     function restartAdapter(adapter) {
         socket.emit("restartAdapter", adapter, function (res) {
-            showMessage (res);
+            showMessage(res);
         });
     }
 
@@ -1152,7 +1152,12 @@ $(document).ready(function () {
 
 
         socket.emit("readFile", "adapter-"+adapter+".json", function (data) {
-            $("#adapter_config_json").html(JSON.stringify(data, null, "    "));
+            try {
+                $("#adapter_config_json").html(JSON.stringify(data, null, "    "));
+            } catch (e) {
+                $("#adapter_config_json").html("{}");
+                showMessage("Error: reading adapter config - invalid JSON");
+            }
             currentAdapterSettings = data;
             socket.emit("readRawFile", "adapter/"+adapter+"/settings.html", function (content) {
                 $("#adapter_loading").hide();
@@ -1180,23 +1185,23 @@ $(document).ready(function () {
             });
             return true;
         } catch (e) {
-            showMessage ("Error: invalid JSON");
+            showMessage("Error: invalid JSON");
             return false;
         }
     }
 
-    function showMessage (text, caption) {
+    function showMessage(text, caption) {
         if (!text) {
             $('#dialogModal').dialog("close");
             return;
         }
-        $('#dialogModal').show ();
-        $('#dialogModal').html ("<p>"+translateWord (text) +"</p>").attr('title', translateWord (caption || "Message"));
+        $('#dialogModal').show();
+        $('#dialogModal').html("<p>"+translateWord (text) +"</p>").attr('title', translateWord (caption || "Message"));
         $( "#dialogModal" ).dialog({
             height: 200,
             modal: true,
             buttons: {
-                "Ok": function() {
+                "Ok": function () {
                     $( this ).dialog( "close" );
                 }
             }
