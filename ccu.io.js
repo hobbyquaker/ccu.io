@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.25";
+settings.version = "1.0.26";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -1682,10 +1682,7 @@ function initSocketIO(_io) {
         });
 
         socket.on('getNextId', function (start, callback) {
-            while (regaObjects[start]) {
-                start++;
-            }
-            callback(start);
+            callback(nextId(start));
         });
 
         socket.on('getSettings', function (callback) {
@@ -1738,17 +1735,23 @@ function initSocketIO(_io) {
             });
         });
 
-        function nextEnumId() {
-            var id = 66000;
+        function nextId(id) {
+            var id = id || 100000;
             while (regaObjects[id]) {
                 id += 1;
             }
             return id;
         }
 
-        socket.on('setObject', function(id, obj, callback) {
+        function setObject(id, obj, callback) {
             if (!obj) {
                 return;
+            }
+            if (obj._findNextId) {
+                delete obj._findNextId;
+                while (regaObjects[id]) {
+                    id += 1;
+                }
             }
             if (obj.rooms) {
                 for (var i = 0; i < obj.rooms.length; i++) {
@@ -1761,7 +1764,7 @@ function initSocketIO(_io) {
                     } else if (regaIndex.Name[obj.rooms[i]] && regaIndex.Name[obj.rooms[i]][1] == "ENUM_ROOMS") {
                         roomId = regaIndex.Name[obj.rooms[i]][0];
                     } else {
-                        roomId = nextEnumId();
+                        roomId = nextId(66000);
                         regaIndex.ENUM_ROOMS.push(roomId);
                         if (!regaIndex.Name[obj.rooms[i]]) {
                             regaIndex.Name[obj.rooms[i]] = [
@@ -1793,7 +1796,7 @@ function initSocketIO(_io) {
                     } else if (regaIndex.Name[obj.funcs[i]] && regaIndex.Name[obj.funcs[i]][1] == "ENUM_FUNCTIONS") {
                         funcId = regaIndex.Name[obj.funcs[i]][0];
                     } else {
-                        funcId = nextEnumId();
+                        funcId = nextId(66000);
                         regaIndex.ENUM_FUNCTIONS.push(funcId);
                         if (!regaIndex.Name[obj.funcs[i]]) {
                             regaIndex.Name[obj.funcs[i]] = [
@@ -1825,7 +1828,7 @@ function initSocketIO(_io) {
                     } else if (regaIndex.Name[obj.favs[i]] && regaIndex.Name[obj.favs[i]][1] == "FAVORITE") {
                         favId = regaIndex.Name[obj.favs[i]][0];
                     } else {
-                        favId = nextEnumId();
+                        favId = nextId(66000);
                         regaIndex.FAVORITE.push(favId);
                         if (!regaIndex.Name[obj.favs[i]]) {
                             regaIndex.Name[obj.favs[i]] = [
@@ -1876,12 +1879,15 @@ function initSocketIO(_io) {
             regaObjects[id] = obj;
 
             if (callback) {
-                callback();
+                callback(id);
             }
-        });
+        }
+
+        socket.on('setObject', setObject);
 
         // Eine Homematic Servicemeldung bestätigen
         socket.on('alarmReceipt', function (id) {
+            logger.verbose("rega          alarmReceipt "+id+" "+regaObjects[id].Name);
             regahss.script("dom.GetObject("+id+").AlReceipt();");
         });
 
