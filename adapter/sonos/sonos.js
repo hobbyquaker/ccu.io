@@ -129,7 +129,7 @@ ccu_socket.on('event', function (obj) {
                 player.mute (false);
             }
         }
-        else (id == dev.DPs.FAVORITE_SET) {
+        else if (id == dev.DPs.FAVORITE_SET) {
             player.replaceWithFavorite(val, function (success) {
                 if (success) player.play();
             });
@@ -145,7 +145,13 @@ function stop() {
     logger.info("adapter sonos  terminating");
 
     if (sonosSettings.webserver.enabled) {
-        sonosSocket.server.close();
+        try {
+            sonosSocket.server.close();
+        }
+        catch (e)
+        {
+            logger.warn ("Cannot stop sonos webserver:"+ e.toString());
+        }
     }
 
     setTimeout(function () {
@@ -216,8 +222,8 @@ function takeSonosState (ip, ids, sonosState) {
     }
     // elapsed time
     setState (ids.DPs.CURRENT_ALBUM,   sonosState.currentTrack.album);
-    setState (ids.DPs.CURRENT_TITLE,   sonosState.currentTrack.title);
     setState (ids.DPs.CURRENT_ARTIST,  sonosState.currentTrack.artist);
+    setState (ids.DPs.CURRENT_TITLE,   sonosState.currentTrack.title);
     setState (ids.DPs.CURRENT_DURATION,sonosState.currentTrack.duration);
     setState (ids.DPs.CURRENT_DURATION_S, toFormattedTime(sonosState.currentTrack.duration));
     setState (ids.DPs.CURRENT_COVER,   "http://"+settings.binrpc.listenIp+":"+sonosSettings.webserver.port + sonosState.currentTrack.albumArtURI);
