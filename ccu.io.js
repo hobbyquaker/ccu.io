@@ -1666,8 +1666,8 @@ function initSocketIO(_io) {
                         callback(body);
                     });
                 }).on('error', function(e) {
-                        logger.error("ccu.io        GET "+url+" "+ e.message);
-                    });
+                    logger.error("ccu.io        GET "+url+" "+ e.message);
+                });
             }
         });
 
