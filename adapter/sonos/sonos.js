@@ -532,8 +532,10 @@ if (sonosSettings.webserver.enabled) {
                 }, function (res2) {
                     console.log(res2.statusCode);
                     if (res2.statusCode == 200) {
-                        var cacheStream = fs.createWriteStream(fileName);
-                        res2.pipe(cacheStream);
+                        if (!fs.exists(fileName)) {
+             				var cacheStream = fs.createWriteStream(fileName);
+             				res2.pipe(cacheStream);
+           				} else { res2.resume(); }
                     } else if (res2.statusCode == 404) {
                         // no image exists! link it to the default image.
                         console.log(res2.statusCode, 'linking', fileName)
@@ -598,13 +600,13 @@ if (sonosSettings.webserver.enabled) {
             if (!player) return;
 
             // invoke action
-            console.log(data)
+            //console.log(data)
             player.groupSetVolume(data.volume);
         });
 
         socket.on('group-management', function (data) {
             // find player based on uuid
-            console.log(data)
+            //console.log(data)
             var player = discovery.getPlayerByUUID(data.player);
             if (!player) return;
 
@@ -617,7 +619,7 @@ if (sonosSettings.webserver.enabled) {
         });
 
         socket.on('play-favorite', function (data) {
-            console.log(data)
+            //console.log(data)
             var player = discovery.getPlayerByUUID(data.uuid);
             if (!player) return;
 
@@ -659,7 +661,7 @@ if (sonosSettings.webserver.enabled) {
         });
 
 		socket.on('group-mute', function (data) {
-			console.log(data)
+			//console.log(data)
 			var player = discovery.getPlayerByUUID(data.uuid);
 			player.groupMute(data.mute);
 		});
@@ -728,7 +730,10 @@ discovery.on('mute', function (data) {
 });
 
 function loadQueue(uuid, socket) {
+	console.time('loading-queue');
+	var maxRequestedCount = 600;
     function getQueue(startIndex, requestedCount) {
+    	console.log('getqueue', startIndex, requestedCount);
         var player = discovery.getPlayerByUUID(uuid);
         player.getQueue(startIndex, requestedCount, function (success, queue) {
             if (!success) return;
@@ -741,19 +746,21 @@ function loadQueue(uuid, socket) {
             }
 
             if (queue.startIndex + queue.numberReturned < queue.totalMatches) {
-                getQueue(queue.startIndex + queue.numberReturned, 100);
+                getQueue(queue.startIndex + queue.numberReturned, maxRequestedCount);
+       		} else {
+         		console.timeEnd('loading-queue');
             }
         });
     }
 
     if (!queues[uuid]) {
-        getQueue(0, 100);
+        getQueue(0, maxRequestedCount);
     } else {
         var queue = queues[uuid];
         queue.numberReturned = queue.items.length;
         socket.emit('queue', {uuid: uuid, queue: queue});
         if (queue.totalMatches > queue.items.length) {
-            getQueue(queue.items.length, 100);
+            getQueue(queue.items.length, maxRequestedCount);
         }
     }
 }
