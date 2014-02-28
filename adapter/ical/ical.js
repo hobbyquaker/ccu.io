@@ -2,12 +2,10 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
- *      Version 1.0
+ *      Version 1.1
  *
- *      + now waiting for callback before displaying Calendar instead of fixed Timer
- *      + processing [val] statement in ev.summarys
- *      + fixed bug when dates starting before today
- *
+ *      + checking predefined Events and set variable when desired
+ *      + hiding Event when desired
  */
 
 var settings = require(__dirname+'/../../settings.js');
@@ -56,6 +54,11 @@ var suffix;
 
 var calCol;
 var runningParser = new Array();
+var eventsDP = new Array();
+var processedEvents = new Array();
+
+//Start bei firstID + 10
+var dpId = icalSettings.firstId + 10;
 
 
 if (settings.ioListenPort) {
@@ -119,6 +122,19 @@ socket.on('event', function (obj) {
 							readOne(content[1]);
 						}
 					}
+                    //Test
+                    if (content[0] == "check") {
+                        if (content[1] != "") {
+                            logger.info("adapter ical checking: " + content[1]);
+                            checkForEvents(content[1]);
+                        }
+                    }
+                    if (content[0] == "readAll") {
+                        if (content[1] != "") {
+                            logger.info("adapter ical readAll ");
+                            readAll();
+                        }
+                    }
 				}
 		}
 });
@@ -152,7 +168,7 @@ function checkiCal(loc,col,count,cb) {
            logger.info("adapter ical processing URL: " + opts+ " "+ loc);
             //Variable ablöschen
             setState(icalSettings.firstId + 1, "");
-           /* for (var k in data) {
+         /* for (var k in data) {
              if (data.hasOwnProperty(k)) {
              var value = data[k];
              console.log("property name is " + k + " value is " + value);
@@ -206,7 +222,15 @@ function checkiCal(loc,col,count,cb) {
                                     ev.end.setMonth(dates[i].getMonth());
                                     ev.end.setFullYear(dates[i].getFullYear());
                                     //Termin auswerten
-                                    checkDates(ev,endpreview,heute,tomorrow,realnow," rrule ",col);
+                                    if (ev.exdate) {
+                                        //Wenn es exdate
+                                        if (ev.exdate != heute) {
+                                            checkDates(ev,endpreview,heute,tomorrow,realnow," rrule ",col);
+                                        }
+                                    } else {
+                                        checkDates(ev,endpreview,heute,tomorrow,realnow," rrule ",col);
+                                    }
+
                                 }
                             } else {
                                 if (debug) {logger.info("Keine RRule Termine innerhalb des Zeitfensters");}
@@ -249,9 +273,16 @@ function checkDates(ev,endpreview,heute,tomorrow,realnow,rule,col) {
         if ((ev.start < endpreview && ev.start >= heute) || (ev.end > heute && ev.end <= endpreview)) {
             var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
             colorizeDates(ev,heute,tomorrow,col);
+            //Nur ganztägige Termine werden gefprüft
+            var display = checkForEvents(betreff,heute,ev,true,realnow);
             var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + betreff;
-            if (debug) {logger.info("Termin (ganztägig) hinzugefügt : " +rule + betreff + " am " + singleDate);}
-            arrDates.push(singleDate);
+            //Nur hinzufügen wenn gewünscht
+            if (display) {
+                arrDates.push(singleDate);
+                if (debug) {logger.info("Termin (ganztägig) hinzugefügt : " +rule + betreff + " am " + singleDate);}
+            } else {
+                if (debug) {logger.info("Termin (ganztägig) nicht dargestellt, da in Events nicht gewünscht :" +betreff)}
+            }
         } else {
             //Termin ausserhalb des Zeitfensters
             if (debug) {logger.info("Termin (ganztägig)" + rule +  betreff + " am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
@@ -262,10 +293,16 @@ function checkDates(ev,endpreview,heute,tomorrow,realnow,rule,col) {
         if ((ev.start >= heute && ev.start < endpreview && ev.end >= realnow) || (ev.end >= realnow && ev.end <= endpreview) ) {
           //  logger.info("Termin mit Uhrzeit: " +rule + ev.start + " end: " + ev.end + " realnow:" +realnow);
             var MyTimeString = ('0' + ev.start.getHours()).slice(-2) + ':' + ('0' + (ev.start.getMinutes())).slice(-2);
+            var display = checkForEvents(betreff,heute,ev,false,realnow);
             colorizeDates(ev,heute,tomorrow,col);
             var singleDate = prefix + ev.start.getDate() + "." + (ev.start.getMonth() + 1) + "." + ev.start.getFullYear() + " " + MyTimeString + suffix + " " + betreff;
-            if (debug) {logger.info("Termin mit Uhrzeit hinzugefügt : "+rule + betreff + " am " + singleDate);}
-            arrDates.push(singleDate);
+            //Nur hinzufügen wenn gewünscht
+            if (display) {
+                arrDates.push(singleDate);
+                if (debug) {logger.info("Termin mit Uhrzeit hinzugefügt : "+rule + betreff + " am " + singleDate);}
+            } else {
+                if (debug) {logger.info("Termin nicht dargestellt, da in Events nicht gewünscht :" +betreff)}
+            }
         } else {
             //Termin ausserhalb des Zeitfensters
             if (debug) {logger.info("Termin " + betreff + rule +" am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
@@ -308,6 +345,125 @@ function colorizeDates(ev,heute,tomorrow,col) {
             prefix = normal;
             suffix = normal2;
         }
+    }
+}
+
+function checkForEvents(betreff,heute,ev,ft,realnow) {
+    var id;
+    //unbekannte Events darstellen
+    var rv = true;
+
+    // Schauen ob es ein Event in der Tabelle gibt
+    for (var counter in eventsDP) {
+        if (betreff.search(new RegExp(eventsDP[counter]["Event"], 'g')) > -1) {
+            id = eventsDP[counter]["ID"];
+            //auslesen ob das Event angezeigt werden soll
+            rv = eventsDP[counter]["display"];
+            if (debug) {logger.info("found Event in Table: " + eventsDP[counter]["Event"] + " " + id);}
+
+
+            if (ft) {
+                //Ganztägige Termine
+                //Nur weitermachen wenn der Termin heute ist
+                if ((ev.start <= heute) && (ev.end >= heute)) {
+                    //merken welche Events wir bearbeitet haben
+                    processedEvents.push(betreff);
+                    //Wenn schon bearbeitet
+                    if (eventsDP[counter]["processed"]) {
+                        //nix tun
+                        if (debug) {
+                            logger.info("Event schon bearbeitet");
+                        }
+                    } else {
+                        //Ansonsten bearbeiten
+                        eventsDP[counter]["processed"] = true;
+                        eventsDP[counter]["state"] = true;
+                        logger.info("Setze ID: " + id + " auf true");
+                        setState(id, true);
+                    }
+                }
+            } else {
+                //Termine mit Uhrzeit
+                //Nur weitermachen wenn der Termin aktuell gültig ist
+                console.log("Termin mit Uhrzeit:" + ev.start + " " + realnow + " " + ev.end);
+                if ((ev.start <= realnow) && (ev.end >= realnow)) {
+                    //if ((ev.start >= heute && ev.start < endpreview && ev.end >= realnow) || (ev.end >= realnow && ev.end <= endpreview) ) {
+                    //merken welche Events wir bearbeitet haben
+                    processedEvents.push(betreff);
+                    //Wenn schon bearbeitet
+                    if (eventsDP[counter]["processed"]) {
+                        //nix tun
+                        if (debug) {
+                            logger.info("Event schon bearbeitet");
+                        }
+                    } else {
+                        //Ansonsten bearbeiten
+                        eventsDP[counter]["processed"] = true;
+                        eventsDP[counter]["state"] = true;
+                        logger.info("Setze ID: " + id + " auf true");
+                        setState(id, true);
+                    }
+                }
+            }
+        }
+    }
+    return rv;
+}
+
+function pastprocessEvents() {
+    // Tabelle durchgehen
+    var found = false;
+    for (var counter in eventsDP) {
+        if (eventsDP[counter]["processed"]) {
+            //Dieses Element wurde bearbeitet --> nun schauen ob es auch in diesem Durchlauf noch vorhanden war
+            for (var i in processedEvents) {
+                if (processedEvents[i].search(new RegExp(eventsDP[counter]["Event"], 'g')) > -1) {
+                //if (processedEvents[i] == eventsDP[counter]["Event"]) {
+                    found = true;
+                }
+            }
+            if (found) {
+                //Alles gut, Element noch da
+            } else {
+                //Nein, also Event vorbei --> Variable auf false
+                eventsDP[counter]["processed"] = false;
+                eventsDP[counter]["state"] = false;
+                var id = eventsDP[counter]["ID"];
+                logger.info("Setze ID: " + id + " auf false");
+                setState(id,false);
+            }
+       }
+    }
+    //Abgearbeitet --> Array löschen
+    processedEvents.length = 0;
+}
+
+function createEventsDP() {
+    var id;
+    var found = false;
+    var eintrag;
+
+    //In den Settings schauen ob es ein Event gibt
+    for (var ev in icalSettings["Events"]) {
+        //Anlegen in CCU.IO
+        setObject(dpId , {
+            Name: ev,
+            TypeName: "VARDP"
+        });
+        //console.log("yo:" + icalSettings["Events"][ev]["enabled"]);
+        if(icalSettings["Events"][ev]["enabled"]) {
+            //Anlegen in interner Liste
+            var evDP = new Object();
+            evDP["Event"] = ev;
+            evDP["ID"] = dpId;
+            evDP["processed"] = false;
+            evDP["state"] = false;
+            evDP["display"] = icalSettings["Events"][ev]["display"];
+            eventsDP.push(evDP);
+            //Beim start alle ablöschen
+            setState(dpId,false);
+        }
+        dpId += 1;
     }
 }
 
@@ -372,6 +528,8 @@ function displayDates() {
     if (arrDates.length > 0) {
         setState(icalSettings.firstId + 1, brSeparatedList(arrDates,today,tomorrow));
     }
+    //Am Ende schauen ob Events vorbei sind
+    pastprocessEvents();
 }
 
 function parseDate(input) {
@@ -478,13 +636,14 @@ function iCalInit() {
 	
 	setState(icalSettings.firstId, "");
 	setState(icalSettings.firstId + 1, "");
+
+    createEventsDP();
 	
 	  logger.info("adapter ical objects inserted, starting at: "+icalSettings.firstId);
 
     if (icalSettings.runEveryMinutes > 0) {
-        //Autostart --> first read in 30sec
-       // setTimeout(function() {checkiCal(icalSettings.defURL)},4000);
-	   setTimeout(readAll,4000);
+        //Autostart --> first read in 4sec
+	    setTimeout(readAll,4000);
         //now schedule
         var runeveryminutes = icalSettings.runEveryMinutes * 60000;
         logger.info("adapter ical autorun every " + icalSettings.runEveryMinutes + " Minutes");
@@ -497,3 +656,4 @@ function iCalInit() {
 logger.info("adapter ical start");
 
 iCalInit();
+

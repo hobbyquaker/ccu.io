@@ -37,7 +37,12 @@ Bedeutung der Optionen im Konfigfile:
 	"calURL": "http://11111.ics", URL des Kalenders
 	"calColor": "white" Farbe des Kalenders, wenn die Option "everyCalOneColor" gesetzt ist
    } es können beliebig viele Kalender eingetragen werden. Im Standard Konfigfile sind 2 Kalender eingetragen.
-
+- "Events": {
+                "Urlaub": {
+                    "enabled": true, # legt fest, ob das Event bearbeitet wird
+                    "display": false # legt fest, ob das Event auch in dem iCalEvents angezeigt wird, oder nur ausgewertet wird
+                }
+            } Durch setzen eines Events (in diesem Beispiel „Urlaub“), werden die Kalender nach dem String „Urlaub“ durchsucht. Sollte ein Termin am heutigen Tage (ganztägige Termine) oder zur aktuellen Uhrzeit mit dem Stichwort „Urlaub“ in einem Kalender stehen, so wird automatisch eine Variable mit dem Namen Urlaub auf True gesetzt. Ist der Termin vorbei, wird die Variable wieder auf false gesetzt. Die Variablen werden automatisch ab der Adresse 80110 angelegt. Achtung ! Es wird nach einem Substring gesucht, d.h. ein Eintrag im Kalender „Urlaub“ wird genauso erkannt wie ein Eintrag „Urlaub Eltern“. Dies ist beim festlegen der Ereignisse zu berücksichtigen. 
 
 Durch Anpassen der dashui-user.css können die Styles von heutigen (Standard rot) und morgigen Terminen (Standard Orange) festegelegt werden:
 iCalWarn (Zeilenanfang Kalendereintrag heute)
@@ -66,5 +71,5 @@ Zum Einbinden eines Google Kalenders muss die Kalendereinstellung des Google Kal
 Diese URL dann entweder in den Settings bei defaultURL eintragen, oder sie bei "read URL" angeben, also z.B. "readURL https://www.google.com/calendar/ical/xxxxxxxx/basic.ics".
 
 
-Known BUGS: Probleme mit gleichen UUIDs von iCal Einträgen (bedingt durch Bibliothek)
+Known BUGS: Probleme mit gleichen UUIDs von iCal Einträgen (bedingt durch Bibliothek); sich wiederholende Termine, in welchen einzelne Termine ausgenommen werden funktionieren nicht. Die Bibliothek verarbeitet keine EXDATES.
 
