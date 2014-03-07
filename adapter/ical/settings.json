@@ -21,6 +21,13 @@
 					"calURL": "http://22222.ics",
 					"calColor": "grey"
 				}
-			}
+			},
+            "Events": {
+                "Urlaub": {
+                    "enabled": true,
+                    "display": false
+                }
+            }
+
 		}
 }	
