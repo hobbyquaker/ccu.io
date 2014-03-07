@@ -23,15 +23,21 @@
 72970-72999                     textCommand adapter
 73000-73099                     lirc adapter
 73100-73199                     telnet-client adapter
+
 !  73200-73295                     Fritz.box! call monitor adapter
 !  73200-73500                     lgtv adapter
 !  73300-?                         onkyo adapter
+
 
 80000-?                         itrans adapter
 80100-?                         iCal adapter
 
 90000-90549                     hue adapter
+
 !  95100-?                         dreambox adapter
+!  95100-95105                     openweathermap adapter
+
+
 96000-?                         Growl adapter
 
 100000-299999                   reserviert für eigene Scripte
