@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.25*
+*aktuelle Version: 1.0.26*
 
 ## Dokumentation
 
@@ -36,6 +36,12 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.26
+* (Hobbyquaker) nextId, getNextId
+* (Hobbyquaker) setObject: neues Attribut _findNextId
+* (Hobbyquaker) Indexing of persistent objects
+
 
 ### 1.0.25
 * (Hobbyquaker) loadTranslation (stringtable) an neue CCU2-Firmware angepasst

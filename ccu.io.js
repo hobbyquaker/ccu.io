@@ -2186,8 +2186,27 @@ function savePersistentObjects() {
 }
 function loadPersistentObjects() {
     try {
-        var x = fs.readFileSync(settings.datastorePath+"io-persistent-objs.json");
-        regaObjects = JSON.parse(x);
+        var x = JSON.parse(fs.readFileSync(settings.datastorePath+"io-persistent-objs.json"));
+        for (var obj in x) {
+            if (obj.TypeName) {
+                if (!regaIndex[obj.TypeName]) {
+                    regaIndex[obj.TypeName] = [];
+                }
+                if (regaIndex[obj.TypeName].indexOf(id) == -1) {
+                    regaIndex[obj.TypeName].push(id);
+                }
+            }
+
+            if (obj.Name) {
+                regaIndex.Name[obj.Name] = [id, obj.TypeName, obj.Parent];
+            }
+
+            if (obj.Address) {
+                regaIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
+            }
+
+        }
+        regaObjects = x;
         logger.info("ccu.io        loaded persistent objects");
         return true;
     } catch (e) {

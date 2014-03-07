@@ -1,7 +1,7 @@
-66000-66100                     virtuelle Räume und Gewerke
+66000-66199                     virtuelle Favoriten, Räume und Gewerke
 
+69800-69998                     DashUI Instanzvariablen
 69999                           CCU.IO language
-
 70000                           yr adapter - Wettervorhersage von yr.no 48h Tabelle HTML
 70001                           yr adapter - Regen 24h
 70002                           yr adapter - Regen 48h
@@ -11,57 +11,28 @@
 70006                           yr adapter - max Temp 48h
 
 70045-70049                     muell_stuttgart adapter
-
 70050-70059                     dwd adapter
-
 70060-70099                     Geofency Adapter
-
 70100-70999                     ping adapter
-
 71000-71255                     rego adapter
 
 72000-72499                     sonos adapter
-
-<<<<<<< HEAD
 72500-72899                     rpi adapter
-
 72900-72949                     sayIt adapter
-
 72950-72969                     listen adapter
-
 72970-72999                     textCommand adapter
-
-73200-73500                     lgtv adapter
-
 73000-73099                     lirc adapter
-
 73100-73199                     telnet-client adapter
-
-73300-?                         onkyo adapter
-
-73200-73295                     Fritz.box! call monitor adapter
-
-73300-73395                     dreamBox adapter
+!  73200-73295                     Fritz.box! call monitor adapter
+!  73200-73500                     lgtv adapter
+!  73300-?                         onkyo adapter
 
 80000-?                         itrans adapter
-
 80100-?                         iCal adapter
-=======
-72500-72550                     rpi adapter
-
-72900                           sayIt trigger
-72901                           sayIt text: Write this variable with text to say
-72902-72920                     sayIt reserved
->>>>>>> vader722-master
-
-80000-?                         IRTrans adapter
 
 90000-90549                     hue adapter
-
-95100-?                         dreambox adapter
-
+!  95100-?                         dreambox adapter
 96000-?                         Growl adapter
-
 
 100000-299999                   reserviert für eigene Scripte
 
