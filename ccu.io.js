@@ -301,7 +301,8 @@ function sendEvent(arr) {
 }
 
 function setDatapoint(id, val, ts, ack, lc) {
-    if (!regaReady) { return; }
+
+    if (id < 65535 && !regaReady) { return; }
     // unescape HomeMatic Script WriteURL()
     if (typeof val == "string") {
         val = unescape(val);
@@ -1666,8 +1667,8 @@ function initSocketIO(_io) {
                         callback(body);
                     });
                 }).on('error', function(e) {
-                        logger.error("ccu.io        GET "+url+" "+ e.message);
-                    });
+                    logger.error("ccu.io        GET "+url+" "+ e.message);
+                });
             }
         });
 

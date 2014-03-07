@@ -1,8 +1,8 @@
 /**
  *      CCU.IO Sonos Adapter
- *      12'2013 Bluefox
+ *      12'2013-2014 Bluefox
  *
- *      Version 0.1
+ *      Version 0.2
  *      party derived from https://github.com/jishi/node-sonos-web-controller by Jimmy Shimizu
  */
 var settings = require(__dirname+'/../../settings.js');
@@ -70,7 +70,7 @@ ccu_socket.on('event', function (obj) {
     if (!dev)
         return;
 
-    // We can control CONTROL, STATE, VOLUME and MUTE
+    // We can control CONTROL, STATE, FAVORITE_SET, VOLUME and MUTE
     var val = obj[1];
     var ts  = obj[2];
     var ack = obj[3];
@@ -129,6 +129,11 @@ ccu_socket.on('event', function (obj) {
                 player.mute (false);
             }
         }
+        else if (id == dev.DPs.FAVORITE_SET) {
+            player.replaceWithFavorite(val, function (success) {
+                if (success) player.play();
+            });
+        }
         else
             logger.warn("adapter sonos  try to control unknown id "+id);
     }
@@ -140,7 +145,13 @@ function stop() {
     logger.info("adapter sonos  terminating");
 
     if (sonosSettings.webserver.enabled) {
-        sonosSocket.server.close();
+        try {
+            sonosSocket.server.close();
+        }
+        catch (e)
+        {
+            logger.warn ("Cannot stop sonos webserver:"+ e.toString());
+        }
     }
 
     setTimeout(function () {
@@ -211,8 +222,8 @@ function takeSonosState (ip, ids, sonosState) {
     }
     // elapsed time
     setState (ids.DPs.CURRENT_ALBUM,   sonosState.currentTrack.album);
-    setState (ids.DPs.CURRENT_TITLE,   sonosState.currentTrack.title);
     setState (ids.DPs.CURRENT_ARTIST,  sonosState.currentTrack.artist);
+    setState (ids.DPs.CURRENT_TITLE,   sonosState.currentTrack.title);
     setState (ids.DPs.CURRENT_DURATION,sonosState.currentTrack.duration);
     setState (ids.DPs.CURRENT_DURATION_S, toFormattedTime(sonosState.currentTrack.duration));
     setState (ids.DPs.CURRENT_COVER,   "http://"+settings.binrpc.listenIp+":"+sonosSettings.webserver.port + sonosState.currentTrack.albumArtURI);
@@ -223,6 +234,15 @@ function takeSonosState (ip, ids, sonosState) {
     setState (ids.DPs.VOLUME,          sonosState.volume);
     if (sonosState.groupState)
         setState (ids.DPs.MUTED,       sonosState.groupState.mute);
+}
+
+function takeSonosFavorites (ip, ids, favorites) {
+	var sFavorites = "";
+	for (var favorite in favorites){
+		sFavorites = ((sFavorites) ? ", ": "") + favorites[favorite].title;
+	};
+	
+    setState (ids.DPs.FAVORITES, sFavorites);
 }
 
 function processSonosEvents (event, data) {
@@ -253,6 +273,15 @@ function processSonosEvents (event, data) {
                 setState (ids.DPs.MUTED,  data.groupState.mute);
                 ids.uuid = s;
             }
+        }
+    } else
+    if (event == "favorites") {
+        // Go through all players
+        for (var uuid in discovery.players) {
+			var ids = devices[discovery.players[uuid].address];
+        	if (ids) {
+            	takeSonosFavorites (devices[discovery.players[uuid].address], ids, data);
+    	 	}
         }
     }
     else
@@ -292,7 +321,9 @@ function sonosInit () {
                 CONTROL:           dp+9,
                 ALIVE:             dp+10,
                 ELAPSED_TIME:      dp+11,
-                ELAPSED_TIME_S:    dp+12
+                ELAPSED_TIME_S:    dp+12,
+                FAVORITES:         dp+13,
+                FAVORITE_SET:      dp+14
             }
         };
 
@@ -421,7 +452,22 @@ function sonosInit () {
             Value:        "00:00",
             Parent:       chnDp
         });
-
+        setObject(devices[ip].DPs.FAVORITES, {
+            Name:         chObject.Address+".FAVORITES",
+            ValueType:    20,
+            ValueSubType: 11,
+            TypeName:     "HSSDP",
+            Value:        "",
+            Parent:       chnDp
+        });
+        setObject(devices[ip].DPs.FAVORITE_SET, {
+            Name:         chObject.Address+".FAVORITE_SET",
+            ValueType:    20,
+            ValueSubType: 11,
+            TypeName:     "HSSDP",
+            Value:        "",
+            Parent:       chnDp
+        });
         i++;
     }
 
@@ -469,6 +515,7 @@ if (sonosSettings.webserver.enabled) {
                 }
             }
 
+			fs.exists = fs.exists || require('path').exists;
             fs.exists(fileName, function (exists) {
                 if (exists) {
                     var readCache = fs.createReadStream(fileName);
@@ -485,8 +532,10 @@ if (sonosSettings.webserver.enabled) {
                 }, function (res2) {
                     console.log(res2.statusCode);
                     if (res2.statusCode == 200) {
-                        var cacheStream = fs.createWriteStream(fileName);
-                        res2.pipe(cacheStream);
+                        if (!fs.exists(fileName)) {
+             				var cacheStream = fs.createWriteStream(fileName);
+             				res2.pipe(cacheStream);
+           				} else { res2.resume(); }
                     } else if (res2.statusCode == 404) {
                         // no image exists! link it to the default image.
                         console.log(res2.statusCode, 'linking', fileName)
@@ -551,13 +600,13 @@ if (sonosSettings.webserver.enabled) {
             if (!player) return;
 
             // invoke action
-            console.log(data)
+            //console.log(data)
             player.groupSetVolume(data.volume);
         });
 
         socket.on('group-management', function (data) {
             // find player based on uuid
-            console.log(data)
+            //console.log(data)
             var player = discovery.getPlayerByUUID(data.player);
             if (!player) return;
 
@@ -570,7 +619,7 @@ if (sonosSettings.webserver.enabled) {
         });
 
         socket.on('play-favorite', function (data) {
-            console.log(data)
+            //console.log(data)
             var player = discovery.getPlayerByUUID(data.uuid);
             if (!player) return;
 
@@ -612,7 +661,7 @@ if (sonosSettings.webserver.enabled) {
         });
 
 		socket.on('group-mute', function (data) {
-			console.log(data)
+			//console.log(data)
 			var player = discovery.getPlayerByUUID(data.uuid);
 			player.groupMute(data.mute);
 		});
@@ -681,7 +730,10 @@ discovery.on('mute', function (data) {
 });
 
 function loadQueue(uuid, socket) {
+	console.time('loading-queue');
+	var maxRequestedCount = 600;
     function getQueue(startIndex, requestedCount) {
+    	console.log('getqueue', startIndex, requestedCount);
         var player = discovery.getPlayerByUUID(uuid);
         player.getQueue(startIndex, requestedCount, function (success, queue) {
             if (!success) return;
@@ -694,19 +746,21 @@ function loadQueue(uuid, socket) {
             }
 
             if (queue.startIndex + queue.numberReturned < queue.totalMatches) {
-                getQueue(queue.startIndex + queue.numberReturned, 100);
+                getQueue(queue.startIndex + queue.numberReturned, maxRequestedCount);
+       		} else {
+         		console.timeEnd('loading-queue');
             }
         });
     }
 
     if (!queues[uuid]) {
-        getQueue(0, 100);
+        getQueue(0, maxRequestedCount);
     } else {
         var queue = queues[uuid];
         queue.numberReturned = queue.items.length;
         socket.emit('queue', {uuid: uuid, queue: queue});
         if (queue.totalMatches > queue.items.length) {
-            getQueue(queue.items.length, 100);
+            getQueue(queue.items.length, maxRequestedCount);
         }
     }
 }

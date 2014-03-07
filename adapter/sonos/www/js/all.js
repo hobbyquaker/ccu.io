@@ -77,17 +77,21 @@ socket.on('topology-change', function (data) {
 		Sonos.players[player.uuid] = player;
 		if (!Sonos.grouping[player.coordinator]) Sonos.grouping[player.coordinator] = [];
 		Sonos.grouping[player.coordinator].push(player.uuid);
-
-		// pre select a group
-		if (!Sonos.currentState.selectedZone) {
-			Sonos.currentState.selectedZone = player.coordinator;
-			// we need queue as well!
-			socket.emit('queue', {uuid:Sonos.currentState.selectedZone});
-			shouldRenderVolumes = true;
-		}
 	});
 
-	console.log(Sonos.grouping, Sonos.players);
+	console.log("topology-change", Sonos.grouping, Sonos.players);
+
+	// If the selected group dissappeared, select a new one.
+	if (!Sonos.grouping[Sonos.currentState.selectedZone]) {
+		// just get first zone available
+		for (var uuid in Sonos.grouping) {
+			Sonos.currentState.selectedZone = uuid;
+			break;
+		}
+		// we need queue as well!
+		socket.emit('queue', {uuid:Sonos.currentState.selectedZone});
+		shouldRenderVolumes = true;
+	}
 
 	if (shouldRenderVolumes) renderVolumes();
 
@@ -126,8 +130,8 @@ socket.on('group-mute', function (data) {
 
 socket.on('mute', function (data) {
 	var player = Sonos.players[data.uuid];
-	player.state.mute = data.state;
-	document.getElementById("mute-" + player.uuid).src = data.state ? 'svg/mute_on.svg' : 'svg/mute_off.svg';
+	player.state.mute = data.state.mute;
+	document.getElementById("mute-" + player.uuid).src = data.state.mute ? 'svg/mute_on.svg' : 'svg/mute_off.svg';
 });
 
 socket.on('favorites', function (data) {
@@ -281,26 +285,25 @@ document.getElementById('player-volumes-container').addEventListener('click', fu
 
 });
 
+document.getElementById("current-track-art").addEventListener('load', function (e) {
+	// new image loaded. update favicon
+	// This prevents duplicate requests!
+	console.log('albumart loaded', this.src)
+	var oldFavicon = document.getElementById("favicon");
+	var newFavicon = oldFavicon.cloneNode();
+	newFavicon.href = this.src;
+	newFavicon.type = "image/png";
+	oldFavicon.parentNode.replaceChild(newFavicon, oldFavicon);
+
+});
+
 ///
 /// ACTIONS
 ///
 
 function updateCurrentStatus() {
 	var selectedZone = Sonos.currentZoneCoordinator();
-	console.log("updating current", selectedZone)
 	document.getElementById("current-track-art").src =  selectedZone.state.currentTrack.albumArtURI;
-	// update favicon
-	var oldFavicon = document.getElementById("favicon");
-	var newFavicon = oldFavicon.cloneNode();
-	if (selectedZone.state.currentTrack.albumArtURI) {
-		newFavicon.href = selectedZone.state.currentTrack.albumArtURI;
-		newFavicon.type = "image/png";
-	} else {
-		newFavicon.href = "favicon.ico";
-		newFavicon.type = "image/x-icon";
-	}
-	oldFavicon.parentNode.replaceChild(newFavicon, oldFavicon);
-
 	document.getElementById('page-title').textContent = selectedZone.state.currentTrack.title + ' - Sonos Web Controller';
 	document.getElementById("track").textContent = selectedZone.state.currentTrack.title;
 	document.getElementById("artist").textContent = selectedZone.state.currentTrack.artist;

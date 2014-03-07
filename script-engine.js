@@ -707,6 +707,10 @@ function log(msg) {
 }
 
 function subscribe(pattern, callback) {
+	if (typeof pattern != "object") {
+		pattern = {id: pattern, change: "ne"};
+	}
+	
     scriptEngine.subscribers.push({
         pattern: pattern,
         callback: callback
