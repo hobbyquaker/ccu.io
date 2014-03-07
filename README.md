@@ -41,7 +41,12 @@ siehe http://ccu.io/
 * (Hobbyquaker) nextId, getNextId
 * (Hobbyquaker) setObject: neues Attribut _findNextId
 * (Hobbyquaker) Indexing of persistent objects
-
+* (BasGo) new adapter: OpenWeatherMap
+* (Bluefox) Enable CCU.IO without connection to CCU or configuration of CCU
+* (Bluefox) Simple syntax for subscribe
+* (Bluefox) Adapter Sonos improvements
+* (Vader722) Adapter iCal: Es können nun Termine im Kalender ausgewertet werden und Variablen in Abhängigkeit des Termins gesetzt werden
+* (Eisbaeeer) Adapter Onkyo: Version 0.9.4
 
 ### 1.0.25
 * (Hobbyquaker) loadTranslation (stringtable) an neue CCU2-Firmware angepasst
