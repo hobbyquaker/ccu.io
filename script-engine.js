@@ -802,7 +802,7 @@ function setObject(id, obj, callback) {
 }
 // read directory (root is www)
 function readdir(path, callback) {
-    scriptEngine.socket.emit("readdir", ["www"], function (data) {
+    scriptEngine.socket.emit("readdir", ["www" + ((!path) ? "" : "/" + path)], function (data) {
         if (callback) {
             callback(data);
         }
