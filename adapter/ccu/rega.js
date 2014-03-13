@@ -12,7 +12,7 @@
  */
 
 
-var logger = require(__dirname+'/logger.js'),
+var logger =  require(__dirname+'/../../logger.js'),
     http = require("http"),
     fs = require('fs'),
     xml2js = require('xml2js'),

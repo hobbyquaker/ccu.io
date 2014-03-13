@@ -1,7 +1,7 @@
 var daemon = require("daemonize2").setup({
-    main: "ccu.io.js",
-    name: "ccu.io",
-    pidfile: "ccu.io.pid"
+    main: "main.js",
+    name: "NodeControl",
+    pidfile: "main.pid"
 });
 
 var fs = require('fs');

@@ -343,6 +343,7 @@ $(document).ready(function () {
     socket.on ("readyBackup", function (name) {
         showMessage ();
         $('#createBackup').button( "option", "disabled", false);
+        $('#createBackupWithLog').button( "option", "disabled", false);
         location.replace(name);
     });
     socket.on ("applyReady", function (text) {
@@ -368,7 +369,6 @@ $(document).ready(function () {
             if (addon == "lib" || addon == "ccu.io" || addon == "index.html") { continue; }
 
             socket.emit("readJsonFile", "www/"+addon+"/io-addon.json", function(meta) {
-
                 if (meta) {
                     var hp = meta.urlHomepage.match(/[http|https]:\/\/(.*)/);
                     var dl = meta.urlDownload.match(/\/([^/]+)$/);
@@ -502,7 +502,13 @@ $(document).ready(function () {
     });
     $("#createBackup").button().css("width", 300).click(function () {
         $(this).button( "option", "disabled", true );
+        $('#createBackupWithLog').button( "option", "disabled", true );
         socket.emit('createBackup');
+    });
+    $("#createBackupWithLog").button().css("width", 300).click(function () {
+        $(this).button( "option", "disabled", true );
+        $("#createBackup").button( "option", "disabled", true );
+        socket.emit('createBackup', true);
     });
 
     $("#applyBackup").button().css("width", 300).click(function () {
@@ -542,7 +548,7 @@ $(document).ready(function () {
     });
 
     $("#restartRPC").button().css("width", 300).click(function () {
-        socket.emit('restartRPC');
+        socket.emit('ccuRestartRPC');
     });
 
     $("#reloadScriptEngine").button().css("width", 300).click(function () {
@@ -933,10 +939,6 @@ $(document).ready(function () {
             translateAll ($(this).val());
         });
 
-
-        $("#ccuIp").val(ccuIoSettings.ccuIp);
-        $("#binrpc_listenIp").val(ccuIoSettings.binrpc.listenIp);
-
         if (ccuIoSettings.stats) {
             $("#stats").attr("checked", true);
         } else {
@@ -991,50 +993,10 @@ $(document).ready(function () {
         } else {
             $("#useCache").removeAttr("checked");
         }
-
-        $("#binrpc_listenPort").val(ccuIoSettings.binrpc.listenPort);
-
-        if (ccuIoSettings.binrpc.rfdEnabled) {
-            $("#binrpc_rfdEnabled").attr("checked", true);
-        } else {
-            $("#binrpc_rfdEnabled").removeAttr("checked");
-        }
-        if (ccuIoSettings.binrpc.hs485dEnabled) {
-            $("#binrpc_hs485dEnabled").attr("checked", true);
-        } else {
-            $("#binrpc_hs485dEnabled").removeAttr("checked");
-        }
-        if (ccuIoSettings.binrpc.cuxdEnabled) {
-            $("#binrpc_cuxdEnabled").attr("checked", true);
-        } else {
-            $("#binrpc_cuxdEnabled").removeAttr("checked");
-        }
-        $("#binrpc_cuxdPort").val(ccuIoSettings.binrpc.cuxdPort);
-        if (ccuIoSettings.binrpc.checkEvents.enabled) {
-            $("#binrpc_checkEvents_enabled").attr("checked", true);
-        } else {
-            $("#binrpc_checkEvents_enabled").removeAttr("checked");
-        }
-        $("#binrpc_checkEvents_rfd").val(ccuIoSettings.binrpc.checkEvents.rfd);
-        $("#binrpc_checkEvents_hs485d").val(ccuIoSettings.binrpc.checkEvents.hs485d);
-
-        $("#regahss_pollDataInterval").val(ccuIoSettings.regahss.pollDataInterval);
-        $("#regahss_pollDataTrigger").val(ccuIoSettings.regahss.pollDataTrigger);
-        if (ccuIoSettings.regahss.pollData) {
-            $("#regahss_pollData").attr("checked", true);
-        } else {
-            $("#regahss_pollData").removeAttr("checked");
-        }
-
-
     }
-
-
 
     function saveSettings() {
         ccuIoSettings.language = $("#language").val();
-        ccuIoSettings.ccuIp = $("#ccuIp").val();
-        ccuIoSettings.binrpc.listenIp = $("#binrpc_listenIp").val();
 
         if ($("#stats").is(":checked")) {
             ccuIoSettings.stats = true;
@@ -1093,44 +1055,8 @@ $(document).ready(function () {
         } else {
             ccuIoSettings.useCache = false;
         }
-        ccuIoSettings.binrpc.listenPort = $("#binrpc_listenPort").val();
 
-        if ($("#binrpc_rfdEnabled").is(":checked")) {
-            ccuIoSettings.binrpc.rfdEnabled = true;
-        } else {
-            ccuIoSettings.binrpc.rfdEnabled = false;
-        }
-        if ($("#binrpc_hs485dEnabled").is(":checked")) {
-            ccuIoSettings.binrpc.hs485dEnabled = true;
-        } else {
-            ccuIoSettings.binrpc.hs485dEnabled = false;
-        }
-        if ($("#binrpc_cuxdEnabled").is(":checked")) {
-            ccuIoSettings.binrpc.cuxdEnabled = true;
-        } else {
-            ccuIoSettings.binrpc.cuxdEnabled = false;
-        }
-        ccuIoSettings.binrpc.cuxdPort = $("#binrpc_cuxdPort").val();
-        if ($("#binrpc_checkEvents_enabled").is(":checked")) {
-            ccuIoSettings.binrpc.checkEvents.enabled = true;
-        } else {
-            ccuIoSettings.binrpc.checkEvents.enabled = false;
-        }
-        ccuIoSettings.binrpc.checkEvents.rfd = $("#binrpc_checkEvents_rfd").val();
-        ccuIoSettings.binrpc.checkEvents.hs485d = $("#binrpc_checkEvents_hs485d").val();
 
-        ccuIoSettings.regahss.pollDataInterval = $("#regahss_pollDataInterval").val();
-        ccuIoSettings.regahss.pollDataTrigger = $("#regahss_pollDataTrigger").val();
-        if ($("#regahss_pollData").is(":checked")) {
-            ccuIoSettings.regahss.pollData = true;
-        } else {
-            ccuIoSettings.regahss.pollData = false;
-        }
-        if ($("#regahss_pollDataTriggerEnabled").is(":checked")) {
-            ccuIoSettings.regahss.pollDataTriggerEnabled = true;
-        } else {
-            ccuIoSettings.regahss.pollDataTriggerEnabled = false;
-        }
         var settingsWithoutAdapters = JSON.parse(JSON.stringify(ccuIoSettings));
         delete settingsWithoutAdapters.adapters;
         socket.emit("writeFile", "io-settings.json", settingsWithoutAdapters, function () {
@@ -1153,7 +1079,7 @@ $(document).ready(function () {
 
         socket.emit("readFile", "adapter-"+adapter+".json", function (data) {
             try {
-                $("#adapter_config_json").html(JSON.stringify(data, null, "    "));
+            $("#adapter_config_json").html(JSON.stringify(data, null, "    "));
             } catch (e) {
                 $("#adapter_config_json").html("{}");
                 showMessage("Error: reading adapter config - invalid JSON");

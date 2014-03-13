@@ -1,7 +1,7 @@
 /**
  *      CCU.IO
  *
- *      Socket.IO based HomeMatic Interface
+ *      Socket.IO based Home Automation Interface
  *
  *      Copyright (c) 2013 http://hobbyquaker.github.io
  *
@@ -11,6 +11,11 @@
  *
  */
 
+// Keep WebStorm satisfied
+if (typeof __dirname == "undefined") {
+    var __dirname = "";
+}
+
 var settings = require(__dirname+'/settings.js');
 
 settings.version = "1.0.26";
@@ -18,24 +23,8 @@ settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
 
-settings.regahss.metaScripts = [
-    "favorites",
-    "variables",
-    "programs",
-    "rooms",
-    "functions",
-    "devices",
-    "channels",
-    "datapoints",
-    "alarms"
-];
-
-
-
 var fs =        require('fs'),
     logger =    require(__dirname+'/logger.js'),
-    binrpc =    require(__dirname+"/binrpc.js"),
-    rega =      require(__dirname+"/rega.js"),
     express =   require('express'),
     http =      require('http'),
     https =     require('https'),
@@ -52,20 +41,20 @@ var fs =        require('fs'),
     io,
     ioSsl,
     devlogCache = [],
-    notFirstVarUpdate = false,
     children = [],
     childrenAdapter = {},
     timerAdapter = {},
     childScriptEngine,
-    pollTimer,
-    ccuReachable = false,
-    ccuRegaUp = false,
     webserverUp = false,
     initsDone = false,
     extDone = false,
-    lastEvents = {},
     authHash = "";
 
+/** @namespace settings.logging.enabled */
+/** @namespace settings.logging.file */
+/** @namespace settings.logging.move */
+/** @namespace settings.logging.varChangeOnly */
+/** @namespace settings.logging.writeInterval */
 
 if (settings.ioListenPort) {
     app =  express();
@@ -74,7 +63,7 @@ if (settings.ioListenPort) {
         app.use(express.basicAuth(settings.authentication.user, settings.authentication.password));
     }
 
-    server =    require('http').createServer(app)
+    server =    require('http').createServer(app);
 }
 
 // Create md5 hash of user and password
@@ -104,57 +93,11 @@ if (settings.ioListenPortSsl) {
     }
 }
 
-if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
-    setInterval(function () {
-        if (initsDone && ccuRegaUp) {
-            var now = Math.floor((new Date()).getTime() / 1000);
-            var check = now - settings.binrpc.checkEvents.testAfter;
-            var reinit = now - settings.binrpc.checkEvents.reinitAfter;
-            for (var i = 0; i < settings.binrpc.inits.length; i++) {
-                var init = settings.binrpc.inits[i];
-                if (lastEvents[init.id] < reinit) {
-
-                    if (settings.binrpc.checkEvents.testTrigger[init.id]) {
-                        logger.warn("binrpc    --> re-init "+init.id);
-
-                        homematic.request(init.port, "init", ["xmlrpc_bin://"+settings.binrpc.listenIp+":"+settings.binrpc.listenPort,init.id], function(data, name) {
-                            if (data === "") {
-                                logger.info("binrpc    <-- init on "+name+" successful");
-                                lastEvents[init.id] = Math.floor((new Date()).getTime() / 1000);
-                            } else {
-                                logger.error("binrpc    <-- init on "+name+" failure");
-                            }
-                        });
-
-                    } else {
-                        logger.warn("binrpc        checkEvent.trigger undefined for "+init.id);
-                    }
-
-                } else if (lastEvents[init.id] < check) {
-                    logger.verbose("binrpc        checking init "+init.id);
-                    if (settings.binrpc.checkEvents.testTrigger[init.id]) {
-                        var id = regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]][0];
-                        regahss.script("dom.GetObject("+id+").State(true);");
-                    } else {
-                        logger.warn("binrpc        checkEvent.trigger undefined for "+init.id);
-                    }
-                } else {
-                    logger.verbose("binrpc        init "+init.id+" ok - last event "+(now-lastEvents[init.id])+"s ago");
-                }
-            }
-        }
-
-        updateStatus();
-
-    }, (settings.binrpc.checkEvents.interval * 1000));
-}
-
 var socketlist = [],
-    homematic,
     stringtable = {},
     datapoints = {},
-    regaObjects = {},
-    regaIndex = {
+    ctrlObjects = {},
+    ctrlIndex = {
         Name: {},
         Address: {},
         ENUM_ROOMS: [],
@@ -168,88 +111,31 @@ var socketlist = [],
         ALARMDP: [],
         PROGRAM: []
 
-    },
-    regaReady = false;
+    };
 
-var ignoreNextUpdate = [];
-
-logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
-logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
+logger.info("node.control  starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
+logger.verbose("node.control  commandline "+JSON.stringify(process.argv));
 
 loadPersistentObjects();
 loadDatapoints();
 initWebserver();
+initExtensions();
 
 // Create language variable
 datapoints[69999] = [settings.language || 'en', formatTimestamp(), true];
-regaObjects[69999] = {Name:"SYSTEM.LANGUAGE", TypeName: "VARDP", DPInfo: "DESC", ValueType: 20, ValueSubType: 11};
-regaIndex.VARDP.push(69999);
-regaIndex.Name[69999] = [13305, "VARDP", null];
-
-var regahss = new rega({
-    ccuIp: settings.ccuIp,
-    ready: function(err) {
-        if (err == "ReGaHSS down") {
-            logger.error("rega          ReGaHSS down");
-            ccuReachable = true;
-            ccuRegaUp = false;
-            if (io) {
-                io.sockets.emit("regaDown");
-            }
-            if (ioSsl) {
-                ioSsl.sockets.emit("regaDown");
-            }
-            initExtensions();
-            updateStatus();
-            tryReconnect();
-        } else if (err == "CCU unreachable") {
-            logger.error("ccu.io        CCU unreachable");
-            ccuReachable = false;
-            ccuRegaUp = false;
-            if (io) {
-                io.sockets.emit("ccuDown");
-            }
-            if (ioSsl) {
-                ioSsl.sockets.emit("ccuDown");
-            }
-            initExtensions();
-            updateStatus();
-            tryReconnect();
-        } else {
-            logger.info("rega          ReGaHSS up");
-            ccuReachable = true;
-            ccuRegaUp = true;
-
-            regahss.loadStringTable(settings.stringTableLanguage, function (data) {
-                stringtable = data;
-                regahss.checkTime(loadRegaData);
-
-            });
-
-            updateStatus();
-
-
-        }
-    }
-});
+ctrlObjects[69999] = {Name:"SYSTEM.LANGUAGE", TypeName: "VARDP", DPInfo: "DESC", ValueType: 20, ValueSubType: 11};
+ctrlIndex.VARDP.push(69999);
+ctrlIndex.Name[69999] = [13305, "VARDP", null];
+var staties = {};
 
 function updateStatus () {
-    var status = {
-        ccuReachable: ccuReachable,
-        ccuRegaUp: ccuRegaUp,
-        ccuRegaData: regaReady,
-        initsDone: initsDone
-    }
     if (io) {
-        io.sockets.emit("updateStatus", status);
+        io.sockets.emit("updateStatus", staties);
     }
     if (ioSsl) {
-        ioSsl.sockets.emit("updateStatus", status);
+        ioSsl.sockets.emit("updateStatus", staties);
     }
-
 }
-
-
 
 if (settings.logging.enabled) {
     setInterval(writeLog, settings.logging.writeInterval * 1000);
@@ -260,13 +146,9 @@ if (settings.logging.enabled) {
     }
 }
 
-
-
 var stats = {
     clients: 0,
-    cuxd: 0,
-    wired: 0,
-    rf: 0,
+    counters: {}, // counters in form {rx: 5, wired: 10}
     start: ((new Date()).getTime()),
     uptime: function() {
         var mseconds = ((new Date()).getTime()) - stats.start;
@@ -277,14 +159,17 @@ var stats = {
         return days+" Tage, "+(hours-1)+" Stunden, "+ diff.getMinutes()+" Minuten, "+diff.getSeconds()+" Sekunden";
     },
     log: function() {
-        logger.info("ccu.io stats  cuxd: "+(stats.cuxd/settings.statsIntervalMinutes).toFixed(0)+"msg/min, wired: "+(stats.wired/settings.statsIntervalMinutes).toFixed(0)+"msg/min, rf: "+(stats.rf/settings.statsIntervalMinutes).toFixed(0)+"msg/min");
+        for (var cnt in stats.counters) {
+            if (stats.counters[cnt].last === undefined) {
+                stats.counters[cnt].last = 0;
+            }
+            logger.info("ccu.io stats  "+cnt+": "+((stats.counters[cnt].value - stats.counters[cnt].last)/settings.statsIntervalMinutes).toFixed(0)+"msg/min");
+            stats.counters[cnt].last = stats.counters[cnt].value;
+        }
         logger.info("ccu.io stats  "+socketlist.length+" Socket.IO Clients connected");
         logger.verbose("ccu.io uptime "+stats.uptime());
-        stats.cuxd = 0;
-        stats.wired = 0;
-        stats.rf = 0;
     }
-}
+};
 
 if (settings.stats) {
     setInterval(stats.log, settings.statsIntervalMinutes * 60000);
@@ -301,9 +186,9 @@ function sendEvent(arr) {
 }
 
 function setDatapoint(id, val, ts, ack, lc) {
+    if (id < 65535 && !staties["ccuRegaData"]) { return; }
 
-    if (id < 65535 && !regaReady) { return; }
-    // unescape HomeMatic Script WriteURL()
+    // unescape Script WriteURL()
     if (typeof val == "string") {
         val = unescape(val);
     }
@@ -313,19 +198,15 @@ function setDatapoint(id, val, ts, ack, lc) {
 
     logger.verbose("setDatapoint "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
 
-
     if (!oldval) {
         // Neu
-        if (!regaObjects[id]) {
+        if (!ctrlObjects[id]) {
             logger.warn("rega      <-- unknown variable "+id);
         }
-        sendEvent(obj);
-
-
         datapoints[id] = [val,ts,ack,lc];
         obj = [id,val,ts,ack,lc];
-        sendEvent(obj);
-
+        sendEvent (obj);
+        devLog(ts, id, val);
     } else {
 
         // Änderung
@@ -341,386 +222,13 @@ function setDatapoint(id, val, ts, ack, lc) {
         if (val == oldval[0] && ack == oldval[2] && ts == oldval[1] && lc == oldval[3]) {
             // Keine Änderung
         } else {
-            sendEvent(obj);
+            // If log updates and changes or value really changed
+            if (!settings.logging.varChangeOnly || val != oldval[0]) {
+                devLog(ts, id, val);
+            }
+            sendEvent (obj);
         }
-
-        /*
-         if (ack && !oldval[2]) {
-         // Bestätigung
-         logger.info("ack "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
-         sendEvent(obj);
-         } else if (val != oldval[0]) {
-         // Änderung
-         logger.info("chg "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
-         sendEvent(obj);
-         } else if (ts !== oldval[1]) {
-         // Aktualisierung
-         logger.info("ts "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
-         sendEvent(obj);
-         } else {
-         // Keine Änderung
-         logger.info("eq "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
-         }
-         */
-
     }
-}
-
-function tryReconnect() {
-    if (regahss && regahss.options && regahss.options.ccuIp) {
-        logger.info("ccu.io        trying to reconnect to CCU");
-        request('http://'+regahss.options.ccuIp+'/ise/checkrega.cgi', function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                if (body == "OK") {
-                    logger.info("ccu.io        ReGaHSS up");
-                    ccuReachable = true;
-                    ccuRegaUp = true;
-                    updateStatus();
-                    reconnect();
-                } else {
-                    logger.error("ccu.io        ReGaHSS down");
-                    ccuRegaUp = false;
-                    updateStatus();
-                    setTimeout(tryReconnect, 10000);
-                }
-            } else {
-                logger.error("ccu.io        CCU unreachable");
-                ccuRegaUp = false;
-                ccuReachable = false;
-                updateStatus();
-                setTimeout(tryReconnect, 10000);
-
-            }
-        });
-    }
-
-}
-
-function reconnect() {
-
-    regahss.loadStringTable(settings.stringTableLanguage, function (data) {
-        stringtable = data;
-    });
-
-    if (initsDone) {
-        initsDone = false;
-        homematic.stopInits();
-        updateStatus();
-
-    }
-
-    regaReady = false;
-
-    updateStatus();
-    clearRegaData();
-    setTimeout(function () {
-        regahss.checkTime(function () {
-            loadRegaData(0, null, null, true);
-        });
-    }, 2500);
-
-}
-
-function pollRega() {
-    regahss.runScriptFile("polling", function (data) {
-        if (!data) {
-            ccuRegaUp = false;
-            tryReconnect();
-            return false;
-        }
-        var data = JSON.parse(data);
-        for (id in data) {
-            var val;
-
-            if (settings.logging.enabled) {
-                var ts = Math.round((new Date()).getTime() / 1000);
-                if (typeof data[id][0] == "string") {
-                    val = unescape(data[id][0]);
-                } else {
-                    val = data[id][0];
-                }
-
-                if (settings.logging.varChangeOnly && notFirstVarUpdate) {
-                    if (datapoints[id][0] != val || !datapoints[id][2]) {
-                        devLog(ts, id, val);
-                    }
-                } else {
-                    devLog(ts, id, val);
-                }
-                // Hat sich die Anzahl der Servicemeldungen geändert?
-                if (id == 41 && datapoints[id][0] != val) {
-                    pollServiceMsgs();
-                }
-            }
-            setDatapoint(id, data[id][0], formatTimestamp(), true, data[id][1]);
-        }
-        notFirstVarUpdate = true;
-        pollTimer = setTimeout(pollRega, settings.regahss.pollDataInterval);
-    });
-}
-
-function pollServiceMsgs() {
-    logger.info("ccu.io        polling service messages");
-    regahss.runScriptFile("alarms", function (data) {
-        if (!data) {
-            ccuRegaUp = false;
-            tryReconnect();
-            return false;
-        }
-        var data = JSON.parse(data);
-        var val;
-        for (id in data) {
-            var ts = Math.round((new Date()).getTime() / 1000);
-            devLog(ts, id, data[id].AlState);
-            setDatapoint(id, data[id].AlState, data[id].LastTriggerTime, true, data[id].AlOccurrenceTime);
-        }
-    });
-}
-
-function loadRegaData(index, err, rebuild, triggerReload) {
-    if (!index) { index = 0; }
-
-    var type = settings.regahss.metaScripts[index];
-    logger.info("rega          fetching "+type);
-    regahss.runScriptFile(type, function (data) {
-        var data = JSON.parse(data);
-        logger.info("ccu.io        indexing "+type);
-        var timestamp = formatTimestamp();
-        for (var id in data) {
-            var idInt = parseInt(id, 10);
-
-            // HomeMatic Script "WriteURL" dekodieren
-            for (var key in data[id]) {
-                // Nur Strings und auf keinen Fall Kanal- oder Datenpunkt-Arrays
-                if (typeof data[id][key] == "string" && key !== "Channels" && key !== "DPs") {
-                    data[id][key] = unescape(data[id][key]);
-                }
-                // Datenpunkt-Namen dekodieren
-                if (key == "DPs") {
-                    for (var subkey in data[id][key]) {
-                        var val = data[id][key][subkey];
-                        delete data[id][key][subkey];
-                        data[id][key][unescape(subkey)] = val;
-                    }
-                }
-            }
-
-            // Index erzeugen
-            if (type == "alarms") {
-                var TypeName = "ALDP";
-            } else {
-                var TypeName = data[id].TypeName;
-            }
-            // Typen-Index (einfach ein Array der IDs)
-            if (!regaIndex[TypeName]) {
-                regaIndex[TypeName] = [];
-            }
-            regaIndex[TypeName].push(idInt);
-            // Namens-Index
-            regaIndex.Name[data[id].Name] = [idInt, TypeName, data[id].Parent];
-            // ggf. Adressen-Index
-            if (data[id].Address) {
-                regaIndex.Address[data[id].Address] = [idInt, TypeName, data[id].Parent];
-            }
-
-            // ggf. Werte setzen
-            if (type == "variables") {
-                datapoints[id] = [data[id].Value, data[id].Timestamp, true, data[id].Timestamp];
-                // Werte aus data Objekt entfernen
-                delete data[id].Value;
-                delete data[id].Timestamp;
-            }
-            if (type == "datapoints") {
-                datapoints[id] = [data[id].Value, timestamp, true, data[id].Timestamp];
-                // Werte aus data Objekt entfernen
-                delete data[id].Value;
-                delete data[id].Timestamp;
-            }
-            if (type == "alarms") {
-
-                if (regaObjects[data[id].Parent]) {
-                    // ggf Kanal ergänzen
-                    if (!regaObjects[data[id].Parent].ALDPs) {
-                        regaObjects[data[id].Parent].ALDPs = {};
-                    }
-                    var tmpType = data[id].Name.split(".");
-                    tmpType = tmpType[1];
-                    regaObjects[data[id].Parent].ALDPs[tmpType] = parseInt(id, 10);
-                }
-
-                // Wert setzen
-                datapoints[id] = [data[id].AlState, data[id].LastTriggerTime, true, data[id].AlOccurrenceTime];
-                // Werte aus data Objekt entfernen
-                delete data[id].AlState;
-                delete data[id].LastTriggerTime;
-                delete data[id].AlOccurrenceTime;
-            }
-
-            if (data[id].ValueUnit && data[id].ValueUnit == "�C") {
-                data[id].ValueUnit = "°C";
-            }
-
-            // Meta-Daten setzen
-            regaObjects[id] = data[id];
-        }
-
-        index += 1;
-        if (index < settings.regahss.metaScripts.length) {
-            loadRegaData(index, null, rebuild);
-        } else {
-            regaReady = true;
-            initExtensions();
-            updateStatus();
-            if (rebuild) {
-                logger.info("rega          data succesfully reloaded");
-                logger.info("socket.io --> broadcast reload")
-                if (io) {
-                    io.sockets.emit("reload");
-                }
-                if (ioSsl) {
-                    ioSsl.sockets.emit("reload");
-                }
-
-            } else {
-                logger.info("rega          data succesfully loaded");
-            }
-
-            if (!rebuild) {
-                if (settings.regahss.pollData) {
-                    pollRega();
-                }
-                initRpc();
-                if (!webserverUp) {
-                    initWebserver();
-                }
-                if (triggerReload) {
-                    logger.info("socket.io --> broadcast reload")
-                    if (io) {
-                        io.sockets.emit("regaUp");
-                        io.sockets.emit("reload");
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("regaUp");
-                        ioSsl.sockets.emit("reload");
-                    }
-                }
-
-            }
-        }
-
-    });
-
-}
-
-function initRpc() {
-
-    for (var i = 0; i < settings.binrpc.inits.length; i++) {
-        lastEvents[settings.binrpc.inits[i].id] = Math.floor((new Date()).getTime() / 1000);
-    }
-
-    if (!homematic) {
-        homematic = new binrpc({
-            ccuIp: settings.ccuIp,
-            listenIp: settings.binrpc.listenIp,
-            listenPort: settings.binrpc.listenPort,
-            inits: settings.binrpc.inits,
-            methods: {
-                event: function (obj) {
-
-                    if (!regaReady) { return; }
-
-                    var timestamp = formatTimestamp();
-
-                    var bidcos;
-                    switch (obj[0]) {
-                        case "io_cuxd":
-                        case "CUxD":
-                            lastEvents.io_cuxd = Math.floor((new Date()).getTime() / 1000);
-                            stats.cuxd += 1;
-                            bidcos = "CUxD." + obj[1] + "." + obj[2];
-                            break;
-                        case "io_rf":
-                            lastEvents.io_rf = Math.floor((new Date()).getTime() / 1000);
-                            stats.rf += 1;
-                            bidcos = "BidCos-RF." + obj[1] + "." + obj[2];
-                            break;
-                        case "io_wired":
-                            lastEvents.io_wired = Math.floor((new Date()).getTime() / 1000);
-                            stats.wired += 1;
-                            bidcos = "BidCos-Wired." + obj[1] + "." + obj[2];
-                            break;
-                        default:
-                        //
-                    }
-
-                    if (settings.regahss.pollDataTriggerEnabled && bidcos == settings.regahss.pollDataTrigger) {
-                        clearTimeout(pollTimer);
-                        pollRega();
-                    }
-
-                    // STATE korrigieren
-                    if (obj[2] == "STATE") {
-                        if (obj[3] === "1" || obj[3] === 1) {
-                            obj[3] = true;
-                        } else if (obj[3] === "0" || obj[3] === 0) {
-                            obj[3] = false;
-                        }
-                    }
-
-                    // Get ReGa id
-                    var regaObj = regaIndex.Name[bidcos];
-
-                    if (regaObj && regaObj[0] && ignoreNextUpdate.indexOf(regaObj[0]) != -1) {
-                        logger.verbose("ccu.io        ignoring event dp "+regaObj[0]);
-                        ignoreNextUpdate.splice(ignoreNextUpdate.indexOf(regaObj[0]), 1);
-                        return;
-                    }
-
-                    // Logging
-                    if (regaObj && regaObj[0] && settings.logging.enabled) {
-                        if (!regaObjects[regaObj] || !regaObjects[regaObj].dontLog) {
-                            var ts = Math.round((new Date()).getTime() / 1000);
-                            devLog(ts, regaObj[0], obj[3]);
-                        }
-                    }
-
-                    if (regaObj && regaObj[0]) {
-                        var id = regaObj[0];
-                        var val = obj[3];
-                        logger.verbose("socket.io --> broadcast event "+JSON.stringify([id, val, timestamp, true]))
-                        var event = [id, val, timestamp, true, timestamp];
-
-                        if (datapoints[id]) {
-                            if (datapoints[id][0] != val) {
-                                // value changed
-                                datapoints[id] = [val, timestamp, true, timestamp];
-                            } else {
-                                // no change - keep LastChange
-                                datapoints[id] = [val, timestamp, true, datapoints[id][3]];
-                                event = [id, val, timestamp, true, datapoints[id][3]];
-                            }
-                        } else {
-                            datapoints[id] = [val, timestamp, true, timestamp];
-                        }
-                        if (io) {
-                            io.sockets.emit("event", event);
-                        }
-                        if (ioSsl) {
-                            ioSsl.sockets.emit("event", event);
-                        }
-
-                    }
-
-                    return "";
-                }
-            }
-        });
-    } else {
-        homematic.init();
-    }
-    initsDone = true;
-    updateStatus();
-
 }
 
 function uploadParser(req, res, next) {
@@ -759,30 +267,30 @@ function uploadParser(req, res, next) {
 
 function findDatapoint(needle, hssdp) {
     if (!datapoints[needle]) {
-        if (regaIndex.Name[needle]) {
+        if (ctrlIndex.Name[needle]) {
             // Get by Name
-            needle = regaIndex.Name[needle][0];
+            needle = ctrlIndex.Name[needle][0];
             if (hssdp) {
                 // Get by Name and Datapoint
-                if (regaObjects[needle].DPs) {
-                    return regaObjects[needle].DPs[hssdp];
+                if (ctrlObjects[needle].DPs) {
+                    return ctrlObjects[needle].DPs[hssdp];
                 } else {
                     return false;
                 }
             }
-        } else if (regaIndex.Address[needle]) {
-            needle = regaIndex.Address[needle][0];
+        } else if (ctrlIndex.Address[needle]) {
+            needle = ctrlIndex.Address[needle][0];
             if (hssdp) {
                 // Get by Channel-Address and Datapoint
-                if (regaObjects[needle].DPs && regaObjects[needle].DPs[hssdp]) {
-                    needle = regaObjects[needle].DPs[hssdp];
+                if (ctrlObjects[needle].DPs && ctrlObjects[needle].DPs[hssdp]) {
+                    needle = ctrlObjects[needle].DPs[hssdp];
                 }
             }
         } else if (needle.match(/[a-zA-Z-]+\.[0-9A-Za-z-]+:[0-9]+\.[A-Z_]+/)) {
             // Get by full BidCos-Address
             addrArr = needle.split(".");
-            if (regaIndex.Address[addrArr[1]]) {
-                needle = regaObjects[regaIndex.Address[addrArr[1]]].DPs[addArr[2]];
+            if (ctrlIndex.Address[addrArr[1]]) {
+                needle = ctrlObjects[ctrlIndex.Address[addrArr[1]]].DPs[addArr[2]];
             }
         } else {
             return false;
@@ -869,21 +377,21 @@ function restApi(req, res) {
                 response = {error: "no object/datapoint given"};
                 break;
             }
-            var dp = findDatapoint(tmpArr[1], tmpArr[2]);
-            if (!dp) {
+            var dp_ = findDatapoint(tmpArr[1], tmpArr[2]);
+            if (!dp_) {
                 response = {error: "object/datapoint not found"};
             } else {
                 status = 200;
-                response = {id:dp};
-                if (datapoints[dp]) {
-                    response.value = datapoints[dp][0];
-                    response.ack = datapoints[dp][2];
-                    response.timestamp = datapoints[dp][1];
-                    response.lastchange = datapoints[dp][3];
+                response = {id: dp_};
+                if (datapoints[dp_]) {
+                    response.value      = datapoints[dp_][0];
+                    response.ack        = datapoints[dp_][2];
+                    response.timestamp  = datapoints[dp_][1];
+                    response.lastchange = datapoints[dp_][3];
                 }
-                if (regaObjects[dp]) {
-                    for (var attr in regaObjects[dp]) {
-                        response[attr] = regaObjects[dp][attr];
+                if (ctrlObjects[dp_]) {
+                    for (var attr in ctrlObjects[dp_]) {
+                        response[attr] = ctrlObjects[dp_][attr];
                     }
                 }
             }
@@ -963,11 +471,11 @@ function restApi(req, res) {
                 response = {error: "no program given"};
             }
             var id;
-            if (regaIndex.Program && regaIndex.PROGRAM.indexOf(tmpArr[1]) != -1) {
+            if (ctrlIndex.Program && ctrlIndex.PROGRAM.indexOf(tmpArr[1]) != -1) {
                 id = tmpArr[1]
-            } else if (regaIndex.Name && regaIndex.Name[tmpArr[1]]) {
-                if (regaObjects[tmpArr[1]].TypeName == "PROGRAM") {
-                    id = regaIndex.Name[tmpArr[1]][0];
+            } else if (ctrlIndex.Name && ctrlIndex.Name[tmpArr[1]]) {
+                if (ctrlObjects[tmpArr[1]].TypeName == "PROGRAM") {
+                    id = ctrlIndex.Name[tmpArr[1]][0];
                 }
             }
             if (!id) {
@@ -979,11 +487,11 @@ function restApi(req, res) {
             }
             break;
         case "getIndex":
-            response = regaIndex;
+            response = ctrlIndex;
             status = 200;
             break;
         case "getObjects":
-            response = regaObjects;
+            response = ctrlObjects;
             status = 200;
             break;
         case "getDatapoints":
@@ -1048,9 +556,9 @@ function initWebserver() {
 
     if (appSsl) {
         if (settings.useCache) {
-            var oneYear = 30758400000;
-            appSsl.use('/', express.static(__dirname + '/www', { maxAge: oneYear }));
-            appSsl.use('/log', express.static(__dirname + '/log', { maxAge: oneYear }));
+            var oneYear_ = 30758400000;
+            appSsl.use('/', express.static(__dirname + '/www', { maxAge: oneYear_ }));
+            appSsl.use('/log', express.static(__dirname + '/log', { maxAge: oneYear_ }));
         }
         else {
             appSsl.use('/', express.static(__dirname + '/www'));
@@ -1098,27 +606,27 @@ function initWebserver() {
 
     }
     webserverUp = true;
-
-
-
 }
 
 function formatTimestamp() {
     var timestamp = new Date();
-    var ts = timestamp.getFullYear() + '-' +
+    return timestamp.getFullYear()                                + '-' +
         ("0" + (timestamp.getMonth() + 1).toString(10)).slice(-2) + '-' +
-        ("0" + (timestamp.getDate()).toString(10)).slice(-2) + ' ' +
-        ("0" + (timestamp.getHours()).toString(10)).slice(-2) + ':' +
-        ("0" + (timestamp.getMinutes()).toString(10)).slice(-2) + ':' +
+        ("0" + (timestamp.getDate()).toString(10)).slice(-2)      + ' ' +
+        ("0" + (timestamp.getHours()).toString(10)).slice(-2)     + ':' +
+        ("0" + (timestamp.getMinutes()).toString(10)).slice(-2)   + ':' +
         ("0" + (timestamp.getSeconds()).toString(10)).slice(-2);
-    return ts;
 }
 
 function programExecute(id, callback) {
-    logger.verbose("socket.io <-- programExecute");
-    regahss.script("Write(dom.GetObject("+id+").ProgramExecute());", function (data) {
-        if (callback) { callback(data); }
-    });
+    if (io) {
+        io.sockets.emit("ccuProgramExecute", id);
+    }
+    if (ioSsl) {
+        ioSsl.sockets.emit("ccuProgramExecute", id);
+    }
+    if (callback)
+        callback (id);
 }
 
 function setState(id,val,ts,ack, callback) {
@@ -1127,176 +635,163 @@ function setState(id,val,ts,ack, callback) {
         ts = formatTimestamp();
     }
 
-
-    // console.log("id="+id+" val="+val+" ts="+ts+" ack="+ack);
-    // console.log("datapoints[id][0]="+datapoints[id][0]);
-
-
     // If ReGa id (0-65534)
-    if (id < 65535) {
-        // Bidcos or Rega?
-        /*
-        if (regaIndex.HSSDP.indexOf(id) != -1) {
-            // Set State via xmlrpc_bin
-            var name = regaObjects[id].Name;
-            var parts = name.split(".");
-            var iface = parts[0],
-                port = homematic.ifacePorts[iface],
-                channel = parts[1],
-                dp = parts[2];
-            // TODO BINRPC FLOAT....?
-            homematic.request(port, "setValue", [channel, dp, val.toString()]);
-            logger.info("BINRPC setValue "+channel+dp+" "+val);
-        } else { */
-            // Set State via ReGa
-            var xval;
-            if (typeof val == "string") {
-                xval = "'" + val.replace(/'/g, '"') + "'";
-            } else {
-                xval = val;
-            }
-            var script = "Write(dom.GetObject("+id+").State("+xval+"));";
-
-            regahss.script(script, function (data) {
-                //logger.verbose("rega      <-- "+data);
-                if (callback) {
-                    callback(data);
-                }
-            });
-
-        //}
-
-        // Bei Update von Thermostaten den nächsten Event von SET_TEMPERATURE und CONTROL_MODE ignorieren!
-        if (regaObjects[id] && regaObjects[id].Name) {
-
-            if (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/) || regaObjects[id].Name.match(/SETPOINT$/)) {
-                var parent = regaObjects[regaObjects[id].Parent];
-                var setTemp = parent.DPs.SET_TEMPERATURE;
-                var ctrlMode = parent.DPs.CONTROL_MODE;
-                if (ignoreNextUpdate.indexOf(setTemp) == -1) {
-                    ignoreNextUpdate.push(setTemp);
-                }
-                if (ignoreNextUpdate.indexOf(ctrlMode) == -1) {
-                    ignoreNextUpdate.push(ctrlMode);
-                }
-                logger.verbose("ccu.io        ignoring next update for "+JSON.stringify(ignoreNextUpdate));
-            }
+    if (id < 65535 && !ack) {
+        if (io) {
+            io.sockets.emit("ccuSetState", id,val,ts,ack);
         }
-
+        if (ioSsl) {
+            ioSsl.sockets.emit("ccuSetState", id,val,ts,ack);
+        }
     }
 
-    setDatapoint(id, val, ts, ack);
-
+    setDatapoint (id, val, ts, ack);
 
     // Virtual Datapoint
     if (id > 65535) {
-        var uxTime = Math.round((new Date()).getTime() / 1000);
        // cacheLog(uxTime+" "+id+" "+JSON.stringify(val)+"\n");
-        devLog(uxTime, id, val);
+        //devLog(null, id, val);
         if (callback) {
             callback();
         }
     }
 }
 
-function clearRegaData() {
-    for (var obj in regaObjects) {
+function clearCcuData() {
+    for (var obj in ctrlObjects) {
         if (parseInt(obj, 10) < 65535) {
-            delete regaObjects[obj];
+            delete ctrlObjects[obj];
         }
     }
-    for (var item in regaIndex.Name) {
-        if (regaIndex.Name[item][0] < 65535) {
-            delete regaIndex.Name[item];
+    for (var item in ctrlIndex.Name) {
+        if (ctrlIndex.Name[item][0] < 65535) {
+            delete ctrlIndex.Name[item];
         }
     }
-    for (var item in regaIndex.Address) {
-        if (regaIndex.Address[item][0] < 65535) {
-            delete regaIndex.Address[item];
+    for (var item in ctrlIndex.Address) {
+        if (ctrlIndex.Address[item][0] < 65535) {
+            delete ctrlIndex.Address[item];
         }
     }
 
     var tmpArr = [];
-    for (var i = 0; i < regaIndex.HSSDP.length; i++) {
-        if (regaIndex.HSSDP[i] > 65535) {
-            tmpArr.push(regaIndex.HSSDP[i]);
+    for (var i = 0; i < ctrlIndex.HSSDP.length; i++) {
+        if (ctrlIndex.HSSDP[i] > 65535) {
+            tmpArr.push(ctrlIndex.HSSDP[i]);
         }
     }
-    regaIndex.HSSDP = tmpArr;
+    ctrlIndex.HSSDP = tmpArr;
 
     var tmpArr = [];
-    for (var i = 0; i < regaIndex.ALDP.length; i++) {
-        if (regaIndex.ALDP[i] > 65535) {
-            tmpArr.push(regaIndex.ALDP[i]);
+    for (var i = 0; i < ctrlIndex.ALDP.length; i++) {
+        if (ctrlIndex.ALDP[i] > 65535) {
+            tmpArr.push(ctrlIndex.ALDP[i]);
         }
     }
-    regaIndex.ALDP = tmpArr;
+    ctrlIndex.ALDP = tmpArr;
 
     var tmpArr = [];
-    for (var i = 0; i < regaIndex.ALARMDP.length; i++) {
-        if (regaIndex.ALARMDP[i] > 65535) {
-            tmpArr.push(regaIndex.ALARMDP[i]);
+    for (var i = 0; i < ctrlIndex.ALARMDP.length; i++) {
+        if (ctrlIndex.ALARMDP[i] > 65535) {
+            tmpArr.push(ctrlIndex.ALARMDP[i]);
         }
     }
-    regaIndex.ALARMDP = tmpArr;
+    ctrlIndex.ALARMDP = tmpArr;
 
     var tmpArr = [];
-    for (var i = 0; i < regaIndex.VARDP.length; i++) {
-        if (regaIndex.VARDP[i] > 65535) {
-            tmpArr.push(regaIndex.VARDP[i]);
+    for (var i = 0; i < ctrlIndex.VARDP.length; i++) {
+        if (ctrlIndex.VARDP[i] > 65535) {
+            tmpArr.push(ctrlIndex.VARDP[i]);
         }
     }
-    regaIndex.VARDP = tmpArr;
+    ctrlIndex.VARDP = tmpArr;
 
     var tmpArr = [];
-    for (var i = 0; i < regaIndex.FAVORITE.length; i++) {
-        if (regaIndex.FAVORITE[i] > 65535) {
-            tmpArr.push(regaIndex.FAVORITE[i]);
+    for (var i = 0; i < ctrlIndex.FAVORITE.length; i++) {
+        if (ctrlIndex.FAVORITE[i] > 65535) {
+            tmpArr.push(ctrlIndex.FAVORITE[i]);
         }
     }
-    regaIndex.FAVORITE = tmpArr;
+    ctrlIndex.FAVORITE = tmpArr;
 
     var tmpArr = [];
-    for (var i = 0; i < regaIndex.ENUM_ROOMS.length; i++) {
-        if (regaIndex.ENUM_ROOMS[i] > 65535) {
-            tmpArr.push(regaIndex.ENUM_ROOMS[i]);
+    for (var i = 0; i < ctrlIndex.ENUM_ROOMS.length; i++) {
+        if (ctrlIndex.ENUM_ROOMS[i] > 65535) {
+            tmpArr.push(ctrlIndex.ENUM_ROOMS[i]);
         }
     }
-    regaIndex.ENUM_ROOMS = tmpArr;
+    ctrlIndex.ENUM_ROOMS = tmpArr;
 
     var tmpArr = [];
-    for (var i = 0; i < regaIndex.ENUM_FUNCTIONS.length; i++) {
-        if (regaIndex.ENUM_FUNCTIONS[i] > 65535) {
-            tmpArr.push(regaIndex.ENUM_FUNCTIONS[i]);
+    for (var i = 0; i < ctrlIndex.ENUM_FUNCTIONS.length; i++) {
+        if (ctrlIndex.ENUM_FUNCTIONS[i] > 65535) {
+            tmpArr.push(ctrlIndex.ENUM_FUNCTIONS[i]);
         }
     }
-    regaIndex.ENUM_FUNCTIONS = tmpArr;
+    ctrlIndex.ENUM_FUNCTIONS = tmpArr;
 
     var tmpArr = [];
-    for (var i = 0; i < regaIndex.DEVICE.length; i++) {
-        if (regaIndex.DEVICE[i] > 65535) {
-            tmpArr.push(regaIndex.DEVICE[i]);
+    for (var i = 0; i < ctrlIndex.DEVICE.length; i++) {
+        if (ctrlIndex.DEVICE[i] > 65535) {
+            tmpArr.push(ctrlIndex.DEVICE[i]);
         }
     }
-    regaIndex.DEVICE = tmpArr;
+    ctrlIndex.DEVICE = tmpArr;
 
     var tmpArr = [];
-    for (var i = 0; i < regaIndex.CHANNEL.length; i++) {
-        if (regaIndex.CHANNEL[i] > 65535) {
-            tmpArr.push(regaIndex.CHANNEL[i]);
+    for (var i = 0; i < ctrlIndex.CHANNEL.length; i++) {
+        if (ctrlIndex.CHANNEL[i] > 65535) {
+            tmpArr.push(ctrlIndex.CHANNEL[i]);
         }
     }
-    regaIndex.CHANNEL = tmpArr;
+    ctrlIndex.CHANNEL = tmpArr;
 
     var tmpArr = [];
-    for (var i = 0; i < regaIndex.PROGRAM.length; i++) {
-        if (regaIndex.PROGRAM[i] > 65535) {
-            tmpArr.push(regaIndex.PROGRAM[i]);
+    for (var i = 0; i < ctrlIndex.PROGRAM.length; i++) {
+        if (ctrlIndex.PROGRAM[i] > 65535) {
+            tmpArr.push(ctrlIndex.PROGRAM[i]);
         }
     }
-    regaIndex.PROGRAM = tmpArr;
+    ctrlIndex.PROGRAM = tmpArr;
 }
 
+function mergeTrees (type, isClear, newObjects, newIndex, newDatapoints) {
+    if (type == "ccu" && isClear) {
+        clearCcuData ();
+    }
+    if (newObjects) {
+        for (var obj in newObjects) {
+            ctrlObjects[obj] = newObjects[obj];
+        }
+    }
+
+    if (newIndex) {
+        for (var subTable in newIndex) {
+            // Merge array
+            if (typeof ctrlIndex[subTable] == "array") {
+                for (var i = 0; i < newIndex[subTable].length; i++) {
+                    if (ctrlIndex[subTable].indexOf (newIndex[subTable][i]) == -1) {
+                        ctrlIndex[subTable].push(newIndex[subTable][i]);
+                    }
+                }
+            }
+            // Merge objects
+            else {
+                for (var obj_ in newIndex[subTable]) {
+                    ctrlIndex[subTable][obj_] = newIndex[subTable][obj_];
+                }
+            }
+        }
+    }
+
+    if (newDatapoints) {
+        for (var dp in newDatapoints) {
+            if (newDatapoints[dp]) {
+                setDatapoint(dp, newDatapoints[dp][0], newDatapoints[dp][1], newDatapoints[dp][2], newDatapoints[dp][3]);
+            }
+        }
+    }
+}
 
 function initSocketIO(_io) {
 	_io.configure(function (){
@@ -1305,14 +800,14 @@ function initSocketIO(_io) {
         if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
             // do not check if localhost
             if(handshakeData.address.address.toString() == "127.0.0.1") {
-                logger.verbose("ccu.io        local authentication " + handshakeData.address.address);
+                logger.verbose("node.control  local authetication " + handshakeData.address.address);
                 callback(null, true);
             } else
             if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
-                logger.warn("ccu.io        authentication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                logger.warn("node.control  authetication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
                 callback ("Invalid session key", false);
             } else{
-                logger.verbose("ccu.io        authentication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                logger.verbose("node.control  authetication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
                 callback(null, true);
             }
         }
@@ -1341,23 +836,23 @@ function initSocketIO(_io) {
         });
 
         socket.on('execCmd', function (cmd, callback) {
-            logger.info("ccu.io        exec "+cmd);
+            logger.info("node.control  exec "+cmd);
             childProcess.exec(cmd, callback);
         });
 
         socket.on('execScript', function (script, arg, callback) {
-            logger.info("ccu.io        script "+script + "["+arg+"]");
+            logger.info("node.control  script "+script + "["+arg+"]");
             var scr_prc = childProcess.fork (__dirname + script, arg);
             var result = null;
             scr_prc.on('message', function(obj) {
                 // Receive results from child process
                 console.log ("Message: " + obj);
-				logger.debug("ccu.io        script result: " + obj);
+				logger.debug("node.control  script result: " + obj);
                 result = obj;
             });
             scr_prc.on ("exit", function (code, signal) {
                 if (callback) {
-					logger.debug("ccu.io        script end result: " + result);
+					logger.debug("node.control  script end result: " + result);
                     callback (script, arg, result);
                 }
             });
@@ -1366,15 +861,17 @@ function initSocketIO(_io) {
         socket.on('restartAdapter', function (adapter) {
            return restartAdapter(adapter)
         });
+
         socket.on('updateAddon', function (url, name) {
             var path = __dirname + "/update-addon.js";
-            logger.info("ccu.io        starting "+path+" "+url+" "+name);
+            logger.info("node.control  starting "+path+" "+url+" "+name);
             var updateProcess = childProcess.fork(path, [url, name]);
             updateProcess.on("close", function (code) {
+                var msg;
                 if (code == 0) {
-                    var msg = " done.";
+                    msg = " done.";
                 } else {
-                    var msg = " failed.";
+                    msg = " failed.";
                 }
                 if (io) {
                     io.sockets.emit("ioMessage", "Update "+name+msg);
@@ -1388,7 +885,7 @@ function initSocketIO(_io) {
         socket.on('updateSelf', function () {
             var path = __dirname + "/update-self.js";
             settings.updateSelfRunning = true;
-            logger.info("ccu.io        starting "+path);
+            logger.info("node.control  starting "+path);
             var updateProcess = childProcess.fork(path);
             if (io) {
                 io.sockets.emit("ioMessage", "Update started. Please be patient...");
@@ -1405,10 +902,10 @@ function initSocketIO(_io) {
                     if (ioSsl) {
                         ioSsl.sockets.emit("ioMessage", "Update done. Restarting...");
                     }
-                    logger.info("ccu.io        update done. restarting...");
+                    logger.info("node.control  update done. restarting...");
                     childProcess.fork(__dirname+"/ccu.io-server.js", ["restart"]);
                 } else {
-                    logger.error("ccu.io        update failed.");
+                    logger.error("node.control  update failed.");
                     if (io) {
                         io.sockets.emit("ioMessage", "Error: update failed.");
                     }
@@ -1420,10 +917,10 @@ function initSocketIO(_io) {
             });
         });
 
-        socket.on('createBackup', function () {
+        socket.on('createBackup', function (isWithLog) {
             var path = __dirname + "/backup.js";
-            logger.info("ccu.io        starting "+path);
-            var backupProcess = childProcess.fork(path, ["create"]);
+            logger.info("node.control  starting "+path);
+            var backupProcess = childProcess.fork(path, [isWithLog ? "createWithLog": "create"]);
             var fileName = "";
             backupProcess.on("message", function (msg) {
                 fileName = msg;
@@ -1443,7 +940,7 @@ function initSocketIO(_io) {
                         ioSsl.sockets.emit("readyBackup", fileName);
                     }
                 } else {
-                    logger.error("ccu.io        Backup failed.");
+                    logger.error("node.control  Backup failed.");
                     if (io) {
                         io.sockets.emit("ioMessage", "Error: Backup failed.");
                     }
@@ -1456,9 +953,8 @@ function initSocketIO(_io) {
 
         socket.on('applyBackup', function (fileName) {
             var path = __dirname + "/backup.js";
-            logger.info("ccu.io        starting "+path);
+            logger.info("node.control  starting "+path);
             var backupProcess = childProcess.fork(path, [fileName]);
-            var fileName = "";
 
             if (io) {
                 io.sockets.emit("ioMessage", "Apply backup started. Please be patient...");
@@ -1475,7 +971,7 @@ function initSocketIO(_io) {
                         ioSsl.sockets.emit("applyReady", "Apply backup done. Restart CCU.IO");
                     }
                 } else {
-                    logger.error("ccu.io        Apply backup failed.");
+                    logger.error("node.control  Apply backup failed.");
                     if (io) {
                         io.sockets.emit("applyError", "Error: Backup failed.");
                     }
@@ -1496,20 +992,48 @@ function initSocketIO(_io) {
         });
 
         socket.on('reloadData', function () {
-            regaReady = false;
+            logger.info("socket.io --> broadcast reload")
+            if (io) {
+                io.sockets.emit("reloadData");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("reloadData");
+            }
+        });
 
-            updateStatus();
-            clearRegaData();
-            loadRegaData(0, null, true);
+        socket.on('newData', function (newObjects, newIndex, newDatapoints){
+            mergeTrees ("ccu", true, newObjects, newIndex, newDatapoints);
+        });
+
+        socket.on('setStates', function (newDatapoints){
+            mergeTrees (null, false, null, null, newDatapoints);
+        });
+        socket.on('devLog', function (timeStamp, id, val){
+            devLog (timeStamp, id, val);
+        });
+
+        socket.on('reloadDataReady', function () {
+            if (io) {
+                io.sockets.emit("reload");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("reload");
+            }
         });
 
         socket.on('restart', function () {
-            logger.info("ccu.io        received restart command");
+            logger.info("node.control  received restart command");
             childProcess.fork(__dirname+"/ccu.io-server.js", ["restart"]);
         });
 
-        socket.on('restartRPC', function () {
-             initRpc();
+        socket.on('ccuRestartRPC', function () {
+            if (io) {
+                io.sockets.emit("ccuRestartRPC");
+            }
+            else
+            if (ioSsl) {
+                ioSsl.sockets.emit("ccuRestartRPC");
+            }
         });
 
         socket.on('reloadScriptEngine', function (callback) {
@@ -1523,7 +1047,6 @@ function initSocketIO(_io) {
                 }, 1500);
             }
         });
-
 
         socket.on('readdir', function (path, callback) {
             path = __dirname+"/"+path;
@@ -1585,7 +1108,7 @@ function initSocketIO(_io) {
 
             fs.readFile(settings.datastorePath+name, function (err, data) {
                 if (err) {
-                    logger.error("ccu.io        failed loading file "+settings.datastorePath+name);
+                    logger.error("node.control  failed loading file "+settings.datastorePath+name);
                     callback(undefined);
                 } else {
                     var obj = JSON.parse(data);
@@ -1599,7 +1122,7 @@ function initSocketIO(_io) {
 
             fs.readFile(__dirname+"/"+name, function (err, data) {
                 if (err) {
-                    logger.error("ccu.io        failed loading file "+__dirname+"/"+name);
+                    logger.error("node.control  failed loading file "+__dirname+"/"+name);
                     callback(undefined);
                 } else {
                     callback(data.toString());
@@ -1610,7 +1133,7 @@ function initSocketIO(_io) {
         socket.on('touchFile', function (name, callback) {
             logger.verbose("socket.io <-- touchFile "+name);
             if (!fs.existsSync(__dirname+"/"+name)) {
-                logger.info("ccu.io        creating empty file "+name);
+                logger.info("node.control  creating empty file "+name);
                 var stream = fs.createWriteStream(__dirname+"/"+name);
                 stream.end();
             }
@@ -1621,7 +1144,7 @@ function initSocketIO(_io) {
 
             fs.unlink(__dirname+"/"+name, function (err, data) {
                 if (err) {
-                    logger.error("ccu.io        failed deleting file "+__dirname+"/"+name);
+                    logger.error("node.control  failed deleting file "+__dirname+"/"+name);
                     callback(false);
                 } else {
                     callback(true);
@@ -1634,7 +1157,7 @@ function initSocketIO(_io) {
 
             fs.readFile(__dirname+"/"+name, function (err, data) {
                 if (err) {
-                    logger.error("ccu.io        failed loading file "+__dirname+"/"+name);
+                    logger.error("node.control  failed loading file "+__dirname+"/"+name);
                     callback(undefined);
                 } else {
                     callback(JSON.parse(data));
@@ -1643,7 +1166,7 @@ function initSocketIO(_io) {
         });
 
         socket.on('getUrl', function (url, callback) {
-            logger.info("ccu.io        GET "+url);
+            logger.info("node.control  GET "+url);
             if (url.match(/^https/)) {
                 https.get(url, function(res) {
                     var body = "";
@@ -1655,7 +1178,7 @@ function initSocketIO(_io) {
                     });
 
                 }).on('error', function(e) {
-                        logger.error("ccu.io        GET "+url+" "+ e.message);
+                        logger.error("node.control  GET "+url+" "+ e.message);
                     });
             } else {
                 http.get(url, function(res) {
@@ -1667,19 +1190,25 @@ function initSocketIO(_io) {
                         callback(body);
                     });
                 }).on('error', function(e) {
-                    logger.error("ccu.io        GET "+url+" "+ e.message);
+                    logger.error("node.control  GET "+url+" "+ e.message);
                 });
             }
         });
 
         socket.on('getStatus', function (callback) {
-            var status = {
-                ccuReachable: ccuReachable,
-                ccuRegaUp: ccuRegaUp,
-                ccuRegaData: regaReady,
-                initsDone: initsDone
+            callback(staties);
+        });
+
+        socket.on('setStatus', function (obj, value) {
+            if (typeof obj == "object") {
+                for (var n in obj) {
+                    staties[n] = obj[n];
+                }
             }
-            callback(status);
+            else {
+                staties[obj] = value;
+            }
+            updateStatus ();
         });
 
         socket.on('getNextId', function (start, callback) {
@@ -1708,17 +1237,26 @@ function initSocketIO(_io) {
 		
         socket.on('getObjects', function(callback) {
             logger.verbose("socket.io <-- getObjects");
-            callback(regaObjects);
+            callback(ctrlObjects);
         });
 
         socket.on('getIndex', function(callback) {
             logger.verbose("socket.io <-- getIndex");
-            callback(regaIndex);
+            callback(ctrlIndex);
         });
 
         socket.on('getStringtable', function(callback) {
             logger.verbose("socket.io <-- getStringtable");
             callback(stringtable);
+        });
+
+        socket.on('setStringtable', function(strTable) {
+            logger.verbose("socket.io <-- getStringtable");
+            stringtable = strTable;
+        });
+
+        socket.on('setStats', function(name, value) {
+            stats.counters[name].value = value;
         });
 
         socket.on('addStringVariable', function(name, desc, str, callback) {
@@ -1727,30 +1265,37 @@ function initSocketIO(_io) {
                 if (id) {
                     var ts = formatTimestamp();
                     datapoints[id] = [str, ts, true];
-                    regaObjects[id] = {Name:name, TypeName: "VARDP", DPInfo: "DESC", ValueType: 20, ValueSubType: 11};
-                    regaIndex.VARDP.push(id);
-                    regaIndex.Name[id] = [13305, "VARDP", null];
-                    logger.info("ccu.io        added string variable "+id+" "+name);
+                    ctrlObjects[id] = {Name:name, TypeName: "VARDP", DPInfo: "DESC", ValueType: 20, ValueSubType: 11};
+                    ctrlIndex.VARDP.push(id);
+                    ctrlIndex.Name[id] = [13305, "VARDP", null];
+                    logger.info("node.control  added string variable "+id+" "+name);
                 }
                 callback(id);
             });
         });
 
-        function nextId(id) {
-            var id = id || 100000;
-            while (regaObjects[id]) {
+        function nextEnumId() {
+            var id = 66000;
+            while (ctrlObjects[id]) {
                 id += 1;
             }
             return id;
         }
-
+        function nextId(id) {
+            var id = id || 100000;
+            while (ctrlObjects[id]) {
+                id += 1;
+            }
+            return id;
+        }
+        
         function setObject(id, obj, callback) {
             if (!obj) {
                 return;
             }
             if (obj._findNextId) {
                 delete obj._findNextId;
-                while (regaObjects[id]) {
+                while (ctrlObjects[id]) {
                     id += 1;
                 }
             }
@@ -1760,28 +1305,28 @@ function initSocketIO(_io) {
                         continue;
                     }
                     var roomId;
-                    if (regaIndex.ENUM_ROOMS.indexOf(obj.rooms[i]) != -1) {
+                    if (ctrlIndex.ENUM_ROOMS.indexOf(obj.rooms[i]) != -1) {
                         roomId = obj.rooms[i];
-                    } else if (regaIndex.Name[obj.rooms[i]] && regaIndex.Name[obj.rooms[i]][1] == "ENUM_ROOMS") {
-                        roomId = regaIndex.Name[obj.rooms[i]][0];
+                    } else if (ctrlIndex.Name[obj.rooms[i]] && ctrlIndex.Name[obj.rooms[i]][1] == "ENUM_ROOMS") {
+                        roomId = ctrlIndex.Name[obj.rooms[i]][0];
                     } else {
                         roomId = nextId(66000);
-                        regaIndex.ENUM_ROOMS.push(roomId);
-                        if (!regaIndex.Name[obj.rooms[i]]) {
-                            regaIndex.Name[obj.rooms[i]] = [
+                        ctrlIndex.ENUM_ROOMS.push(roomId);
+                        if (!ctrlIndex.Name[obj.rooms[i]]) {
+                            ctrlIndex.Name[obj.rooms[i]] = [
                                 roomId, "ENUM_ROOMS", null
                             ];
                         }
-                        regaObjects[roomId] = {
+                        ctrlObjects[roomId] = {
                             "Name": obj.rooms[i],
                             "TypeName": "ENUM_ROOMS",
                             "EnumInfo": "",
                             "Channels": []
                         };
-                        logger.info("ccu.io        setObject room "+obj.rooms[i]+" created");
+                        logger.info("node.control  setObject room "+obj.rooms[i]+" created");
                     }
-                    if (roomId && regaObjects[roomId].Channels.indexOf(id) == -1) {
-                        regaObjects[roomId].Channels.push(id);
+                    if (roomId && ctrlObjects[roomId].Channels.indexOf(id) == -1) {
+                        ctrlObjects[roomId].Channels.push(id);
                     }
                 }
                 delete obj.rooms
@@ -1792,28 +1337,28 @@ function initSocketIO(_io) {
                         continue;
                     }
                     var funcId;
-                    if (regaIndex.ENUM_FUNCTIONS.indexOf(obj.funcs[i]) != -1) {
+                    if (ctrlIndex.ENUM_FUNCTIONS.indexOf(obj.funcs[i]) != -1) {
                         funcId = obj.funcs[i];
-                    } else if (regaIndex.Name[obj.funcs[i]] && regaIndex.Name[obj.funcs[i]][1] == "ENUM_FUNCTIONS") {
-                        funcId = regaIndex.Name[obj.funcs[i]][0];
+                    } else if (ctrlIndex.Name[obj.funcs[i]] && ctrlIndex.Name[obj.funcs[i]][1] == "ENUM_FUNCTIONS") {
+                        funcId = ctrlIndex.Name[obj.funcs[i]][0];
                     } else {
                         funcId = nextId(66000);
-                        regaIndex.ENUM_FUNCTIONS.push(funcId);
-                        if (!regaIndex.Name[obj.funcs[i]]) {
-                            regaIndex.Name[obj.funcs[i]] = [
+                        ctrlIndex.ENUM_FUNCTIONS.push(funcId);
+                        if (!ctrlIndex.Name[obj.funcs[i]]) {
+                            ctrlIndex.Name[obj.funcs[i]] = [
                                 funcId, "ENUM_FUNCTIONS", null
                             ];
                         }
-                        regaObjects[funcId] = {
+                        ctrlObjects[funcId] = {
                             "Name": obj.funcs[i],
                             "TypeName": "ENUM_FUNCTIONS",
                             "EnumInfo": "",
                             "Channels": []
                         };
-                        logger.info("ccu.io        setObject function "+obj.funcs[i]+" created");
+                        logger.info("node.control  setObject function "+obj.funcs[i]+" created");
                     }
-                    if (funcId && regaObjects[funcId].Channels.indexOf(id) == -1) {
-                        regaObjects[funcId].Channels.push(id);
+                    if (funcId && ctrlObjects[funcId].Channels.indexOf(id) == -1) {
+                        ctrlObjects[funcId].Channels.push(id);
                     }
                 }
                 delete obj.funcs;
@@ -1824,78 +1369,83 @@ function initSocketIO(_io) {
                         continue;
                     }
                     var favId;
-                    if (regaIndex.FAVORITE.indexOf(obj.favs[i]) != -1) {
+                    if (ctrlIndex.FAVORITE.indexOf(obj.favs[i]) != -1) {
                         favId = obj.favs[i];
-                    } else if (regaIndex.Name[obj.favs[i]] && regaIndex.Name[obj.favs[i]][1] == "FAVORITE") {
-                        favId = regaIndex.Name[obj.favs[i]][0];
+                    } else if (ctrlIndex.Name[obj.favs[i]] && ctrlIndex.Name[obj.favs[i]][1] == "FAVORITE") {
+                        favId = ctrlIndex.Name[obj.favs[i]][0];
                     } else {
                         favId = nextId(66000);
-                        regaIndex.FAVORITE.push(favId);
-                        if (!regaIndex.Name[obj.favs[i]]) {
-                            regaIndex.Name[obj.favs[i]] = [
+                        ctrlIndex.FAVORITE.push(favId);
+                        if (!ctrlIndex.Name[obj.favs[i]]) {
+                            ctrlIndex.Name[obj.favs[i]] = [
                                 favId, "ENUM_FUNCTIONS", null
                             ];
                         }
-                        regaObjects[favId] = {
+                        ctrlObjects[favId] = {
                             "Name": obj.favs[i],
                             "TypeName": "FAVORITE",
                             "EnumInfo": "",
                             "Channels": []
                         };
-                        logger.info("ccu.io        setObject favorite "+obj.favs[i]+" created");
+                        logger.info("node.control  setObject favorite "+obj.favs[i]+" created");
                     }
-                    if (favId && regaObjects[favId].Channels.indexOf(id) == -1) {
-                        regaObjects[favId].Channels.push(id);
+                    if (favId && ctrlObjects[favId].Channels.indexOf(id) == -1) {
+                        ctrlObjects[favId].Channels.push(id);
                     }
                 }
                 delete obj.favs;
             }
 
             if (obj.TypeName) {
-                if (!regaIndex[obj.TypeName]) {
-                    regaIndex[obj.TypeName] = [];
+                if (!ctrlIndex[obj.TypeName]) {
+                    ctrlIndex[obj.TypeName] = [];
                 }
-                if (regaIndex[obj.TypeName].indexOf(id) == -1) {
-                    regaIndex[obj.TypeName].push(id);
+                if (ctrlIndex[obj.TypeName].indexOf(id) == -1) {
+                    ctrlIndex[obj.TypeName].push(id);
                 }
             }
 
             if (obj.Name) {
-                regaIndex.Name[obj.Name] = [id, obj.TypeName, obj.Parent];
+                ctrlIndex.Name[obj.Name] = [id, obj.TypeName, obj.Parent];
             }
 
             if (obj.Address) {
-                regaIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
+                ctrlIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
             }
             if (obj.TypeName && obj.TypeName.match(/DP$/)) {
                 if (!obj.ValueUnit) {
                     obj.ValueUnit = "";
                 }
                 if (!datapoints[id] || obj.Value) {
-                    logger.verbose("adding dp "+id);
+                    logger.verbose("node.control  adding dp "+id);
                     datapoints[id] = [obj.Value, formatTimestamp()];
                 }
             }
 
-            regaObjects[id] = obj;
+            ctrlObjects[id] = obj;
 
             if (callback) {
                 callback(id);
             }
         }
-
+        
         socket.on('setObject', setObject);
 
         // Eine Homematic Servicemeldung bestätigen
         socket.on('alarmReceipt', function (id) {
-            logger.verbose("rega          alarmReceipt "+id+" "+regaObjects[id].Name);
-            regahss.script("dom.GetObject("+id+").AlReceipt();");
+            if (io) {
+                io.sockets.emit("ccuAlarmReceipt", id);
+            }
+            else
+            if (ioSsl) {
+                ioSsl.sockets.emit("ccuAlarmReceipt", id);
+            }
         });
 
         socket.on('setState', function(arr, callback) {
             // Todo Delay!
 
-            //logger.info("setState"+JSON.stringify(arr));
+            logger.info("setState"+JSON.stringify(arr));
 
             var id =    arr[0],
                 val =   arr[1],
@@ -1903,10 +1453,10 @@ function initSocketIO(_io) {
                 ack =   arr[3];
 
             if (typeof id == "string") {
-                if (regaIndex.Name[id]) {
-                    id = regaIndex.Name[id][0];
-                } else if (regaIndex.Address[id]) {
-                    id = regaIndex.Address[id][0];
+                if (ctrlIndex.Name[id]) {
+                    id = ctrlIndex.Name[id][0];
+                } else if (ctrlIndex.Address[id]) {
+                    id = ctrlIndex.Address[id][0];
                 }
             }
 
@@ -1916,13 +1466,40 @@ function initSocketIO(_io) {
 
         });
 
-        socket.on('programExecute', programExecute);
+        socket.on('programExecute', function (id, callback) {
+            if (io) {
+                io.sockets.emit("ccuProgramExecute", id, function () {
+                    if (callback) {
+                        callback ();
+                    }
+                });
+            }
+            else
+            if (ioSsl) {
+                ioSsl.sockets.emit("ccuProgramExecute", id, function () {
+                    if (callback) {
+                        callback ();
+                    }
+                });
+            }
+        });
 
         socket.on('runScript', function(script, callback) {
-            logger.verbose("socket.io <-- script");
-            regahss.script(script, function (data) {
-                if (callback) { callback(data); }
-            });
+            if (io) {
+                io.sockets.emit("ccuRunScript", script, function (data) {
+                    if (callback) {
+                        callback (data);
+                    }
+                });
+            }
+            else
+            if (ioSsl) {
+                ioSsl.sockets.emit("ccuRunScript", script, function () {
+                    if (callback) {
+                        callback (data);
+                    }
+                });
+            }
         });
 
         socket.on('disconnect', function () {
@@ -1937,12 +1514,11 @@ function initSocketIO(_io) {
             socketlist.splice(socketlist.indexOf(socket), 1);
         });
     });
-
 }
 
 function startScriptEngine() {
     var path = __dirname + "/script-engine.js";
-    logger.info("ccu.io        starting script-engine");
+    logger.info("node.control  starting script-engine");
     childScriptEngine = childProcess.fork(path);
 }
 
@@ -1950,7 +1526,7 @@ function restartAdapter(adapter) {
     if (!settings.adapters[adapter].enabled) {
         return "Error: Adapter not enabled";
     }
-    //logger.info("ccu.io        found adapter "+adapter);
+    //logger.info("node.control  found adapter "+adapter);
     var mode = settings.adapters[adapter].mode;
     var period = settings.adapters[adapter].period * 60000;
 
@@ -1961,13 +1537,13 @@ function restartAdapter(adapter) {
             clearTimeout(timerAdapter[adapter]);
             setTimeout(function (_path, _period, _adapter) {
                 startAdapterPeriod(_path, _period);
-                logger.info("ccu.io        adapter "+_adapter+" timer restarted");
+                logger.info("node.control  adapter "+_adapter+" timer restarted");
             }, 50, path, period, adapter);
             return "adapter "+adapter+" timer restarted";
             break;
 
         default:
-            logger.info("ccu.io        killing adapter "+adapter);
+            logger.info("node.control  killing adapter "+adapter);
 
             try {
                 childrenAdapter[adapter].process.kill();
@@ -1975,7 +1551,7 @@ function restartAdapter(adapter) {
 
             }
             setTimeout(function (_path, _adapter) {
-                logger.info("ccu.io        starting adapter "+_path);
+                logger.info("node.control  starting adapter "+_path);
                 childrenAdapter[_adapter] = childProcess.fork(_path);
                 return "adapter "+_adapter+" timer restartet";
             }, 1000, path, adapter);
@@ -1994,7 +1570,7 @@ function startAdapters () {
         if (!settings.adapters[adapter] || !settings.adapters[adapter].enabled) {
             continue;
         }
-        //logger.info("ccu.io        found adapter "+adapter);
+        //logger.info("node.control  found adapter "+adapter);
         var mode = settings.adapters[adapter].mode;
         var period = settings.adapters[adapter].period * 60000;
 
@@ -2013,7 +1589,7 @@ function startAdapters () {
 
             default:
                 setTimeout(function (_path, _adapter) {
-                    logger.info("ccu.io        starting adapter "+_path);
+                    logger.info("node.control  starting adapter "+_path);
                     if (!childrenAdapter[_adapter]) {
                         childrenAdapter[_adapter] = {};
                     }
@@ -2035,10 +1611,10 @@ function startAdapterPeriod (adapter, interval, _adapter) {
     }
 
    timerAdapter[_adapter] = setInterval(function () {
-       logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
+       logger.info("node.control  starting adapter "+adapter+" (interval="+interval+"ms)");
        childrenAdapter[_adapter].process = childProcess.fork(adapter);
    }, interval);
-   logger.info("ccu.io        starting adapter "+adapter+" (interval="+interval+"ms)");
+   logger.info("node.control  starting adapter "+adapter+" (interval="+interval+"ms)");
    childrenAdapter[_adapter].process = childProcess.fork(adapter);
 }
 
@@ -2051,9 +1627,6 @@ process.on('SIGTERM', function () {
 });
 
 function stop() {
-    if (homematic && initsDone) {
-        homematic.stopInits();
-    }
     saveDatapoints();
     savePersistentObjects();
     try {
@@ -2063,27 +1636,27 @@ function stop() {
         });
 
         if (io && io.server) {
-            logger.info("ccu.io        closing http server");
+            logger.info("node.control  closing http server");
             io.server.close();
             io.server = undefined;
         }
         if (ioSsl && ioSsl.server) {
-            logger.info("ccu.io        closing https server");
+            logger.info("node.control  closing https server");
             ioSsl.server.close();
             ioSsl.server = undefined;
         }
 
         if (childScriptEngine) {
-            logger.info("ccu.io        killing script-engine");
+            logger.info("node.control  killing script-engine");
             childScriptEngine.kill();
         }
 
         for (var adapter in childrenAdapter) {
-            logger.info("ccu.io        killing adapter "+adapter);
+            logger.info("node.control  killing adapter "+adapter);
             childrenAdapter[adapter].process.kill();
         }
     } catch (e) {
-        logger.error("ccu.io        something went wrong while terminating: "+e)
+        logger.error("node.control  something went wrong while terminating: "+e)
     }
 
 
@@ -2093,7 +1666,7 @@ function stop() {
 var quitCounter = 0;
 
 function quit() {
-    logger.verbose("ccu.io        quit");
+    logger.verbose("node.control  quit");
     if (regahss.pendingRequests > 0) {
         quitCounter += 1;
         if (quitCounter > 20) {
@@ -2107,7 +1680,7 @@ function quit() {
 
     } else {
         logger.info("ccu.io uptime "+stats.uptime());
-        logger.info("ccu.io        terminating");
+        logger.info("node.control  terminating");
         setTimeout(function () {
             process.exit(0);
         }, 250);
@@ -2131,13 +1704,13 @@ function writeLog() {
     devlogCache = [];
 
     var l = tmp.length;
-    logger.verbose("ccu.io        writing "+l+" lines to "+settings.logging.file);
+    logger.verbose("node.control  writing "+l+" lines to "+settings.logging.file);
 
     var file = __dirname+"/log/"+settings.logging.file;
 
     fs.appendFile(file, tmp.join(""), function (err) {
         if (err) {
-            logger.error("ccu.io        writing to "+settings.logging.file + " error: "+JSON.stringify(err));
+            logger.error("node.control  writing to "+settings.logging.file + " error: "+JSON.stringify(err));
         }
     });
 
@@ -2154,7 +1727,7 @@ function moveLog(file) {
         ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
         ("0" + (ts.getDate()).toString(10)).slice(-2);
 
-    logger.info("ccu.io        moving Logfile "+file+" "+timestamp);
+    logger.info("node.control  moving Logfile "+file+" "+timestamp);
 
     fs.rename(__dirname+"/log/"+file, __dirname+"/log/"+file+"."+timestamp, function() {
         logMoving[file] = false;
@@ -2163,6 +1736,13 @@ function moveLog(file) {
 }
 
 function devLog(ts, id, val) {
+    if (!settings.logging.enabled) {
+        return;
+    }
+    if (!ts || (typeof ts == "string" && ts.indexOf(" ") != -1)) {
+        ts = Math.round((new Date()).getTime() / 1000);
+    }
+
 
     if (typeof val === "string") {
         if (val === "true") { val = true; }
@@ -2176,44 +1756,46 @@ function devLog(ts, id, val) {
 
 function savePersistentObjects() {
     var name = "io-persistent-objs.json";
-    var content = JSON.parse(JSON.stringify(regaObjects));
+    var content = JSON.parse(JSON.stringify(ctrlObjects));
     for (var id in content) {
         if (parseInt(id, 10) < 65536 || !content[id]._persistent) {
             delete content[id];
         }
     }
     fs.writeFileSync(settings.datastorePath+name, JSON.stringify(content));
-    logger.info("ccu.io        saved persistent objects");
+    logger.info("node.control  saved persistent objects");
 }
+
 function loadPersistentObjects() {
     try {
         var x = JSON.parse(fs.readFileSync(settings.datastorePath+"io-persistent-objs.json"));
         for (var obj in x) {
             if (obj.TypeName) {
-                if (!regaIndex[obj.TypeName]) {
-                    regaIndex[obj.TypeName] = [];
+                if (!ctrlIndex[obj.TypeName]) {
+                    ctrlIndex[obj.TypeName] = [];
                 }
-                if (regaIndex[obj.TypeName].indexOf(id) == -1) {
-                    regaIndex[obj.TypeName].push(id);
+                if (ctrlIndex[obj.TypeName].indexOf(id) == -1) {
+                    ctrlIndex[obj.TypeName].push(id);
                 }
             }
 
             if (obj.Name) {
-                regaIndex.Name[obj.Name] = [id, obj.TypeName, obj.Parent];
+                ctrlIndex.Name[obj.Name] = [id, obj.TypeName, obj.Parent];
             }
 
             if (obj.Address) {
-                regaIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
+                ctrlIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
             }
 
         }
-        regaObjects = x;
+        ctrlObjects = x;
         logger.info("ccu.io        loaded persistent objects");
         return true;
     } catch (e) {
         return false;
     }
 }
+
 function saveDatapoints() {
     var name = "io-persistent-dps.json";
     var content = JSON.parse(JSON.stringify(datapoints));
@@ -2225,15 +1807,16 @@ function saveDatapoints() {
         }
     }
     fs.writeFileSync(settings.datastorePath+name, JSON.stringify(content));
-    logger.info("ccu.io        saved datapoints");
+    logger.info("node.control  saved datapoints");
 }
+
 function loadDatapoints() {
     var dps;
     try {
         var x = fs.readFileSync(settings.datastorePath+"io-persistent-dps.json");
         dps = JSON.parse(x);
         datapoints = dps;
-        logger.info("ccu.io        loaded datapoints");
+        logger.info("node.control  loaded datapoints");
         return true
     } catch (e) {
         return false;

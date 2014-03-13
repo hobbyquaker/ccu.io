@@ -195,6 +195,10 @@ function applyBackup (zipFileName) {
 
 var cmd = process.argv[2];
 
+if (cmd == "createWithLog") {
+    createBackup (true);
+}
+else
 if (cmd == "create") {
     createBackup ();
 }

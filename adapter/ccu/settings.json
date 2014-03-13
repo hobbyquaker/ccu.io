@@ -1,0 +1,36 @@
+{
+    "enabled": false,
+    "settings": {
+        "ccuIp": "",
+
+        "binrpc": {
+            "listenIp": "",
+            "listenPort": 2101,
+            "rfdEnabled": true,
+            "rfdId": "io_rf",
+            "rfdPort": 2001,
+            "hs485dEnabled": false,
+            "hs485dId": "io_wired",
+            "hs485dPort": 2000,
+            "cuxdEnabled": false,
+            "cuxdId": "io_cuxd",
+            "cuxdPort": 8701,
+            "checkEvents": {
+                "enabled": false,
+                "interval": 60,
+                "testAfter": 180,
+                "reinitAfter": 300,
+                "rfd": "BidCos-RF.BidCoS-RF:50.PRESS_SHORT",
+                "hs485d": "BidCos-Wired.BidCoS-Wir:50.PRESS_SHORT"
+            }
+        },
+        "stringTableLanguage": "de",
+        "regahss": {
+            "pollData": true,
+            "pollDataTriggerEnabled": false,
+            "pollDataTrigger": "BidCos-RF.BidCoS-RF:50.PRESS_LONG",
+            "pollDataInterval": 15000
+
+        }
+    }
+}
