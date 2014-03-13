@@ -1667,24 +1667,11 @@ var quitCounter = 0;
 
 function quit() {
     logger.verbose("node.control  quit");
-    if (regahss.pendingRequests > 0) {
-        quitCounter += 1;
-        if (quitCounter > 20) {
-            logger.verbose("rega          waited too long ... killing process");
-            setTimeout(function () {
-                process.exit(0);
-            }, 250);
-        }
-        logger.verbose("rega          waiting for pending ReGa request...");
-        setTimeout(quit, 500);
-
-    } else {
-        logger.info("ccu.io uptime "+stats.uptime());
-        logger.info("node.control  terminating");
-        setTimeout(function () {
-            process.exit(0);
-        }, 250);
-    }
+	logger.info("node.control  uptime "+stats.uptime());
+	logger.info("node.control  terminating");
+	setTimeout(function () {
+		process.exit(0);
+	}, 250);
 }
 
 function cacheLog(str) {
