@@ -1,0 +1,314 @@
+<link rel="stylesheet" href="../../ccu.io/css/ccu.io.css" type="text/css"/>
+<table style="font-size: 12px" id="ccu_table">
+    <tr>
+        <td class="translate">Enabled:</td>
+        <td>
+            <select id="ccu_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td class="translate">CCU IP address:</td>
+        <td style="width: 100px"><input id="ccuIp" style="width:100px" type="text"></td>
+        <td colspan="3" class="translate">IP address of CCU or CCU2 from Homematic</td>
+    </tr>
+    <tr>
+        <td class="translate">Node.Control IP-Address:</td>
+        <td style="width: 100px"><input id="binrpc_listenIp" style="width:100px" type="text"></td>
+        <td colspan="3" class="translate">Own ip address (don't use "localhost" if does not run on CCU2)</td>
+    </tr>
+</table>
+<div class="settings-box">
+    <h3 class='translate'>HomeMatic RPC</h3>
+    <table class="settings-table">
+        <tr>
+            <td class="settings-td1 translate">Node.Control RPC Server </td>
+            <td class="settings-td2">&nbsp;</td>
+            <td class="settings-td3">&nbsp;</td>
+            <td class="settings-td4 translate">Port</td>
+            <td class="settings-td5"><input id="binrpc_listenPort" data-defaultval="2100" type="text"/></td>
+            <td class="settings-td6">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="settings-td1 translate">rfd Init</td>
+            <td class="settings-td2 translate">Enabled</td>
+            <td class="settings-td3"><input id="binrpc_rfdEnabled" type="checkbox"/></td>
+            <td class="settings-td4"></td>
+            <td class="settings-td5"></td>
+            <td class="settings-td6"></td>
+        </tr>
+        <tr>
+            <td class="settings-td1 translate">hs485d Init</td>
+            <td class="settings-td2 translate">Enabled</td>
+            <td class="settings-td3"><input id="binrpc_hs485dEnabled" type="checkbox"/></td>
+            <td class="settings-td4"></td>
+            <td class="settings-td5"></td>
+            <td class="settings-td6"></td>
+        </tr>
+        <tr>
+            <td class="settings-td1 translate">CUxD Init</td>
+            <td class="settings-td2 translate">Enabled</td>
+            <td class="settings-td3"><input id="binrpc_cuxdEnabled" type="checkbox"/></td>
+            <td class="settings-td4 translate">Port</td>
+            <td class="settings-td5"><input id="binrpc_cuxdPort" type="text"/></td>
+            <td class="settings-td6"></td>
+        </tr>
+        <tr>
+            <td class="settings-td1 translate">Check RPC Events</td>
+            <td class="settings-td2 translate">Enabled</td>
+            <td class="settings-td3"><input id="binrpc_checkEvents_enabled" type="checkbox"/></td>
+            <td class="settings-td4"></td>
+            <td class="settings-td5"></td>
+            <td class="settings-td6"></td>
+        </tr>
+        <tr>
+            <td class="settings-td1 translate">Check rfd Events</td>
+            <td class="settings-td2"></td>
+            <td class="settings-td3"></td>
+            <td class="settings-td4 translate">Virtual Key</td>
+            <td colspan="2"><input size="50" id="binrpc_checkEvents_rfd" type="text"/></td>
+        </tr>
+        <tr>
+            <td class="settings-td1 translate">Check hs485d Events</td>
+            <td class="settings-td2"></td>
+            <td class="settings-td3"></td>
+            <td class="settings-td4 translate">Virtual Key</td>
+            <td colspan="2"><input size="50" id="binrpc_checkEvents_hs485d" type="text"/></td>
+        </tr>
+
+    </table>
+</div>
+<div class="settings-box">
+    <h3 class='translate'>HomeMatic ReGaHSS</h3>
+    <table class="settings-table">
+        <tr>
+            <td class="settings-td1 translate">Polling</td>
+            <td class="settings-td2 translate">Enabled</td>
+            <td class="settings-td3"><input id="regahss_pollData" type="checkbox"/></td>
+            <td class="settings-td4 translate">Interval (ms)</td>
+            <td class="settings-td5"><input id="regahss_pollDataInterval" type="text"/></td>
+            <td class="settings-td6">&nbsp;</td>
+        </tr>
+        <tr>
+            <td class="settings-td1 translate">Polling Trigger</td>
+            <td class="settings-td2 translate">Enabled</td>
+            <td class="settings-td3"><input id="regahss_pollDataTriggerEnabled" type="checkbox"/></td>
+            <td class="settings-td4 translate">Virtual Key</td>
+            <td colspan="2"><input id="regahss_pollDataTrigger" size="50" type="text"/></td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+
+    var adapterWords = {
+        "false":              {"en": "false",                "de": "nein",                "ru": "нет"},
+        "true":               {"en": "true",                 "de": "ja",                  "ru": "да"},
+        "Enabled:":           {"en": "Enabled:",             "de": "Aktiviert:",          "ru": "Активно:"},
+        "Enabled"           : {"en": "Enabled",              "de": "Aktiviert",           "ru": "Включено"},
+        "CCU IP-Address"    : {"en": "CCU IP-Address",       "de": "CCU IP Adresse",      "ru": "IP Адрес CCU"},
+        "CCU.IO IP-Address" : {"en": "CCU.IO IP-Address",    "de": "CCU.IO IP Adresse",   "ru": "IP Адрес CCU.IO"},
+        "HomeMatic RPC"     : {"en": "HomeMatic RPC",        "de": "HomeMatic RPC",       "ru": "HomeMatic RPC"},
+        "CCU.IO RPC Server ": {"en": "CCU.IO RPC Server",    "de": "CCU.IO RPC Server",   "ru": "CCU.IO RPC Server"},
+        "rfd Init"          : {"en": "rfd Init",             "de": "rfd Init",            "ru": "rfd Init"},
+        "hs485d Init"       : {"en": "hs485d Init",          "de": "hs485d Init",         "ru": "hs485d Init"},
+        "CUxD Init"         : {"en": "CUxD Init",            "de": "CUxD Init",           "ru": "CUxD Init"},
+        "Check RPC Events"  : {"en": "Check RPC Events",     "de": "Prüfe RPC Ereignisse","ru": "Проверять RPC сообщения"},
+        "Check rfd Events"  : {"en": "Check rfd Events",     "de": "Prüfe rfd Ereignisse","ru": "Проверять rfd сообщения"},
+        "Virtual Key"       : {"en": "Virtual Key",          "de": "Virtual Key",         "ru": "Virtual Key"},
+        "Check hs485d Events": {"en": "Check hs485d Events", "de": "Prüfe hs485d Ereignisse", "ru": "Проверять hs485d сообщения"},
+        "HomeMatic ReGaHSS" : {"en": "HomeMatic ReGaHSS",    "de": "HomeMatic ReGaHSS",   "ru": "HomeMatic ReGaHSS"},
+        "Polling"           : {"en": "Polling",              "de": "Polling",             "ru": "Polling"},
+        "Interval (ms)"     : {"en": "Interval (ms)",        "de": "Intervall (ms)",      "ru": "Интервал (ms)"},
+        "Polling Trigger"   : {"en": "Polling Trigger",      "de": "Polling-Trigger",     "ru": "Polling-Trigger"}
+    };
+
+    function translateWord (text, lang, dictionary) {
+        if (!ccuIoSettings) return text;
+        if (!dictionary) dictionary = ccuWords;
+        if (!lang)       lang       = ccuIoSettings.language || 'en';
+
+        if (!dictionary) {
+            return text;
+        }
+
+        if (dictionary[text]) {
+            var newText = dictionary[text][lang];
+            if (newText){
+                return newText;
+            }
+            else if (lang != 'en') {
+                newText = dictionary[text]['en'];
+                if (newText){
+                    return newText;
+                }
+            }
+
+        }
+        return text;
+    }
+
+    function translateWordBack (text, lang, dictionary) {
+        if (!dictionary) {
+            return text;
+        }
+        for (var word in dictionary) {
+            if (dictionary[word] === null)
+                continue;
+            if (dictionary[word][lang] == text)
+                return word;
+        }
+
+        console.log ("back: " + text);
+        return text;
+    }
+    function translateAll (lang, dictionary) {
+        lang  = lang || ccuIoSettings.language || 'en';
+        dictionary = dictionary || ccuWords;
+
+        $(".translate").each(function (idx) {
+            var curlang = $(this).attr ('data-lang');
+            var text    = $(this).html ();
+            if (curlang != lang) {
+                if (curlang) {
+                    text = translateWordBack (text, curlang, dictionary);
+                }
+
+                var transText = translateWord (text, lang, dictionary);
+                if (transText) {
+                    $(this).html (transText);
+                    $(this).attr ('data-lang', lang);
+                }
+            }
+        });
+    }
+
+    function storeSettings () {
+        console.log (currentAdapterSettings);
+        updateAdapterSettings();
+    }
+
+    if (currentAdapterSettings.enabled) {
+        $("#ccu_enabled option[value='false']").removeAttr("selected");
+        $("#ccu_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#ccu_enabled option[value='true']").removeAttr("selected");
+        $("#ccu_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#ccu_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#ccu_enabled option:selected").val() == "false" ? false : true);
+        storeSettings();
+    });
+
+    $("#ccuIp").val(currentAdapterSettings.settings.ccuIp);
+
+    $("#ccuIp").change(function () {
+        currentAdapterSettings.settings.ccuIp = $(this).val();
+        storeSettings();
+    });
+
+    $("#binrpc_listenIp").val(currentAdapterSettings.settings.binrpc.listenIp);
+
+    $("#binrpc_listenIp").change(function () {
+        currentAdapterSettings.settings.binrpc.listenIp = $(this).val();
+        storeSettings();
+    });
+
+    $("#binrpc_listenPort").val(currentAdapterSettings.settings.binrpc.listenPort);
+
+    $("#binrpc_listenPort").change(function () {
+        currentAdapterSettings.settings.binrpc.listenPort = $(this).val();
+        storeSettings();
+    });
+
+    if (currentAdapterSettings.settings.binrpc.rfdEnabled) {
+        $("#binrpc_rfdEnabled").attr("checked", true);
+    }
+
+    $("#binrpc_rfdEnabled").change(function () {
+        currentAdapterSettings.settings.binrpc.rfdEnabled = $("#binrpc_rfdEnabled").is(":checked");
+        storeSettings();
+    });
+
+    if (currentAdapterSettings.settings.binrpc.hs485dEnabled)
+        $("#binrpc_hs485dEnabled").attr("checked", true);
+
+    $("#binrpc_hs485dEnabled").change(function () {
+        currentAdapterSettings.settings.binrpc.hs485dEnabled = $("#binrpc_hs485dEnabled").is(":checked");
+        storeSettings();
+    });
+
+    if (currentAdapterSettings.settings.binrpc.cuxdEnabled) {
+        $("#binrpc_cuxdEnabled").attr("checked", true);
+    }
+
+    $("#binrpc_cuxdEnabled").change(function () {
+        currentAdapterSettings.settings.binrpc.cuxdEnabled = $("#binrpc_cuxdEnabled").is(":checked");;
+        storeSettings();
+    });
+
+    $("#binrpc_cuxdPort").val(currentAdapterSettings.settings.binrpc.cuxdPort);
+
+    $("#binrpc_cuxdPort").change(function () {
+        currentAdapterSettings.settings.binrpc.cuxdPort = $(this).val();
+        storeSettings();
+    });
+
+    if (currentAdapterSettings.settings.binrpc.checkEvents.enabled) {
+        $("#binrpc_checkEvents_enabled").attr("checked", true);
+    }
+
+    $("#binrpc_checkEvents_enabled").change(function () {
+        currentAdapterSettings.settings.binrpc.checkEvents.enabled = $("#binrpc_checkEvents_enabled").is(":checked");;
+        storeSettings();
+    });
+
+    $("#binrpc_checkEvents_rfd").val(currentAdapterSettings.settings.binrpc.checkEvents.rfd);
+    $("#binrpc_checkEvents_rfd").change(function () {
+        currentAdapterSettings.settings.binrpc.checkEvents.rfd = $("#binrpc_checkEvents_rfd").val();
+        storeSettings();
+    });
+
+    $("#binrpc_checkEvents_hs485d").val(currentAdapterSettings.settings.binrpc.checkEvents.hs485d);
+    $("#binrpc_checkEvents_hs485d").change(function () {
+        currentAdapterSettings.settings.binrpc.checkEvents.hs485d = $("#binrpc_checkEvents_hs485d").val();
+        storeSettings();
+    });
+
+
+    $("#regahss_pollDataInterval").val(currentAdapterSettings.settings.regahss.pollDataInterval);
+    $("#regahss_pollDataInterval").change(function () {
+        currentAdapterSettings.settings.regahss.pollDataInterval = $(this).val();
+        storeSettings();
+    });
+
+    $("#regahss_pollDataTrigger").val(currentAdapterSettings.settings.regahss.pollDataTrigger);
+    $("#regahss_pollDataTrigger").change(function () {
+        currentAdapterSettings.settings.regahss.pollDataTrigger = $("#regahss_pollDataTrigger").val();
+        storeSettings();
+    });
+
+    if (currentAdapterSettings.settings.regahss.pollData) {
+        $("#regahss_pollData").attr("checked", true);
+    }
+
+    $("#regahss_pollData").change(function () {
+        currentAdapterSettings.settings.regahss.pollData = $("#regahss_pollData").is(":checked");
+        storeSettings();
+    });
+
+    if (currentAdapterSettings.settings.regahss.pollDataTriggerEnabled) {
+        $("#regahss_pollDataTriggerEnabled").attr("checked", true);
+    }
+
+    $("#regahss_pollDataTriggerEnabled").change(function () {
+        currentAdapterSettings.settings.regahss.pollDataTriggerEnabled = $("#regahss_pollDataTriggerEnabled").is(":checked");
+        storeSettings();
+    });
+
+    translateAll (ccuIoSettings.language, adapterWords);
+
+</script>

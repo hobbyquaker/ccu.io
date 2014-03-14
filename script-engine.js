@@ -769,11 +769,9 @@ function getState(id, dpType) {
     }
 }
 
-
 function getTimestamp(id) {
     return datapoints[id][0];
 }
-
 
 function executeProgram(id, callback) {
     scriptEngine.socket.emit("executeProgram", id, function () {
@@ -799,6 +797,14 @@ function setObject(id, obj, callback) {
     scriptEngine.socket.emit("setObject", id, obj, function () {
         if (callback) {
             callback();
+        }
+    });
+}
+// read directory (root is www)
+function readdir(path, callback) {
+    scriptEngine.socket.emit("readdir", ["www" + ((!path) ? "" : "/" + path)], function (data) {
+        if (callback) {
+            callback(data);
         }
     });
 }

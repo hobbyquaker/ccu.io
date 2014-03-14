@@ -50,6 +50,13 @@ div.settings-box {
     margin-bottom: 12px;
 }
 
+div.control-box {
+    border: 1px solid grey;
+    width: 650px;
+    padding-left: 6px;
+    margin-bottom: 12px;
+}
+
 table.settings-table {
     font-size: 12px;
 }
