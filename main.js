@@ -1256,6 +1256,10 @@ function initSocketIO(_io) {
         });
 
         socket.on('setStats', function(name, value) {
+			if (!stats.counters[name]) {
+				stats.counters[name] = {value: 0};
+			}
+			
             stats.counters[name].value = value;
         });
 

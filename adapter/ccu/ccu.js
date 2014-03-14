@@ -696,7 +696,6 @@ function quit() {
         setTimeout(quit, 500);
 
     } else {
-        logger.info("adapter CCU   uptime "+stats.uptime());
         logger.info("adapter CCU   terminating");
         setTimeout(function () {
             process.exit(0);
