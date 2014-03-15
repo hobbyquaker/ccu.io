@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.26*
+*aktuelle Version: 1.0.27*
 
 ## Dokumentation
 
@@ -36,6 +36,12 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.27
+* (Hobbyquaker) Lade-Anzeige: CSS gefixt
+* (Hobbyquaker) neue Methode delObject (via Socket.IO und in Script-Engine)
+* (Hobbyquaker) Script-Engine: readdir (root ist das CCU.IO-Verzeichnis - gleiches Verhalten wie readdir via Socket.IO)
+* (Hobbyquaker) Node-Modul easysax ergänzt (notwendig für Sonos-Adapter)
 
 ### 1.0.26
 * (Hobbyquaker) nextId, getNextId
