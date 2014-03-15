@@ -2188,7 +2188,8 @@ function savePersistentObjects() {
 function loadPersistentObjects() {
     try {
         var x = JSON.parse(fs.readFileSync(settings.datastorePath+"io-persistent-objs.json"));
-        for (var obj in x) {
+        for (var id in x) {
+            var obj = x[id];
             if (obj.TypeName) {
                 if (!regaIndex[obj.TypeName]) {
                     regaIndex[obj.TypeName] = [];
@@ -2205,12 +2206,14 @@ function loadPersistentObjects() {
             if (obj.Address) {
                 regaIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
             }
+            logger.verbose("persistent added "+JSON.stringify(obj));
 
         }
         regaObjects = x;
         logger.info("ccu.io        loaded persistent objects");
         return true;
     } catch (e) {
+        logger.error("ccu.io        error while loading persistent objects: "+e);
         return false;
     }
 }
