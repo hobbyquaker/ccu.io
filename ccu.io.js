@@ -1744,6 +1744,11 @@ function initSocketIO(_io) {
             return id;
         }
 
+        // Todo deletion of persistent objects
+        function delObject(id) {
+
+        }
+
         function setObject(id, obj, callback) {
             if (!obj) {
                 return;
@@ -1885,6 +1890,8 @@ function initSocketIO(_io) {
         }
 
         socket.on('setObject', setObject);
+
+        socket.on('delObject', delObject);
 
         // Eine Homematic Servicemeldung bestätigen
         socket.on('alarmReceipt', function (id) {
