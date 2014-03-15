@@ -38,6 +38,7 @@ siehe http://ccu.io/
 ## Changelog
 
 ### 1.0.27
+* (Hobbyquaker) Bugfix: index von persistenten Objekten
 * (Hobbyquaker) Lade-Anzeige: CSS gefixt
 * (Hobbyquaker) neue Methode delObject (via Socket.IO und in Script-Engine)
 * (Hobbyquaker) Script-Engine: readdir (root ist das CCU.IO-Verzeichnis - gleiches Verhalten wie readdir via Socket.IO)
