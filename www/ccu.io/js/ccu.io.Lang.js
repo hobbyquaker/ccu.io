@@ -16,18 +16,18 @@ var ccuWords = {
     "update"            : {"en": "update",               "de": "update",              "ru": "обновить"},
     "check"             : {"en": "check",                "de": "prüfen",              "ru": "проверить"},
     "CCU reachable:"    : {"en": "CCU reachable:",       "de": "CCU erreichbar:",     "ru": "CCU полключена:"},
-    "ReGa Up:"          : {"en": "ReGa Up:",             "de": "ReGa erreichbar:",            "ru": "ReGa запущена:"},
-    "ReGa Data loaded:" : {"en": "ReGa Data loaded:",    "de": "ReGa-Data geladen:",  "ru": "Данные ReGa загружкны:"},
+    "ReGa Up:"          : {"en": "ReGa Up:",             "de": "ReGa erreichbar:",    "ru": "ReGa запущена:"},
+    "ReGa Data loaded:" : {"en": "ReGa Data loaded:",    "de": "ReGa-Data geladen:",  "ru": "Данные ReGa загружены:"},
     "RPC Inits:"        : {"en": "RPC Inits:",           "de": "RPC Inits:",          "ru": "RPC Inits:"},
     "script-engine enabled:" : {"en": "script-engine enabled:","de": "Script-Engine aktiviert:", "ru": "Script-engine запущена:"},
-    "logging enabled:"  : {"en": "logging enabled:",     "de": "Logging aktiviert:",        "ru": "Протоколлирование:"},
+    "logging enabled:"  : {"en": "logging enabled:",     "de": "Logging aktiviert:",  "ru": "Протоколлирование:"},
     "Last ReGa poll:"   : {"en": "Last ReGa poll:",      "de": "Letzte ReGa-Anfrage:","ru": "Последний ReGa запрос:"},
     "Last rf event:"    : {"en": "Last rf event:",       "de": "Letzte rf-Ereignis:", "ru": "Последнее rf событие:"},
     "Last hs485 event:" : {"en": "Last hs485 event:",    "de": "Letzte hs485-Ereignis:","ru": "Последнее hs485 событие:"},
     "Last CUx event:"   : {"en": "Last CUx event:",      "de": "Letzte CUx-Ereignis:","ru": "Последнее CUxD событие:"},
     "restart CCU.IO"    : {"en": "restart CCU.IO",       "de": "Neustart CCU.IO",     "ru": "Перезапуск CCU.IO"},
     "refresh Addons"    : {"en": "refresh Addons",       "de": "Addons neu laden",    "ru": "Перезагрузить дополнения"},
-    "reload ReGa data"  : {"en": "reload CCU data",     "de": "CCU-Daten neu laden", "ru": "Считать ReGa-данные заново"},
+    "reload ReGa data"  : {"en": "reload CCU data",      "de": "CCU-Daten neu laden", "ru": "Считать ReGa-данные заново"},
     "create Backup"     : {"en": "create Backup",        "de": "Backup erzeugen",     "ru": "Создать резервную копию"},
     "restart RPC inits" : {"en": "restart RPC inits",    "de": "RPC inits neu starten", "ru": "Перезапуск RPC inits"},
     "apply Backup"      : {"en": "apply Backup",         "de": "Backup anwenden",     "ru": "Применить резервную копию"},
@@ -83,10 +83,10 @@ var ccuWords = {
     "save changes"      : {"en": "save changes",         "de": "Änderungen speichern","ru": "Сохранить изменения"},
     "install"           : {"en": "install",              "de": "Installieren",        "ru": "Установить"},
     "CCU.IO is reloading all CCU data. Please be patient. This page will be automatically reloaded when finished.": {
-        "en": "CCU.IO is reloading all CCU data. Please be patient. This page will be automatically reloaded when finished.",              
-        "de": "CCU.IO lädt alle Daten aus CCU neu. Bitte warten. Die Seite wird automatisch neu geladen, wenn Ladeforgang abgeschlossen wird.",       
+        "en": "CCU.IO is reloading all CCU data. Please be patient. This page will be automatically reloaded when finished.",
+        "de": "CCU.IO lädt alle Daten aus CCU neu. Bitte warten. Die Seite wird automatisch neu geladen, wenn Ladeforgang abgeschlossen wird.",
         "ru": "CCU.IO загружает все данные из CCU. Запаситесь терпением. Страница автоматически обновиться по окончании загрузки."
-        },
+    },
     "CCU.IO is restarting.": {"en": "CCU.IO is restarting.", "de": "CCU.IO startet neu. ",       "ru": "CCU.IO перезапускается."},
     "name"              : {"en": "name",                  "de": "Name",               "ru": "Имя"},
     "enabled"           : {"en": "enabled",               "de": "Aktiviert",          "ru": "Активен"},
@@ -117,49 +117,49 @@ var ccuWords = {
     "CCU.IO disconnected":{"en": "CCU.IO disconnected",   "de": "Verbindung zu CCU.IO getrennt", "ru": "Связь с CCU.IO прервана"},
     "install started"   : {"en": "install started",       "de": "Installation gestartet","ru": "Установка начата"},
     "CCU.IO settings saved. Please restart CCU.IO" : {
-        "en": "CCU.IO settings saved. Please restart CCU.IO",                 
+        "en": "CCU.IO settings saved. Please restart CCU.IO",
         "de": "CCU.IO Einstellungen gespeichert. Bitte CCU.IO neu starten",
         "ru": "CCU.IO настройки сохранены. Перезапустите CCU.IO"
-        },
+    },
     "Error: invalid JSON" : {"en": "Error: invalid JSON", "de": "Fehler: ungültiges JSON","ru": "Ошибка: неправильный формат JSON"},
     " adapter settings saved. Please restart CCU.IO" : {
         "en": " adapter settings saved. Please reload adapter",
         "de": " Adpater-Einstellungen gespeichert. Bitte Adapter neu laden",
         "ru": ": настройки сохранены. Перезапустите CCU.IO или драйвер"
-        },
+    },
     "Apply backup started. Please be patient..." : {
-        "en": "Apply backup started. Please be patient...",                 
-        "de": "Apply backup started. Please be patient...",             
+        "en": "Apply backup started. Please be patient...",
+        "de": "Apply backup started. Please be patient...",
         "ru": "Резервная копия распаковывается. Подождтите..."
-        },
+    },
     "Apply backup done. Restart CCU.IO" : {
-        "en": "Apply backup done. Restart CCU.IO",                 
+        "en": "Apply backup done. Restart CCU.IO",
         "de": "Sicherung eingespielt. Bitte CCU.IO neu starten.",
         "ru": "Резервная копия распакована. Перезапустите CCU.IO"
-        },
+    },
     "Error: Backup failed." : {
-        "en": "Error: Backup failed.",                 
-        "de": "Fehler: Sicherheitskopie konnte nicht erzeugt werden",             
+        "en": "Error: Backup failed.",
+        "de": "Fehler: Sicherheitskopie konnte nicht erzeugt werden",
         "ru": "Ошибка: создание резервной копии не удалось."
-        },
+    },
     "Backup started. Please be patient..." : {
-        "en": "Backup started. Please be patient...",                 
+        "en": "Backup started. Please be patient...",
         "de": "Sicherung wird erstellt. Bitte warten...",
         "ru": "Создание резервной копии запущено. Подождтите..."
-        },
+    },
     "Update started. Please be patient..." : {
-        "en": "Update started. Please be patient...",                 
+        "en": "Update started. Please be patient...",
         "de": "Update gestartet. Bitte warten...",
         "ru": "Обновление начато. Подождтите..."
-        },
+    },
     "Update done. Restarting..." : {
-        "en": "Update done. Restarting...",                 
-        "de": "Update beendet. Neustart...",             
+        "en": "Update done. Restarting...",
+        "de": "Update beendet. Neustart...",
         "ru": "Обновление завершено. Перезагрузка..."
-        },
+    },
     "Error: update failed." : {
-        "en": "Error: update failed.",                 
-        "de": "Fehler: update konnte nicht durchgeführt werden.",             
+        "en": "Error: update failed.",
+        "de": "Fehler: update konnte nicht durchgeführt werden.",
         "ru": "Ошибка: обновление не удалось."
-        }
+    }
 };
