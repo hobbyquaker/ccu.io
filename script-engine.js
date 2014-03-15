@@ -807,9 +807,9 @@ function delObject(id) {
     scriptEngine.socket.emit("delObject", id);
 }
 
-// read directory (root is www)
+// read directory (root is ccu.io/)
 function readdir(path, callback) {
-    scriptEngine.socket.emit("readdir", ["www" + ((!path) ? "" : "/" + path)], function (data) {
+    scriptEngine.socket.emit("readdir", [path], function (data) {
         if (callback) {
             callback(data);
         }
