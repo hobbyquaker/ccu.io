@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.26";
+settings.version = "1.0.27";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -1744,9 +1744,18 @@ function initSocketIO(_io) {
             return id;
         }
 
-        // Todo deletion of persistent objects
         function delObject(id) {
-
+            var obj = regaObjects[id];
+            if (obj) {
+                if (regaIndex.Name[obj.Name] && regaIndex.Name[obj.Name][1] == id) {
+                    delete regaIndex.Name[obj.Name];
+                }
+                if (regaIndex.Address[obj.Address] && regaIndex.Address[obj.Address][1] == id) {
+                    delete regaIndex.Address[obj.Address];
+                }
+            }
+            delete regaObjects[id];
+            savePersistentObjects();
         }
 
         function setObject(id, obj, callback) {
