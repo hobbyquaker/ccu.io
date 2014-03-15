@@ -41,7 +41,8 @@ siehe http://ccu.io/
 * (Hobbyquaker) Lade-Anzeige: CSS gefixt
 * (Hobbyquaker) neue Methode delObject (via Socket.IO und in Script-Engine)
 * (Hobbyquaker) Script-Engine: readdir (root ist das CCU.IO-Verzeichnis - gleiches Verhalten wie readdir via Socket.IO)
-* (Hobbyquaker) Node-Modul easysax ergänzt (notwendig für Sonos-Adapter)
+* (Bluefox) Node-Modul easysax ergänzt (notwendig für Sonos-Adapter)
+* (Bluefox) Fixes Übersetzung
 
 ### 1.0.26
 * (Hobbyquaker) nextId, getNextId
