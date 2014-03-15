@@ -803,6 +803,19 @@ function setObject(id, obj, callback) {
     });
 }
 
+function delObject(id) {
+    scriptEngine.socket.emit("delObject", id);
+}
+
+// read directory (root is www)
+function readdir(path, callback) {
+    scriptEngine.socket.emit("readdir", ["www" + ((!path) ? "" : "/" + path)], function (data) {
+        if (callback) {
+            callback(data);
+        }
+    });
+}
+
 function pushover(obj) {
     if (scriptEngine.settings.adapters.pushover && scriptEngine.settings.adapters.pushover.enabled) {
         var msg = {};
