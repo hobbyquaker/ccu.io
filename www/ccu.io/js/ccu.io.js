@@ -276,10 +276,10 @@ $(document).ready(function () {
         $("#stringtable").html(JSON.stringify(obj, null, "  "));
     });
 
-    function getYesNo (isTrue, isWarning) {
+    function getYesNo(isTrue, isWarning) {
         return isTrue ? "<span class='indicator-true translate' data-lang='"+(ccuIoSettings.language || 'en')+"'>"+translateWord("YES")+"</span>"  : "<span class='" + (!isWarning ? "indicator-false" :"indicator-false-warning")+" translate' data-lang='"+(ccuIoSettings.language || 'en')+"'>"+translateWord("NO")+"</span>";
     }
-    function getTrueFalse (isTrue) {
+    function getTrueFalse(isTrue) {
         return isTrue ? "<span style='color:green'><b data-lang='"+(ccuIoSettings.language || 'en')+"' class='translate'>"+translateWord('TRUE')+"</b></span>" : "<span data-lang='"+(ccuIoSettings.language || 'en')+"' class='translate'>"+translateWord('false')+"</span>";
     }
     $("#loader_message").append(translateWord("loading settings") + " ... <br/>");
@@ -644,7 +644,7 @@ $(document).ready(function () {
     $("#grid_datapoints").jqGrid({
         datatype: "local",
 
-        colNames:['id', getWord('TypeName'), getWord('Name'), getWord('Parent Name'), getWord('Value'), getWord('Timestamp'), getWord('ack'), getWord('lastChange')],
+        colNames:['id', getWord('TypeName'), getWord('Name'), getWord('Parent Name'), getWord('Value'), getWord('Timestamp'), getWord('ack'), getWord('lastChange'), 'persistent'],
         colModel:[
             {name:'id',index:'id', width:60, sorttype: "int"},
             {name:'type',index:'type', width:80},
@@ -653,7 +653,8 @@ $(document).ready(function () {
             {name:'val',index:'val', width:160, editable:true},
             {name:'timestamp',index:'timestamp', width:140},
             {name:'ack',index:'ack', width:50},
-            {name:'lastChange',index:'lastChange', width:140}
+            {name:'lastChange',index:'lastChange', width:140},
+            {name:'persistent',index:'persistent', width:30}
         ],
         rowNum:20,
         autowidth: true,
@@ -781,7 +782,8 @@ $(document).ready(function () {
                     val: $('<div/>').text(obj[id][0]).html(),
                     timestamp: (obj[id][1] == "1970-01-01 01:00:00" ? "" : obj[id][1]),
                     ack: obj[id][2],
-                    lastChange: (obj[id][3] == "1970-01-01 01:00:00" ? "" : obj[id][3])
+                    lastChange: (obj[id][3] == "1970-01-01 01:00:00" ? "" : obj[id][3]),
+                    persistent: (regaObjects[id] && regaObjects[id]._persistent ? "*" : "")
                 };
                 $("#grid_datapoints").jqGrid('addRowData',id,data);
             }
