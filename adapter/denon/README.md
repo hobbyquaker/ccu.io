@@ -39,6 +39,8 @@ Denon adapter
 
 ## Changelog
 
+### 0.1.1
+* Status über Variable sichtbar
 
 ### 0.1.0
 * First launch

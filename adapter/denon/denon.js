@@ -25,6 +25,7 @@ var logger = require(__dirname+'/../../logger.js'),
 	net    = require('net');
 	
 	var socketOnkyo;
+	var denonConnected = 'false';
 	var objects = {},
 	    datapoints = {};
 		
@@ -50,6 +51,8 @@ function connectDenon() {
 	logger.info("adapter denon starting connect to:"+denonSettings.IP+" "+denonSettings.port);
 	socketOnkyo = net.connect({port: denonSettings.port, host: denonSettings.IP},
 	  function() { 
+		denonConnected = 'true';
+		setState(denonSettings.firstId+20,true);
 		logger.info("adapter denon connected to Receiver: "+ denonSettings.IP);
 		logger.info("adapter denon ccuId is set to: "+ denonSettings.ccuId);
 		//Wenn Du noch was senden willst musst (initialisierung?) dann so:
@@ -559,7 +562,9 @@ socketOnkyo.on('data', function (data) {
 //Wird beim Socket Fehler aufgerufen
 socketOnkyo.on('error', function (data) {
 	logger.info("adapter denon ERROR Connection Receiver:"+data.toString());
-	//Neuen connect in 10sec initiieren
+	setState(denonSettings.firstId+20,false);                                    
+	denonConnected = 'false';
+	//Neuen connect in 10sec initiieren (geht nur einmalig, deshalb setinterval denonreconnect)
     activityTimeout = setTimeout(function () {
        connectDenon();
     }, 10000);
@@ -660,6 +665,11 @@ function getState(id, callback) {
     });
 }
 
+function denonReconnect() {
+  if (denonConnected != 'true'){
+      connectDenon();
+      }
+}
 function sleep(milliseconds) {
     var start = new Date().getTime();
     for (var i = 0; i < 1e7; i++) {
@@ -746,6 +756,10 @@ function DenonInit() {
 	  "DPInfo": "Denon",	  
 	  TypeName: "VARDP"
 	});
+	setObject(denonSettings.firstId+20, {
+	  Name: "Denon_Connect_Status",
+	  TypeName: "HSSDP"
+	}); 
   	
     logger.info("adapter denon objects inserted, starting at: "+denonSettings.firstId);
 }
