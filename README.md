@@ -1,14 +1,14 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.27*
+*aktuelle Version: 1.0.28*
 
 ## Dokumentation
 
 siehe http://ccu.io/
 
 
-## Todo/Roadmap
+## Todo/Roadmap (unsortiert)
 
 * adapter/skeleton-ipc.js
 * Prozesse überwachen (und evtl abgestürzte Adapter/Script-Engine neu starten?)
@@ -16,17 +16,18 @@ siehe http://ccu.io/
 * Logrotate für ccu.io.log
 * settings.html für diverse Adapter
 * diverse Adapter auf ipc umstellen?
-* Pushover Callbacks (Nachrichten bestätigen, callback Methode aufrufen)
-* Weboberfläche Ladeanzeige
+* Adapter: Pushover - Callbacks (Nachrichten bestätigen, callback Methode aufrufen)
 * Weboberfläche Datenpunkte anlegen, löschen
 * Weboberfläche Devices in Baumstruktur anzeigen
 * Weboberfläche Objekte neu laden wenn CCU.IO neue Objekte von Adaptern/Scripts erhalten hat
-* Persistente Objekte in regaIndex aufnehmen!
-* ArtNet (DMX) Adapter
-* Rocket LED Adapter
-* iTunes Adapter
+* Adapter: ArtNet (DMX)
+* Adapter: Limitless LED
+* Adapter: iTunes
+* Adapter: Samsung SmartTV
+* Adapter: Anymote (control Google TV)
+* Adapter: Hue - Gruppensteuerung
+* Nutzungsstatistiken (welche Addons sind in welcher Version installiert, welche Adapter sind aktiviert, wie viele DashUI-Views sind definiert, wie viele Scripte werden verwendet)
 * Script-Engine Addins (von Addons "mitgebrachte" Methoden)?
-* Anymote Adapter (control Google TV)
 * Doku, Doku, Doku
 * CMS für Homepage?
 * CCU2-Paket für einfache Installation
@@ -36,6 +37,10 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.28
+* (Hobbyquaker) readFile Methode liefert Fehler zurück wenn JSON.parse scheitert
+* (BlueEssi) Adapter Denon: Version 0.1.1 - Status über Variable sichtbar
 
 ### 1.0.27
 * (Hobbyquaker) Bugfix: index von persistenten Objekten
