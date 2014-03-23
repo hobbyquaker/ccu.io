@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.27";
+settings.version = "1.0.28";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -1588,8 +1588,13 @@ function initSocketIO(_io) {
                     logger.error("ccu.io        failed loading file "+settings.datastorePath+name);
                     callback(undefined);
                 } else {
-                    var obj = JSON.parse(data);
-                    callback(obj);
+                    try {
+                        var obj = JSON.parse(data);
+                        callback(obj);
+                    } catch (e) {
+                        callback(null, e);
+                    }
+
                 }
             });
         });
