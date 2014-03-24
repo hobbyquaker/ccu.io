@@ -1,5 +1,5 @@
 /**
- *      CCU.IO RaspberryPi Adapter 0.3
+ *      CCU.IO RaspberryPi Adapter 0.4
  *
  *      20140123  Eisbaeeer - added PiFace
  *                enable|disable PiFace with "piface": false|true
@@ -102,7 +102,8 @@ socket.emit("setObject", settings.adapters.rpi.firstId, {
     Interface: "CCU.IO",
     Channels: [
         72501
-    ]
+    ],
+    _persistent: true
 });
 
 socket.emit("setObject", settings.adapters.rpi.firstId+1, {
@@ -113,7 +114,8 @@ socket.emit("setObject", settings.adapters.rpi.firstId+1, {
     DPs: {
         TEMPERATURE: settings.adapters.rpi.firstId+2
     },
-    Parent: settings.adapters.rpi.firstId
+    Parent: settings.adapters.rpi.firstId,
+    _persistent: true
 });
 
 socket.emit("setObject", settings.adapters.rpi.firstId+3, {
@@ -124,7 +126,8 @@ socket.emit("setObject", settings.adapters.rpi.firstId+3, {
     DPs: {
         LOAD: settings.adapters.rpi.firstId+4
     },
-    Parent: settings.adapters.rpi.firstId
+    Parent: settings.adapters.rpi.firstId,
+    _persistent: true
 });
 
 
@@ -136,7 +139,8 @@ socket.emit("setObject", settings.adapters.rpi.firstId+2, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "°C",
-    "Parent": settings.adapters.rpi.firstId+1
+    "Parent": settings.adapters.rpi.firstId+1,
+    _persistent: true
 });
 
 socket.emit("setObject", settings.adapters.rpi.firstId+4, {
@@ -145,7 +149,8 @@ socket.emit("setObject", settings.adapters.rpi.firstId+4, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "",
-    "Parent": settings.adapters.rpi.firstId+3
+    "Parent": settings.adapters.rpi.firstId+3,
+    _persistent: true
 });
 
 socket.emit("setObject", settings.adapters.rpi.firstId+3, {
@@ -156,7 +161,8 @@ socket.emit("setObject", settings.adapters.rpi.firstId+3, {
     DPs: {
         LOAD: settings.adapters.rpi.firstId+4
     },
-    Parent: settings.adapters.rpi.firstId
+    Parent: settings.adapters.rpi.firstId,
+    _persistent: true
 });
 
 var dpId = settings.adapters.rpi.firstId+5;
@@ -171,18 +177,21 @@ if (adapterSettings.gpio) {
                 DIRECTION: dpId+1,
                 STATE: dpId+2
             },
-            Parent: settings.adapters.rpi.firstId
+            Parent: settings.adapters.rpi.firstId,
+            _persistent: true
         });
         socket.emit("setObject", dpId+1, {
             "Name": adapterSettings.deviceName+".GPIO"+gpioNr+".DIRECTION",
             "TypeName": "HSSDP",
-            "Parent": dpId
+            "Parent": dpId,
+            _persistent: true
         });
 
         socket.emit("setObject", dpId+2, {
             "Name": adapterSettings.deviceName+".GPIO"+gpioNr+".STATE",
             "TypeName": "HSSDP",
-            "Parent": dpId
+            "Parent": dpId,
+            _persistent: true
         });
         gpioIDs[gpioNr] = dpId+2;
 
@@ -217,14 +226,16 @@ if (adapterSettings["1wire"]) {
             Address: adapterSettings.deviceName+".1WIRE:"+wireDevice,
             HssType: "RPI-1WIRE",
             DPs: dpId+1,
-            Parent: settings.adapters.rpi.firstId
+            Parent: settings.adapters.rpi.firstId,
+            _persistent: true
         });
 
         socket.emit("setObject", dpId+1, {
             "Name": adapterSettings.deviceName+".1WIRE:"+wireDevice+".TEMPERATURE",
             "TypeName": "HSSDP",
             "ValueUnit": "°C",
-            "Parent": dpId
+            "Parent": dpId,
+            _persistent: true
         });
         wireDPs[wireDevice] = dpId+1;
         dpId += 2;
@@ -244,7 +255,8 @@ socket.emit("setObject", dpId, {
     Address: adapterSettings.deviceName+".DISK",
     HssType: "RPI-DISK",
     DPs: diskDPs,
-    Parent: settings.adapters.rpi.firstId
+    Parent: settings.adapters.rpi.firstId,
+    _persistent: true
 });
 
 socket.emit("setObject", dpId+1, {
@@ -253,7 +265,8 @@ socket.emit("setObject", dpId+1, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "GB",
-    "Parent": dpId
+    "Parent": dpId,
+    _persistent: true
 });
 socket.emit("setObject", dpId+2, {
     "Name": adapterSettings.deviceName+".DISK.USED",
@@ -261,7 +274,8 @@ socket.emit("setObject", dpId+2, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "GB",
-    "Parent": dpId
+    "Parent": dpId,
+    _persistent: true
 });
 socket.emit("setObject", dpId+3, {
     "Name": adapterSettings.deviceName+".DISK.FREE",
@@ -269,7 +283,8 @@ socket.emit("setObject", dpId+3, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "GB",
-    "Parent": dpId
+    "Parent": dpId,
+    _persistent: true
 });
 socket.emit("setObject", dpId+4, {
     "Name": adapterSettings.deviceName+".DISK.USAGE",
@@ -277,7 +292,8 @@ socket.emit("setObject", dpId+4, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "%",
-    "Parent": dpId
+    "Parent": dpId,
+    _persistent: true
 });
 
 dpId += 5;
@@ -294,7 +310,8 @@ socket.emit("setObject", dpId, {
     Address: adapterSettings.deviceName+".MEM",
     HssType: "RPI-MEM",
     DPs: memDPs,
-    Parent: settings.adapters.rpi.firstId
+    Parent: settings.adapters.rpi.firstId,
+    _persistent: true
 });
 
 socket.emit("setObject", dpId+1, {
@@ -303,7 +320,8 @@ socket.emit("setObject", dpId+1, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "MB",
-    "Parent": dpId
+    "Parent": dpId,
+    _persistent: true
 });
 
 socket.emit("setObject", dpId+2, {
@@ -312,7 +330,8 @@ socket.emit("setObject", dpId+2, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "MB",
-    "Parent": dpId
+    "Parent": dpId,
+    _persistent: true
 });
 
 socket.emit("setObject", dpId+3, {
@@ -321,7 +340,8 @@ socket.emit("setObject", dpId+3, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "MB",
-    "Parent": dpId
+    "Parent": dpId,
+    _persistent: true
 });
 
 dpId += 4;
@@ -338,7 +358,8 @@ socket.emit("setObject", dpId, {
     Address: adapterSettings.deviceName+".SWAP",
     HssType: "RPI-SWAP",
     DPs: swapDPs,
-    Parent: settings.adapters.rpi.firstId
+    Parent: settings.adapters.rpi.firstId,
+    _persistent: true
 });
 
 socket.emit("setObject", dpId+1, {
@@ -347,7 +368,8 @@ socket.emit("setObject", dpId+1, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "MB",
-    "Parent": dpId
+    "Parent": dpId,
+    _persistent: true
 });
 
 socket.emit("setObject", dpId+2, {
@@ -356,7 +378,8 @@ socket.emit("setObject", dpId+2, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "MB",
-    "Parent": dpId
+    "Parent": dpId,
+    _persistent: true
 });
 
 socket.emit("setObject", dpId+3, {
@@ -365,10 +388,14 @@ socket.emit("setObject", dpId+3, {
     "Operations": 5,
     "ValueType": 4,
     "ValueUnit": "MB",
-    "Parent": dpId
+    "Parent": dpId,
+    _persistent: true
 });
 
 dpId += 9;
+
+//PiFace
+if (settings.adapters.rpi.settings.piface) {
 
 var pifaceinDPs = {
     IN0:  dpId+1,
@@ -557,8 +584,7 @@ socket.emit("setObject", dpId+8, {
 });
 
 
-//PiFace 
-if (settings.adapters.rpi.settings.piface) {
+
 //Wird aufgerufen bei Änderungen von Objekten in CCU.IO. 
     socket.on('event', function (obj) {
         if (!obj || !obj[0]) {

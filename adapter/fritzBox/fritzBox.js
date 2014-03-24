@@ -3,7 +3,12 @@
  *      01'2014 Bluefox
  *      Can store incoming calls into the list.
  *
- *      Version 0.3
+ *      Version 0.4
+ *
+ * Changelog 0.4 (09.02.2014)
+ * IP-Adresse standardmäßig auf fritz.box geändert (anli)
+ * Weitergehende Meldung im Log-Eintrag, wenn Fehler auftritt (IP prüfen und Dialmonitor aktiv prüfen) (anli)
+ * kleinere Korrekturen
  *
  *    Wenn man beim Telefon #96*5* eintippt, wird der TCP-Port 1012 geoffnet.
  *    Mit #96*4* wird dieser wieder geschlossen.
@@ -48,12 +53,13 @@ var objState                  = fritzBoxSettings.firstId + 0, // Current state o
     objAllCallsList           = fritzBoxSettings.firstId + 8, // Incoming, Outgoing, Missed all together
     objAllCallsListFormatted  = fritzBoxSettings.firstId + 9; // the same as previous but, formatted
 
+var socket;
 if (settings.ioListenPort) {
-    var socket = io.connect("127.0.0.1", {
+    socket = io.connect("127.0.0.1", {
         port: settings.ioListenPort
     });
 } else if (settings.ioListenPortSsl) {
-    var socket = io.connect("127.0.0.1", {
+    socket = io.connect("127.0.0.1", {
         port: settings.ioListenPortSsl,
         secure: true
     });
@@ -83,7 +89,7 @@ function getState(id, callback) {
 
 function stop() {
     logger.info("adapter fritzBox terminating");
-    socketBox.end;
+    socketBox.end();
     setTimeout(function () {
         process.exit();
     }, 250);
@@ -188,11 +194,10 @@ function listToHtml (table) {
         text += "<td class='callListTableDuration'>" + formatDuration (table[i].duration) + "</td>";
         text += "</tr>";
     }
-    text += "</table>"
+    text += "</table>";
 
     return text;
 }
-
 
 function connectToFritzBox () {
     if (connecting) {
@@ -207,7 +212,7 @@ function connectToFritzBox () {
 
     socketBox.on('close', function () {
         logger.info("adapter fritzBox received 'close'");
-        socketBox.end ();
+        socketBox.end();
         if (!connecting){
             connecting = setTimeout(function () {
                 connectToFritzBox();
@@ -216,7 +221,7 @@ function connectToFritzBox () {
     });
 
     socketBox.on('error', function (data) {
-        logger.info("adapter fritzBox received 'error':"+data.toString());
+        logger.info("adapter fritzBox received 'error' - please ensure to open dialmonitor via dialing #96*5* on a phone connected to fritzBox and check the ip of the box (" + settings.adapters.fritzBox.IP + "):"+data.toString());
         if (!connecting){
             connecting = setTimeout(function () {
                 connectToFritzBox();
@@ -226,7 +231,7 @@ function connectToFritzBox () {
 
     socketBox.on('end', function () {
         logger.info("adapter fritzBox received 'end'");
-        socketBox.end ();
+        socketBox.end();
         if (!connecting){
             connecting = setTimeout(function () {
                 connectToFritzBox();
@@ -281,9 +286,9 @@ function connectToFritzBox () {
             ", exLine: "   + item.extensionLine +
             ", called: "   + item.calledNumber +
             ", own: "      + item.ownNumber +
-            ", sec: "      + item.durationSecs +")");
+            ", sec: "      + item.durationSecs + ")");
 
-        if (item.type == "DISCONNECT") {
+        if (item.type == "DISCONNECT" && callStatus[item.connectionId] !== undefined) {
             callStatus[item.connectionId].durationSecs = item.durationSecs;
 
             // If missed call
@@ -490,6 +495,7 @@ getState (objMissedCalls, function (id, obj) {
         missedCount = obj[0];
     }
 });
+
 // Read stored lists
 getState (objMissedList, function (id, obj) {
     if (!obj){

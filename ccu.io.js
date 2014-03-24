@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.18";
+settings.version = "1.0.28";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -301,7 +301,8 @@ function sendEvent(arr) {
 }
 
 function setDatapoint(id, val, ts, ack, lc) {
-    if (!regaReady) { return; }
+
+    if (id < 65535 && !regaReady) { return; }
     // unescape HomeMatic Script WriteURL()
     if (typeof val == "string") {
         val = unescape(val);
@@ -896,9 +897,10 @@ function restApi(req, res) {
             response = {};
             var dps = tmpArr[1].split(",");
             for (var i = 0; i < dps.length; i++) {
-                dp = findDatapoint(dps[i]);
+                var parts = dps[i].split(";");
+                dp = findDatapoint(parts[0], parts[1]);
                 if (dp) {
-                    response[dp] = datapoints[dp][0];
+                    response[dps[i]] = {"val":datapoints[dp][0], "ts":datapoints[dp][3]};
                 }
             }
             break;
@@ -925,6 +927,19 @@ function restApi(req, res) {
                 status = 200;
                 response = {id:dp,value:value};
             }
+            break;
+        case "toggle":
+            if (!tmpArr[1]) {
+                response = {error: "object/datapoint not given"};
+            }
+            var dp = findDatapoint(tmpArr[1], tmpArr[2]);
+                var value = datapoints[dp][0];
+                if (value === true) value = 1;
+                if (value === false) value = 0;
+                value = 1 - parseInt(value, 10);
+                setState(dp, value);
+                status = 200;
+                response = {id:dp,value:value};
             break;
         case "setBulk":
             response = [];
@@ -1001,9 +1016,9 @@ function initExtensions() {
 function initWebserver() {
     if (app) {
         if (settings.useCache) {
-            var oneDay = 86400000;
-            app.use('/', express.static(__dirname + '/www', { maxAge: oneDay }));
-            app.use('/log', express.static(__dirname + '/log', { maxAge: oneDay }));
+            var oneYear = 30758400000;
+            app.use('/', express.static(__dirname + '/www', { maxAge: oneYear }));
+            app.use('/log', express.static(__dirname + '/log', { maxAge: oneYear }));
         }
         else {
             app.use('/', express.static(__dirname + '/www'));
@@ -1033,9 +1048,9 @@ function initWebserver() {
 
     if (appSsl) {
         if (settings.useCache) {
-            var oneDay = 86400000;
-            appSsl.use('/', express.static(__dirname + '/www', { maxAge: oneDay }));
-            appSsl.use('/log', express.static(__dirname + '/log', { maxAge: oneDay }));
+            var oneYear = 30758400000;
+            appSsl.use('/', express.static(__dirname + '/www', { maxAge: oneYear }));
+            appSsl.use('/log', express.static(__dirname + '/log', { maxAge: oneYear }));
         }
         else {
             appSsl.use('/', express.static(__dirname + '/www'));
@@ -1290,14 +1305,14 @@ function initSocketIO(_io) {
         if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
             // do not check if localhost
             if(handshakeData.address.address.toString() == "127.0.0.1") {
-                logger.verbose("ccu.io        local authetication " + handshakeData.address.address);
+                logger.verbose("ccu.io        local authentication " + handshakeData.address.address);
                 callback(null, true);
             } else
             if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
-                logger.warn("ccu.io        authetication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                logger.warn("ccu.io        authentication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
                 callback ("Invalid session key", false);
             } else{
-                logger.verbose("ccu.io        authetication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                logger.verbose("ccu.io        authentication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
                 callback(null, true);
             }
         }
@@ -1512,7 +1527,7 @@ function initSocketIO(_io) {
 
         socket.on('readdir', function (path, callback) {
             path = __dirname+"/"+path;
-            logger.info("socket.io <-- readdir "+path);
+            logger.verbose("socket.io <-- readdir "+path);
             fs.readdir(path, function (err, data) {
                 if (err) {
                     callback(undefined);
@@ -1524,7 +1539,7 @@ function initSocketIO(_io) {
 
         socket.on('readdirStat', function(path, callback) {
             path = __dirname + "/" + path;
-            logger.info("socket.io <-- readdir_stat " + path);
+            logger.verbose("socket.io <-- readdirStat " + path);
 
             fs.readdir(path, function(err, files) {
                 var data = [];
@@ -1573,8 +1588,13 @@ function initSocketIO(_io) {
                     logger.error("ccu.io        failed loading file "+settings.datastorePath+name);
                     callback(undefined);
                 } else {
-                    var obj = JSON.parse(data);
-                    callback(obj);
+                    try {
+                        var obj = JSON.parse(data);
+                        callback(obj);
+                    } catch (e) {
+                        callback(null, e);
+                    }
+
                 }
             });
         });
@@ -1652,8 +1672,8 @@ function initSocketIO(_io) {
                         callback(body);
                     });
                 }).on('error', function(e) {
-                        logger.error("ccu.io        GET "+url+" "+ e.message);
-                    });
+                    logger.error("ccu.io        GET "+url+" "+ e.message);
+                });
             }
         });
 
@@ -1667,13 +1687,8 @@ function initSocketIO(_io) {
             callback(status);
         });
 
-
-
         socket.on('getNextId', function (start, callback) {
-            while (regaObjects[start]) {
-                start++;
-            }
-            callback(start);
+            callback(nextId(start));
         });
 
         socket.on('getSettings', function (callback) {
@@ -1726,17 +1741,37 @@ function initSocketIO(_io) {
             });
         });
 
-        function nextEnumId() {
-            var id = 66000;
+        function nextId(id) {
+            var id = id || 100000;
             while (regaObjects[id]) {
                 id += 1;
             }
             return id;
         }
 
-        socket.on('setObject', function(id, obj, callback) {
+        function delObject(id) {
+            var obj = regaObjects[id];
+            if (obj) {
+                if (regaIndex.Name[obj.Name] && regaIndex.Name[obj.Name][1] == id) {
+                    delete regaIndex.Name[obj.Name];
+                }
+                if (regaIndex.Address[obj.Address] && regaIndex.Address[obj.Address][1] == id) {
+                    delete regaIndex.Address[obj.Address];
+                }
+            }
+            delete regaObjects[id];
+            savePersistentObjects();
+        }
+
+        function setObject(id, obj, callback) {
             if (!obj) {
                 return;
+            }
+            if (obj._findNextId) {
+                delete obj._findNextId;
+                while (regaObjects[id]) {
+                    id += 1;
+                }
             }
             if (obj.rooms) {
                 for (var i = 0; i < obj.rooms.length; i++) {
@@ -1749,7 +1784,7 @@ function initSocketIO(_io) {
                     } else if (regaIndex.Name[obj.rooms[i]] && regaIndex.Name[obj.rooms[i]][1] == "ENUM_ROOMS") {
                         roomId = regaIndex.Name[obj.rooms[i]][0];
                     } else {
-                        roomId = nextEnumId();
+                        roomId = nextId(66000);
                         regaIndex.ENUM_ROOMS.push(roomId);
                         if (!regaIndex.Name[obj.rooms[i]]) {
                             regaIndex.Name[obj.rooms[i]] = [
@@ -1781,7 +1816,7 @@ function initSocketIO(_io) {
                     } else if (regaIndex.Name[obj.funcs[i]] && regaIndex.Name[obj.funcs[i]][1] == "ENUM_FUNCTIONS") {
                         funcId = regaIndex.Name[obj.funcs[i]][0];
                     } else {
-                        funcId = nextEnumId();
+                        funcId = nextId(66000);
                         regaIndex.ENUM_FUNCTIONS.push(funcId);
                         if (!regaIndex.Name[obj.funcs[i]]) {
                             regaIndex.Name[obj.funcs[i]] = [
@@ -1813,7 +1848,7 @@ function initSocketIO(_io) {
                     } else if (regaIndex.Name[obj.favs[i]] && regaIndex.Name[obj.favs[i]][1] == "FAVORITE") {
                         favId = regaIndex.Name[obj.favs[i]][0];
                     } else {
-                        favId = nextEnumId();
+                        favId = nextId(66000);
                         regaIndex.FAVORITE.push(favId);
                         if (!regaIndex.Name[obj.favs[i]]) {
                             regaIndex.Name[obj.favs[i]] = [
@@ -1864,12 +1899,19 @@ function initSocketIO(_io) {
             regaObjects[id] = obj;
 
             if (callback) {
-                callback();
+                callback(id);
             }
+        }
+
+        socket.on('setObject', setObject);
+
+        socket.on('delObject', delObject);
+
+        // Eine Homematic Servicemeldung bestätigen
+        socket.on('alarmReceipt', function (id) {
+            logger.verbose("rega          alarmReceipt "+id+" "+regaObjects[id].Name);
+            regahss.script("dom.GetObject("+id+").AlReceipt();");
         });
-
-
-
 
         socket.on('setState', function(arr, callback) {
             // Todo Delay!
@@ -1970,7 +2012,7 @@ function startAdapters () {
     }
     var i = 0;
     for (adapter in settings.adapters) {
-        if (!settings.adapters[adapter].enabled) {
+        if (!settings.adapters[adapter] || !settings.adapters[adapter].enabled) {
             continue;
         }
         //logger.info("ccu.io        found adapter "+adapter);
@@ -2166,11 +2208,33 @@ function savePersistentObjects() {
 }
 function loadPersistentObjects() {
     try {
-        var x = fs.readFileSync(settings.datastorePath+"io-persistent-objs.json");
-        regaObjects = JSON.parse(x);
+        var x = JSON.parse(fs.readFileSync(settings.datastorePath+"io-persistent-objs.json"));
+        for (var id in x) {
+            var obj = x[id];
+            if (obj.TypeName) {
+                if (!regaIndex[obj.TypeName]) {
+                    regaIndex[obj.TypeName] = [];
+                }
+                if (regaIndex[obj.TypeName].indexOf(id) == -1) {
+                    regaIndex[obj.TypeName].push(id);
+                }
+            }
+
+            if (obj.Name) {
+                regaIndex.Name[obj.Name] = [id, obj.TypeName, obj.Parent];
+            }
+
+            if (obj.Address) {
+                regaIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
+            }
+            logger.verbose("persistent added "+JSON.stringify(obj));
+
+        }
+        regaObjects = x;
         logger.info("ccu.io        loaded persistent objects");
         return true;
     } catch (e) {
+        logger.error("ccu.io        error while loading persistent objects: "+e);
         return false;
     }
 }

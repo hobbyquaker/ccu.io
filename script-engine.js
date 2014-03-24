@@ -707,6 +707,10 @@ function log(msg) {
 }
 
 function subscribe(pattern, callback) {
+	if (typeof pattern != "object") {
+		pattern = {id: pattern, change: "ne"};
+	}
+	
     scriptEngine.subscribers.push({
         pattern: pattern,
         callback: callback
@@ -758,7 +762,7 @@ function setState(id, val, callback) {
 
 function getState(id, dpType) {
     var dp = datapoints[findDatapoint(id, dpType)];
-    if (dp && dp[0]) {
+    if (dp) {
         return dp[0];
     } else {
         return null;
@@ -779,10 +783,35 @@ function executeProgram(id, callback) {
     });
 }
 
+function execCmd(cmd, callback) {
+    scriptEngine.socket.emit("execCmd", function(err, stdout, stdin) {
+        if (callback) {
+            callback(err, stdout, stdin);
+        }
+    })
+}
+
+function alarmReceipt(id) {
+    scriptEngine.socket.emit("alarmReceipt", id);
+}
+
 function setObject(id, obj, callback) {
     scriptEngine.socket.emit("setObject", id, obj, function () {
         if (callback) {
             callback();
+        }
+    });
+}
+
+function delObject(id) {
+    scriptEngine.socket.emit("delObject", id);
+}
+
+// read directory (root is ccu.io/)
+function readdir(path, callback) {
+    scriptEngine.socket.emit("readdir", [path], function (data) {
+        if (callback) {
+            callback(data);
         }
     });
 }
@@ -794,6 +823,9 @@ function pushover(obj) {
         msg.title = obj.title || scriptEngine.poSettings.title;
         msg.sound = obj.sound || scriptEngine.poSettings.sound;
         msg.priority = obj.priority || scriptEngine.poSettings.priority;
+        msg.url = obj.url || scriptEngine.poSettings.url;
+        msg.url_title = obj.url_title || scriptEngine.poSettings.url_title;
+        msg.device = obj.device || scriptEngine.poSettings.device;
         scriptEngine.pushover.send( msg, function( err, result ) {
             if (err) {
                 scriptEngine.logger.error("script-engine pushover error "+JSON.stringify(err));
@@ -829,7 +861,7 @@ function email(obj) {
 }
 
 function findDatapoint(needle, hssdp) {
-    if (!datapoints[needle]) {
+    if (datapoints[needle] === undefined) {
         if (regaIndex.Name[needle]) {
             // Get by Name
             needle = regaIndex.Name[needle][0];
@@ -860,7 +892,6 @@ function findDatapoint(needle, hssdp) {
         }
     }
     return needle;
-
 }
 
 process.on('SIGINT', function () {

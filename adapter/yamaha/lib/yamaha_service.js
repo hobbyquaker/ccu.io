@@ -177,6 +177,22 @@ exports.now_playing = (function(callback){
     });
 });
 
+/**
+ * requests the  basic status of the receiver.
+ * @type {Function}
+ * @param callback
+ */
+exports.basic_status = (function(callback){
+    var request_data = build_request_data(HTTP_METHODS.GET, "<Basic_Status>GetParam</Basic_Status>");
+    var http_request = yapi.http_request(request_data);
+
+    connect_to_yamaha(function(data){
+        callback(data.toString());
+    });
+
+    write_to_yamaha(http_request);
+});
+
 /* ----------------------PRIVATE FUNCTIONS---------------------------- */
 
 connect_to_yamaha = (function(data_callback){
@@ -205,6 +221,7 @@ connect_to_yamaha = (function(data_callback){
             err_message.indexOf("EHOSTUNREACH") >-1 ||
             err_message.indexOf("ECONNREFUSED") >-1 ||
             err_message.indexOf("ECONNRESET") >-1 ||
+            err_message.indexOf("EMFILE") >-1 ||
             err_message.indexOf("ENETUNREACH") >-1){
             logger.debug("Connection to Yamaha AV Receiver was broken: "+err_message);
         }else{

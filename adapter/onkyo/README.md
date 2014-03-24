@@ -1,8 +1,8 @@
 Onkyo adapter
 ======
 
-* Aktuelle Version: 0.9.2
-* Anzahl verwendeter Variablen in ccu.io: 53
+* Aktuelle Version: 0.9.4
+* Anzahl verwendeter Variablen in ccu.io: 40
 
 getestet mit Onkyo TX-NR626; TX-NR515 
 
@@ -21,13 +21,12 @@ getestet mit Onkyo TX-NR626; TX-NR515
   und setzt die Frequenz "101.80"
   Hierdurch ist es nun auch möglich, eigene Initialisierungen durchzuführen. Z.B. 
   zyklische Abfrage von Werten. Oder Abfrage beim Starten von CCU.IO.
-* Die nächsten Variablen sind Rückmeldungen vom Onkyo (Volume, Mute, ...), 
-  welche vom Adapter gefüllt werden. 
-* Die Variablen (ab Startvariable +34 bis +43) sind NET Variable. Diese werden 
+* Die nächsten Variablen werden zum setzten von Befehlen und für Rückmeldungen 
+  vom Onkyo verwendet. Beispiel (Volume, Mute, ...) diese werden vom Adapter gefüllt und
+  sind ECHTE Rückmeldungen. 
+* Die Variablen (ab Startvariable +20 bis +29) sind NET Variable. Diese werden 
   beim Netzwerkbetrieb (smb, HomeMedia, etc.) gefüllt. Eine Anzeige zum 
-  Navigieren bieten die letzten 3 Variablen (Startvariable +44 bis +46 zeigt die aktuelle 
-  Position im Netzwerkbetrieb, die Startvariable +44 zeigt die Position im Menü und
-  die +45 die aktuelle Anzahl / Gesamtanzahl des Verzeichnisses).
+  Navigieren bieten die letzten 3 Variablen
   
 ### Konfiguration über HTML bzw. settings.js unter adapter:
 enabled:  true|false
@@ -36,83 +35,68 @@ Port:     xxxxx  (Onkyo Port)
 FirstId:  xxxxxx  (Erste ID) 
 Debug:    true|false
   
-### Variablenbeschreibung
-Es gibt 3 Arten von Variablen. 
-* Feedback Variablen
-Alle Variable mit der Kennzeichnung "xxxx_fb" sind Feedback Variable. Diese 
-Variablen beeinhalten das direkte Feedback des Onkyo Receiver.
-* Set Variablen
-Diese Variablen "xxxx_set" senden beim Setzen den Befehl an den Onkyo Receiver. Dabei wird, 
-wenn nötig, der Wert von Dezimal in einen Hexadezimalen Wert gewandelt, damit der
-Onkyo Receiver den Befehl versteht. Die Variable wird nach dem Senden des Befehls 
-wieder geleert.
-* Command Variable
-Diese Variable sendet direkt den gesetzten Wert und wird anschließend wieder geleert.
-Hier können direkt die ISCP Befehle gestetzt werden. Beispiel: Power On Zone 1 "PWR01"
-oder Power Off Zone 1 "PWR00".
-
 
 ### Verfügbare Variablen
-*VARIABLE      ISCP  Read/Write      Beispiel    Bezeichnung
-*firstId       ---   Array           PWR01       "Onkyo_Command"                
-*firstId+1 	  NAT   read-only       --          "Onkyo_NET/USB_Artist_Name_Info"
-*firstId+2     NTM   read-only       --          "Onkyo_NET/USB_Time_Info"
-*firstId+3     NAL   read-only       --          "Onkyo_NET/USB_Album_Name_Info"
-*firstId+4     NTR   read-only       --          "Onkyo_NET/USB_Track_Info"
-*firstId+5     NTI   read-only       --          "Onkyo_NET/USB_Track_Info"
-*firstId+6     MVL   read-only       --          "Onkyo_Volume_Zone1_fb"
-*firstId+7     MVL   0-100 decimal   85          "Onkyo_Volume_Zone1_set"
-*firstId+8     ZVL   read-only       --          "Onkyo_Volume_Zone2_fb"
-*firstId+9     ZVL   0-100 decimal   34          "Onkyo_Volume_Zone2_set"
-*firstId+10    TUN   read-only       --          "Onkyo_Tuning_Zone1_fb"
-*firstId+11    TUN   nnn.nn          104.40      "Onkyo_Tuning_Zone1_set"        
-*firstId+12    TUZ   read-only       --          "Onkyo_Tuning_Zone2_fb"
-*firstId+13    TUZ   nnn.nn          097.40      "Onkyo_Tuning_Zone2_set"        
-*firstId+14    NPR   read-only       --          "Onkyo_Internet_Radio_Preset_Zone1_fb"
-*firstId+15    NPR   1-40 decimal    12          "Onkyo_Internet_Radio_Preset_Zone1_set"
-*firstId+16    NPZ   read-only       --          "Onkyo_Internet_Radio_Preset_Zone2_fb"
-*firstId+17    NPZ   1-40 decimal    08          "Onkyo_Internet_Radio_Preset_Zone2_set"
-*firstId+18    SLI   read-only       --          "Onkyo_Input_Select_Zone1_fb"
-*firstId+19    SLI   00-FF hex       2B          "Onkyo_Input_Select_Zone1_set"
-*firstId+20    SLZ   read-only       --          "Onkyo_Input_Select_Zone2_fb"
-*firstId+21    SLZ   00-FF hex       2D          "Onkyo_Input_Select_Zone2_set"
-*firstId+22    AMT   read-only       --          "Onkyo_Audio_Mute_Zone1_fb"
-*firstId+23    AMT   boolean         1           "Onkyo_Audio_Mute_Zone1_set"
-*firstId+24    ZMT   read-only       --          "Onkyo_Audio_Mute_Zone2_fb"
-*firstId+25    ZMT   boolean         0           "Onkyo_Audio_Mute_Zone2_set"
-*firstId+26    PRS   read-only       --          "Onkyo_Tuner_Preset_Zone1_fb"
-*firstId+27    PRS   1-30 decimal    21          "Onkyo_Tuner_Preset_Zone1_set"
-*firstId+28    PRZ   read-only       --          "Onkyo_Tuner_Preset_Zone2_fb"
-*firstId+29    PRZ   1-30 decimal    18          "Onkyo_Tuner_Preset_Zone2_set"
-*firstId+30    PWR   read-only       --          "Onkyo_Power_Zone1_fb"
-*firstId+31    PWR   boolean         1           "Onkyo_Power_Zone1_set"
-*firstId+32    ZPW   read-only       --          "Onkyo_Power_Zone2_fb"
-*firstId+33    ZPW   boolean         0           "Onkyo_Power_Zone2_set"
-*firstId+34    NLS   read-only       --          "Onkyo_NET-MENU-0"
-*firstId+35    NLS   read-only       --          "Onkyo_NET-MENU-1"
-*firstId+36    NLS   read-only       --          "Onkyo_NET-MENU-2"
-*firstId+37    NLS   read-only       --          "Onkyo_NET-MENU-3"
-*firstId+38    NLS   read-only       --          "Onkyo_NET-MENU-4"
-*firstId+39    NLS   read-only       --          "Onkyo_NET-MENU-5"
-*firstId+40    NLS   read-only       --          "Onkyo_NET-MENU-6"
-*firstId+41    NLS   read-only       --          "Onkyo_NET-MENU-7"
-*firstId+42    NLS   read-only       --          "Onkyo_NET-MENU-8"
-*firstId+43    NLS   read-only       --          "Onkyo_NET-MENU-9"
-*firstId+44    NLT   read-only       --          "Onkyo_NET_NAVIGATION"
-*firstId+45    NLT   read-only       --          "Onkyo_NET_POSITION"
-*firstId+46    NLT   read-only       --          "Onkyo_NET_POSITION_SUMM"
-*firstId+47    LMD   read-only       --          "Onkyo_Listening_Mode"
-*firstId+48    IFA   read-only       --          "Onkyo_Audio_Information"
-*firstId+49    IFV   read-only       --          "Onkyo_Video_Information"
-*firstId+50    NST   read-only       --          "Onkyo_NET_Play_Status"
-*firstId+51    NST   read-only       --          "Onkyo_NET_Repeat_Status"
-*firstId+52    NST   read-only       --          "Onkyo_NET_Shuffle_Status"
-  
-
+|VARIABLE      |ISCP  |Read/Write      |Beispiel |Bezeichnung                           |
+|--------------|:----:|:--------------:|:-------:|-------------------------------------:|
+|firstId       |---   |Array           |PWR01    |"Onkyo_Command"                       |                
+|firstId+1 	   |NAT   |read-only       |--       |"Onkyo_NET/USB_Artist_Name_Info"      |
+|firstId+2     |NTM   |read-only       |--       |"Onkyo_NET/USB_Time_Info"             |
+|firstId+3     |NAL   |read-only       |--       |"Onkyo_NET/USB_Album_Name_Info"       |
+|firstId+4     |NTR   |read-only       |--       |"Onkyo_NET/USB_Track_Info"            |
+|firstId+5     |NTI   |read-only       |--       |"Onkyo_NET/USB_Track_Info"            |
+|firstId+6     |MVL   |0-100 decimal   |47       |"Onkyo_Volume_Zone1"                  |
+|firstId+7     |ZVL   |0-100 decimal   |34       |"Onkyo_Volume_Zone2"                  |
+|firstId+8     |TUN   |nnn.nn          |104.40   |"Onkyo_Tuning_Zone1"                  |
+|firstId+9     |TUZ   |nnn.nn          |097.40   |"Onkyo_Tuning_Zone2"                  |
+|firstId+10    |NPR   |1-40 decimal    |12       |"Onkyo_Internet_Radio_Preset_Zone1"   |
+|firstId+11    |NPZ   |1-40 decimal    |08       |"Onkyo_Internet_Radio_Preset_Zone2"   |
+|firstId+12    |SLI   |00-FF hex       |2B       |"Onkyo_Input_Select_Zone1"            |
+|firstId+13    |SLZ   |00-FF hex       |2D       |"Onkyo_Input_Select_Zone2"            |
+|firstId+14    |AMT   |boolean         |1        |"Onkyo_Audio_Mute_Zone1"              |
+|firstId+15    |ZMT   |boolean         |0        |"Onkyo_Audio_Mute_Zone2"              |
+|firstId+16    |PRS   |1-30 decimal    |21       |"Onkyo_Tuner_Preset_Zone1"            |
+|firstId+17    |PRZ   |1-30 decimal    |18       |"Onkyo_Tuner_Preset_Zone2"            |
+|firstId+18    |PWR   |boolean         |true     |"Onkyo_Power_Zone1"                   |
+|firstId+19    |ZPW   |boolean         |false    |"Onkyo_Power_Zone2"                   |
+|firstId+20    |NLS   |read-only       |--       |"Onkyo_NET-MENU-0"                    |
+|firstId+21    |NLS   |read-only       |--       |"Onkyo_NET-MENU-1"                    |
+|firstId+22    |NLS   |read-only       |--       |"Onkyo_NET-MENU-2"                    |
+|firstId+23    |NLS   |read-only       |--       |"Onkyo_NET-MENU-3"                    |
+|firstId+24    |NLS   |read-only       |--       |"Onkyo_NET-MENU-4"                    |
+|firstId+25    |NLS   |read-only       |--       |"Onkyo_NET-MENU-5"                    |
+|firstId+26    |NLS   |read-only       |--       |"Onkyo_NET-MENU-6"                    |
+|firstId+27    |NLS   |read-only       |--       |"Onkyo_NET-MENU-7"                    |
+|firstId+28    |NLS   |read-only       |--       |"Onkyo_NET-MENU-8"                    |
+|firstId+29    |NLS   |read-only       |--       |"Onkyo_NET-MENU-9"                    |
+|firstId+30    |NLT   |read-only       |--       |"Onkyo_NET_NAVIGATION"                |
+|firstId+31    |NLT   |read-only       |--       |"Onkyo_NET_POSITION"                  |
+|firstId+32    |NLT   |read-only       |--       |"Onkyo_NET_POSITION_SUMM"             |
+|firstId+33    |LMD   |read-only       |--       |"Onkyo_Listening_Mode"                |
+|firstId+34    |IFA   |read-only       |--       |"Onkyo_Audio_Information"             |
+|firstId+35    |IFV   |read-only       |--       |"Onkyo_Video_Information"             |
+|firstId+36    |NST   |read-only       |--       |"Onkyo_NET_Play_Status"               |
+|firstId+37    |NST   |read-only       |--       |"Onkyo_NET_Repeat_Status"             |
+|firstId+38    |NST   |read-only       |--       |"Onkyo_NET_Shuffle_Status"            |
+|firstId+39    |---   |read-only       |--       |"Onkyo_Connect_Status"                |
+                                               
 ## Todo/Roadmap
 * Requests to Eisbaeeer@gmail.com
 
 ## Changelog
+
+### 0.9.4
+* Major changes in variable structur (combining set and feedback vars in front
+  of compatibility with Dashui and CCU.IO) - if we set a var, we don´t set "ACK" to true, if we 
+  get a feedback of Receiver, we set "ACK" to true. In this case it is possible to use one button
+  for e.g. ON|OFF
+* Small bugfixes. Delete characters like CR, LF in string vars. Issues - It was not possible to 
+  use the var in DashUI for select-list. E.g. SLI doesn´t works.
+* Default init of Mute and Master Volume and Input by changing the state of PWR and ZPW. 
+
+### 0.9.3
+* Added var +53 (Onkyo connect status)
+* Added function reconnect onkyo socket
 
 ### 0.9.2
 * Bugfix NET Navigation (cursor position in menu). Var +44 shows now the correct position in NET-MENU (1-10)

@@ -1,14 +1,14 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.18*
+*aktuelle Version: 1.0.28*
 
 ## Dokumentation
 
 siehe http://ccu.io/
 
 
-## Todo/Roadmap
+## Todo/Roadmap (unsortiert)
 
 * adapter/skeleton-ipc.js
 * Prozesse überwachen (und evtl abgestürzte Adapter/Script-Engine neu starten?)
@@ -16,17 +16,18 @@ siehe http://ccu.io/
 * Logrotate für ccu.io.log
 * settings.html für diverse Adapter
 * diverse Adapter auf ipc umstellen?
-* Pushover Callbacks (Nachrichten bestätigen, callback Methode aufrufen)
-* Weboberfläche Ladeanzeige
+* Adapter: Pushover - Callbacks (Nachrichten bestätigen, callback Methode aufrufen)
 * Weboberfläche Datenpunkte anlegen, löschen
 * Weboberfläche Devices in Baumstruktur anzeigen
 * Weboberfläche Objekte neu laden wenn CCU.IO neue Objekte von Adaptern/Scripts erhalten hat
-* Persistente Objekte in regaIndex aufnehmen!
-* ArtNet (DMX) Adapter
-* Rocket LED Adapter
-* iTunes Adapter
+* Adapter: ArtNet (DMX)
+* Adapter: Limitless LED
+* Adapter: iTunes
+* Adapter: Samsung SmartTV
+* Adapter: Anymote (control Google TV)
+* Adapter: Hue - Gruppensteuerung
+* Nutzungsstatistiken (welche Addons sind in welcher Version installiert, welche Adapter sind aktiviert, wie viele DashUI-Views sind definiert, wie viele Scripte werden verwendet)
 * Script-Engine Addins (von Addons "mitgebrachte" Methoden)?
-* Anymote Adapter (control Google TV)
 * Doku, Doku, Doku
 * CMS für Homepage?
 * CCU2-Paket für einfache Installation
@@ -36,6 +37,80 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.28
+* (Hobbyquaker) readFile Methode liefert Fehler zurück wenn JSON.parse scheitert
+* (BlueEssi) Adapter Denon: Version 0.1.1 - Status über Variable sichtbar
+
+### 1.0.27
+* (Hobbyquaker) Bugfix: index von persistenten Objekten
+* (Hobbyquaker) Lade-Anzeige: CSS gefixt
+* (Hobbyquaker) neue Methode delObject (via Socket.IO und in Script-Engine)
+* (Hobbyquaker) Script-Engine: readdir (root ist das CCU.IO-Verzeichnis - gleiches Verhalten wie readdir via Socket.IO)
+* (Bluefox) Node-Modul easysax ergänzt (notwendig für Sonos-Adapter)
+* (Bluefox) Fixes Übersetzung
+
+### 1.0.26
+* (Hobbyquaker) nextId, getNextId
+* (Hobbyquaker) setObject: neues Attribut _findNextId
+* (Hobbyquaker) Indexing of persistent objects
+* (BasGo) new adapter: OpenWeatherMap
+* (Bluefox) Enable CCU.IO without connection to CCU or configuration of CCU
+* (Bluefox) Simple syntax for subscribe
+* (Bluefox) Adapter Sonos improvements
+* (Vader722) Adapter iCal: Es können nun Termine im Kalender ausgewertet werden und Variablen in Abhängigkeit des Termins gesetzt werden
+* (Eisbaeeer) Adapter Onkyo: Version 0.9.4
+
+### 1.0.25
+* (Hobbyquaker) loadTranslation (stringtable) an neue CCU2-Firmware angepasst
+* (Hobbyquaker) Loader für CCU.IO Oberfläche
+* (Hobbyquaker) Bugfix Addon-Update-Check
+* (Hobbyquaker) neue Methode alarmReceipt (bestätigen von Servicemeldungen)
+* (Anli) Adapter Fritzbox: Standard-IP von 192.168.1.1 auf fritz.box geändert - so sollte das bei den Standard-Homeinstallationen out-of-the-box funktionieren
+* (Anli) Adapter Fritzbox: mehr Infos bei Nichtverbindung des Fritzbox Adapters (Hinweis zu Aktivierung Anrufmonitor)
+* (Anli) Adapter Fritzbox: kleinere syntaktische Fehlerkorrekturen
+* (Thorque) Script-Engine: Adding device, url and url_title to pushover notifications
+* (Vader722) now waiting for callback before displaying Calendar instead of fixed Timer
+* (Vader722) processing [val] statement in ev.summarys
+* (Vader722) fixed bug when dates starting before today
+
+### 1.0.24
+* (Hobbyquaker) Script-Engine: implemented method execCmd()
+* (Hobbyquaker) Adapter ping: setState by ID
+* (Hobbyquaker) added jQuery 1.11.0 to lib
+* (Thorque) Adapter yamaha: Fixing useless error message
+* (Vader722) Adapter iCal: ignoring dates without startdate
+* (Vader722) Adapter iCal: new Functions: OneColor per Calendar, Replacing Date with "Today" "Tomorrow"
+* (online-junkie) using adm-zip module für update-self.js and update-addon.js - should fix update problems
+
+### 1.0.23
+* (Hobbyquaker) reverted Thorques "Clean dependencies"
+
+
+### 1.0.22
+* (Thorque) Clean dependencies
+* (Vader722) Adapter iCal: now unlimited Calendars possible
+
+
+### 1.0.21
+* (BlueEssi) Adapter Denon: settings.html hinzugefügt
+* (Hobbyquaker) SimpleAPI getBulk liefert nun auch Timestamps zurück und kann Datenpunkte auch über Namen adressieren
+* (Hobbyquaker) SimpleAPI neue Methode toggle
+
+### 1.0.20
+* (BlueEssi) Neuer Adapter: Denon
+* (Bluefox) Adapter SayIt: Clear value after saying it.
+* (Bluefox) http server: cache maxAge 1y
+* (Bluefox) Adapter Ping: fix
+* (Hobbyquaker) Adapter rpi: setObjects _persistent
+
+### 1.0.19
+* (Hobbyquaker) Bugfix Script-Engine getState()
+* (Hobbyquaker) Bugfix Adapter start
+* (Hobbyquaker) Log invalid Rega responses
+* (Hobbyquaker) Adapter dream: removed merge conflict
+* (Thorque) Adding an analyzer script to get the basic status of the Yamaha AV receiver
+* (Smiling-Jack) Linktrack support for addon updates
 
 ### 1.0.18
 * (Hobbyquaker) Bugfix SlimUI Install
