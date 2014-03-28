@@ -3,7 +3,7 @@
  *
  *      Socket.IO based HomeMatic Interface
  *
- *      Copyright (c) 2013 http://hobbyquaker.github.io
+ *      Copyright (c) 2013, 2014 http://hobbyquaker.github.io
  *
  *      CC BY-NC 3.0
  *
@@ -173,7 +173,7 @@ var socketlist = [],
 
 var ignoreNextUpdate = [];
 
-logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
+logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013, 2014 hobbyquaker http://hobbyquaker.github.io");
 logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
 
 loadPersistentObjects();
