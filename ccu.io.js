@@ -2076,20 +2076,34 @@ function startAdapterPeriod (adapter, interval, _adapter) {
    childrenAdapter[_adapter].process = childProcess.fork(adapter);
 }
 
+var stopping = false;
+
 process.on('SIGINT', function () {
+    if (stopping) {
+        return;
+    }
+    stopping = true;
     stop();
 });
 
 process.on('SIGTERM', function () {
+    if (stopping) {
+        return;
+    }
+    stopping = true;
     stop();
 });
 
 function stop() {
-    if (homematic && initsDone) {
-        homematic.stopInits();
-    }
+    logger.info("ccu.io uptime "+stats.uptime());
+
     saveDatapoints();
     savePersistentObjects();
+
+    if (homematic && initsDone) {
+        homematic.stopInits();
+        initsDone = false;
+    }
     try {
         socketlist.forEach(function(socket) {
             logger.info("socket.io --> disconnecting socket");
@@ -2099,22 +2113,24 @@ function stop() {
         if (io && io.server) {
             logger.info("ccu.io        closing http server");
             io.server.close();
-            io.server = undefined;
+            delete io.server ;
         }
         if (ioSsl && ioSsl.server) {
             logger.info("ccu.io        closing https server");
             ioSsl.server.close();
-            ioSsl.server = undefined;
+            delete ioSsl.server;
         }
 
         if (childScriptEngine) {
             logger.info("ccu.io        killing script-engine");
             childScriptEngine.kill();
+            delete childScriptEngine;
         }
 
         for (var adapter in childrenAdapter) {
             logger.info("ccu.io        killing adapter "+adapter);
             childrenAdapter[adapter].process.kill();
+            delete childrenAdapter[adapter];
         }
     } catch (e) {
         logger.error("ccu.io        something went wrong while terminating: "+e)
@@ -2131,7 +2147,8 @@ function quit() {
     if (regahss.pendingRequests > 0) {
         quitCounter += 1;
         if (quitCounter > 20) {
-            logger.verbose("rega          waited too long ... killing process");
+            logger.verbose("rega          waited too long ...");
+            logger.info("ccu.io        terminating");
             setTimeout(function () {
                 process.exit(0);
             }, 250);
@@ -2140,7 +2157,6 @@ function quit() {
         setTimeout(quit, 500);
 
     } else {
-        logger.info("ccu.io uptime "+stats.uptime());
         logger.info("ccu.io        terminating");
         setTimeout(function () {
             process.exit(0);
