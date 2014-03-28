@@ -1,3 +1,5 @@
+// TODO automatic Import of all Logfiles...
+
 var settings = require(__dirname+'/../../settings.js');
 
 if (!settings.adapters.graphite || !settings.adapters.graphite.enabled) {
@@ -55,7 +57,7 @@ socket.on('disconnect', function () {
 function readLogs() {
     console.log("graphite import started");
 
-    var file = process.argv[3];
+    var file = process.argv[2];
     if (!file) {
         console.log("usage: node import.js devices-variables.log.2014-03-27");
     }
@@ -74,7 +76,7 @@ function readLogs() {
 function readLog(file) {
             var fileBuf = fs.readFileSync(__dirname+"/../../log/"+file);
             var fileArr = fileBuf.toString().split("\n");
-            if (!fileArr.length < 1) {
+            if (fileArr.length < 1) {
                 console.log("error reading logfile");
                 return;
             }
