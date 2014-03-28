@@ -1340,6 +1340,14 @@ function initSocketIO(_io) {
            }
         });
 
+        socket.on('logDp', function (id) {
+            if (!datapoints[id]) {
+                return;
+            }
+            var ts = Math.round((new Date()).getTime() / 1000);
+            devLog(ts, id, datapoints[id][0]);
+        });
+
         socket.on('execCmd', function (cmd, callback) {
             logger.info("ccu.io        exec "+cmd);
             childProcess.exec(cmd, callback);
