@@ -31,6 +31,7 @@
 
 80000-?                         itrans adapter
 80100-?                         iCal adapter
+81000-81005                     german_holidays adapter
 
 90000-90549                     hue adapter
 
@@ -41,6 +42,10 @@
 96000-?                         Growl adapter
 
 100000-299999                   reserviert für eigene Scripte
+300000-499999                   reserviert für mitgelieferte Scripte
+
+300000-300007                   feiertage.js
+
 
 268435456 - 268500991           reserviert für zweite CCU (0x10000000 - 0x1000FFFF)
 536870912 - 536936447           reserviert für dritte CCU (0x20000000 - 0x2000FFFF)
