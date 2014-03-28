@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.28*
+*aktuelle Version: 1.0.29*
 
 ## Dokumentation
 
@@ -37,6 +37,15 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.29
+* (Hobbyquaker) _feiertage.js wird mitgeliefert (zum aktivieren Dateiendung .inactive entfernen)
+* (Hobbyquaker) IDs 300000-499999 für mitgelieferte Scripte reserviert
+* (Hobbyquaker) Adapter-Graphite: import-Script
+* (Hobbyquaker) neue Methode logDp(id) - schreibt einen Datenpunkt in die device-variables.log - sinnvoll für CCU-Systemvariablen
+* (Hobbyquaker) Persistente Datenpunkte können in der Oberfläche gelöscht werden (x-Button ganz rechts)
+* (Hobbyquaker) Bugfixes stop() - mehrfach empfangene SIGINT/SIGTERM beim Beenden/Neustarten abgefangen
+
 
 ### 1.0.28
 * (Hobbyquaker) readFile Methode liefert Fehler zurück wenn JSON.parse scheitert

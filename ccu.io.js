@@ -1770,6 +1770,7 @@ function initSocketIO(_io) {
             delete regaObjects[id];
             if (datapoints[id]) {
                 delete datapoints[id];
+                saveDatapoints();
             }
             savePersistentObjects();
         }
@@ -2095,7 +2096,6 @@ process.on('SIGTERM', function () {
 });
 
 function stop() {
-    logger.info("ccu.io uptime "+stats.uptime());
 
     saveDatapoints();
     savePersistentObjects();
@@ -2148,15 +2148,17 @@ function quit() {
         quitCounter += 1;
         if (quitCounter > 20) {
             logger.verbose("rega          waited too long ...");
+            logger.info("ccu.io uptime "+stats.uptime());
             logger.info("ccu.io        terminating");
             setTimeout(function () {
                 process.exit(0);
             }, 250);
         }
-        logger.verbose("rega          waiting for pending ReGa request...");
+        logger.info("rega          waiting for pending ReGa request...");
         setTimeout(quit, 500);
 
     } else {
+        logger.info("ccu.io uptime "+stats.uptime());
         logger.info("ccu.io        terminating");
         setTimeout(function () {
             process.exit(0);
