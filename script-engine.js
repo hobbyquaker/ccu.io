@@ -860,6 +860,10 @@ function email(obj) {
     }
 }
 
+function logDp(id) {
+    scriptEngine.socket.emit('logDp', id);
+}
+
 function findDatapoint(needle, hssdp) {
     if (datapoints[needle] === undefined) {
         if (regaIndex.Name[needle]) {
