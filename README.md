@@ -10,12 +10,10 @@ siehe http://ccu.io/
 
 ## Todo/Roadmap (unsortiert)
 
-* adapter/skeleton-ipc.js
 * Prozesse überwachen (und evtl abgestürzte Adapter/Script-Engine neu starten?)
 * Log über Weboberfläche ansehen (tail)
 * Logrotate für ccu.io.log
 * settings.html für diverse Adapter
-* diverse Adapter auf ipc umstellen?
 * Adapter: Pushover - Callbacks (Nachrichten bestätigen, callback Methode aufrufen)
 * Weboberfläche Datenpunkte anlegen, löschen
 * Weboberfläche Devices in Baumstruktur anzeigen
@@ -37,6 +35,9 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.30
+* (Hobbyquaker) Bugfix Script-Engine execCmd
 
 ### 1.0.29
 * (Hobbyquaker) _feiertage.js wird mitgeliefert (zum aktivieren Dateiendung .inactive entfernen)
