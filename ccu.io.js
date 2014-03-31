@@ -1355,7 +1355,7 @@ function initSocketIO(_io) {
 
         socket.on('execScript', function (script, arg, callback) {
             logger.info("ccu.io        script "+script + "["+arg+"]");
-            var scr_prc = childProcess.fork (__dirname + script, arg);
+            var scr_prc = childProcess.fork(__dirname + script, arg);
             var result = null;
             scr_prc.on('message', function(obj) {
                 // Receive results from child process
@@ -1366,7 +1366,7 @@ function initSocketIO(_io) {
             scr_prc.on ("exit", function (code, signal) {
                 if (callback) {
 					logger.debug("ccu.io        script end result: " + result);
-                    callback (script, arg, result);
+                    callback(script, arg, result);
                 }
             });
         });

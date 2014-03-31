@@ -784,7 +784,7 @@ function executeProgram(id, callback) {
 }
 
 function execCmd(cmd, callback) {
-    scriptEngine.socket.emit("execCmd", function(err, stdout, stdin) {
+    scriptEngine.socket.emit("execCmd", cmd, function(err, stdout, stdin) {
         if (callback) {
             callback(err, stdout, stdin);
         }
