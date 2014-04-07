@@ -1,0 +1,17 @@
+{
+    "enabled": true,
+    "firstId": 300000,
+    "settings": {
+        "Bundesland": "BW",
+        "Morgendaemmerung": -6,
+        "Abenddaemmerung": -6,
+        "Fruehmorgen": "6:00",
+        "Morgen": "7:00",
+        "Vormittag": "9:00",
+        "Mittag": "12:00",
+        "Nachmittag":"14:00",
+        "Abend":"18:00",
+        "Spaetabend": "20:00",
+        "Nacht": "23:00"
+    }
+}
