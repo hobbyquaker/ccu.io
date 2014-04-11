@@ -345,6 +345,11 @@ $(document).ready(function () {
         $('#createBackup').button( "option", "disabled", false);
         location.replace(name);
     });
+    socket.on ("readySnapshot", function (name) {
+        showMessage ();
+        $('#createSnapshot').button( "option", "disabled", false);
+        location.replace(name);
+    });
     socket.on ("applyReady", function (text) {
         $('#applyBackup').button( "option", "disabled", false);
         showMessage ();
@@ -503,6 +508,10 @@ $(document).ready(function () {
     $("#createBackup").button().css("width", 300).click(function () {
         $(this).button( "option", "disabled", true );
         socket.emit('createBackup');
+    });
+    $("#createSnapshot").button().css("width", 300).click(function () {
+        $(this).button( "option", "disabled", true );
+        socket.emit('createSnapshot');
     });
 
     $("#applyBackup").button().css("width", 300).click(function () {

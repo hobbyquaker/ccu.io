@@ -1462,6 +1462,40 @@ function initSocketIO(_io) {
             });
         });
 
+        socket.on('createSnapshot', function () {
+            var path = __dirname + "/backup.js";
+            logger.info("ccu.io        starting "+path);
+            var backupProcess = childProcess.fork(path, ["snapshot"]);
+            var fileName = "";
+            backupProcess.on("message", function (msg) {
+                fileName = msg;
+            });
+            if (io) {
+                io.sockets.emit("ioMessage", "Snapshot started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Snapshot started. Please be patient...");
+            }
+            backupProcess.on("close", function (code) {
+                if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("readySnapshot", fileName);
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("readySnapshot", fileName);
+                    }
+                } else {
+                    logger.error("ccu.io        Snapshot failed.");
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Error: Snapshot failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Error: Snapshot failed.");
+                    }
+                }
+            });
+        });
+
         socket.on('applyBackup', function (fileName) {
             var path = __dirname + "/backup.js";
             logger.info("ccu.io        starting "+path);

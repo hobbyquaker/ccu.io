@@ -31,6 +31,7 @@ var ccuWords = {
     "create Backup"     : {"en": "create Backup",        "de": "Backup erzeugen",     "ru": "Создать резервную копию"},
     "restart RPC inits" : {"en": "restart RPC inits",    "de": "RPC inits neu starten", "ru": "Перезапуск RPC inits"},
     "apply Backup"      : {"en": "apply Backup",         "de": "Backup anwenden",     "ru": "Применить резервную копию"},
+    "create Snapshot"   : {"en": "create Snapshot",      "de": "Erzeuge Snapshot",    "ru": "Создать snapshot"},
     "restart script-engine" : {"en": "restart script-engine","de": "Script-Engine neu starten", "ru": "Перезапустить Script-Engine"},
     "save changes"      : {"en": "save changes",         "de": "Änderungen speichern", "ru": "Сохранить изменения"},
     "Base configuration": {"en": "Base configuration",   "de": "Basiskonfiguration",  "ru": "Основные настройки"},
