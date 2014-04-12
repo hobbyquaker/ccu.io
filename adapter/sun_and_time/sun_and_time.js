@@ -18,7 +18,7 @@ var logger = require(__dirname + '/../../logger.js');
 var io = require('socket.io-client');
 var suncalc = require('suncalc');
 var scheduler = require('node-schedule');
-var firstID = 300000;
+var firstID = settings.adapters.sun_and_time.firstId;
 
 logger.info("_________________________________________________________________sun_and_time_____________________________________________________________");
 

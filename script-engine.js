@@ -899,7 +899,7 @@ function findDatapoint(needle, hssdp) {
 }
 
 
-function SunCalc() {
+function sunCalc() {
     var date = new Date;
     return scriptEngine.suncalc.getPosition(date, scriptEngine.settings.latitude, scriptEngine.settings.longitude);
 }

@@ -36,6 +36,11 @@ siehe http://ccu.io/
 
 ## Changelog
 
+### 1.0.31
+* (Bluefox) Create anonimyzed snapshot for debug
+* (smiling-Jack) New Scriptengine function: sunCalc()
+* (smiling-Jack) Neuer Adapter: sun_and_time
+
 ### 1.0.30
 * (Hobbyquaker) Bugfix Script-Engine execCmd
 
