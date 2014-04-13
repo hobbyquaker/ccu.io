@@ -131,7 +131,12 @@ ccu_socket.on('event', function (obj) {
         }
         else if (id == dev.DPs.FAVORITE_SET) {
             player.replaceWithFavorite(val, function (success) {
-                if (success) player.play();
+                if (success) {
+                    player.play();
+                    setState (dev.DPs.CURRENT_ALBUM,   val);
+                    setState (dev.DPs.CURRENT_ARTIST,  val);
+
+                }
             });
         }
         else
