@@ -131,7 +131,7 @@ var ccuWords = {
     "Apply backup started. Please be patient..." : {
         "en": "Apply backup started. Please be patient...",
         "de": "Apply backup started. Please be patient...",
-        "ru": "Резервная копия распаковывается. Подождтите..."
+        "ru": "Резервная копия распаковывается. Подождите..."
     },
     "Apply backup done. Restart CCU.IO" : {
         "en": "Apply backup done. Restart CCU.IO",
@@ -146,12 +146,22 @@ var ccuWords = {
     "Backup started. Please be patient..." : {
         "en": "Backup started. Please be patient...",
         "de": "Sicherung wird erstellt. Bitte warten...",
-        "ru": "Создание резервной копии запущено. Подождтите..."
+        "ru": "Создание резервной копии запущено. Подождите..."
+    },
+    "Error: Snapshot failed." : {
+        "en": "Error: creation of snapshot failed.",
+        "de": "Fehler: Snapshot konnte nicht erzeugt werden",
+        "ru": "Ошибка: создание Snapshot не удалось."
+    },
+    "Snapshot started. Please be patient..." : {
+        "en": "Creation of snapshot started. Please be patient...",
+        "de": "Snapshot wird erstellt. Bitte warten...",
+        "ru": "Создание snapshot запущено. Подождите..."
     },
     "Update started. Please be patient..." : {
         "en": "Update started. Please be patient...",
         "de": "Update gestartet. Bitte warten...",
-        "ru": "Обновление начато. Подождтите..."
+        "ru": "Обновление начато. Подождите..."
     },
     "Update done. Restarting..." : {
         "en": "Update done. Restarting...",

@@ -184,7 +184,7 @@ function applyBackup (zipFileName) {
         ncp(targetFolder + '/'+ task, __dirname, function (err) {
             if (err) {
                 logger.error(err);
-                return
+                return;
             }
 
             setTimeout(function () {
@@ -259,13 +259,39 @@ function createSnapshot (isNotAnonymized, zipFileName) {
 
                     fs.mkdirSync(bckDir + '/datastore');
                     fs.writeFile(bckDir + '/datastore/local-data.json', JSON.stringify(localData, null, '  '));
+
+                    try {
+                        var _jviews = fs.readFileSync(__dirname + '/datastore/dashui-views.json');
+                        var views   = JSON.parse(_jviews);
+
+                        // Remove all cameras from views
+                        for (var view in views) {
+                            for (var widget in views[view]['widgets']) {
+                                if (views[view]['widgets'][widget] &&
+                                    views[view]['widgets'][widget].data) {
+                                    if (views[view]['widgets'][widget].data.hqoptions) {
+                                        var hqOpt = JSON.parse(views[view].widgets[widget].data.hqoptions);
+                                        if (hqOpt.ipCamImageURL) {
+                                            hqOpt.ipCamImageURL = 'http://www.river-reach.net/netcam1.jpg';
+                                            views[view]['widgets'][widget].data.hqoptions = JSON.stringify(hqOpt, null, '  ');
+                                        }
+                                    }
+                                    if (views[view]['widgets'][widget].data.refreshInterval) {
+                                        views[view]['widgets'][widget].data.src = 'http://www.river-reach.net/netcam1.jpg';
+                                    }
+                                }
+                            }
+                        }
+                        fs.writeFile (bckDir + '/datastore/dashui-views.json', JSON.stringify(views, null, '  '))
+                    } catch (e) {
+                        logger.warn("create-snapshot: cannot create ")
+                    }
+
                     fs.mkdirSync(bckDir + '/dashui');
                     fs.mkdirSync(bckDir + '/dashui/img');
                     copyDirectory(__dirname + '/www/dashui/img', bckDir + '/dashui/img', 'devices,mfd,back', false);
                     fs.mkdirSync(bckDir + '/dashui/css');
-                    copyFile (__dirname + '/www/dashui/css/dashui-user.css', bckDir + '/dashui/css/dashui-user.css', false);
-                    copyFile (__dirname + '/datastore/dashui-views.json', bckDir + '/datastore/dashui-views.json', true);
-                    
+                    copyFile (__dirname + '/www/dashui/css/dashui-user.css', bckDir + '/dashui/css/dashui-user.css', true);
                 });
             });
         });
