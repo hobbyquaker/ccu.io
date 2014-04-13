@@ -61,7 +61,7 @@ ccu_socket.on('event', function (obj) {
     var dev = null;
 
     for (var ip in devices) {
-        if (id >= devices[ip].DPs.STATE && id <= devices[ip].DPs.CONTROL) {
+        if (id >= devices[ip].DPs.STATE && id <= devices[ip].DPs.FAVORITE_SET) {
             dev = devices[ip];
             break;
         }
@@ -239,7 +239,9 @@ function takeSonosState (ip, ids, sonosState) {
 function takeSonosFavorites (ip, ids, favorites) {
 	var sFavorites = "";
 	for (var favorite in favorites){
-		sFavorites = ((sFavorites) ? ", ": "") + favorites[favorite].title;
+        if (favorites[favorite].title) {
+            sFavorites += ((sFavorites) ? ", ": "") + favorites[favorite].title;
+        }
 	};
 	
     setState (ids.DPs.FAVORITES, sFavorites);
