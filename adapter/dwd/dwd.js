@@ -66,6 +66,7 @@ process.on('SIGTERM', function () {
 
 var dwdSettings = settings.adapters.dwd.settings;
 
+dwdSettings.kreis = (dwdSettings.kreis + "XXX").slice(0, 4);
 
 var ftp = new JSFtp({
     host: dwdSettings.host,
