@@ -774,7 +774,6 @@ function getTimestamp(id) {
     return datapoints[id][0];
 }
 
-
 function executeProgram(id, callback) {
     scriptEngine.socket.emit("executeProgram", id, function () {
         if (callback) {
@@ -805,6 +804,14 @@ function setObject(id, obj, callback) {
 
 function delObject(id) {
     scriptEngine.socket.emit("delObject", id);
+}
+
+function getUrl(url, callback) {
+    scriptEngine.socket.emit("getUrl", url, function (result) {
+        if (callback) {
+            callback(result);
+        }
+    });
 }
 
 // read directory (root is ccu.io/)
