@@ -1690,32 +1690,41 @@ function initSocketIO(_io) {
         });
 
         socket.on('getUrl', function (url, callback) {
-            logger.info("ccu.io        GET "+url);
-            if (url.match(/^https/)) {
-                https.get(url, function(res) {
-                    var body = "";
-                    res.on("data", function (data) {
-                        body += data;
-                    });
-                    res.on("end", function () {
-                        callback(body);
-                    });
+            logger.info("ccu.io        GET "+JSON.stringify(url));
+            var post = null;
+            var protocoll;
+            if (typeof url == "object" && url.post) {
+                post = url.post;
+                delete url.post;
 
-                }).on('error', function(e) {
-                        logger.error("ccu.io        GET "+url+" "+ e.message);
-                    });
+                if (url.hostname) {
+                    protocoll = url.hostname.match(/^https/) ? https: http;
+                } else if (url.host) {
+                    if (url.host.match(/^https/)) {
+                        protocoll = https;
+                        url.host = url.host.replace("https://", "");
+                    } else {
+                        protocoll = http;
+                        url.host = url.host.replace("http://", "");
+                    }
+                }
             } else {
-                http.get(url, function(res) {
-                    var body = "";
-                    res.on("data", function (data) {
-                        body += data;
-                    });
-                    res.on("end", function () {
-                        callback(body);
-                    });
-                }).on('error', function(e) {
+                protocoll = url.match(/^https/) ? https: http;
+            }
+            var req = protocoll.request(url, function(res) {
+                var body = "";
+                res.on("data", function (data) {
+                    body += data;
+                });
+                res.on("end", function () {
+                    callback(body);
+                });
+
+            }).on('error', function(e) {
                     logger.error("ccu.io        GET "+url+" "+ e.message);
                 });
+            if (post) {
+                req.write(post);
             }
         });
 
