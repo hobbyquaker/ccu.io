@@ -40,7 +40,6 @@
         <li><a href="#mainTab1"><span class='translate'>CCU.IO</span></a></li>
         <li><a href="#mainTab2"><span class='translate'>Addons</span></a></li>
         <li><a href="#mainTab3"><span class='translate'>Adapter</span></a></li>
-        <!-- <li><a href="#mainTab4"><span>Scripts</span></a></li> -->
         <li><a href="#mainTab5"><span class='translate'>Data</span></a></li>
     </ul>
     <div id="mainTab1">
@@ -387,15 +386,13 @@
             </div>
         </div>
     </div>
-    <div id="mainTab4">
-        <table class="gridMain" id="grid_scripts"></table>
-        <div id="pager_scripts"></div>
-    </div>
+
     <div id="mainTab5">
         <div class="jqui-tabs" id="subTabs5">
             <ul>
                 <li><a href="#subTab51" class='translate'>metaObjects</a></li>
                 <li><a href="#subTab52" class='translate'>metaIndex</a></li>
+                <li><a href="#subTab57" class='translate'>Object tree</a></li>
                 <li><a href="#subTab53" class='translate'>datapoints</a></li>
                 <li><a href="#subTab55" class='translate'>events</a></li>
                 <li><a href="#subTab54" class='translate'>stringtable</a></li>
@@ -412,6 +409,10 @@
                 <input id="indexAnonymize" type="button" class='translateV' value="anonymize"/>
                 <!--<input id="indexSave" type="button" value="apply changes"/>--><br/>
                 <textarea readonly class="data-area ui-widget ui-state-default ui-corner-all" id="index"></textarea>
+            </div>
+            <div id="subTab57">
+                <table class="gridSub" id="grid_devices"></table>
+                <div id="pager_devices"></div>
             </div>
             <div id="subTab53">
                 <!--<input id="dataRefresh" type="button" value="refresh"/>

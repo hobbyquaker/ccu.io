@@ -722,7 +722,8 @@ $(document).ready(function () {
         socket.emit('getObjects', function(obj) {
             regaObjects = obj;
             $("#meta").html(JSON.stringify(obj, null, "  "));
-            regaObjects = obj;
+
+            buildDevicesGrid();
 
             socket.on('event', function(obj) {
 
@@ -862,6 +863,51 @@ $(document).ready(function () {
         viewrecords: true,
         caption: getWord("Adapter")
     });
+
+    $("#grid_devices").jqGrid({
+        datatype: "local",
+        colNames: [
+            getWord('id'),
+            getWord('Name'),
+            getWord('Object type'),
+            getWord('Interface'),
+            getWord('Address'),
+            getWord('Type')
+
+        ],
+        colModel: [
+            {name:'id', index:'id', width: 48, sorttype: 'int'},
+            {name:'Name', index:'Name', width: 240},
+            {name:'TypeName', index:'TypeName', width: 130},
+            {name:'Interface', index:'Interface', width: 88},
+            {name:'Address', index:'Address', width: 90},
+            {name:'HssType', index:'HssType', width: 130}
+        ],
+        rowNum:20,
+        autowidth: true,
+        width: 1200,
+        height: 440,
+        rowList:[20,100,500,1000],
+        pager: $('#pager_devices'),
+        sortname: "id",
+        sortorder: "desc",
+        viewrecords: true,
+        sortorder: "desc",
+        caption: getWord("Object tree"),
+        ignoreCase:true,
+        subGrid: true,
+        subGridRowExpanded: function(grid_id, row_id) {
+            subGridChannel(grid_id, row_id);
+        }
+    }).jqGrid('filterToolbar',{
+        defaultSearch:'cn',
+
+        autosearch: true,
+        searchOnEnter: false,
+        enableClear: false
+    });
+
+
 
     $("#grid_events").jqGrid({
         datatype: "local",
@@ -1247,5 +1293,74 @@ $(document).ready(function () {
         $("#adapter_overview").show();
     });
 
+    function buildDevicesGrid() {
+        for (var id in regaObjects) {
+            var obj = regaObjects[id];
+            obj.id = id;
+            if (!obj.Parent) {
+                $("#grid_devices").jqGrid('addRowData', id, obj);
+            }
+        }
+    }
 
+    function subGridChannel(grid_id, row_id) {
+        var subgrid_table_id = grid_id + "_t";
+
+        var gridObjects = {};
+        var count = 0;
+
+        for (var dev in regaObjects) {
+            if (regaObjects[dev].Parent == row_id) {
+                count += 1;
+                gridObjects[dev] = regaObjects[dev];
+            }
+        }
+
+        if (count == 0) {
+            console.log("no children");
+            return null;
+        }
+
+        $("#" + grid_id).html("<table id='" + subgrid_table_id + "''></table>");
+        var gridConf = {
+            datatype: "local",
+            colNames: [
+                getWord('id'),
+                getWord('Object type'),
+                getWord('Interface'),
+                getWord('Address'),
+                getWord('Type'),
+                getWord('Name'),
+
+            ],
+            colModel: [
+                {name: 'id', index: 'id', width: 48, sorttype: 'int'},
+                {name: 'TypeName', index: 'TypeName', width: 130},
+                {name: 'Interface', index: 'Interface', width: 88},
+                {name: 'Address', index: 'Address', width: 90},
+                {name: 'HssType', index: 'HssType', width: 130},
+                {name: 'Name', index: 'Name', width: 240}
+            ],
+            rowNum: 1000000,
+            autowidth: true,
+            height: "auto",
+            width: 1200,
+            sortname: "id",
+            sortorder: "desc",
+            viewrecords: true,
+            sortorder: "desc",
+            ignoreCase: true,
+            subGrid: true,
+            subGridRowExpanded: function(grid_id, row_id) {
+                subGridChannel(grid_id, row_id);
+            }
+        };
+
+        $("#" + subgrid_table_id).jqGrid(gridConf);
+
+        for (var id in gridObjects) {
+            $("#" + subgrid_table_id).jqGrid('addRowData', id, gridObjects[id]);
+        }
+
+    }
 });
