@@ -1791,7 +1791,18 @@ function initSocketIO(_io) {
             return id;
         }
 
-        function delObject(id) {
+        function delObject(id, isRecursion) {
+            logger.info("ccu.io        deleting object id="+id);
+
+            // find children
+            for (var cid in regaObjects) {
+                if (regaObjects[cid].Parent == id) {
+                    // recursion
+                    delObject(cid, true);
+                }
+            }
+
+
             var obj = regaObjects[id];
             if (obj) {
                 if (regaIndex.Name[obj.Name] && regaIndex.Name[obj.Name][1] == id) {
@@ -1804,9 +1815,11 @@ function initSocketIO(_io) {
             delete regaObjects[id];
             if (datapoints[id]) {
                 delete datapoints[id];
-                saveDatapoints();
             }
-            savePersistentObjects();
+            if (!isRecursion) {
+                saveDatapoints();
+                savePersistentObjects();
+            }
         }
 
 
