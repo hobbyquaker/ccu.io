@@ -864,7 +864,7 @@ $(document).ready(function () {
         caption: getWord("Adapter")
     });
 
-    $("#grid_devices").jqGrid({
+    $("#grid_objecttree").jqGrid({
         datatype: "local",
         colNames: [
             getWord('id'),
@@ -883,21 +883,21 @@ $(document).ready(function () {
             {name:'Address', index:'Address', width: 90},
             {name:'HssType', index:'HssType', width: 130}
         ],
-        rowNum:20,
-        autowidth: true,
-        width: 1200,
-        height: 440,
-        rowList:[20,100,500,1000],
-        pager: $('#pager_devices'),
-        sortname: "id",
-        sortorder: "desc",
+        rowNum:     20,
+        autowidth:  true,
+        width:      1200,
+        height:     440,
+        rowList:    [20,100,500,1000],
+        pager:      $('#pager_objecttree'),
+        sortname:   "id",
+        sortorder:  "desc",
         viewrecords: true,
-        sortorder: "desc",
-        caption: getWord("Object tree"),
-        ignoreCase:true,
-        subGrid: true,
+        sortorder:  "desc",
+        caption:    getWord("Object tree"),
+        ignoreCase: true,
+        subGrid:    true,
         subGridRowExpanded: function(grid_id, row_id) {
-            subGridChannel(grid_id, row_id);
+            subGridObjecttree(grid_id, row_id);
         }
     }).jqGrid('filterToolbar',{
         defaultSearch:'cn',
@@ -1298,12 +1298,13 @@ $(document).ready(function () {
             var obj = regaObjects[id];
             obj.id = id;
             if (!obj.Parent) {
-                $("#grid_devices").jqGrid('addRowData', id, obj);
+                // FIXME Multiple usage of same IDs
+                $("#grid_objecttree").jqGrid('addRowData', id, obj);
             }
         }
     }
 
-    function subGridChannel(grid_id, row_id) {
+    function subGridObjecttree(grid_id, row_id) {
         var subgrid_table_id = grid_id + "_t";
 
         var gridObjects = {};
@@ -1317,7 +1318,7 @@ $(document).ready(function () {
         }
 
         if (count == 0) {
-            console.log("no children");
+            $("#grid_objecttree").jqGrid('collapseSubGridRow', grid_id);
             return null;
         }
 
@@ -1351,7 +1352,7 @@ $(document).ready(function () {
             ignoreCase: true,
             subGrid: true,
             subGridRowExpanded: function(grid_id, row_id) {
-                subGridChannel(grid_id, row_id);
+                subGridObjecttree(grid_id, row_id);
             }
         };
 
