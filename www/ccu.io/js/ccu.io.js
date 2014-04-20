@@ -869,10 +869,10 @@ $(document).ready(function () {
         colNames: [
             getWord('id'),
             getWord('Name'),
-            getWord('Object type'),
+            getWord('TypeName'),
             getWord('Interface'),
             getWord('Address'),
-            getWord('Type')
+            getWord('HssType')
 
         ],
         colModel: [
@@ -1326,20 +1326,19 @@ $(document).ready(function () {
             datatype: "local",
             colNames: [
                 getWord('id'),
-                getWord('Object type'),
+                getWord('Name'),
+                getWord('TypeName'),
                 getWord('Interface'),
                 getWord('Address'),
-                getWord('Type'),
-                getWord('Name'),
-
+                getWord('HssType')
             ],
             colModel: [
                 {name: 'id', index: 'id', width: 48, sorttype: 'int'},
+                {name: 'Name', index: 'Name', width: 240},
                 {name: 'TypeName', index: 'TypeName', width: 130},
                 {name: 'Interface', index: 'Interface', width: 88},
                 {name: 'Address', index: 'Address', width: 90},
-                {name: 'HssType', index: 'HssType', width: 130},
-                {name: 'Name', index: 'Name', width: 240}
+                {name: 'HssType', index: 'HssType', width: 130}
             ],
             rowNum: 1000000,
             autowidth: true,
