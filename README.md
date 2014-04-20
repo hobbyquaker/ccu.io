@@ -36,6 +36,9 @@ siehe http://ccu.io/
 
 ## Changelog
 
+### 1.0.33
+* (Mimquadrat) Favicon für CCU.IO-Oberfläche
+
 ### 1.0.32
 * (Hobbyquaker) DWD-Adapter: doppelte Anzeige von Warnungen unterbunden, Dienststellen korrigiert
 * (Bluefox) Snapshot tries to erase links to cameras in dashui-views.json to prevent inclusion of passwords

@@ -653,11 +653,12 @@ $(document).ready(function () {
     $("#grid_datapoints").jqGrid({
         datatype: "local",
 
-        colNames:['id', getWord('TypeName'), getWord('Name'), getWord('Parent Name'), getWord('Value'), getWord('Timestamp'), getWord('ack'), getWord('lastChange'), 'persistent'],
+        colNames:['id', getWord('TypeName'), getWord('Name'), getWord('Address'), getWord('Parent Name'), getWord('Value'), getWord('Timestamp'), getWord('ack'), getWord('lastChange'), 'persistent'],
         colModel:[
             {name:'id',index:'id', width:60, sorttype: "int"},
             {name:'type',index:'type', width:80},
             {name:'name',index:'name', width:240},
+            {name:'address',index:'address', width:240, hidden: true},
             {name:'parent',index:'parent', width:240},
             {name:'val',index:'val', width:160, editable:true},
             {name:'timestamp',index:'timestamp', width:140},
@@ -747,6 +748,7 @@ $(document).ready(function () {
                 var data = {
                     id: obj[0],
                     name: oldData.name,
+                    address: oldData.address,
                     parent: oldData.parent,
                     type: oldData.type,
                     val: obj[1],
@@ -795,6 +797,7 @@ $(document).ready(function () {
                 var data = {
                     id: id,
                     name: (regaObjects[id] ? regaObjects[id].Name : ""),
+                    address: (regaObjects[id] ? regaObjects[id].Address : ""),
                     parent: (regaObjects[id] && regaObjects[id].Parent ? regaObjects[regaObjects[id].Parent].Name : ""),
                     type: (regaObjects[id] ? regaObjects[id].TypeName : ""),
                     val: $('<div/>').text(obj[id][0]).html(),
@@ -806,6 +809,7 @@ $(document).ready(function () {
                 $("#grid_datapoints").jqGrid('addRowData',id,data);
             }
             $("#loader").remove();
+            $(".favicon").attr('href', 'favicon.ico');
             $("#grid_datapoints").trigger("reloadGrid");
 
         });
