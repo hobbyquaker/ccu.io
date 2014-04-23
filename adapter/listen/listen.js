@@ -1,6 +1,6 @@
 /**
  *      CCU.IO Listen Adapter
- *      12'2013-2014 Denis Khaev
+ *      12'2013-2014 Bluefox
  *
  *      Version 0.1
  *
@@ -21,7 +21,7 @@
  *  Find additional information under http://linux.die.net/man/1/rec or
  *  http://digitalcardboard.com/blog/2009/08/25/the-sox-of-silence/
  *
- * Copyright (c) 2013-2014 Denis Khaev deniskhaev@gmail.com
+ * Copyright (c) 2013-2014 Bluefox dogafox@gmail.com
  *
  * It is licensed under the Creative Commons Attribution-Non Commercial-Share Alike 3.0 license.
  * The full text of the license you can get at http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode

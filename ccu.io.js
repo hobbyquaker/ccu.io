@@ -3,7 +3,7 @@
  *
  *      Socket.IO based HomeMatic Interface
  *
- *      Copyright (c) 2013 http://hobbyquaker.github.io
+ *      Copyright (c) 2013, 2014 http://hobbyquaker.github.io
  *
  *      CC BY-NC 3.0
  *
@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.28";
+settings.version = "1.0.32";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -173,7 +173,7 @@ var socketlist = [],
 
 var ignoreNextUpdate = [];
 
-logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013 hobbyquaker http://hobbyquaker.github.io");
+logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013, 2014 hobbyquaker http://hobbyquaker.github.io");
 logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
 
 loadPersistentObjects();
@@ -1340,6 +1340,14 @@ function initSocketIO(_io) {
            }
         });
 
+        socket.on('logDp', function (id) {
+            if (!datapoints[id]) {
+                return;
+            }
+            var ts = Math.round((new Date()).getTime() / 1000);
+            devLog(ts, id, datapoints[id][0]);
+        });
+
         socket.on('execCmd', function (cmd, callback) {
             logger.info("ccu.io        exec "+cmd);
             childProcess.exec(cmd, callback);
@@ -1347,7 +1355,7 @@ function initSocketIO(_io) {
 
         socket.on('execScript', function (script, arg, callback) {
             logger.info("ccu.io        script "+script + "["+arg+"]");
-            var scr_prc = childProcess.fork (__dirname + script, arg);
+            var scr_prc = childProcess.fork(__dirname + script, arg);
             var result = null;
             scr_prc.on('message', function(obj) {
                 // Receive results from child process
@@ -1358,7 +1366,7 @@ function initSocketIO(_io) {
             scr_prc.on ("exit", function (code, signal) {
                 if (callback) {
 					logger.debug("ccu.io        script end result: " + result);
-                    callback (script, arg, result);
+                    callback(script, arg, result);
                 }
             });
         });
@@ -1449,6 +1457,40 @@ function initSocketIO(_io) {
                     }
                     if (ioSsl) {
                         ioSsl.sockets.emit("ioMessage", "Error: Backup failed.");
+                    }
+                }
+            });
+        });
+
+        socket.on('createSnapshot', function () {
+            var path = __dirname + "/backup.js";
+            logger.info("ccu.io        starting "+path);
+            var backupProcess = childProcess.fork(path, ["snapshot"]);
+            var fileName = "";
+            backupProcess.on("message", function (msg) {
+                fileName = msg;
+            });
+            if (io) {
+                io.sockets.emit("ioMessage", "Snapshot started. Please be patient...");
+            }
+            if (ioSsl) {
+                ioSsl.sockets.emit("ioMessage", "Snapshot started. Please be patient...");
+            }
+            backupProcess.on("close", function (code) {
+                if (code == 0) {
+                    if (io) {
+                        io.sockets.emit("readySnapshot", fileName);
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("readySnapshot", fileName);
+                    }
+                } else {
+                    logger.error("ccu.io        Snapshot failed.");
+                    if (io) {
+                        io.sockets.emit("ioMessage", "Error: Snapshot failed.");
+                    }
+                    if (ioSsl) {
+                        ioSsl.sockets.emit("ioMessage", "Error: Snapshot failed.");
                     }
                 }
             });
@@ -1760,8 +1802,14 @@ function initSocketIO(_io) {
                 }
             }
             delete regaObjects[id];
+            if (datapoints[id]) {
+                delete datapoints[id];
+                saveDatapoints();
+            }
             savePersistentObjects();
         }
+
+
 
         function setObject(id, obj, callback) {
             if (!obj) {
@@ -2063,20 +2111,33 @@ function startAdapterPeriod (adapter, interval, _adapter) {
    childrenAdapter[_adapter].process = childProcess.fork(adapter);
 }
 
+var stopping = false;
+
 process.on('SIGINT', function () {
+    if (stopping) {
+        return;
+    }
+    stopping = true;
     stop();
 });
 
 process.on('SIGTERM', function () {
+    if (stopping) {
+        return;
+    }
+    stopping = true;
     stop();
 });
 
 function stop() {
-    if (homematic && initsDone) {
-        homematic.stopInits();
-    }
+
     saveDatapoints();
     savePersistentObjects();
+
+    if (homematic && initsDone) {
+        homematic.stopInits();
+        initsDone = false;
+    }
     try {
         socketlist.forEach(function(socket) {
             logger.info("socket.io --> disconnecting socket");
@@ -2086,22 +2147,24 @@ function stop() {
         if (io && io.server) {
             logger.info("ccu.io        closing http server");
             io.server.close();
-            io.server = undefined;
+            delete io.server ;
         }
         if (ioSsl && ioSsl.server) {
             logger.info("ccu.io        closing https server");
             ioSsl.server.close();
-            ioSsl.server = undefined;
+            delete ioSsl.server;
         }
 
         if (childScriptEngine) {
             logger.info("ccu.io        killing script-engine");
             childScriptEngine.kill();
+            delete childScriptEngine;
         }
 
         for (var adapter in childrenAdapter) {
             logger.info("ccu.io        killing adapter "+adapter);
             childrenAdapter[adapter].process.kill();
+            delete childrenAdapter[adapter];
         }
     } catch (e) {
         logger.error("ccu.io        something went wrong while terminating: "+e)
@@ -2118,12 +2181,14 @@ function quit() {
     if (regahss.pendingRequests > 0) {
         quitCounter += 1;
         if (quitCounter > 20) {
-            logger.verbose("rega          waited too long ... killing process");
+            logger.verbose("rega          waited too long ...");
+            logger.info("ccu.io uptime "+stats.uptime());
+            logger.info("ccu.io        terminating");
             setTimeout(function () {
                 process.exit(0);
             }, 250);
         }
-        logger.verbose("rega          waiting for pending ReGa request...");
+        logger.info("rega          waiting for pending ReGa request...");
         setTimeout(quit, 500);
 
     } else {

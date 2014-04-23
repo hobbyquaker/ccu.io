@@ -784,7 +784,7 @@ function executeProgram(id, callback) {
 }
 
 function execCmd(cmd, callback) {
-    scriptEngine.socket.emit("execCmd", function(err, stdout, stdin) {
+    scriptEngine.socket.emit("execCmd", cmd, function(err, stdout, stdin) {
         if (callback) {
             callback(err, stdout, stdin);
         }
@@ -860,6 +860,10 @@ function email(obj) {
     }
 }
 
+function logDp(id) {
+    scriptEngine.socket.emit('logDp', id);
+}
+
 function findDatapoint(needle, hssdp) {
     if (datapoints[needle] === undefined) {
         if (regaIndex.Name[needle]) {
@@ -895,7 +899,7 @@ function findDatapoint(needle, hssdp) {
 }
 
 
-function SunCalc() {
+function sunCalc() {
     var date = new Date;
     return scriptEngine.suncalc.getPosition(date, scriptEngine.settings.latitude, scriptEngine.settings.longitude);
 }

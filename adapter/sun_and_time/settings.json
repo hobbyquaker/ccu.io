@@ -1,6 +1,6 @@
 {
-    "enabled": true,
-    "firstId": 300000,
+    "enabled": false,
+    "firstId": 96050,
     "settings": {
         "Bundesland": "BW",
         "Morgendaemmerung": -6,

@@ -66,6 +66,7 @@ process.on('SIGTERM', function () {
 
 var dwdSettings = settings.adapters.dwd.settings;
 
+dwdSettings.kreis = (dwdSettings.kreis + "XXX").slice(0, 4);
 
 var ftp = new JSFtp({
     host: dwdSettings.host,
@@ -131,7 +132,7 @@ function received() {
             var effective = formatTimestamp(res.alert.info.effective),
                 expires =   formatTimestamp(res.alert.info.expires);
 
-            if (res.alert.msgType == "Alert" && expires > now && effective < now) {
+            if (res.alert.msgType == "Alert" && res.alert.info.eventCode.value > 30 && expires > now && effective < now) {
                 warnungen[res.alert.info.eventCode.value] = {
                     text:       res.alert.info.event,
                     desc:       res.alert.info.description,
@@ -159,10 +160,10 @@ function received() {
         severity: 0
     };
 
+    console.log(warnungen);
+
     var first = true;
     for (item in warnungen) {
-        console.log(item);
-        console.log(warnungen[item]);
         if (!first) {
             warnung.text += ", ";
             warnung.desc += " ";
@@ -170,7 +171,6 @@ function received() {
         } else {
             first = false;
         }
-        now = "2013-11-21 06:00:00";
         if (warnung.expires < warnungen[item].expires) { warnung.expires = warnungen[item].expires; }
         warnung.text += warnungen[item].text;
         warnung.desc += warnungen[item].desc;

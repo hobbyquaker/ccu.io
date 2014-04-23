@@ -345,6 +345,11 @@ $(document).ready(function () {
         $('#createBackup').button( "option", "disabled", false);
         location.replace(name);
     });
+    socket.on ("readySnapshot", function (name) {
+        showMessage ();
+        $('#createSnapshot').button( "option", "disabled", false);
+        location.replace(name);
+    });
     socket.on ("applyReady", function (text) {
         $('#applyBackup').button( "option", "disabled", false);
         showMessage ();
@@ -503,6 +508,10 @@ $(document).ready(function () {
     $("#createBackup").button().css("width", 300).click(function () {
         $(this).button( "option", "disabled", true );
         socket.emit('createBackup');
+    });
+    $("#createSnapshot").button().css("width", 300).click(function () {
+        $(this).button( "option", "disabled", true );
+        socket.emit('createSnapshot');
     });
 
     $("#applyBackup").button().css("width", 300).click(function () {
@@ -683,6 +692,15 @@ $(document).ready(function () {
                 //console.log(datapointsLastSel+ " "+$("#grid_datapoints").jqGrid("getCell", datapointsLastSel, "val"));
                 socket.emit('setState', [datapointsLastSel, $("#grid_datapoints").jqGrid("getCell", datapointsLastSel, "val")]);
             });
+        },
+        loadComplete: function () {
+            $("input.delObject").click(function () {
+                var id = $(this).attr("data-del-id");
+                $(this).attr("disabled", true);
+                socket.emit('delObject', id);
+                delete regaObjects[id];
+                $("table#grid_datapoints tr#"+id).remove();
+            });
         }
     }).jqGrid('filterToolbar',{
             autosearch: true,
@@ -783,12 +801,13 @@ $(document).ready(function () {
                     timestamp: (obj[id][1] == "1970-01-01 01:00:00" ? "" : obj[id][1]),
                     ack: obj[id][2],
                     lastChange: (obj[id][3] == "1970-01-01 01:00:00" ? "" : obj[id][3]),
-                    persistent: (regaObjects[id] && regaObjects[id]._persistent ? "*" : "")
+                    persistent: (regaObjects[id] && regaObjects[id]._persistent ? "<input class='delObject' data-del-id='"+id+"' type='button' value='x'/>" : "")
                 };
                 $("#grid_datapoints").jqGrid('addRowData',id,data);
             }
             $("#loader").remove();
             $("#grid_datapoints").trigger("reloadGrid");
+
         });
     }
     function getWord (word) {
