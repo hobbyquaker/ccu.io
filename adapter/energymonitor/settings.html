@@ -1,0 +1,91 @@
+<h3>FTP Adapter for <a href="https://www.busch-jaeger.de/uploads/tx_bjeprospekte/AWH-Busch_EnergyMonitor_1_.pdf" target="_blank">Busch-EnergyMonitor®</a></h3>
+
+<table style="font-size: 12px">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td>
+            <select id="energymonitor_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Listen Address:</td>
+        <td><input id="energymonitor_settings_host" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Listen Port:</td>
+        <td><input id="energymonitor_settings_port" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Username:</td>
+        <td><input id="energymonitor_settings_user" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Password:</td>
+        <td><input id="energymonitor_settings_pass" type="text"/></td>
+    </tr>
+
+</table>
+<p>
+    Wird als User "anonymous" verwendet ist das Passwort irrelevant.<br/>
+    Wird als Listen Address "0.0.0.0" verwendet lauscht der FTP-Server auf allen Netzwerkinterfaces
+</p>
+<p>
+    <h4>EnergyMonitor-Einstellungen</h4>
+    <ul>
+        <li>Passives FTP: nicht aktivieren</li>
+        <li>Zielverzeichnis: /</li>
+    </ul>
+</p>
+
+<script type="text/javascript">
+
+    if (currentAdapterSettings.enabled) {
+        $("#energymonitor_enabled option[value='false']").removeAttr("selected");
+        $("#energymonitor_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#energymonitor_enabled option[value='true']").removeAttr("selected");
+        $("#energymonitor_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#energymonitor_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#energymonitor_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+
+    $("#energymonitor_settings_host").val(currentAdapterSettings.settings.host);
+
+    $("#energymonitor_settings_host").change(function () {
+        currentAdapterSettings.settings.host = $("#energymonitor_settings_host").val();
+        updateAdapterSettings();
+    });
+
+
+    $("#energymonitor_settings_port").val(currentAdapterSettings.settings.port);
+
+    $("#energymonitor_settings_port").change(function () {
+        currentAdapterSettings.settings.port = $("#energymonitor_settings_port").val();
+        updateAdapterSettings();
+    });
+
+    $("#energymonitor_settings_user").val(currentAdapterSettings.settings.user);
+
+    $("#energymonitor_settings_user").change(function () {
+        currentAdapterSettings.settings.user = $("#energymonitor_settings_user").val();
+        updateAdapterSettings();
+    });
+
+    $("#energymonitor_settings_pass").val(currentAdapterSettings.settings.pass);
+
+    $("#energymonitor_settings_pass").change(function () {
+        currentAdapterSettings.settings.pass = $("#energymonitor_settings_pass").val();
+        updateAdapterSettings();
+    });
+
+
+</script>
