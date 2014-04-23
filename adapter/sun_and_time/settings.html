@@ -1,0 +1,193 @@
+<script src="../lib/js/jquery.inputmask.bundle.min.js" type="text/javascript"></script>
+
+
+<h1>Sun and Time</h1>
+<table style="font-size: 12px">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td>
+            <select id="sad_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>First ID:</td>
+        <td><input id="sad_firstId" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Bundesland:</td>
+        <td>
+            <select id="sad_settings_bundesland">
+                <option value="BW">Baden-Württemberg</option>
+                <option value="BY">Bayern</option>
+                <option value="BE">Berlin</option>
+                <option value="BB">Brandenburg</option>
+                <option value="HB">Bremen</option>
+                <option value="HH">Hamburg</option>
+                <option value="HE">Hessen</option>
+                <option value="MV">Mecklenburg-Vorpommern</option>
+                <option value="NI">Niedersachsen</option>
+                <option value="NW">Nordrhein-Westfalen</option>
+                <option value="RP">Rheinland-Pfalz</option>
+                <option value="SL">Saarland</option>
+                <option value="SN">Sachsen</option>
+                <option value="ST">Sachsen-Anhalt</option>
+                <option value="SH">Schleswig-Holstein</option>
+                <option value="TH">Thüringen</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Morgendaemmerung: 0 bis</td>
+        <td><input id="sad_settings_Morgendaemmerung" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Abenddaemmerung: 0 bis</td>
+        <td><input id="sad_settings_Abenddaemmerung" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Fruehmorgen:</td>
+        <td><input id="sad_settings_Fruehmorgen" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Morgen:</td>
+        <td><input id="sad_settings_Morgen" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Vormittag:</td>
+        <td><input id="sad_settings_Vormittag" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Mittag:</td>
+        <td><input id="sad_settings_Mittag" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Nachmittag:</td>
+        <td><input id="sad_settings_Nachmittag" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Abend:</td>
+        <td><input id="sad_settings_Abend" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Spaetabend:</td>
+        <td><input id="sad_settings_Spaetabend" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Nacht:</td>
+        <td><input id="sad_settings_Nacht" type="text"/></td>
+    </tr>
+
+</table>
+
+
+
+<script type="text/javascript">
+
+
+    $('#sad_enabled option[value=' + currentAdapterSettings.enabled + ']').attr("selected", true);
+
+    $("#sad_enabled").change(function () {
+        currentAdapterSettings.enabled = $(this).val();
+        updateAdapterSettings();
+    });
+
+
+    $("#sad_firstId")
+            .val(currentAdapterSettings.firstId)
+            .change(function () {
+                currentAdapterSettings.firstId = $("#sad_firstId").val();
+                updateAdapterSettings();
+            });
+
+    $('#sad_settings_bundesland option[value=' + currentAdapterSettings.settings.Bundesland + ']').attr("selected", true);
+    $("#sad_settings_bundesland").change(function () {
+        currentAdapterSettings.settings.Bundesland = $(this).val();
+        updateAdapterSettings();
+    });
+
+
+    $("#sad_settings_Morgendaemmerung")
+            .val(currentAdapterSettings.settings.Morgendaemmerung)
+            .change(function () {
+                currentAdapterSettings.settings.Morgendaemmerung = $("#sad_settings_Morgendaemmerung").val();
+                updateAdapterSettings();
+            });
+
+    $("#sad_settings_Abenddaemmerung")
+            .val(currentAdapterSettings.settings.Abenddaemmerung)
+            .change(function () {
+                currentAdapterSettings.settings.Abenddaemmerung = $("#sad_settings_Abenddaemmerung").val();
+                updateAdapterSettings();
+            });
+
+    $("#sad_settings_Fruehmorgen")
+            .inputmask("99:99",{ "placeholder": "00:00" })
+            .val(currentAdapterSettings.settings.Fruehmorgen)
+            .change(function () {
+                currentAdapterSettings.settings.Fruehmorgen = $("#sad_settings_Fruehmorgen").val();
+                updateAdapterSettings();
+            });
+
+    $("#sad_settings_Morgen")
+            .inputmask("99:99",{ "placeholder": "00:00" })
+            .val(currentAdapterSettings.settings.Morgen)
+            .change(function () {
+                currentAdapterSettings.settings.Morgen = $("#sad_settings_Morgen").val();
+                updateAdapterSettings();
+            });
+
+    $("#sad_settings_Vormittag")
+            .inputmask("99:99",{ "placeholder": "00:00" })
+            .val(currentAdapterSettings.settings.Vormittag)
+            .change(function () {
+                currentAdapterSettings.settings.Vormittag = $("#sad_settings_Vormittag").val();
+                updateAdapterSettings();
+            });
+
+    $("#sad_settings_Mittag")
+            .inputmask("99:99",{ "placeholder": "00:00" })
+            .val(currentAdapterSettings.settings.Mittag)
+            .change(function () {
+                currentAdapterSettings.settings.Mittag = $("#sad_settings_Mittag").val();
+                updateAdapterSettings();
+            });
+
+    $("#sad_settings_Nachmittag")
+            .inputmask("99:99",{ "placeholder": "00:00" })
+            .val(currentAdapterSettings.settings.Nachmittag)
+            .change(function () {
+                currentAdapterSettings.settings.Nachmittag = $("#sad_settings_Nachmittag").val();
+                updateAdapterSettings();
+            });
+
+    $("#sad_settings_Abend")
+            .inputmask("99:99",{ "placeholder": "00:00" })
+            .val(currentAdapterSettings.settings.Abend)
+            .change(function () {
+                currentAdapterSettings.settings.Abend = $("#sad_settings_Abend").val();
+                updateAdapterSettings();
+            });
+
+    $("#sad_settings_Spaetabend")
+            .inputmask("99:99",{ "placeholder": "00:00" })
+            .val(currentAdapterSettings.settings.Spaetabend)
+            .change(function () {
+                currentAdapterSettings.settings.Spaetabend = $("#sad_settings_Spaetabend").val();
+                updateAdapterSettings();
+            });
+
+    $("#sad_settings_Nacht")
+            .inputmask("99:99",{ "placeholder": "00:00" })
+            .val(currentAdapterSettings.settings.Nacht)
+            .change(function () {
+                currentAdapterSettings.settings.Nacht = $("#sad_settings_Nacht").val();
+                updateAdapterSettings();
+            });
+
+
+</script>
