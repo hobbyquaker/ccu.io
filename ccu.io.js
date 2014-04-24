@@ -1646,6 +1646,7 @@ function initSocketIO(_io) {
                         var obj = JSON.parse(data);
                         callback(obj);
                     } catch (e) {
+                        logger.warn("ccu.io        failed parsing JSON file "+settings.datastorePath+name);
                         callback(null, e);
                     }
 
