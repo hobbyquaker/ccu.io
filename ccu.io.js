@@ -2057,13 +2057,13 @@ function restartAdapter(adapter) {
             try {
                 childrenAdapter[adapter].process.kill();
             } catch (e) {
-
+                logger.error("ccu.io        killing adapter failed: "+e)
             }
             setTimeout(function (_path, _adapter) {
                 logger.info("ccu.io        starting adapter "+_path);
                 childrenAdapter[_adapter] = childProcess.fork(_path);
-                return "adapter "+_adapter+" timer restartet";
             }, 1000, path, adapter);
+            return "adapter "+_adapter+" restarting";
     }
 
 
