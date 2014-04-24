@@ -1609,6 +1609,9 @@ function initSocketIO(_io) {
 
         socket.on('writeFile', function (name, obj, callback) {
             var content = JSON.stringify(obj);
+            if (JSON.parse(content) != obj) {
+                logger.error("ccu.io        writeFile JSON mismatch");
+            }
             logger.verbose("socket.io <-- writeFile "+name+" "+content);
             fs.writeFile(settings.datastorePath+name, content);
             // Todo Fehler abfangen
