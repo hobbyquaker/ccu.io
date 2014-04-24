@@ -2076,7 +2076,7 @@ function restartAdapter(adapter) {
                 logger.info("ccu.io        starting adapter "+_path);
                 childrenAdapter[_adapter] = childProcess.fork(_path);
             }, 1000, path, adapter);
-            return "adapter "+_adapter+" restarting";
+            return "adapter "+adapter+" restarting";
     }
 
 
