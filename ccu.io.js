@@ -1802,7 +1802,6 @@ function initSocketIO(_io) {
                 }
             }
 
-
             var obj = regaObjects[id];
             if (obj) {
                 if (regaIndex.Name[obj.Name] && regaIndex.Name[obj.Name][1] == id) {
@@ -1812,10 +1811,14 @@ function initSocketIO(_io) {
                     delete regaIndex.Address[obj.Address];
                 }
             }
+
             delete regaObjects[id];
+
+
             if (datapoints[id]) {
                 delete datapoints[id];
             }
+
             if (!isRecursion) {
                 saveDatapoints();
                 savePersistentObjects();
