@@ -2233,7 +2233,7 @@ function quit() {
             logger.info("ccu.io        terminating");
             setTimeout(function () {
                 process.exit(0);
-            }, 250);
+            }, 500);
         }
         logger.info("rega          waiting for pending ReGa request...");
         setTimeout(quit, 500);
@@ -2243,7 +2243,7 @@ function quit() {
         logger.info("ccu.io        terminating");
         setTimeout(function () {
             process.exit(0);
-        }, 250);
+        }, 500);
     }
 }
 
