@@ -1608,14 +1608,23 @@ function initSocketIO(_io) {
         });
 
         socket.on('writeFile', function (name, obj, callback) {
+            // Todo Fehler abfangen
             var content = JSON.stringify(obj);
             if (JSON.parse(content) != obj) {
-                logger.error("ccu.io        writeFile JSON mismatch");
+                logger.warn("ccu.io        writeFile JSON mismatch");
             }
             logger.verbose("socket.io <-- writeFile "+name+" "+content);
-            fs.writeFile(settings.datastorePath+name, content);
-            // Todo Fehler abfangen
-            if (callback) { callback(); }
+            fs.exists(settings.datastorePath+name, function (exists) {
+                if (exists) {
+                    fs.rename(settings.datastorePath+name, settings.datastorePath+name+".bak", function() {
+                        fs.writeFile(settings.datastorePath+name, content);
+                        if (callback) { callback(); }
+                    });
+                } else {
+                    fs.writeFile(settings.datastorePath+name, content);
+                    if (callback) { callback(); }
+                }
+            });
         });
 
         socket.on('writeRawFile', function (path, content, callback) {
