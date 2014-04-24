@@ -695,7 +695,7 @@ $(document).ready(function () {
             });
         },
         loadComplete: function () {
-            $("input.delObject").click(function () {
+            $("#grid_datapoints input.delObject").click(function () {
                 var id = $(this).attr("data-del-id");
                 $(this).attr("disabled", true);
                 socket.emit('delObject', id);
@@ -778,7 +778,7 @@ $(document).ready(function () {
                 };
                 $eventGrid.jqGrid('addRowData', eventCounter++, data, "first");
                 //console.log($mainTabs.tabs("option", "active") + " " + $subTabs5.tabs("option", "active"));
-                if ($mainTabs.tabs("option", "active") == 3 && $subTabs5.tabs("option", "active") == 3) {
+                if ($mainTabs.tabs("option", "active") == 4 && $subTabs5.tabs("option", "active") == 4) {
                     $eventGrid.trigger("reloadGrid");
                 }
             });
@@ -867,21 +867,22 @@ $(document).ready(function () {
     $("#grid_objecttree").jqGrid({
         datatype: "local",
         colNames: [
-            getWord('id'),
-            getWord('Name'),
-            getWord('TypeName'),
-            getWord('Interface'),
-            getWord('Address'),
-            getWord('HssType')
-
+            ('id'),
+            ('Name'),
+            ('TypeName'),
+            ('Interface'),
+            ('Address'),
+            ('HssType'),
+            '_persistent'
         ],
         colModel: [
-            {name:'id', index:'id', width: 48, sorttype: 'int'},
-            {name:'Name', index:'Name', width: 240},
-            {name:'TypeName', index:'TypeName', width: 130},
-            {name:'Interface', index:'Interface', width: 88},
-            {name:'Address', index:'Address', width: 90},
-            {name:'HssType', index:'HssType', width: 130}
+            {name: 'id', index: 'id', width: 48, sorttype: 'int'},
+            {name: 'Name', index: 'Name', width: 240},
+            {name: 'TypeName', index: 'TypeName', width: 130},
+            {name: 'Interface', index: 'Interface', width: 88},
+            {name: 'Address', index: 'Address', width: 90},
+            {name: 'HssType', index: 'HssType', width: 130},
+            {name: '_persistent', index: '_persistent', width: 30}
         ],
         rowNum:     20,
         autowidth:  true,
@@ -898,6 +899,15 @@ $(document).ready(function () {
         subGrid:    true,
         subGridRowExpanded: function(grid_id, row_id) {
             subGridObjecttree(grid_id, row_id);
+        },
+        loadComplete: function () {
+            $("#grid_objecttree input.delObject").click(function () {
+                var id = $(this).attr("data-del-id");
+                $(this).attr("disabled", true);
+                socket.emit('delObject', id);
+                delete regaObjects[id];
+                $("#grid_objecttree tr#"+id).remove();
+            });
         }
     }).jqGrid('filterToolbar',{
         defaultSearch:'cn',
@@ -1297,11 +1307,13 @@ $(document).ready(function () {
         for (var id in regaObjects) {
             var obj = regaObjects[id];
             obj.id = id;
+            obj._persistent = (obj._persistent ? "<input class='delObject' data-del-id='"+id+"' type='button' value='x'/>" : "");
             if (!obj.Parent) {
-                // FIXME Multiple usage of same IDs
+                // FIXME Multiple usage of same IDs (datapoint-grid)
                 $("#grid_objecttree").jqGrid('addRowData', id, obj);
             }
         }
+        $("#grid_objecttree").trigger("reloadGrid");
     }
 
     function subGridObjecttree(grid_id, row_id) {
@@ -1318,7 +1330,6 @@ $(document).ready(function () {
         }
 
         if (count == 0) {
-            $("#grid_objecttree").jqGrid('collapseSubGridRow', grid_id);
             return null;
         }
 
@@ -1326,12 +1337,13 @@ $(document).ready(function () {
         var gridConf = {
             datatype: "local",
             colNames: [
-                getWord('id'),
-                getWord('Name'),
-                getWord('TypeName'),
-                getWord('Interface'),
-                getWord('Address'),
-                getWord('HssType')
+                ('id'),
+                ('Name'),
+                ('TypeName'),
+                ('Interface'),
+                ('Address'),
+                ('HssType'),
+                '_persistent'
             ],
             colModel: [
                 {name: 'id', index: 'id', width: 48, sorttype: 'int'},
@@ -1339,7 +1351,8 @@ $(document).ready(function () {
                 {name: 'TypeName', index: 'TypeName', width: 130},
                 {name: 'Interface', index: 'Interface', width: 88},
                 {name: 'Address', index: 'Address', width: 90},
-                {name: 'HssType', index: 'HssType', width: 130}
+                {name: 'HssType', index: 'HssType', width: 130},
+                {name: '_persistent', index: '_persistent', width: 30}
             ],
             rowNum: 1000000,
             autowidth: true,
@@ -1361,6 +1374,14 @@ $(document).ready(function () {
         for (var id in gridObjects) {
             $("#" + subgrid_table_id).jqGrid('addRowData', id, gridObjects[id]);
         }
+
+        $("#" + subgrid_table_id + " input.delObject").click(function () {
+            var id = $(this).attr("data-del-id");
+            $(this).attr("disabled", true);
+            socket.emit('delObject', id);
+            delete regaObjects[id];
+            $("#" + subgrid_table_id + " tr#"+id).remove();
+        });
 
     }
 });
