@@ -1611,7 +1611,7 @@ function initSocketIO(_io) {
             // Todo Fehler abfangen
             var content = JSON.stringify(obj);
             if (JSON.parse(content) != obj) {
-                logger.warn("ccu.io        writeFile JSON mismatch");
+                logger.warn("ccu.io        writeFile JSON mismatch "+name);
             }
             logger.verbose("socket.io <-- writeFile "+name+" "+content);
             fs.exists(settings.datastorePath+name, function (exists) {
@@ -2172,33 +2172,50 @@ function stop() {
             logger.info("socket.io --> disconnecting socket");
             socket.disconnect();
         });
+    } catch (e) {
+        logger.error("ccu.io        something went wrong while terminating socket connections: "+e)
+    }
 
+    try {
         if (io && io.server) {
             logger.info("ccu.io        closing http server");
             io.server.close();
             delete io.server ;
         }
+    } catch (e) {
+        logger.error("ccu.io        something went wrong while terminating webserver: "+e)
+    }
+
+    try {
         if (ioSsl && ioSsl.server) {
             logger.info("ccu.io        closing https server");
             ioSsl.server.close();
             delete ioSsl.server;
         }
+    } catch (e) {
+        logger.error("ccu.io        something went wrong while terminating ssl webserver: "+e)
+    }
 
+    try {
         if (childScriptEngine) {
             logger.info("ccu.io        killing script-engine");
             childScriptEngine.kill();
             delete childScriptEngine;
         }
-
-        for (var adapter in childrenAdapter) {
-            logger.info("ccu.io        killing adapter "+adapter);
-            childrenAdapter[adapter].process.kill();
-            delete childrenAdapter[adapter];
-        }
     } catch (e) {
-        logger.error("ccu.io        something went wrong while terminating: "+e)
+        logger.error("ccu.io        something went wrong while terminating script-engine: "+e)
     }
 
+
+    for (var adapter in childrenAdapter) {
+        logger.info("ccu.io        killing adapter "+adapter);
+        try {
+            childrenAdapter[adapter].process.kill();
+            delete childrenAdapter[adapter];
+        } catch (e) {
+            logger.error("ccu.io        something went wrong while terminating adapters: "+e)
+        }
+    }
 
     setTimeout(quit, 500);
 }
