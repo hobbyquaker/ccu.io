@@ -20,8 +20,6 @@ var suncalc = require('suncalc');
 var scheduler = require('node-schedule');
 var firstID = settings.adapters.sun_and_time.firstId;
 
-logger.info("_________________________________________________________________sun_and_time_____________________________________________________________");
-
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
         port: settings.ioListenPort
@@ -34,7 +32,6 @@ if (settings.ioListenPort) {
 } else {
     process.exit();
 }
-
 
 socket.on('connect', function () {
     logger.info("adapter sun_and_time  connected to ccu.io");
@@ -121,7 +118,8 @@ socket.emit("setObject", firstID + 20, {
     Address: "Sun_and_Time.time",
     HssType: "Time",
     DPs: {
-        Day_Time: firstID + 21
+        Day_Time: firstID + 21,
+        CCU_IO_Time: firstID + 22
     },
     Parent: firstID,
     _persistent: false
@@ -131,6 +129,13 @@ socket.emit("setObject", firstID + 21, {
     "Name": "Sun_and_Time.Sun.Tageszeit",
     "TypeName": "HSSDP",
     "Address": "Sun_and_Time.Sun.Day_Time",
+    "Parent": firstID + 20,
+    _persistent: true
+});
+socket.emit("setObject", firstID + 22, {
+    "Name": "Sun_and_Time.Sun.CCU_IO_Time",
+    "TypeName": "HSSDP",
+    "Address": "Sun_and_Time.Sun.CCU_IO_Time",
     "Parent": firstID + 20,
     _persistent: true
 });
@@ -1754,11 +1759,11 @@ function every_minute() {
             daytime = 7;
         }
 
-
         socket.emit("setState", [firstID + 11, day_night]);
         socket.emit("setState", [firstID + 12, Math.round(azimuth * 100) / 100]);
         socket.emit("setState", [firstID + 13, _position]);
         socket.emit("setState", [firstID + 21, daytime]);
+        socket.emit("setState", [firstID + 22, _now]);
     });
 }
 
