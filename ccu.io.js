@@ -1610,8 +1610,8 @@ function initSocketIO(_io) {
         socket.on('writeFile', function (name, obj, callback) {
             // Todo Fehler abfangen
             var content = JSON.stringify(obj);
-            if (JSON.parse(content) != obj) {
-                logger.warn("ccu.io        writeFile JSON mismatch "+name);
+            if (JSON.stringify(obj) != content) {
+                logger.warn("ccu.io        writeFile strange JSON mismatch "+name);
             }
             logger.verbose("socket.io <-- writeFile "+name+" "+content);
             fs.exists(settings.datastorePath+name, function (exists) {
