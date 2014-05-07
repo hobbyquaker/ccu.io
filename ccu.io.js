@@ -1299,28 +1299,31 @@ function clearRegaData() {
 
 
 function initSocketIO(_io) {
-	_io.configure(function (){
-	  this.set('authorization', function (handshakeData, callback) {
-        var isHttps = (serverSsl !== undefined && this.server == serverSsl);
-        if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
-            // do not check if localhost
-            if(handshakeData.address.address.toString() == "127.0.0.1") {
-                logger.verbose("ccu.io        local authentication " + handshakeData.address.address);
-                callback(null, true);
-            } else
-            if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
-                logger.warn("ccu.io        authentication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
-                callback ("Invalid session key", false);
-            } else{
-                logger.verbose("ccu.io        authentication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
-                callback(null, true);
+	_io.configure(function () {
+
+        this.set('heartbeat timeout', 25);
+        this.set('heartbeat interval', 10);
+
+        this.set('authorization', function (handshakeData, callback) {
+            var isHttps = (serverSsl !== undefined && this.server == serverSsl);
+            if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
+                // do not check if localhost
+                if(handshakeData.address.address.toString() == "127.0.0.1") {
+                    logger.verbose("ccu.io        local authentication " + handshakeData.address.address);
+                    callback(null, true);
+                } else
+                if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
+                    logger.warn("ccu.io        authentication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                    callback ("Invalid session key", false);
+                } else{
+                    logger.verbose("ccu.io        authentication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                    callback(null, true);
+                }
+            } else {
+               callback(null, true);
             }
-        }
-        else {
-           callback(null, true);
-        }
-	  });
-	});
+        });
+    });
 
     _io.sockets.on('connection', function (socket) {
         socketlist.push(socket);
