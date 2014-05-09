@@ -515,7 +515,9 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             if (!regaIndex[TypeName]) {
                 regaIndex[TypeName] = [];
             }
-            regaIndex[TypeName].push(idInt);
+            if (regaIndex[TypeName].indexOf(idInt) == -1) {
+                regaIndex[TypeName].push(idInt);
+            }
             // Namens-Index
             regaIndex.Name[data[id].Name] = [idInt, TypeName, data[id].Parent];
             // ggf. Adressen-Index
@@ -2325,22 +2327,23 @@ function loadPersistentObjects() {
     try {
         var x = JSON.parse(fs.readFileSync(settings.datastorePath+"io-persistent-objs.json"));
         for (var id in x) {
+            var idInt = parseInt(id, 10);
             var obj = x[id];
             if (obj.TypeName) {
                 if (!regaIndex[obj.TypeName]) {
                     regaIndex[obj.TypeName] = [];
                 }
-                if (regaIndex[obj.TypeName].indexOf(id) == -1) {
-                    regaIndex[obj.TypeName].push(id);
+                if (regaIndex[obj.TypeName].indexOf(idInt) == -1) {
+                    regaIndex[obj.TypeName].push(IdInt);
                 }
             }
 
             if (obj.Name) {
-                regaIndex.Name[obj.Name] = [id, obj.TypeName, obj.Parent];
+                regaIndex.Name[obj.Name] = [idInt, obj.TypeName, obj.Parent];
             }
 
             if (obj.Address) {
-                regaIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
+                regaIndex.Address[obj.Address] = [idInt, obj.TypeName, obj.Parent];
             }
             logger.verbose("persistent added "+JSON.stringify(obj));
 
