@@ -1811,6 +1811,8 @@ function initSocketIO(_io) {
         }
 
         function delObject(id, isRecursion) {
+            if (!id) return;
+
             logger.info("ccu.io        deleting object id="+id);
 
             // find children
@@ -2334,7 +2336,7 @@ function loadPersistentObjects() {
                     regaIndex[obj.TypeName] = [];
                 }
                 if (regaIndex[obj.TypeName].indexOf(idInt) == -1) {
-                    regaIndex[obj.TypeName].push(IdInt);
+                    regaIndex[obj.TypeName].push(idInt);
                 }
             }
 
