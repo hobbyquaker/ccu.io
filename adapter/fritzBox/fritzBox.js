@@ -51,7 +51,9 @@ var objState                  = fritzBoxSettings.firstId + 0, // Current state o
     objRingingNumber          = fritzBoxSettings.firstId + 6, // Now ringing Number / Name
     objRingingNumberImage     = fritzBoxSettings.firstId + 7, // Now ringing Number / Image
     objAllCallsList           = fritzBoxSettings.firstId + 8, // Incoming, Outgoing, Missed all together
-    objAllCallsListFormatted  = fritzBoxSettings.firstId + 9; // the same as previous but, formatted
+    objAllCallsListFormatted  = fritzBoxSettings.firstId + 9, // the same as previous but, formatted
+    objAllCallsListJson       = fritzBoxSettings.firstId + 10, // the same as previous but, javascript object
+    objAllCallsListJsonAdd    = fritzBoxSettings.firstId + 11; // the same as previous but, last event as javascript object
 
 var socket;
 if (settings.ioListenPort) {
@@ -163,6 +165,7 @@ function getImageType (type) {
     }
     return "";
 }
+
 function formatDuration (seconds) {
     seconds = parseInt(seconds);
 
@@ -187,8 +190,10 @@ function listToHtml (table) {
     var text = '<table class="callListTable">';
     for (var i = table.length - 1; i >= 0; i--) {
         text += "<tr class='callListTableLine"+(i%2)+"'>";
-        text += "<td class='callListTableType'><img src='" + getImageType (table[i].type) + "' style='width:32px;height:32px' /></td>";
-        text += "<td class='callListTableImg'><img src='" + resolveNumberImg (table[i].number) + "' style='width:32px;height:32px' /></td>";
+        text += "<td class='callListTableType'><img src='" + getImageType (table[i].type) + "' /></td>";
+        if (fritzBoxSettings.phonebook.length) {
+            text += "<td class='callListTableImg'><img src='" + resolveNumberImg (table[i].number) + "' /></td>";
+        }
         text += "<td class='callListTableTime'>" + table[i].time + "</td>";
         text += "<td class='callListTableName'>" + resolveNumber (table[i].number) + "</td>";
         text += "<td class='callListTableDuration'>" + formatDuration (table[i].duration) + "</td>";
@@ -197,6 +202,42 @@ function listToHtml (table) {
     text += "</table>";
 
     return text;
+}
+
+
+function elemToJson(table, i){
+    if (fritzBoxSettings.phonebook.length) {
+        return {
+            'Image':    '<img src="' + getImageType(table[i].type) + '" class="tclass-img-type"/>',
+            'Person':   '<img src="' + resolveNumberImg(table[i].number) + '" class="tclass-img-person"/>',
+            'Time':     table[i].time,
+            'Number':   resolveNumber(table[i].number),
+            'Duration': formatDuration(table[i].duration)
+        };
+    }
+    else {
+        return {
+            'Image':    '<img src="' + getImageType(table[i].type) + '" />',
+            'Time':     table[i].time,
+            'Number':   resolveNumber(table[i].number),
+            'Duration': formatDuration(table[i].duration)
+        };
+    }
+}
+// following json string or object is expected:
+//    '[\
+//       {"Time": "12:34:34", "Event", "Door opened", "_data":{"Type": "1", "Event" : "SomeEvent1"}, "_class" : "selected"},\
+//       {"Time": "12:34:35", "Event", "Door closed", "_data":{"Type": "2", "Event" : "SomeEvent2"}, "_class": "red" },\
+//       {"Time": "12:34:36", "Event", "Window opened", "_data":{"Type": "3", "Event" : "SomeEvent3"}}\
+//     ]'
+//
+function listToJson (table) {
+    var json = [];
+    for (var i = table.length - 1; i >= 0; i--) {
+        json.push(elemToJson(table, i));
+    }
+
+    return JSON.stringify(json);
 }
 
 function connectToFritzBox () {
@@ -317,6 +358,8 @@ function connectToFritzBox () {
 
                     setState(objAllCallsList, listToText(allCallsList));
                     setState(objAllCallsListFormatted, listToHtml (allCallsList));
+                    setState(objAllCallsListJson, listToJson(allCallsList));
+                    setState(objAllCallsListJsonAdd, JSON.stringify(elemToJson(allCallsList, allCallsList.length - 1)));
                 }
                 else {
                     // Incoming and not missed
@@ -330,6 +373,8 @@ function connectToFritzBox () {
                     allCallsList[allCallsList.length] = {type: "IN", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
                     setState(objAllCallsList, listToText(allCallsList));
                     setState(objAllCallsListFormatted, listToHtml (allCallsList));
+                    setState(objAllCallsListJson, listToJson(allCallsList));
+                    setState(objAllCallsListJsonAdd, JSON.stringify(elemToJson(allCallsList, allCallsList.length - 1)));
                 }
             }
             else
@@ -347,7 +392,9 @@ function connectToFritzBox () {
 
                 allCallsList[allCallsList.length] = {type: "IN", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
                 setState(objAllCallsList, listToText(allCallsList));
-                setState(objAllCallsListFormatted, listToHtml (allCallsList));
+                setState(objAllCallsListFormatted, listToHtml(allCallsList));
+                setState(objAllCallsListJson, listToJson(allCallsList));
+                setState(objAllCallsListJsonAdd, JSON.stringify(elemToJson(allCallsList, allCallsList.length - 1)));
             }
             else
             // If outgoing call
@@ -363,6 +410,8 @@ function connectToFritzBox () {
                 allCallsList[allCallsList.length] = {type: "OUT", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
                 setState(objAllCallsList, listToText(allCallsList));
                 setState(objAllCallsListFormatted, listToHtml (allCallsList));
+                setState(objAllCallsListJson, listToJson(allCallsList));
+                setState(objAllCallsListJsonAdd, JSON.stringify(elemToJson(allCallsList, allCallsList.length - 1)));
             }
         }
         else {
@@ -486,6 +535,22 @@ createObject(objAllCallsListFormatted, {
     "ValueSubType": 11
 });
 
+createObject(objAllCallsListJson, {
+    Name:     "FRITZBOX.ALL_JSON_TABLE",
+    "DPInfo": "FritzBox",
+    TypeName: "VARDP",
+    "ValueType": 20,
+    "ValueSubType": 11
+});
+
+createObject(objAllCallsListJsonAdd, {
+    Name:     "FRITZBOX.ALL_JSON_TABLE_EVENT",
+    "DPInfo": "FritzBox",
+    TypeName: "VARDP",
+    "ValueType": 20,
+    "ValueSubType": 11
+});
+
 // Init objects if they are not stored
 getState (objMissedCalls, function (id, obj) {
     if (!obj){
@@ -521,6 +586,7 @@ getState (objAllCallsList, function (id, obj) {
             var els = calls[i].split("/", 4);// type/time/number/duration
             allCallsList[allCallsList.length] = {type: els[0], time: els[1], number: els[2], duration: els[3]};
         }
-        setState(objAllCallsListFormatted, listToHtml (allCallsList));
+        setState(objAllCallsListFormatted, listToHtml(allCallsList));
+        setState(objAllCallsListJson, listToJson(allCallsList));
     }
 });
