@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.29*
+*aktuelle Version: 1.0.32*
 
 ## Dokumentation
 
@@ -35,6 +35,17 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.32
+* (Hobbyquaker) DWD-Adapter: doppelte Anzeige von Warnungen unterbunden, Dienststellen korrigiert
+* (Bluefox) Snapshot tries to erase links to cameras in dashui-views.json to prevent inclusion of passwords
+* (Bluefox) Fix Sonos adapter to control Favorites
+* (Bluefox) Fix Sonos adapter
+
+### 1.0.31
+* (Bluefox) Create anonimyzed snapshot for debug
+* (smiling-Jack) Neue Script-Engine Methode: sunCalc()
+* (smiling-Jack) Neuer Adapter: sun_and_time
 
 ### 1.0.30
 * (Hobbyquaker) Bugfix Script-Engine execCmd

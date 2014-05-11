@@ -905,6 +905,12 @@ function findDatapoint(needle, hssdp) {
     return needle;
 }
 
+
+function sunCalc() {
+    var date = new Date;
+    return scriptEngine.suncalc.getPosition(date, scriptEngine.settings.latitude, scriptEngine.settings.longitude);
+}
+
 process.on('SIGINT', function () {
     scriptEngine.stop();
 });
