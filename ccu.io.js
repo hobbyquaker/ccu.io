@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.32";
+settings.version = "1.0.33";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -429,7 +429,11 @@ function pollRega() {
             return false;
         }
         try {
-            var data = JSON.parse(data);
+            data = JSON.parse(data);
+        } catch (e) {
+            logger.error("ccu.io        pollRega "+e);
+        }
+        try {
             for (id in data) {
                 var val;
 
@@ -441,13 +445,14 @@ function pollRega() {
                         val = data[id][0];
                     }
 
-                    if (settings.logging.varChangeOnly && notFirstVarUpdate) {
-                        if (!datapoints[id] || datapoints[id][0] != val || !datapoints[id][2]) {
+                    if (datapoints[id] && settings.logging.varChangeOnly && notFirstVarUpdate) {
+                        if (datapoints[id][0] != val || !datapoints[id][2]) {
                             devLog(ts, id, val);
                         }
                     } else {
                         devLog(ts, id, val);
                     }
+
                     // Hat sich die Anzahl der Servicemeldungen geändert?
                     if (id == 41 && datapoints[id][0] != val) {
                         pollServiceMsgs();
@@ -481,7 +486,7 @@ function pollServiceMsgs() {
     });
 }
 
-function loadRegaData(index, err, rebuild, triggerReload) {
+function loadRegaData(index, err, rebuild, triggerReload, onlyOne) {
     if (!index) { index = 0; }
 
     var type = settings.regahss.metaScripts[index];
@@ -570,6 +575,8 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             regaObjects[id] = data[id];
         }
 
+        if (onlyOne) return;
+
         index += 1;
         if (index < settings.regahss.metaScripts.length) {
             loadRegaData(index, null, rebuild);
@@ -579,7 +586,7 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             updateStatus();
             if (rebuild) {
                 logger.info("rega          data succesfully reloaded");
-                logger.info("socket.io --> broadcast reload")
+                logger.info("socket.io --> broadcast reload");
                 if (io) {
                     io.sockets.emit("reload");
                 }
