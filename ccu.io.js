@@ -428,31 +428,35 @@ function pollRega() {
             tryReconnect();
             return false;
         }
-        var data = JSON.parse(data);
-        for (id in data) {
-            var val;
+        try {
+            var data = JSON.parse(data);
+            for (id in data) {
+                var val;
 
-            if (settings.logging.enabled) {
-                var ts = Math.round((new Date()).getTime() / 1000);
-                if (typeof data[id][0] == "string") {
-                    val = unescape(data[id][0]);
-                } else {
-                    val = data[id][0];
-                }
+                if (settings.logging.enabled) {
+                    var ts = Math.round((new Date()).getTime() / 1000);
+                    if (typeof data[id][0] == "string") {
+                        val = unescape(data[id][0]);
+                    } else {
+                        val = data[id][0];
+                    }
 
-                if (settings.logging.varChangeOnly && notFirstVarUpdate) {
-                    if (datapoints[id][0] != val || !datapoints[id][2]) {
+                    if (settings.logging.varChangeOnly && notFirstVarUpdate) {
+                        if (!datapoints[id] || datapoints[id][0] != val || !datapoints[id][2]) {
+                            devLog(ts, id, val);
+                        }
+                    } else {
                         devLog(ts, id, val);
                     }
-                } else {
-                    devLog(ts, id, val);
+                    // Hat sich die Anzahl der Servicemeldungen geändert?
+                    if (id == 41 && datapoints[id][0] != val) {
+                        pollServiceMsgs();
+                    }
                 }
-                // Hat sich die Anzahl der Servicemeldungen geändert?
-                if (id == 41 && datapoints[id][0] != val) {
-                    pollServiceMsgs();
-                }
+                setDatapoint(id, data[id][0], formatTimestamp(), true, data[id][1]);
             }
-            setDatapoint(id, data[id][0], formatTimestamp(), true, data[id][1]);
+        } catch (e) {
+            logger.error("ccu.io        pollRega "+e);
         }
         notFirstVarUpdate = true;
         pollTimer = setTimeout(pollRega, settings.regahss.pollDataInterval);
