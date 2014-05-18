@@ -1629,11 +1629,11 @@ function initSocketIO(_io) {
             if (JSON.stringify(obj) != content) {
                 logger.warn("ccu.io        writeFile strange JSON mismatch "+name);
             }
-            logger.info("socket.io <-- writeFile "+name+" "+content);
+            logger.verbose("socket.io <-- writeFile "+name+" "+content);
             fs.exists(settings.datastorePath+name, function (exists) {
                 if (exists) {
                     fs.rename(settings.datastorePath+name, settings.datastorePath+name+".bak", function() {
-                        logger.info("socket.io <-- writeFile created "+settings.datastorePath+name+".bak");
+                        logger.verbose("socket.io <-- writeFile created "+settings.datastorePath+name+".bak");
                         fs.writeFile(settings.datastorePath+name, content);
                         if (callback) { callback(); }
                     });
