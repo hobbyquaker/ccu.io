@@ -1,0 +1,91 @@
+<h3>FTP Adapter for <a href="http://www.b-control.com/energiemanagement/ihr-zuhause.html" target="_blank">B-control EM100</a></h3>
+
+<table style="font-size: 12px">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td>
+            <select id="bcontrol_em_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Listen Address:</td>
+        <td><input id="bcontrol_em_settings_host" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Listen Port:</td>
+        <td><input id="bcontrol_em_settings_port" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Username:</td>
+        <td><input id="bcontrol_em_settings_user" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Password:</td>
+        <td><input id="bcontrol_em_settings_pass" type="text"/></td>
+    </tr>
+
+</table>
+<p>
+    Wird als User "anonymous" verwendet ist das Passwort irrelevant.<br/>
+    Wird als Listen Address "0.0.0.0" verwendet lauscht der FTP-Server auf allen Netzwerkinterfaces
+</p>
+<p>
+    <h4>B-Control Einstellungen</h4>
+    <ul>
+        <li>Passives FTP: nicht aktivieren</li>
+        <li>Zielverzeichnis: /</li>
+    </ul>
+</p>
+
+<script type="text/javascript">
+
+    if (currentAdapterSettings.enabled) {
+        $("#bcontrol_em_enabled option[value='false']").removeAttr("selected");
+        $("#bcontrol_em_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#bcontrol_em_enabled option[value='true']").removeAttr("selected");
+        $("#bcontrol_em_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#bcontrol_em_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#bcontrol_em_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+
+    $("#bcontrol_em_settings_host").val(currentAdapterSettings.settings.host);
+
+    $("#bcontrol_em_settings_host").change(function () {
+        currentAdapterSettings.settings.host = $("#bcontrol_em_settings_host").val();
+        updateAdapterSettings();
+    });
+
+
+    $("#bcontrol_em_settings_port").val(currentAdapterSettings.settings.port);
+
+    $("#bcontrol_em_settings_port").change(function () {
+        currentAdapterSettings.settings.port = $("#bcontrol_em_settings_port").val();
+        updateAdapterSettings();
+    });
+
+    $("#bcontrol_em_settings_user").val(currentAdapterSettings.settings.user);
+
+    $("#bcontrol_em_settings_user").change(function () {
+        currentAdapterSettings.settings.user = $("#bcontrol_em_settings_user").val();
+        updateAdapterSettings();
+    });
+
+    $("#bcontrol_em_settings_pass").val(currentAdapterSettings.settings.pass);
+
+    $("#bcontrol_em_settings_pass").change(function () {
+        currentAdapterSettings.settings.pass = $("#bcontrol_em_settings_pass").val();
+        updateAdapterSettings();
+    });
+
+
+</script>

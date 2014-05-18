@@ -117,6 +117,7 @@ var ccuWords = {
     "File saved."       : {"en": "File saved.",           "de": "Datei gespeichert",  "ru": "Файл сохранён."},
     "CCU.IO disconnected":{"en": "CCU.IO disconnected",   "de": "Verbindung zu CCU.IO getrennt", "ru": "Связь с CCU.IO прервана"},
     "install started"   : {"en": "install started",       "de": "Installation gestartet","ru": "Установка начата"},
+    "Object tree":        {"en": "Object tree",            "de": "Objektbaum"},
     "CCU.IO settings saved. Please restart CCU.IO" : {
         "en": "CCU.IO settings saved. Please restart CCU.IO",
         "de": "CCU.IO Einstellungen gespeichert. Bitte CCU.IO neu starten",

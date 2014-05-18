@@ -53,7 +53,7 @@ rega.prototype = {
             if (!err) {
                 var ccuTime = parseInt(data, 10);
                 var localTime = Math.round(new Date().getTime() / 1000);
-                var diff = localTime - ccuTime
+                var diff = localTime - ccuTime;
                 logger.info("ccu.io        time difference local-ccu " + diff.toString() + "s");
             }
             callback(0, err);

@@ -1,0 +1,40 @@
+>> 220 FTP server (nodeftpd) ready
+<< USER me@hostname:22
+>> 331 Password required for me@hostname:22
+<< PASS ***
+>> 230 Logged on
+<< TYPE I
+>> 200 OK
+<< CWD /home/me
+>> 250 CWD successful. "/home/me" is current directory
+<< SYST
+>> 215 UNIX Type: I
+<< PORT 127,0,0,1,245,44
+>> 200 OK
+<< LIST
+>> 150 Here comes the directory listing
+>> drwxr-xr-x 1 ftp ftp        12288 Jan 16 15:59 file.js
+>> 226 Transfer OK
+<< PORT 127,0,0,1,245,46
+>> 200 OK
+<< LIST path/to
+>> 150 Here comes the directory listing
+>> -rw-r--r-- 1 ftp ftp         3000 Jan 16 17:04 file.js
+>> 226 Transfer OK
+<< PORT 127,0,0,1,245,48
+>> 200 OK
+<< STOR path/to/file.js
+>> 150 Ok to send data
+>> 226 Closing data connection
+<< PORT 127,0,0,1,245,50
+>> 200 OK
+<< LIST path/to
+>> 150 Here comes the directory listing
+>> -rw-r--r-- 1 ftp ftp         3000 Jan 16 17:04 file.js
+>> 226 Transfer OK
+<< FEAT
+>> 211-Features
+ SIZE
+211 end
+<< MDTM 20130117011400 path/to/file.js
+>> 202 Not supported
