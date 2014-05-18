@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.32*
+*aktuelle Version: 1.0.33*
 
 ## Dokumentation
 
@@ -38,6 +38,20 @@ siehe http://ccu.io/
 
 ### 1.0.33
 * (Mimquadrat) Favicon für CCU.IO-Oberfläche
+* (smiling-Jack) Fix Adapter sun_and_time: default settings and daytime calculation
+* (Bluefox) Adapter Fritzbox: json Table for FritzBox adapter, Images for FritzBox changed
+* (Hobbyquaker) new Tab in Webinterface: Object tree
+* (Hobbyquaker) new Adapter: B-control Energy Manager
+* (Hobbyquaker) Fix create adapter-settings
+* (Hobbyquaker) Fix regaPoll Error
+* (Hobbyquaker) Fix typeof id in Index
+* (Hobbyquaker) decreased socket.io heartbeat interval and timeout
+* (Hobbyquaker) increased terminate timeout
+* (Hobbyquaker) more fault tolerance on terminating
+* (Hobbyquaker) log error if adapter kill fails
+* (Hobbyquaker) Fix reload Adapter
+* (Hobbyquaker) writeFile creates .bak when overwriting
+
 
 ### 1.0.32
 * (Hobbyquaker) DWD-Adapter: doppelte Anzeige von Warnungen unterbunden, Dienststellen korrigiert
