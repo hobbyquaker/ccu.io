@@ -20,8 +20,6 @@ var suncalc = require('suncalc');
 var scheduler = require('node-schedule');
 var firstID = settings.adapters.sun_and_time.firstId;
 
-logger.info("_________________________________________________________________sun_and_time_____________________________________________________________");
-
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
         port: settings.ioListenPort
@@ -34,7 +32,6 @@ if (settings.ioListenPort) {
 } else {
     process.exit();
 }
-
 
 socket.on('connect', function () {
     logger.info("adapter sun_and_time  connected to ccu.io");
@@ -121,7 +118,8 @@ socket.emit("setObject", firstID + 20, {
     Address: "Sun_and_Time.time",
     HssType: "Time",
     DPs: {
-        Day_Time: firstID + 21
+        Day_Time: firstID + 21,
+        CCU_IO_Time: firstID + 22
     },
     Parent: firstID,
     _persistent: false
@@ -131,6 +129,13 @@ socket.emit("setObject", firstID + 21, {
     "Name": "Sun_and_Time.Sun.Tageszeit",
     "TypeName": "HSSDP",
     "Address": "Sun_and_Time.Sun.Day_Time",
+    "Parent": firstID + 20,
+    _persistent: true
+});
+socket.emit("setObject", firstID + 22, {
+    "Name": "Sun_and_Time.Sun.CCU_IO_Time",
+    "TypeName": "HSSDP",
+    "Address": "Sun_and_Time.Sun.CCU_IO_Time",
     "Parent": firstID + 20,
     _persistent: true
 });
@@ -1665,100 +1670,102 @@ function every_minute() {
     var day_night = 0;
 
     scheduler.scheduleJob("* * * * *", function () {
-        var now = new Date;
-        var position = suncalc.getPosition(now, settings.latitude, settings.longitude);
-        var azimuth = position.azimuth * 180 / Math.PI;
-        var altitude = position.altitude * 180 / Math.PI;
+    var now = new Date;
+    var position = suncalc.getPosition(now, settings.latitude, settings.longitude);
+    var azimuth = position.azimuth * 180 / Math.PI;
+    var altitude = position.altitude * 180 / Math.PI;
 
-        // Day Night
-        if (altitude < AdapterSettings.Morgendaemmerung && altitude < AdapterSettings.Abenddaemmerung) {
-            day_night = 1; //Nacht
-        } else if (azimuth < 0 && (altitude < 0 && altitude > AdapterSettings.Morgendaemmerung)) {
-            day_night = 2; // Morgendämmerung
-        } else if (altitude > 0) {
-            day_night = 3; //Tag
-        } else if (azimuth > 0 && (altitude < 0 && altitude > AdapterSettings.Abenddaemmerung)) {
-            day_night = 4; //Abenddänmmerung
-        } else if (azimuth > 0 && altitude < AdapterSettings.Abenddaemmerung) {
-            day_night = 1; //Nacht
-        }
+    // Day Night
+    if (altitude < AdapterSettings.Morgendaemmerung && altitude < AdapterSettings.Abenddaemmerung) {
+        day_night = 1; //Nacht
+    } else if (azimuth < 0 && (altitude < 0 && altitude > AdapterSettings.Morgendaemmerung)) {
+        day_night = 2; // Morgendämmerung
+    } else if (altitude > 0) {
+        day_night = 3; //Tag
+    } else if (azimuth > 0 && (altitude < 0 && altitude > AdapterSettings.Abenddaemmerung)) {
+        day_night = 4; //Abenddänmmerung
+    } else if (azimuth > 0 && altitude < AdapterSettings.Abenddaemmerung) {
+        day_night = 1; //Nacht
+    }
 
-        // Richtung
+    // Richtung
 
-        if (azimuth > -135 && azimuth < -112.5) {
-            _position = 1;
-        }
-        else if (azimuth > -112.5 && azimuth < -90) {
-            _position = 2;
-        }
-        else if (azimuth > -90 && azimuth < -67.5) {
-            _position = 3;
-        }
-        else if (azimuth > -67.5 && azimuth < -45) {
-            _position = 4;
-        }
-        else if (azimuth > -45 && azimuth < -22.5) {
-            _position = 5;
-        }
-        else if (azimuth > -22.5 && azimuth < 0) {
-            _position = 6;
-        }
-        else if (azimuth > 0 && azimuth < 22.5) {
-            _position = 7;
-        }
-        else if (azimuth > 22.5 && azimuth < 45) {
-            _position = 8;
-        }
-        else if (azimuth > 45 && azimuth < 67.5) {
-            _position = 9;
-        }
-        else if (azimuth > 67.5 && azimuth < 90) {
-            _position = 10;
-        }
-        else if (azimuth > 90 && azimuth < 112.5) {
-            _position = 11;
-        }
-        else if (azimuth > 112.5 && azimuth < 135) {
-            _position = 12;
-        }
-
-
-        //DayTime
-        var now_h = now.getHours();
-        var now_m = now.getMinutes();
-
-        if (parseInt(now_h) <= 9) {
-            now_h = "0" + now_h;
-        }
-        if (parseInt(now_m) <= 9) {
-            now_m = "0" + now_m;
-        }
-
-        var _now = now_h + ":" + now_m;
-
-        if (_now < AdapterSettings.Fruehmorgen) {
-            daytime = 8;
-        } else if (_now < AdapterSettings.Morgen) {
-            daytime = 1;
-        } else if (_now < AdapterSettings.Vormittag) {
-            daytime = 2;
-        } else if (_now < AdapterSettings.Mittag) {
-            daytime = 3;
-        } else if (_now < AdapterSettings.Nachmittag) {
-            daytime = 4;
-        } else if (_now < AdapterSettings.Abend) {
-            daytime = 5;
-        } else if (_now < AdapterSettings.Spaetabend) {
-            daytime = 6;
-        } else {
-            daytime = 7;
-        }
+    if (azimuth > -135 && azimuth < -112.5) {
+        _position = 1;
+    }
+    else if (azimuth > -112.5 && azimuth < -90) {
+        _position = 2;
+    }
+    else if (azimuth > -90 && azimuth < -67.5) {
+        _position = 3;
+    }
+    else if (azimuth > -67.5 && azimuth < -45) {
+        _position = 4;
+    }
+    else if (azimuth > -45 && azimuth < -22.5) {
+        _position = 5;
+    }
+    else if (azimuth > -22.5 && azimuth < 0) {
+        _position = 6;
+    }
+    else if (azimuth > 0 && azimuth < 22.5) {
+        _position = 7;
+    }
+    else if (azimuth > 22.5 && azimuth < 45) {
+        _position = 8;
+    }
+    else if (azimuth > 45 && azimuth < 67.5) {
+        _position = 9;
+    }
+    else if (azimuth > 67.5 && azimuth < 90) {
+        _position = 10;
+    }
+    else if (azimuth > 90 && azimuth < 112.5) {
+        _position = 11;
+    }
+    else if (azimuth > 112.5 && azimuth < 135) {
+        _position = 12;
+    }
 
 
-        socket.emit("setState", [firstID + 11, day_night]);
-        socket.emit("setState", [firstID + 12, Math.round(azimuth * 100) / 100]);
-        socket.emit("setState", [firstID + 13, _position]);
-        socket.emit("setState", [firstID + 21, daytime]);
+    //DayTime
+    var now_h = now.getHours();
+    var now_m = now.getMinutes();
+
+    if (parseInt(now_h) <= 9) {
+        now_h = "0" + now_h;
+    }
+    if (parseInt(now_m) <= 9) {
+        now_m = "0" + now_m;
+    }
+
+    var _now = now_h + ":" + now_m;
+
+    if (_now < AdapterSettings.Fruehmorgen) {
+        daytime = 8;
+    } else if (_now < AdapterSettings.Morgen) {
+        daytime = 1;
+    } else if (_now < AdapterSettings.Vormittag) {
+        daytime = 2;
+    } else if (_now < AdapterSettings.Mittag) {
+        daytime = 3;
+    } else if (_now < AdapterSettings.Nachmittag) {
+        daytime = 4;
+    } else if (_now < AdapterSettings.Abend) {
+        daytime = 5;
+    } else if (_now < AdapterSettings.Spaetabend) {
+        daytime = 6;
+    } else if (_now < AdapterSettings.Nacht) {
+        daytime = 7;
+    } else {
+        daytime = 8;
+    }
+
+    socket.emit("setState", [firstID + 11, day_night]);
+    socket.emit("setState", [firstID + 12, Math.round(azimuth * 100) / 100]);
+    socket.emit("setState", [firstID + 13, _position]);
+    socket.emit("setState", [firstID + 21, daytime]);
+    socket.emit("setState", [firstID + 22, _now]);
     });
 }
 
