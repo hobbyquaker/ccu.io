@@ -61,9 +61,9 @@ function bemDev(file, text) {
     var sn = snArr[1];
 
     var dev = {
-        Name: "Busch EnergyMonitor SN"+sn,
+        Name: "B-control EnergyManager SN"+sn,
         Address: "BEM"+sn,
-        HssType: "BUSCH-ENERGYMONITOR",
+        HssType: "BCONTROL-ENERGYMANAGER",
         TypeName: "DEVICE",
         Interface: "BEM",
         _findNextId: true,
@@ -124,7 +124,7 @@ function bemCh(devId, dev, text) {
     for (var i = 0; i < channelCount; i++) {
         var idx = (i * 2) + 2;
         channels[i] = {
-            Name: "EnergyMonitor " + desc[idx],
+            Name: "EnergyManager " + desc[idx],
             Address: dev.Address + ":" + JSON.parse(serials[idx]),
             HssType: "OBIS_" + obis[idx],
             TypeName: "CHANNEL",
