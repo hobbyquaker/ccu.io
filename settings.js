@@ -72,7 +72,18 @@ for (var i = 0; i < adapters.length; i++) {
     try {
         settingsJson = fs.readFileSync(__dirname+"/datastore/adapter-"+adapters[i]+".json");
         adapterSettings = JSON.parse(settingsJson.toString());
-        logger.verbose("ccu.io        settings.json found for "+adapters[i]);
+        if (!adapterSettings) {
+            try {
+                settingsJson = fs.readFileSync(__dirname+"/adapter/"+adapters[i]+"/settings.json");
+                var adapterSettings = JSON.parse(settingsJson.toString());
+                fs.writeFileSync(__dirname+"/datastore/adapter-"+adapters[i]+".json", JSON.stringify(adapterSettings));
+                logger.info("ccu.io        creating datastore/adapter-"+adapters[i]+".json");
+            } catch (ee) {
+                logger.error("ccu.io        no settings.json found for "+adapters[i]);
+            }
+        } else {
+            logger.verbose("ccu.io        settings.json found for "+adapters[i]);
+        }
 
     } catch (e) {
         try {
