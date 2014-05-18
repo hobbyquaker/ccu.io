@@ -36,6 +36,9 @@ siehe http://ccu.io/
 
 ## Changelog
 
+### 1.0.34
+* (Hobbyquaker) Fix loadDatapoints
+
 ### 1.0.33
 * (Mimquadrat) Favicon für CCU.IO-Oberfläche
 * (smiling-Jack) Fix Adapter sun_and_time: default settings and daytime calculation
