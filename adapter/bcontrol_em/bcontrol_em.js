@@ -1,5 +1,5 @@
 /**
- *  Adapter für Busch EnergyMonitor®
+ *  Adapter für B-control Energy Manager
  *
  *  Version 0.1
  *
@@ -13,7 +13,7 @@ var ftpd = require('ftpd');
 
 var settings = require(__dirname+'/../../settings.js');
 
-if (!settings.adapters.energymonitor || !settings.adapters.energymonitor.enabled) {
+if (!settings.adapters.bcontrol_em || !settings.adapters.bcontrol_em.enabled) {
     process.exit();
 }
 
@@ -34,8 +34,8 @@ if (settings.ioListenPort) {
     process.exit();
 }
 
-var adapterSettings = settings.adapters.energymonitor.settings;
-var firstId = settings.adapters.energymonitor.firstId;
+var adapterSettings = settings.adapters.bcontrol_em.settings;
+var firstId = settings.adapters.bcontrol_em.firstId;
 adapterSettings.users = {};
 adapterSettings.users[adapterSettings.user] = adapterSettings.pass;
 
