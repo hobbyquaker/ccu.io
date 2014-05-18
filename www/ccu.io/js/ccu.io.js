@@ -799,7 +799,7 @@ $(document).ready(function () {
                     id: id,
                     name: (regaObjects[id] ? regaObjects[id].Name : ""),
                     address: (regaObjects[id] ? regaObjects[id].Address : ""),
-                    parent: (regaObjects[id] && regaObjects[id].Parent ? regaObjects[regaObjects[id].Parent].Name : ""),
+                    parent: (regaObjects[id] && regaObjects[id].Parent && regaObjects[regaObjects[id].Parent] ? regaObjects[regaObjects[id].Parent].Name : ""),
                     type: (regaObjects[id] ? regaObjects[id].TypeName : ""),
                     val: $('<div/>').text(obj[id][0]).html(),
                     timestamp: (obj[id][1] == "1970-01-01 01:00:00" ? "" : obj[id][1]),
