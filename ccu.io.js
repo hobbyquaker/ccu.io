@@ -112,6 +112,7 @@ if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
             var reinit = now - settings.binrpc.checkEvents.reinitAfter;
             for (var i = 0; i < settings.binrpc.inits.length; i++) {
                 var init = settings.binrpc.inits[i];
+                if (init.id == "io_cuxd") continue;
                 if (lastEvents[init.id] < reinit) {
 
                     if (settings.binrpc.checkEvents.testTrigger[init.id]) {
