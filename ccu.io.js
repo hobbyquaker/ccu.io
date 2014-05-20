@@ -133,8 +133,12 @@ if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
                 } else if (lastEvents[init.id] < check) {
                     logger.verbose("binrpc        checking init "+init.id);
                     if (settings.binrpc.checkEvents.testTrigger[init.id]) {
-                        var id = regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]][0];
-                        regahss.script("dom.GetObject("+id+").State(true);");
+                        if (regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]]) {
+                            var id = regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]][0];
+                            regahss.script("dom.GetObject("+id+").State(true);");
+                        } else {
+                            logger.warn("binrpc        checkEvent.trigger undefined for "+init.id);
+                        }
                     } else {
                         logger.warn("binrpc        checkEvent.trigger undefined for "+init.id);
                     }
