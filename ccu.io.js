@@ -1646,10 +1646,21 @@ function initSocketIO(_io) {
         });
 
         socket.on('writeRawFile', function (path, content, callback) {
-            logger.verbose("socket.io <-- writeRawFile "+path);
-            fs.writeFile(__dirname+"/"+path, content);
             // Todo Fehler abfangen
-            if (callback) { callback(); }
+
+            logger.verbose("socket.io <-- writeRawFile "+path);
+            fs.exists(__dirname+"/"+path, function (exists) {
+                if (exists) {
+                    fs.rename(__dirname+"/"+path, __dirname+"/"+path+".bak", function() {
+                        logger.verbose("socket.io <-- writeRawFile created "+__dirname+"/"+path+".bak");
+                        fs.writeFile(__dirname+"/"+path, content);
+                        if (callback) { callback(); }
+                    });
+                } else {
+                    fs.writeFile(__dirname+"/"+path, content);
+                    if (callback) { callback(); }
+                }
+            });
         });
 
         socket.on('writeBase64', function (path, content, callback) {
