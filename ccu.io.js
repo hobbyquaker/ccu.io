@@ -45,6 +45,7 @@ var fs =        require('fs'),
     url =       require('url'),
     socketio =  require('socket.io'),
     scheduler = require('node-schedule'),
+    mime = require('mime'),
     app,
     appSsl,
     server,
@@ -1680,6 +1681,22 @@ function initSocketIO(_io) {
                     callback(undefined);
                 } else {
                     callback(data.toString());
+                }
+            });
+        });
+
+        socket.on('readBase64', function (name, callback) {
+            logger.verbose("socket.io <-- readFile "+name);
+
+            fs.readFile(__dirname+"/"+name,"base64", function (err, data) {
+                if (err) {
+                    logger.error("ccu.io        failed reading Base64 file "+__dirname+"/"+name);
+                    callback(undefined);
+                } else {
+                    callback({
+                        mime: mime.lookup(__dirname+"/"+name),
+                        data:data
+                    });
                 }
             });
         });
