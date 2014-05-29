@@ -23,6 +23,7 @@ var objects = {},
 	datapoints = {};
 var ical = require('ical'), months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']
 var RRule = require('rrule').RRule;
+var S = require('string');
 var preview = icalSettings.preview;
 var intervalID;
 var fontbold = '<span style=\"font-weight:bold;color:'+icalSettings.defColor+'\">';
@@ -56,6 +57,7 @@ var calCol;
 var runningParser = new Array();
 var eventsDP = new Array();
 var processedEvents = new Array();
+
 
 //Start bei firstID + 10
 var dpId = icalSettings.firstId + 10;
@@ -96,6 +98,7 @@ socket.on('event', function (obj) {
                 if (id == icalSettings.firstId && val != "" && val !="autorun" && val != "stopped") {
 					var content = val.split(" ");
 					setState(icalSettings.firstId + 1, "");
+                    setState(icalSettings.firstId + 2, "0");
                     //von defURL lesen
 					if (content[0] == "read") {
 						logger.info("adapter ical  reading iCal from default URL: " + icalSettings.defURL);
@@ -168,6 +171,7 @@ function checkiCal(loc,col,count,cb) {
            logger.info("adapter ical  processing URL: " + opts+ " "+ loc);
             //Variable ablöschen
             setState(icalSettings.firstId + 1, "");
+            setState(icalSettings.firstId + 2, "0");
          /* for (var k in data) {
              if (data.hasOwnProperty(k)) {
              var value = data[k];
@@ -527,6 +531,9 @@ function displayDates() {
 
     if (arrDates.length > 0) {
         setState(icalSettings.firstId + 1, brSeparatedList(arrDates,today,tomorrow));
+        //Erweiterung von nicx
+        var todayEventcounter = S(brSeparatedList(arrDates,today,tomorrow)).count(todayString);
+        setState(icalSettings.firstId + 2, todayEventcounter);
     }
     //Am Ende schauen ob Events vorbei sind
     pastprocessEvents();
@@ -631,6 +638,10 @@ function iCalInit() {
 	
 	setObject(icalSettings.firstId + 1 , {
         Name: "iCalEvents",
+        TypeName: "VARDP",
+    });
+    setObject(icalSettings.firstId + 2 , {
+        Name: "iCalEventCount",
         TypeName: "VARDP",
     });
 	
