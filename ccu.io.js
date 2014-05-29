@@ -1652,6 +1652,19 @@ function initSocketIO(_io) {
             if (callback) { callback(); }
         });
 
+        socket.on('writeBase64', function (path, content, callback) {
+            logger.info("socket.io <-- writeBase64 "+path);
+
+            fs.writeFile(__dirname+"/"+path, content, "base64", function(err){
+                if (err) {
+                    logger.error("socket.io <-- writeBase64 "+path);
+                    callback(err)
+                }else{
+                    callback(true)
+                }
+            });
+        });
+
         socket.on('readFile', function (name, callback) {
             logger.verbose("socket.io <-- readFile "+name);
 
