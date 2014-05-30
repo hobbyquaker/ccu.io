@@ -1653,6 +1653,20 @@ function initSocketIO(_io) {
             });
         });
 
+        socket.on('delDir', function(path, callback) {
+            var p = __dirname + "/" + path;
+            // TODO für ioBroker eine schönere lösung suchen
+            logger.verbose("socket.io <-- mkDir " + path);
+            childProcess.exec("rm -r " + p, function(err){
+                if (err) {
+                    logger.error("socket.io <-- mkDir "+path);
+                    callback(err)
+                }else{
+                    callback(true)
+                }
+            });
+        });
+
         socket.on('writeFile', function (name, obj, callback) {
             // Todo Fehler abfangen
             var content = JSON.stringify(obj);
