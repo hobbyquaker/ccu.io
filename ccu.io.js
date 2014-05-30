@@ -1616,7 +1616,6 @@ function initSocketIO(_io) {
                             });
                             if (data.length == files.length) {
                                 callback(data);
-                                logger.info(data);
                             }
                         });
                     });
@@ -1637,8 +1636,6 @@ function initSocketIO(_io) {
                     callback(true)
                 }
             });
-
-
         });
 
         socket.on('writeFile', function (name, obj, callback) {
