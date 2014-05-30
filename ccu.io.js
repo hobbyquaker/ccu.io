@@ -1391,6 +1391,7 @@ function initSocketIO(_io) {
         socket.on('restartAdapter', function (adapter) {
            return restartAdapter(adapter)
         });
+
         socket.on('updateAddon', function (url, name) {
             var path = __dirname + "/update-addon.js";
             logger.info("ccu.io        starting "+path+" "+url+" "+name);
@@ -1583,7 +1584,6 @@ function initSocketIO(_io) {
             }
         });
 
-
         socket.on('readdir', function (path, callback) {
             path = __dirname+"/"+path;
             logger.verbose("socket.io <-- readdir "+path);
@@ -1622,6 +1622,23 @@ function initSocketIO(_io) {
                     });
                 }
             });
+        });
+
+        socket.on('rename', function(path_old,path, callback) {
+            var p_old = __dirname + "/" + path_old;
+            var p = __dirname + "/" + path;
+            logger.verbose("socket.io <-- rename " + path);
+
+            fs.rename(p_old, p, function(err) {
+                if (err) {
+                    logger.error("socket.io <-- rename "+path);
+                    callback(err)
+                }else{
+                    callback(true)
+                }
+            });
+
+
         });
 
         socket.on('writeFile', function (name, obj, callback) {
