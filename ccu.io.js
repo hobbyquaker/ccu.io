@@ -1638,6 +1638,21 @@ function initSocketIO(_io) {
             });
         });
 
+        socket.on('mkDir', function(path, callback) {
+            var p = __dirname + "/" + path;
+
+            logger.verbose("socket.io <-- mkDir " + path);
+
+            fs.mkdir(p,"0777", function(err) {
+                if (err) {
+                    logger.error("socket.io <-- mkDir "+path);
+                    callback(err)
+                }else{
+                    callback(true)
+                }
+            });
+        });
+
         socket.on('writeFile', function (name, obj, callback) {
             // Todo Fehler abfangen
             var content = JSON.stringify(obj);
