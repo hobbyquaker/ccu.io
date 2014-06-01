@@ -1,5 +1,7 @@
 var settings = require(__dirname+'/../../settings.js');
 
+
+
 if (!settings.adapters.speedport || !settings.adapters.speedport.enabled) {
     process.exit();
 }
@@ -78,6 +80,7 @@ var request = require('request');
 var cookieJar = request.jar();
 
 function getCallers() {
+
     request.post({
         url: 'https://' + host + '/data/Login.json',
         jar: cookieJar,
@@ -90,6 +93,7 @@ function getCallers() {
             'Referer': 'https://' + host + '/html/login/index.html'
         }
     }, function (err, res, body) {
+
         request({
             headers: {
                 'Referer': 'https://' + host + '/html/content/phone/phone_call_list.html'
@@ -136,7 +140,7 @@ function parseCalls(data) {
 		}
 		calls[ident].push(obj);		
 	}
-	console.log(calls);
+
     socket.emit("setState", [firstId, JSON.stringify(calls.dialedcalls)], function () {
         socket.emit("setState", [firstId + 1, JSON.stringify(calls.takencalls)], function () {
             socket.emit("setState", [firstId + 2, JSON.stringify(calls.missedcalls)], function () {
@@ -152,4 +156,4 @@ getCallers();
 setTimeout(function () {
     logger.info("adapter sport  force terminating");
     process.exit();
-}), 600000;
+}, 600000);
