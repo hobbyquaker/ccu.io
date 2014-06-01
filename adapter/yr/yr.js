@@ -272,4 +272,4 @@ function parseData(xml) {
 setTimeout(function () {
     logger.info("adapter yr    force terminating");
     process.exit();
-}), 900000;
+}, 900000);
