@@ -1,9 +1,9 @@
 /**
  *  Adapter für B-control Energy Manager
  *
- *  Version 0.1
+ *  Version 0.2
  *
- *  (c) 4'2014 hobbyquaker
+ *  (c) 2014 hobbyquaker
  *
  *
  *
@@ -82,6 +82,8 @@ function bemDev(file, text) {
     } else {
 
         // Gerät muss neu angelegt werden
+        logger.info("adapter bem   creating device " + dev.Address);
+
         socket.emit("setObject", firstId, dev, function (id) {
             devId = id;
             //console.log(devId, dev);
@@ -101,7 +103,12 @@ var dpIds = [];
 function bemCh(devId, dev, text) {
 
     // Split Lines
-    var lines = text.split("\r\n");
+    if (text.match(/\r\n/)) {
+        var lines = text.split("\r\n");
+    } else {
+        var lines = text.split("\n");
+    }
+
 
     // Split Bezeichnung
     var desc = lines[0].split(";");
@@ -122,10 +129,12 @@ function bemCh(devId, dev, text) {
     setChannelCounter = channelCount;
 
     for (var i = 0; i < channelCount; i++) {
+
         var idx = (i * 2) + 2;
+        var serial = (serials[idx] == '' ? '' : ' (' + JSON.parse(serials[idx])+ ')');
         channels[i] = {
-            Name: "EnergyManager " + desc[idx],
-            Address: dev.Address + ":" + JSON.parse(serials[idx]),
+            Name: "EnergyManager " + desc[idx] + serial,
+            Address: dev.Address + ":" + i,
             HssType: "OBIS_" + obis[idx],
             TypeName: "CHANNEL",
             Parent: devId,
@@ -134,23 +143,18 @@ function bemCh(devId, dev, text) {
 
         }
     }
-    //console.log(channels);
     setBemCh(lines);
 }
 
 function setBemCh(lines) {
-    console.log("setBemCh()");
     if (setChannelCounter == 0) {
-        //console.log("all channels set!");
-        //console.log(channelIds);
-        //console.log(dpIds);
         setBemValues(lines);
         return;
     }
     var i = --setChannelCounter;
 
     var dp1 = {
-        Name: "BEM." + channels[i].Address + ".MEAN15MINUTES",
+        Name: "BEM." + channels[i].Address + ".AVG15",
         TypeName: "HSSDP",
         ValueUnit: "W",
         _persistent: true,
@@ -178,6 +182,8 @@ function setBemCh(lines) {
     } else {
 
         // Kanal muss angelegt werden
+        logger.info("adapter bem   creating channel " + channels[i].Address);
+
         socket.emit("setObject", firstId, channels[i], function (id) {
             channelIds[i] = id;
             metaIndex.Address[channels[i].Address] = id;
@@ -195,16 +201,11 @@ function setBemCh(lines) {
 }
 
 function setBemValues(lines) {
-    //console.log(" --- data");
-    //console.log(lines);
-    //console.log("---");
-    //console.log(lines[lines.length - 2]);
     var parts = lines[lines.length - 2].split(";");
     for (var i = 0; i < channelCount; i++) {
         var idx = (i * 2) + 2;
         var val = parseFloat(parts[idx]) * 4;
         socket.emit("setState", [dpIds[i], val, null, true]);
-        //console.log("setState " + dpIds[i]+ " "+val);
     }
 }
 
@@ -221,8 +222,6 @@ function receiver(name, text) {
     }
 
     logger.info("adapter bem   received file "+file+" from user "+user);
-
-    //console.log(text);
 
     bemDev(file, text);
 
@@ -345,7 +344,11 @@ socket.on('disconnect', function () {
 
 function stop() {
     logger.info("adapter bem   terminating");
-    server.close();
+    try {
+        server.close();
+    } catch (e) {
+
+    }
     setTimeout(function () {
         process.exit();
     }, 250);
