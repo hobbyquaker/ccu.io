@@ -36,6 +36,11 @@ siehe http://ccu.io/
 
 ## Changelog
 
+### 1.0.35
+* (Hobbyquaker) Fix Astro schedule if event doesn't occur
+* (Eisbaeeer) New adapter owfs - 1wire devices: This adapter allows connection to a 1-wire owfs server. The server can be installed on ccu.io host or any other host.
+* (nicx) Adapter iCal: added number of events today in iCalEventCount
+
 ### 1.0.34
 * (Hobbyquaker) Fix loadDatapoints
 
