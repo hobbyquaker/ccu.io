@@ -723,6 +723,17 @@ function schedule(pattern, callback) {
         var date = new Date();
         var ts = scriptEngine.suncalc.getTimes(date, scriptEngine.settings.latitude, scriptEngine.settings.longitude)[pattern.astro];
 
+        if (ts == null) {
+            // Ereignis tritt nicht auf - in 24h noch mal versuchen
+            sch = scriptEngine.scheduler.scheduleJob(ts, function () {
+                setTimeout(function () {
+                    sch = schedule(pattern, callback);
+                }, 86400000);
+            });
+            scriptEngine.schedules.push(sch);
+            return sch;
+        }
+
         if (pattern.shift) {
             ts = new Date(ts.getTime() + (pattern.shift * 60000));
         }
@@ -733,7 +744,6 @@ function schedule(pattern, callback) {
             if (pattern.shift) {
                 ts = new Date(ts.getTime() + (pattern.shift * 60000));
             }
-
         }
 
         sch = scriptEngine.scheduler.scheduleJob(ts, function () {
