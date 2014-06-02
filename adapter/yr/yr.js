@@ -20,6 +20,8 @@ var reqOptions = {
     method: 'GET'
 };
 
+//console.log(reqOptions.hostname + reqOptions.path);
+
 var http = 		require("http"),
 	xml2js = 	require("xml2js"),
     logger =    require(__dirname+'/../../logger.js');
@@ -57,7 +59,7 @@ var req = http.request(reqOptions, function(res) {
   });
 
   res.on('end', function () {
-  	parseData(data.toString());
+    parseData(data.toString());
   });
 
 });
@@ -66,14 +68,14 @@ req.on('error', function(e) {
   logger.error("adapter yr    " + e.message);
 });
 
-req.end()
-;
+req.end();
+
 function parseData(xml) {
 
 	var options = {
 		explicitArray: false,
 		mergeAttrs: true
-	}
+	};
 	var parser = new xml2js.Parser(options);
 	parser.parseString(xml, function (err, result) {
 		if (err) {
@@ -215,7 +217,7 @@ function parseData(xml) {
             });
 
             socket.emit("setObject", 70005, {
-                Name: "yr.no Temp min 24h",
+                Name: "yr.no Temp max 24h",
                 DPInfo: "maximale Temperatur in den nächsten 24h",
                 TypeName: "VARDP",
                 "ValueMin": null,
@@ -228,7 +230,7 @@ function parseData(xml) {
                 socket.emit("setState", [70005, maxTemp24]);
             });
             socket.emit("setObject", 70006, {
-                Name: "yr.no Temp min 48h",
+                Name: "yr.no Temp max 48h",
                 DPInfo: "maximale Temperatur in den darauffolgenden 24h",
                 TypeName: "VARDP",
                 "ValueMin": null,
