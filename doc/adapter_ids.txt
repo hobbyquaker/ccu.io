@@ -28,6 +28,8 @@
 73300-?                         onkyo adapter
 73400-73500                     lgtv adapter
 
+74000-74002                     speedport adapter
+
 80000-?                         itrans adapter
 80100-?                         iCal adapter
 81000-81005                     german_holidays adapter
@@ -42,9 +44,12 @@
 
 96050-?                         sun_and_time
 
+
+
 100000-299999                   reserviert für eigene Scripte
 
 300000-499999                   reserviert für mitgelieferte Scripte
-
 300000-300007                   feiertage.js
 
+500000-565535                   B-Control EnergyManager Adapter
+600000-601000                   ALLNET 3418v2 Adapter

@@ -23,6 +23,7 @@ var objects = {},
 	datapoints = {};
 var ical = require('ical'), months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']
 var RRule = require('rrule').RRule;
+var S = require('string');
 var preview = icalSettings.preview;
 var intervalID;
 var fontbold = '<span style=\"font-weight:bold;color:'+icalSettings.defColor+'\">';
@@ -57,6 +58,7 @@ var runningParser = new Array();
 var eventsDP = new Array();
 var processedEvents = new Array();
 
+
 //Start bei firstID + 10
 var dpId = icalSettings.firstId + 10;
 
@@ -75,11 +77,11 @@ if (settings.ioListenPort) {
 }
 
 socket.on('connect', function () {
-    logger.info("adapter iCal  connected to ccu.io");
+    logger.info("adapter ical  connected to ccu.io");
 });
 
 socket.on('disconnect', function () {
-    logger.info("adapter iCal  disconnected from ccu.io");
+    logger.info("adapter ical  disconnected from ccu.io");
 });
 
 socket.on('event', function (obj) {
@@ -96,42 +98,43 @@ socket.on('event', function (obj) {
                 if (id == icalSettings.firstId && val != "" && val !="autorun" && val != "stopped") {
 					var content = val.split(" ");
 					setState(icalSettings.firstId + 1, "");
+                    setState(icalSettings.firstId + 2, "0");
                     //von defURL lesen
 					if (content[0] == "read") {
-						logger.info("adapter ical reading iCal from default URL: " + icalSettings.defURL);
+						logger.info("adapter ical  reading iCal from default URL: " + icalSettings.defURL);
 						readOne(icalSettings.defURL);
 					}
                     // autoload starten
                     if (content[0] == "start") {
                         //eventuell alte Instanz stoppen
                         clearInterval(intervalID);
-                        logger.info("adapter ical startting autoload every " + icalSettings.runEveryMinutes);
+                        logger.info("adapter ical  startting autoload every " + icalSettings.runEveryMinutes);
 						intervallID = setInterval(readAll,icalSettings.runEveryMinutes * 60000);
                         setState(icalSettings.firstId, "autorun");
                     }
                     //autoload stoppen
                     if (content[0] == "stop") {
-                        logger.info("adapter ical stopping autoload");
+                        logger.info("adapter ical  stopping autoload");
                         clearInterval(intervalID);
                         setState(icalSettings.firstId, "stopped");
                     }
 					//von custom URL lesen
 					if (content[0] == "readURL") {
 						if (content[1] != "") {
-							logger.info("adapter ical reading iCal from URL: " + content[1]);
+							logger.info("adapter ical  reading iCal from URL: " + content[1]);
 							readOne(content[1]);
 						}
 					}
                     //Test
                     if (content[0] == "check") {
                         if (content[1] != "") {
-                            logger.info("adapter ical checking: " + content[1]);
+                            logger.info("adapter ical  checking: " + content[1]);
                             checkForEvents(content[1]);
                         }
                     }
                     if (content[0] == "readAll") {
                         if (content[1] != "") {
-                            logger.info("adapter ical readAll ");
+                            logger.info("adapter ical  readAll ");
                             readAll();
                         }
                     }
@@ -163,11 +166,12 @@ function checkiCal(loc,col,count,cb) {
     // Syntax ical.fromURL(URL,opts,callback) returns err,opts,data
         ical.fromURL(loc, col, function (err, opts, data) {
 			if (err != undefined) {
-				logger.info("adapter ical Error Reading from URL: " + err.toString());
+				logger.info("adapter ical  Error Reading from URL: " + err.toString());
 			}
-           logger.info("adapter ical processing URL: " + opts+ " "+ loc);
+           logger.info("adapter ical  processing URL: " + opts+ " "+ loc);
             //Variable ablöschen
             setState(icalSettings.firstId + 1, "");
+            setState(icalSettings.firstId + 2, "0");
          /* for (var k in data) {
              if (data.hasOwnProperty(k)) {
              var value = data[k];
@@ -208,7 +212,7 @@ function checkiCal(loc,col,count,cb) {
                             var options = RRule.parseString(ev.rrule.toString());
                             options.dtstart = ev.start
                             rule = new RRule(options)
-                            if (debug) {logger.info("RRule termin:" + ev.summary + " " + ev.start.toString() + " " + endpreview.toString() + " now:" + heute + " now2:" + now2 +  " " +rule.toText());}
+                            if (debug) {logger.info("adapter ical  RRule termin:" + ev.summary + " " + ev.start.toString() + " " + endpreview.toString() + " now:" + heute + " now2:" + now2 +  " " +rule.toText());}
                             var dates = rule.between(now2, endpreview);
                             //Termine innerhalb des Zeitfensters
                             if (dates.length > 0) {
@@ -233,7 +237,7 @@ function checkiCal(loc,col,count,cb) {
 
                                 }
                             } else {
-                                if (debug) {logger.info("Keine RRule Termine innerhalb des Zeitfensters");}
+                                if (debug) {logger.info("adapter ical  Keine RRule Termine innerhalb des Zeitfensters");}
                             }
                         } else {
                             //Kein RRule Termin
@@ -279,13 +283,13 @@ function checkDates(ev,endpreview,heute,tomorrow,realnow,rule,col) {
             //Nur hinzufügen wenn gewünscht
             if (display) {
                 arrDates.push(singleDate);
-                if (debug) {logger.info("Termin (ganztägig) hinzugefügt : " +rule + betreff + " am " + singleDate);}
+                if (debug) {logger.info("adapter ical  Termin (ganztägig) hinzugefügt : " +rule + betreff + " am " + singleDate);}
             } else {
-                if (debug) {logger.info("Termin (ganztägig) nicht dargestellt, da in Events nicht gewünscht :" +betreff)}
+                if (debug) {logger.info("adapter ical  Termin (ganztägig) nicht dargestellt, da in Events nicht gewünscht :" +betreff)}
             }
         } else {
             //Termin ausserhalb des Zeitfensters
-            if (debug) {logger.info("Termin (ganztägig)" + rule +  betreff + " am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
+            if (debug) {logger.info("adapter ical  Termin (ganztägig)" + rule +  betreff + " am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
         }
     } else {
         //Termin mit Uhrzeit
@@ -299,13 +303,13 @@ function checkDates(ev,endpreview,heute,tomorrow,realnow,rule,col) {
             //Nur hinzufügen wenn gewünscht
             if (display) {
                 arrDates.push(singleDate);
-                if (debug) {logger.info("Termin mit Uhrzeit hinzugefügt : "+rule + betreff + " am " + singleDate);}
+                if (debug) {logger.info("adapter ical  Termin mit Uhrzeit hinzugefügt : "+rule + betreff + " am " + singleDate);}
             } else {
-                if (debug) {logger.info("Termin nicht dargestellt, da in Events nicht gewünscht :" +betreff)}
+                if (debug) {logger.info("adapter ical  Termin nicht dargestellt, da in Events nicht gewünscht :" +betreff)}
             }
         } else {
             //Termin ausserhalb des Zeitfensters
-            if (debug) {logger.info("Termin " + betreff + rule +" am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
+            if (debug) {logger.info("adapter ical  Termin " + betreff + rule +" am " + ev.start + " aussortiert, da nicht innerhalb des Zeitfensters");}
         }
     }
 }
@@ -359,7 +363,7 @@ function checkForEvents(betreff,heute,ev,ft,realnow) {
             id = eventsDP[counter]["ID"];
             //auslesen ob das Event angezeigt werden soll
             rv = eventsDP[counter]["display"];
-            if (debug) {logger.info("found Event in Table: " + eventsDP[counter]["Event"] + " " + id);}
+            if (debug) {logger.info("adapter ical  found Event in Table: " + eventsDP[counter]["Event"] + " " + id);}
 
 
             if (ft) {
@@ -372,13 +376,13 @@ function checkForEvents(betreff,heute,ev,ft,realnow) {
                     if (eventsDP[counter]["processed"]) {
                         //nix tun
                         if (debug) {
-                            logger.info("Event schon bearbeitet");
+                            logger.info("adapter ical  Event schon bearbeitet");
                         }
                     } else {
                         //Ansonsten bearbeiten
                         eventsDP[counter]["processed"] = true;
                         eventsDP[counter]["state"] = true;
-                        logger.info("Setze ID: " + id + " auf true");
+                        logger.info("adapter ical  Setze ID: " + id + " auf true");
                         setState(id, true);
                     }
                 }
@@ -394,13 +398,13 @@ function checkForEvents(betreff,heute,ev,ft,realnow) {
                     if (eventsDP[counter]["processed"]) {
                         //nix tun
                         if (debug) {
-                            logger.info("Event schon bearbeitet");
+                            logger.info("adapter ical  Event schon bearbeitet");
                         }
                     } else {
                         //Ansonsten bearbeiten
                         eventsDP[counter]["processed"] = true;
                         eventsDP[counter]["state"] = true;
-                        logger.info("Setze ID: " + id + " auf true");
+                        logger.info("adapter ical  Setze ID: " + id + " auf true");
                         setState(id, true);
                     }
                 }
@@ -429,7 +433,7 @@ function pastprocessEvents() {
                 eventsDP[counter]["processed"] = false;
                 eventsDP[counter]["state"] = false;
                 var id = eventsDP[counter]["ID"];
-                logger.info("Setze ID: " + id + " auf false");
+                logger.info("adapter ical  Setze ID: " + id + " auf false");
                 setState(id,false);
             }
        }
@@ -479,7 +483,7 @@ function readAll() {
 		for (var cal in icalSettings["Calendar"]) {
 			if ((icalSettings["Calendar"][cal]["calURL"] != "") && (icalSettings["Calendar"][cal]["calURL"] != undefined)) {
 				count +=1;
-			 	if (debug) {logger.info("adapter ical reading Calendar from URL: " + icalSettings["Calendar"][cal] + " color: " +icalSettings["Calendar"][cal]["calColor"] );}
+			 	if (debug) {logger.info("adapter ical  reading Calendar from URL: " + icalSettings["Calendar"][cal] + " color: " +icalSettings["Calendar"][cal]["calColor"] );}
                 calCol = icalSettings["Calendar"][cal]["calColor"];
                 //merker für Kalender hinzufügen
                 runningParser.push(count);
@@ -488,7 +492,7 @@ function readAll() {
                     runningParser.pop();
                     //Wenn diese Instanz die letzte ist, dann darstellen
                     if (runningParser.length == 0) {
-                        if (debug) {logger.info("displaying dates because of callback");}
+                        if (debug) {logger.info("adapter ical  displaying dates because of callback");}
                         displayDates();
                     }
                 });
@@ -498,7 +502,7 @@ function readAll() {
         runningParser.pop();
         //Wenn es die letzte Instanz war, dann darstellen
         if (runningParser.length == 0) {
-            if (debug) {logger.info("displaying dates");}
+            if (debug) {logger.info("adapter ical  displaying dates");}
             displayDates();
         }
 	}
@@ -527,6 +531,9 @@ function displayDates() {
 
     if (arrDates.length > 0) {
         setState(icalSettings.firstId + 1, brSeparatedList(arrDates,today,tomorrow));
+        //Erweiterung von nicx
+        var todayEventcounter = S(brSeparatedList(arrDates,today,tomorrow)).count(todayString);
+        setState(icalSettings.firstId + 2, todayEventcounter);
     }
     //Am Ende schauen ob Events vorbei sind
     pastprocessEvents();
@@ -594,7 +601,7 @@ function brSeparatedList(arr,today,tomorrow) {
 }
 
 function stop() {
-    logger.info("adapter ical terminating");
+    logger.info("adapter ical  terminating");
 	setTimeout(function () {
         process.exit();
     }, 250);
@@ -618,7 +625,7 @@ function setObject(id, obj) {
 
 function setState(id, val) {
 	datapoints[id] = [val];
-	logger.verbose("adapter ical setState "+id+" "+val);
+	logger.verbose("adapter ical  setState "+id+" "+val);
 	socket.emit("setState", [id,val,null,true]);
 }
 
@@ -633,27 +640,31 @@ function iCalInit() {
         Name: "iCalEvents",
         TypeName: "VARDP",
     });
+    setObject(icalSettings.firstId + 2 , {
+        Name: "iCalEventCount",
+        TypeName: "VARDP",
+    });
 	
 	setState(icalSettings.firstId, "");
 	setState(icalSettings.firstId + 1, "");
 
     createEventsDP();
 	
-	  logger.info("adapter ical objects inserted, starting at: "+icalSettings.firstId);
+	  logger.info("adapter ical  objects inserted, starting at: "+icalSettings.firstId);
 
     if (icalSettings.runEveryMinutes > 0) {
         //Autostart --> first read in 4sec
 	    setTimeout(readAll,4000);
         //now schedule
         var runeveryminutes = icalSettings.runEveryMinutes * 60000;
-        logger.info("adapter ical autorun every " + icalSettings.runEveryMinutes + " Minutes");
+        logger.info("adapter ical  autorun every " + icalSettings.runEveryMinutes + " Minutes");
         setState(icalSettings.firstId, "autorun");
         //intervalID = setInterval(function() {checkiCal(icalSettings.defURL)},runeveryminutes);
         intervallID = setInterval(readAll,runeveryminutes);
 	}
 }
 
-logger.info("adapter ical start");
+logger.info("adapter ical  start");
 
 iCalInit();
 

@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.32*
+*aktuelle Version: 1.0.33*
 
 ## Dokumentation
 
@@ -35,6 +35,36 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.35
+* (Eisbaeeer) New adapter owfs - 1wire devices: This adapter allows connection to a 1-wire owfs server. The server can be installed on ccu.io host or any other host.
+* (nicx) Adapter iCal: added number of events today in iCalEventCount* (Hobbyquaker) Fix Astro schedule falls Ereignis nicht eintritt
+* (Hobbyquaker) Fix Adapter B-Control EnergyManager v0.2
+* (Hobbyquaker) Fix undefined checkEvent trigger
+* (Hobbyquaker) Fix CUxD checkEvent
+* (Hobbyquaker) Neuer Adapter Allnet 3418v2
+* (Hobbyquaker) Neuer Adapter speedport: IP-Telefonie - Anrufliste aus Speedport Router lesen
+
+
+### 1.0.34
+* (Hobbyquaker) Fix loadDatapoints
+
+### 1.0.33
+* (Mimquadrat) Favicon für CCU.IO-Oberfläche
+* (smiling-Jack) Fix Adapter sun_and_time: default settings and daytime calculation
+* (Bluefox) Adapter Fritzbox: json Table for FritzBox adapter, Images for FritzBox changed
+* (Hobbyquaker) new Tab in Webinterface: Object tree
+* (Hobbyquaker) new Adapter: B-control Energy Manager
+* (Hobbyquaker) Fix create adapter-settings
+* (Hobbyquaker) Fix regaPoll Error
+* (Hobbyquaker) Fix typeof id in Index
+* (Hobbyquaker) decreased socket.io heartbeat interval and timeout
+* (Hobbyquaker) increased terminate timeout
+* (Hobbyquaker) more fault tolerance on terminating
+* (Hobbyquaker) log error if adapter kill fails
+* (Hobbyquaker) Fix reload Adapter
+* (Hobbyquaker) writeFile creates .bak when overwriting
+
 
 ### 1.0.32
 * (Hobbyquaker) DWD-Adapter: doppelte Anzeige von Warnungen unterbunden, Dienststellen korrigiert

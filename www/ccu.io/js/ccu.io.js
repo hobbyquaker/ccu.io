@@ -653,11 +653,12 @@ $(document).ready(function () {
     $("#grid_datapoints").jqGrid({
         datatype: "local",
 
-        colNames:['id', getWord('TypeName'), getWord('Name'), getWord('Parent Name'), getWord('Value'), getWord('Timestamp'), getWord('ack'), getWord('lastChange'), 'persistent'],
+        colNames:['id', getWord('TypeName'), getWord('Name'), getWord('Address'), getWord('Parent Name'), getWord('Value'), getWord('Timestamp'), getWord('ack'), getWord('lastChange'), 'persistent'],
         colModel:[
             {name:'id',index:'id', width:60, sorttype: "int"},
             {name:'type',index:'type', width:80},
             {name:'name',index:'name', width:240},
+            {name:'address',index:'address', width:240, hidden: true},
             {name:'parent',index:'parent', width:240},
             {name:'val',index:'val', width:160, editable:true},
             {name:'timestamp',index:'timestamp', width:140},
@@ -694,7 +695,7 @@ $(document).ready(function () {
             });
         },
         loadComplete: function () {
-            $("input.delObject").click(function () {
+            $("#grid_datapoints input.delObject").click(function () {
                 var id = $(this).attr("data-del-id");
                 $(this).attr("disabled", true);
                 socket.emit('delObject', id);
@@ -721,7 +722,8 @@ $(document).ready(function () {
         socket.emit('getObjects', function(obj) {
             regaObjects = obj;
             $("#meta").html(JSON.stringify(obj, null, "  "));
-            regaObjects = obj;
+
+            buildDevicesGrid();
 
             socket.on('event', function(obj) {
 
@@ -747,6 +749,7 @@ $(document).ready(function () {
                 var data = {
                     id: obj[0],
                     name: oldData.name,
+                    address: oldData.address,
                     parent: oldData.parent,
                     type: oldData.type,
                     val: obj[1],
@@ -775,7 +778,7 @@ $(document).ready(function () {
                 };
                 $eventGrid.jqGrid('addRowData', eventCounter++, data, "first");
                 //console.log($mainTabs.tabs("option", "active") + " " + $subTabs5.tabs("option", "active"));
-                if ($mainTabs.tabs("option", "active") == 3 && $subTabs5.tabs("option", "active") == 3) {
+                if ($mainTabs.tabs("option", "active") == 4 && $subTabs5.tabs("option", "active") == 4) {
                     $eventGrid.trigger("reloadGrid");
                 }
             });
@@ -795,7 +798,8 @@ $(document).ready(function () {
                 var data = {
                     id: id,
                     name: (regaObjects[id] ? regaObjects[id].Name : ""),
-                    parent: (regaObjects[id] && regaObjects[id].Parent ? regaObjects[regaObjects[id].Parent].Name : ""),
+                    address: (regaObjects[id] ? regaObjects[id].Address : ""),
+                    parent: (regaObjects[id] && regaObjects[id].Parent && regaObjects[regaObjects[id].Parent] ? regaObjects[regaObjects[id].Parent].Name : ""),
                     type: (regaObjects[id] ? regaObjects[id].TypeName : ""),
                     val: $('<div/>').text(obj[id][0]).html(),
                     timestamp: (obj[id][1] == "1970-01-01 01:00:00" ? "" : obj[id][1]),
@@ -806,6 +810,7 @@ $(document).ready(function () {
                 $("#grid_datapoints").jqGrid('addRowData',id,data);
             }
             $("#loader").remove();
+            $(".favicon").attr('href', 'favicon.ico');
             $("#grid_datapoints").trigger("reloadGrid");
 
         });
@@ -858,6 +863,61 @@ $(document).ready(function () {
         viewrecords: true,
         caption: getWord("Adapter")
     });
+
+    $("#grid_objecttree").jqGrid({
+        datatype: "local",
+        colNames: [
+            ('id'),
+            ('Name'),
+            ('TypeName'),
+            ('Interface'),
+            ('Address'),
+            ('HssType'),
+            '_persistent'
+        ],
+        colModel: [
+            {name: 'id', index: 'id', width: 48, sorttype: 'int'},
+            {name: 'Name', index: 'Name', width: 240},
+            {name: 'TypeName', index: 'TypeName', width: 130},
+            {name: 'Interface', index: 'Interface', width: 88},
+            {name: 'Address', index: 'Address', width: 90},
+            {name: 'HssType', index: 'HssType', width: 130},
+            {name: '_persistent', index: '_persistent', width: 30}
+        ],
+        rowNum:     20,
+        autowidth:  true,
+        width:      1200,
+        height:     440,
+        rowList:    [20,100,500,1000],
+        pager:      $('#pager_objecttree'),
+        sortname:   "id",
+        sortorder:  "desc",
+        viewrecords: true,
+        sortorder:  "desc",
+        caption:    getWord("Object tree"),
+        ignoreCase: true,
+        subGrid:    true,
+        subGridRowExpanded: function(grid_id, row_id) {
+            subGridObjecttree(grid_id, row_id);
+        },
+        loadComplete: function () {
+            $("#grid_objecttree input.delObject").click(function () {
+                var id = $(this).attr("data-del-id");
+                $(this).attr("disabled", true);
+                socket.emit('delObject', id);
+                delete regaObjects[id];
+                $("#grid_objecttree tr#"+id).remove();
+            });
+        }
+    }).jqGrid('filterToolbar',{
+        defaultSearch:'cn',
+
+        autosearch: true,
+        searchOnEnter: false,
+        enableClear: false
+    });
+
+
 
     $("#grid_events").jqGrid({
         datatype: "local",
@@ -1243,5 +1303,85 @@ $(document).ready(function () {
         $("#adapter_overview").show();
     });
 
+    function buildDevicesGrid() {
+        for (var id in regaObjects) {
+            var obj = regaObjects[id];
+            obj.id = id;
+            obj._persistent = (obj._persistent ? "<input class='delObject' data-del-id='"+id+"' type='button' value='x'/>" : "");
+            if (!obj.Parent) {
+                // FIXME Multiple usage of same IDs (datapoint-grid)
+                $("#grid_objecttree").jqGrid('addRowData', id, obj);
+            }
+        }
+        $("#grid_objecttree").trigger("reloadGrid");
+    }
 
+    function subGridObjecttree(grid_id, row_id) {
+        var subgrid_table_id = grid_id + "_t";
+
+        var gridObjects = {};
+        var count = 0;
+
+        for (var dev in regaObjects) {
+            if (regaObjects[dev].Parent == row_id) {
+                count += 1;
+                gridObjects[dev] = regaObjects[dev];
+            }
+        }
+
+        if (count == 0) {
+            return null;
+        }
+
+        $("#" + grid_id).html("<table id='" + subgrid_table_id + "''></table>");
+        var gridConf = {
+            datatype: "local",
+            colNames: [
+                ('id'),
+                ('Name'),
+                ('TypeName'),
+                ('Interface'),
+                ('Address'),
+                ('HssType'),
+                '_persistent'
+            ],
+            colModel: [
+                {name: 'id', index: 'id', width: 48, sorttype: 'int'},
+                {name: 'Name', index: 'Name', width: 240},
+                {name: 'TypeName', index: 'TypeName', width: 130},
+                {name: 'Interface', index: 'Interface', width: 88},
+                {name: 'Address', index: 'Address', width: 90},
+                {name: 'HssType', index: 'HssType', width: 130},
+                {name: '_persistent', index: '_persistent', width: 30}
+            ],
+            rowNum: 1000000,
+            autowidth: true,
+            height: "auto",
+            width: 1200,
+            sortname: "id",
+            sortorder: "desc",
+            viewrecords: true,
+            sortorder: "desc",
+            ignoreCase: true,
+            subGrid: true,
+            subGridRowExpanded: function(grid_id, row_id) {
+                subGridObjecttree(grid_id, row_id);
+            }
+        };
+
+        $("#" + subgrid_table_id).jqGrid(gridConf);
+
+        for (var id in gridObjects) {
+            $("#" + subgrid_table_id).jqGrid('addRowData', id, gridObjects[id]);
+        }
+
+        $("#" + subgrid_table_id + " input.delObject").click(function () {
+            var id = $(this).attr("data-del-id");
+            $(this).attr("disabled", true);
+            socket.emit('delObject', id);
+            delete regaObjects[id];
+            $("#" + subgrid_table_id + " tr#"+id).remove();
+        });
+
+    }
 });

@@ -1,0 +1,10 @@
+{
+    "enabled": false,
+    "mode": "periodical",
+    "period": 15,
+    "firstId": 74000,
+    "settings": {
+        "host": "speedport.ip",
+        "pass": "12345678"
+    }
+}

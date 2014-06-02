@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.32";
+settings.version = "1.0.35";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -112,6 +112,7 @@ if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
             var reinit = now - settings.binrpc.checkEvents.reinitAfter;
             for (var i = 0; i < settings.binrpc.inits.length; i++) {
                 var init = settings.binrpc.inits[i];
+                if (init.id == "io_cuxd") continue;
                 if (lastEvents[init.id] < reinit) {
 
                     if (settings.binrpc.checkEvents.testTrigger[init.id]) {
@@ -133,8 +134,12 @@ if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
                 } else if (lastEvents[init.id] < check) {
                     logger.verbose("binrpc        checking init "+init.id);
                     if (settings.binrpc.checkEvents.testTrigger[init.id]) {
-                        var id = regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]][0];
-                        regahss.script("dom.GetObject("+id+").State(true);");
+                        if (regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]]) {
+                            var id = regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]][0];
+                            regahss.script("dom.GetObject("+id+").State(true);");
+                        } else {
+                            logger.warn("binrpc        checkEvent.trigger undefined for "+init.id);
+                        }
                     } else {
                         logger.warn("binrpc        checkEvent.trigger undefined for "+init.id);
                     }
@@ -428,31 +433,40 @@ function pollRega() {
             tryReconnect();
             return false;
         }
-        var data = JSON.parse(data);
-        for (id in data) {
-            var val;
+        try {
+            data = JSON.parse(data);
+        } catch (e) {
+            logger.error("ccu.io        pollRega "+e);
+        }
+        try {
+            for (id in data) {
+                var val;
 
-            if (settings.logging.enabled) {
-                var ts = Math.round((new Date()).getTime() / 1000);
-                if (typeof data[id][0] == "string") {
-                    val = unescape(data[id][0]);
-                } else {
-                    val = data[id][0];
-                }
+                if (settings.logging.enabled) {
+                    var ts = Math.round((new Date()).getTime() / 1000);
+                    if (typeof data[id][0] == "string") {
+                        val = unescape(data[id][0]);
+                    } else {
+                        val = data[id][0];
+                    }
 
-                if (settings.logging.varChangeOnly && notFirstVarUpdate) {
-                    if (datapoints[id][0] != val || !datapoints[id][2]) {
+                    if (datapoints[id] && settings.logging.varChangeOnly && notFirstVarUpdate) {
+                        if (datapoints[id][0] != val || !datapoints[id][2]) {
+                            devLog(ts, id, val);
+                        }
+                    } else {
                         devLog(ts, id, val);
                     }
-                } else {
-                    devLog(ts, id, val);
+
+                    // Hat sich die Anzahl der Servicemeldungen geändert?
+                    if (id == 41 && datapoints[id][0] != val) {
+                        pollServiceMsgs();
+                    }
                 }
-                // Hat sich die Anzahl der Servicemeldungen geändert?
-                if (id == 41 && datapoints[id][0] != val) {
-                    pollServiceMsgs();
-                }
+                setDatapoint(id, data[id][0], formatTimestamp(), true, data[id][1]);
             }
-            setDatapoint(id, data[id][0], formatTimestamp(), true, data[id][1]);
+        } catch (e) {
+            logger.error("ccu.io        pollRega "+e);
         }
         notFirstVarUpdate = true;
         pollTimer = setTimeout(pollRega, settings.regahss.pollDataInterval);
@@ -477,7 +491,7 @@ function pollServiceMsgs() {
     });
 }
 
-function loadRegaData(index, err, rebuild, triggerReload) {
+function loadRegaData(index, err, rebuild, triggerReload, onlyOne) {
     if (!index) { index = 0; }
 
     var type = settings.regahss.metaScripts[index];
@@ -515,7 +529,9 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             if (!regaIndex[TypeName]) {
                 regaIndex[TypeName] = [];
             }
-            regaIndex[TypeName].push(idInt);
+            if (regaIndex[TypeName].indexOf(idInt) == -1) {
+                regaIndex[TypeName].push(idInt);
+            }
             // Namens-Index
             regaIndex.Name[data[id].Name] = [idInt, TypeName, data[id].Parent];
             // ggf. Adressen-Index
@@ -564,6 +580,8 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             regaObjects[id] = data[id];
         }
 
+        if (onlyOne) return;
+
         index += 1;
         if (index < settings.regahss.metaScripts.length) {
             loadRegaData(index, null, rebuild);
@@ -573,7 +591,7 @@ function loadRegaData(index, err, rebuild, triggerReload) {
             updateStatus();
             if (rebuild) {
                 logger.info("rega          data succesfully reloaded");
-                logger.info("socket.io --> broadcast reload")
+                logger.info("socket.io --> broadcast reload");
                 if (io) {
                     io.sockets.emit("reload");
                 }
@@ -1299,28 +1317,31 @@ function clearRegaData() {
 
 
 function initSocketIO(_io) {
-	_io.configure(function (){
-	  this.set('authorization', function (handshakeData, callback) {
-        var isHttps = (serverSsl !== undefined && this.server == serverSsl);
-        if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
-            // do not check if localhost
-            if(handshakeData.address.address.toString() == "127.0.0.1") {
-                logger.verbose("ccu.io        local authentication " + handshakeData.address.address);
-                callback(null, true);
-            } else
-            if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
-                logger.warn("ccu.io        authentication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
-                callback ("Invalid session key", false);
-            } else{
-                logger.verbose("ccu.io        authentication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
-                callback(null, true);
+	_io.configure(function () {
+
+        this.set('heartbeat timeout', 25);
+        this.set('heartbeat interval', 10);
+
+        this.set('authorization', function (handshakeData, callback) {
+            var isHttps = (serverSsl !== undefined && this.server == serverSsl);
+            if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
+                // do not check if localhost
+                if(handshakeData.address.address.toString() == "127.0.0.1") {
+                    logger.verbose("ccu.io        local authentication " + handshakeData.address.address);
+                    callback(null, true);
+                } else
+                if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
+                    logger.warn("ccu.io        authentication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                    callback ("Invalid session key", false);
+                } else{
+                    logger.verbose("ccu.io        authentication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                    callback(null, true);
+                }
+            } else {
+               callback(null, true);
             }
-        }
-        else {
-           callback(null, true);
-        }
-	  });
-	});
+        });
+    });
 
     _io.sockets.on('connection', function (socket) {
         socketlist.push(socket);
@@ -1608,11 +1629,24 @@ function initSocketIO(_io) {
         });
 
         socket.on('writeFile', function (name, obj, callback) {
-            var content = JSON.stringify(obj);
-            logger.verbose("socket.io <-- writeFile "+name+" "+content);
-            fs.writeFile(settings.datastorePath+name, content);
             // Todo Fehler abfangen
-            if (callback) { callback(); }
+            var content = JSON.stringify(obj);
+            if (JSON.stringify(obj) != content) {
+                logger.warn("ccu.io        writeFile strange JSON mismatch "+name);
+            }
+            logger.verbose("socket.io <-- writeFile "+name+" "+content);
+            fs.exists(settings.datastorePath+name, function (exists) {
+                if (exists) {
+                    fs.rename(settings.datastorePath+name, settings.datastorePath+name+".bak", function() {
+                        logger.verbose("socket.io <-- writeFile created "+settings.datastorePath+name+".bak");
+                        fs.writeFile(settings.datastorePath+name, content);
+                        if (callback) { callback(); }
+                    });
+                } else {
+                    fs.writeFile(settings.datastorePath+name, content);
+                    if (callback) { callback(); }
+                }
+            });
         });
 
         socket.on('writeRawFile', function (path, content, callback) {
@@ -1634,6 +1668,7 @@ function initSocketIO(_io) {
                         var obj = JSON.parse(data);
                         callback(obj);
                     } catch (e) {
+                        logger.warn("ccu.io        failed parsing JSON file "+settings.datastorePath+name);
                         callback(null, e);
                     }
 
@@ -1800,7 +1835,19 @@ function initSocketIO(_io) {
             return id;
         }
 
-        function delObject(id) {
+        function delObject(id, isRecursion) {
+            if (!id) return;
+
+            logger.info("ccu.io        deleting object id="+id);
+
+            // find children
+            for (var cid in regaObjects) {
+                if (regaObjects[cid].Parent == id) {
+                    // recursion
+                    delObject(cid, true);
+                }
+            }
+
             var obj = regaObjects[id];
             if (obj) {
                 if (regaIndex.Name[obj.Name] && regaIndex.Name[obj.Name][1] == id) {
@@ -1810,12 +1857,18 @@ function initSocketIO(_io) {
                     delete regaIndex.Address[obj.Address];
                 }
             }
+
             delete regaObjects[id];
+
+
             if (datapoints[id]) {
                 delete datapoints[id];
-                saveDatapoints();
             }
-            savePersistentObjects();
+
+            if (!isRecursion) {
+                saveDatapoints();
+                savePersistentObjects();
+            }
         }
 
 
@@ -2050,13 +2103,13 @@ function restartAdapter(adapter) {
             try {
                 childrenAdapter[adapter].process.kill();
             } catch (e) {
-
+                logger.error("ccu.io        killing adapter failed: "+e)
             }
             setTimeout(function (_path, _adapter) {
                 logger.info("ccu.io        starting adapter "+_path);
                 childrenAdapter[_adapter] = childProcess.fork(_path);
-                return "adapter "+_adapter+" timer restartet";
             }, 1000, path, adapter);
+            return "adapter "+adapter+" restarting";
     }
 
 
@@ -2152,33 +2205,50 @@ function stop() {
             logger.info("socket.io --> disconnecting socket");
             socket.disconnect();
         });
+    } catch (e) {
+        logger.error("ccu.io        something went wrong while terminating socket connections: "+e)
+    }
 
+    try {
         if (io && io.server) {
             logger.info("ccu.io        closing http server");
             io.server.close();
             delete io.server ;
         }
+    } catch (e) {
+        logger.error("ccu.io        something went wrong while terminating webserver: "+e)
+    }
+
+    try {
         if (ioSsl && ioSsl.server) {
             logger.info("ccu.io        closing https server");
             ioSsl.server.close();
             delete ioSsl.server;
         }
+    } catch (e) {
+        logger.error("ccu.io        something went wrong while terminating ssl webserver: "+e)
+    }
 
+    try {
         if (childScriptEngine) {
             logger.info("ccu.io        killing script-engine");
             childScriptEngine.kill();
             delete childScriptEngine;
         }
-
-        for (var adapter in childrenAdapter) {
-            logger.info("ccu.io        killing adapter "+adapter);
-            childrenAdapter[adapter].process.kill();
-            delete childrenAdapter[adapter];
-        }
     } catch (e) {
-        logger.error("ccu.io        something went wrong while terminating: "+e)
+        logger.error("ccu.io        something went wrong while terminating script-engine: "+e)
     }
 
+
+    for (var adapter in childrenAdapter) {
+        logger.info("ccu.io        killing adapter "+adapter);
+        try {
+            childrenAdapter[adapter].process.kill();
+            delete childrenAdapter[adapter];
+        } catch (e) {
+            logger.error("ccu.io        something went wrong while terminating adapters: "+e)
+        }
+    }
 
     setTimeout(quit, 500);
 }
@@ -2195,7 +2265,7 @@ function quit() {
             logger.info("ccu.io        terminating");
             setTimeout(function () {
                 process.exit(0);
-            }, 250);
+            }, 500);
         }
         logger.info("rega          waiting for pending ReGa request...");
         setTimeout(quit, 500);
@@ -2205,7 +2275,7 @@ function quit() {
         logger.info("ccu.io        terminating");
         setTimeout(function () {
             process.exit(0);
-        }, 250);
+        }, 500);
     }
 }
 
@@ -2284,22 +2354,23 @@ function loadPersistentObjects() {
     try {
         var x = JSON.parse(fs.readFileSync(settings.datastorePath+"io-persistent-objs.json"));
         for (var id in x) {
+            var idInt = parseInt(id, 10);
             var obj = x[id];
             if (obj.TypeName) {
                 if (!regaIndex[obj.TypeName]) {
                     regaIndex[obj.TypeName] = [];
                 }
-                if (regaIndex[obj.TypeName].indexOf(id) == -1) {
-                    regaIndex[obj.TypeName].push(id);
+                if (regaIndex[obj.TypeName].indexOf(idInt) == -1) {
+                    regaIndex[obj.TypeName].push(idInt);
                 }
             }
 
             if (obj.Name) {
-                regaIndex.Name[obj.Name] = [id, obj.TypeName, obj.Parent];
+                regaIndex.Name[obj.Name] = [idInt, obj.TypeName, obj.Parent];
             }
 
             if (obj.Address) {
-                regaIndex.Address[obj.Address] = [id, obj.TypeName, obj.Parent];
+                regaIndex.Address[obj.Address] = [idInt, obj.TypeName, obj.Parent];
             }
             logger.verbose("persistent added "+JSON.stringify(obj));
 
