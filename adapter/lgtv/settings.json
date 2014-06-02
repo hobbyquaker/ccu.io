@@ -1,7 +1,7 @@
 {
     "enabled": false,
     "settings": {
-        "firstId":    73200,
+        "firstId":    73400,
         "devices":    {
             "_1": {"ip":      "0.0.0.0",
                    "pairKey": "",
