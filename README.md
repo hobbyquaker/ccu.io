@@ -41,7 +41,8 @@ siehe http://ccu.io/
 
 ### 1.0.35
 * (Eisbaeeer) New adapter owfs - 1wire devices: This adapter allows connection to a 1-wire owfs server. The server can be installed on ccu.io host or any other host.
-* (nicx) Adapter iCal: added number of events today in iCalEventCount* (Hobbyquaker) Fix Astro schedule falls Ereignis nicht eintritt
+* (nicx) Adapter iCal: added number of events today in iCalEventCount
+* (Hobbyquaker) Fix Astro schedule falls Ereignis nicht eintritt
 * (Hobbyquaker) Fix Adapter B-Control EnergyManager v0.2
 * (Hobbyquaker) Fix undefined checkEvent trigger
 * (Hobbyquaker) Fix CUxD checkEvent
