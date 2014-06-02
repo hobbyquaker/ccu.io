@@ -12,9 +12,9 @@ var arguments = process.argv.slice(2),
     url = arguments[0],
     name = arguments[1],
     urlParts = url.split("/"),
-    nameArr = urlParts.splice(-3),
-    tmpDir = nameArr[0]+"-master";
-    tmpFile = __dirname+"/tmp/"+nameArr[0]+"master.zip";
+    nameArr = [url.split("?")[1]] || urlParts.splice(-3),
+    tmpDir = nameArr[0] + "-master";
+    tmpFile = __dirname + "/tmp/" + nameArr[0] + "master.zip";
 
 logger.info("update-addon  download and unzip "+url);
 
