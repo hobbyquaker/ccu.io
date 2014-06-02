@@ -1,4 +1,4 @@
-66000-66199                     virtuelle Favoriten, Räume und Gewerke
+﻿66000-66199                     virtuelle Favoriten, Räume und Gewerke
 
 69800-69998                     DashUI Instanzvariablen
 69999                           CCU.IO language
@@ -24,9 +24,9 @@
 73000-73099                     lirc adapter
 73100-73199                     telnet-client adapter
 
-!  73200-73295                     Fritz.box! call monitor adapter
-!  73200-73500                     lgtv adapter
-!  73300-?                         onkyo adapter
+73200-73295                     Fritz.box! call monitor adapter
+73300-?                         onkyo adapter
+73400-73500                     lgtv adapter
 
 80000-?                         itrans adapter
 80100-?                         iCal adapter
