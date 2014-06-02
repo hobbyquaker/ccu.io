@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.35";
+settings.version = "1.0.36";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -45,6 +45,7 @@ var fs =        require('fs'),
     url =       require('url'),
     socketio =  require('socket.io'),
     scheduler = require('node-schedule'),
+    mime = require('mime'),
     app,
     appSsl,
     server,
@@ -1395,6 +1396,7 @@ function initSocketIO(_io) {
         socket.on('restartAdapter', function (adapter) {
            return restartAdapter(adapter)
         });
+
         socket.on('updateAddon', function (url, name) {
             var path = __dirname + "/update-addon.js";
             logger.info("ccu.io        starting "+path+" "+url+" "+name);
@@ -1587,7 +1589,6 @@ function initSocketIO(_io) {
             }
         });
 
-
         socket.on('readdir', function (path, callback) {
             path = __dirname+"/"+path;
             logger.verbose("socket.io <-- readdir "+path);
@@ -1620,10 +1621,53 @@ function initSocketIO(_io) {
                             });
                             if (data.length == files.length) {
                                 callback(data);
-                                logger.info(data);
                             }
                         });
                     });
+                }
+            });
+        });
+
+        socket.on('rename', function(path_old,path, callback) {
+            var p_old = __dirname + "/" + path_old;
+            var p = __dirname + "/" + path;
+            logger.verbose("socket.io <-- rename " + path);
+
+            fs.rename(p_old, p, function(err) {
+                if (err) {
+                    logger.error("socket.io <-- rename "+path);
+                    callback(err)
+                }else{
+                    callback(true)
+                }
+            });
+        });
+
+        socket.on('mkDir', function(path, callback) {
+            var p = __dirname + "/" + path;
+
+            logger.verbose("socket.io <-- mkDir " + path);
+
+            fs.mkdir(p,"0777", function(err) {
+                if (err) {
+                    logger.error("socket.io <-- mkDir "+path);
+                    callback(err)
+                }else{
+                    callback(true)
+                }
+            });
+        });
+
+        socket.on('removeRecursive', function(path, callback) {
+            var p = __dirname + "/" + path;
+
+            logger.verbose("socket.io <-- mkDir " + path);
+            fs.removeRecursive(p,function(err,status){
+                if (err) {
+                    logger.error("socket.io <-- mkDir "+path);
+                    callback(err)
+                }else{
+                    callback(true)
                 }
             });
         });
@@ -1650,10 +1694,34 @@ function initSocketIO(_io) {
         });
 
         socket.on('writeRawFile', function (path, content, callback) {
-            logger.verbose("socket.io <-- writeRawFile "+path);
-            fs.writeFile(__dirname+"/"+path, content);
             // Todo Fehler abfangen
-            if (callback) { callback(); }
+
+            logger.verbose("socket.io <-- writeRawFile "+path);
+            fs.exists(__dirname+"/"+path, function (exists) {
+                if (exists) {
+                    fs.rename(__dirname+"/"+path, __dirname+"/"+path+".bak", function() {
+                        logger.verbose("socket.io <-- writeRawFile created "+__dirname+"/"+path+".bak");
+                        fs.writeFile(__dirname+"/"+path, content);
+                        if (callback) { callback(); }
+                    });
+                } else {
+                    fs.writeFile(__dirname+"/"+path, content);
+                    if (callback) { callback(); }
+                }
+            });
+        });
+
+        socket.on('writeBase64', function (path, content, callback) {
+            logger.info("socket.io <-- writeBase64 "+path);
+
+            fs.writeFile(__dirname+"/"+path, content, "base64", function(err){
+                if (err) {
+                    logger.error("socket.io <-- writeBase64 "+path);
+                    callback(err)
+                }else{
+                    callback(true)
+                }
+            });
         });
 
         socket.on('readFile', function (name, callback) {
@@ -1685,6 +1753,22 @@ function initSocketIO(_io) {
                     callback(undefined);
                 } else {
                     callback(data.toString());
+                }
+            });
+        });
+
+        socket.on('readBase64', function (name, callback) {
+            logger.verbose("socket.io <-- readFile "+name);
+
+            fs.readFile(__dirname+"/"+name,"base64", function (err, data) {
+                if (err) {
+                    logger.error("ccu.io        failed reading Base64 file "+__dirname+"/"+name);
+                    callback(undefined);
+                } else {
+                    callback({
+                        mime: mime.lookup(__dirname+"/"+name),
+                        data:data
+                    });
                 }
             });
         });
@@ -1725,41 +1809,32 @@ function initSocketIO(_io) {
         });
 
         socket.on('getUrl', function (url, callback) {
-            logger.info("ccu.io        GET "+JSON.stringify(url));
-            var post = null;
-            var protocoll;
-            if (typeof url == "object" && url.post) {
-                post = url.post;
-                delete url.post;
+            logger.info("ccu.io        GET "+url);
+            if (url.match(/^https/)) {
+                https.get(url, function(res) {
+                    var body = "";
+                    res.on("data", function (data) {
+                        body += data;
+                    });
+                    res.on("end", function () {
+                        callback(body);
+                    });
 
-                if (url.hostname) {
-                    protocoll = url.hostname.match(/^https/) ? https: http;
-                } else if (url.host) {
-                    if (url.host.match(/^https/)) {
-                        protocoll = https;
-                        url.host = url.host.replace("https://", "");
-                    } else {
-                        protocoll = http;
-                        url.host = url.host.replace("http://", "");
-                    }
-                }
+                }).on('error', function(e) {
+                        logger.error("ccu.io        GET "+url+" "+ e.message);
+                    });
             } else {
-                protocoll = url.match(/^https/) ? https: http;
-            }
-            var req = protocoll.request(url, function(res) {
-                var body = "";
-                res.on("data", function (data) {
-                    body += data;
-                });
-                res.on("end", function () {
-                    callback(body);
-                });
-
-            }).on('error', function(e) {
+                http.get(url, function(res) {
+                    var body = "";
+                    res.on("data", function (data) {
+                        body += data;
+                    });
+                    res.on("end", function () {
+                        callback(body);
+                    });
+                }).on('error', function(e) {
                     logger.error("ccu.io        GET "+url+" "+ e.message);
                 });
-            if (post) {
-                req.write(post);
             }
         });
 
@@ -2408,3 +2483,92 @@ function loadDatapoints() {
         return false;
     }
 }
+fs.removeRecursive = function(path,cb){
+// ### removeRecursive
+// NodeJS:
+// Delete a file or delete a DIR recursively
+// be aware that this is a power full delete function
+// so best is to check if the PATH given is really
+// the path you want to DELETE ENTIRELY
+//
+// ### usage example
+// remove a folder recursively
+//
+// fs.removeRecursive(full_path_to_dir,function(err,status){});
+//
+// or just delete a file (works to)
+//
+// fs.removeRecursive(full_path_to_file,function(err,status){});
+//
+    var self = this;
+
+    fs.stat(path, function(err, stats) {
+        if(err){
+            cb(err,stats);
+            return;
+        }
+        if(stats.isFile()){
+            fs.unlink(path, function(err) {
+                if(err) {
+                    cb(err,null);
+                }else{
+                    cb(null,true);
+                }
+                return;
+            });
+        }else if(stats.isDirectory()){
+// A folder may contain files
+// We need to delete the files first
+// When all are deleted we could delete the
+// dir itself
+            fs.readdir(path, function(err, files) {
+                if(err){
+                    cb(err,null);
+                    return;
+                }
+                var f_length = files.length;
+                var f_delete_index = 0;
+
+// Check and keep track of deleted files
+// Delete the folder itself when the files are deleted
+
+                var checkStatus = function(){
+// We check the status
+// and count till we r done
+                    if(f_length===f_delete_index){
+                        fs.rmdir(path, function(err) {
+                            if(err){
+                                cb(err,null);
+                            }else{
+                                cb(null,true);
+                            }
+                        });
+                        return true;
+                    }
+                    return false;
+                };
+                if(!checkStatus()){
+                    for(var i=0;i<f_length;i++){
+// Create a local scope for filePath
+// Not really needed, but just good practice
+// (as strings arn't passed by reference)
+                        (function(){
+                            var filePath = path + '/' + files[i];
+// Add a named function as callback
+// just to enlighten debugging
+                            fs.removeRecursive(filePath,function removeRecursiveCB(err,status){
+                                if(!err){
+                                    f_delete_index ++;
+                                    checkStatus();
+                                }else{
+                                    cb(err,null);
+                                    return;
+                                }
+                            });
+                        })()
+                    }
+                }
+            });
+        }
+    });
+};

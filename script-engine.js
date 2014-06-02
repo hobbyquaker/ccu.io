@@ -816,14 +816,6 @@ function delObject(id) {
     scriptEngine.socket.emit("delObject", id);
 }
 
-function getUrl(url, callback) {
-    scriptEngine.socket.emit("getUrl", url, function (result) {
-        if (callback) {
-            callback(result);
-        }
-    });
-}
-
 // read directory (root is ccu.io/)
 function readdir(path, callback) {
     scriptEngine.socket.emit("readdir", [path], function (data) {
