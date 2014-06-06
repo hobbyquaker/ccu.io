@@ -42,6 +42,7 @@
 96000-96049                     Growl adapter
 96050-?                         sun_and_time
 
+97000-97500                     homepilot
 
 
 100000-299999                   reserviert für eigene Scripte
