@@ -8,13 +8,20 @@ ncp.limit = 16;
 
 logger.info("update-addon  started");
 
-var arguments = process.argv.slice(2),
-    url = arguments[0],
-    name = arguments[1],
-    urlParts = url.split("/"),
-    nameArr = [url.split("?")[1]] || urlParts.splice(-3),
-    tmpDir = nameArr[0] + "-master";
-    tmpFile = __dirname + "/tmp/" + nameArr[0] + "master.zip";
+var arguments = process.argv.slice(2);
+var url = arguments[0];
+var name = arguments[1];
+var urlParts = url.split("/");
+var nameArr ="";
+
+if (url.split("?")[1] == undefined) {
+    nameArr = urlParts.splice(-3)[0].toString();
+} else {
+    nameArr = url.split("?")[1].toString();
+}
+
+var tmpFile = __dirname + "/tmp/" + nameArr + "master.zip";
+var tmpDir = nameArr + "-master";
 
 logger.info("update-addon  download and unzip "+url);
 
