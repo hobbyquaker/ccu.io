@@ -1,5 +1,5 @@
 /**
- *      CCU.IO RaspberryPi Adapter 0.5
+ *      CCU.IO RaspberryPi Adapter 0.6
  *
  *      20140123  Eisbaeeer - added PiFace
  *                enable|disable PiFace with "piface": false|true
@@ -693,59 +693,59 @@ if (settings.adapters.rpi.settings.piface) {
         //log("info", "adapter   rpi: IN: " + PiFaceIN[0]);
         
         if (PiFaceIN[0] == '1') {
-          PiFaceIN[0] = 'true'
+          PiFaceIN[0] = true
           }
         if (PiFaceIN[0] == '0') {
-          PiFaceIN[0] = 'false'
+          PiFaceIN[0] = false
           }
 
         if (PiFaceIN[1] == '1') {
-          PiFaceIN[1] = 'true'
+          PiFaceIN[1] = true
           }
         if (PiFaceIN[1] == '0') {
-          PiFaceIN[1] = 'false'
+          PiFaceIN[1] = false
           }
 
         if (PiFaceIN[2] == '1') {
-          PiFaceIN[2] = 'true'
+          PiFaceIN[2] = true
           }
         if (PiFaceIN[2] == '0') {
-          PiFaceIN[2] = 'false'
+          PiFaceIN[2] = false
           }
 
         if (PiFaceIN[3] == '1') {
-          PiFaceIN[3] = 'true'
+          PiFaceIN[3] = true
           }
         if (PiFaceIN[3] == '0') {
-          PiFaceIN[3] = 'false'
+          PiFaceIN[3] = false
           }
 
         if (PiFaceIN[4] == '1') {
-          PiFaceIN[4] = 'true'
+          PiFaceIN[4] = true
           }
         if (PiFaceIN[4] == '0') {
-          PiFaceIN[4] = 'false'
+          PiFaceIN[4] = false
           }
 
         if (PiFaceIN[5] == '1') {
-          PiFaceIN[5] = 'true'
+          PiFaceIN[5] = true
           }
         if (PiFaceIN[5] == '0') {
-          PiFaceIN[5] = 'false'
+          PiFaceIN[5] = false
           }
 
         if (PiFaceIN[6] == '1') {
-          PiFaceIN[6] = 'true'
+          PiFaceIN[6] = true
           }
         if (PiFaceIN[6] == '0') {
-          PiFaceIN[6] = 'false'
+          PiFaceIN[6] = false
           }
 
         if (PiFaceIN[7] == '1') {
-          PiFaceIN[7] = 'true'
+          PiFaceIN[7] = true
           }
         if (PiFaceIN[7] == '0') {
-          PiFaceIN[7] = 'false'
+          PiFaceIN[7] = false
           }
       
         if (vars_init == '1') {
@@ -759,30 +759,15 @@ if (settings.adapters.rpi.settings.piface) {
             inp[6] = PiFaceIN[6];
             inp[7] = PiFaceIN[7];
 
-//            if (PiFaceIN[0] == 'false' || PiFaceIN[0] == 'true') {
                 socket.emit("setState", [pifaceinDPs.IN0, PiFaceIN[0], null,true]);
-//            }
-//            if (PiFaceIN[1] == 'false' || PiFaceIN[1] == 'true') {
                 socket.emit("setState", [pifaceinDPs.IN1, PiFaceIN[1], null,true]);
-//            }
-//            if (PiFaceIN[2] == 'false' || PiFaceIN[2] == 'true') {
                 socket.emit("setState", [pifaceinDPs.IN2, PiFaceIN[2], null,true]);
-//            }
-//            if (PiFaceIN[3] == 'false' || PiFaceIN[3] == 'true') {
                 socket.emit("setState", [pifaceinDPs.IN3, PiFaceIN[3], null,true]);
-//            }
-//            if (PiFaceIN[4] == 'false' || PiFaceIN[4] == 'true') {
                 socket.emit("setState", [pifaceinDPs.IN4, PiFaceIN[4], null,true]);
-//            }
-//            if (PiFaceIN[5] == 'false' || PiFaceIN[5] == 'true') {
                 socket.emit("setState", [pifaceinDPs.IN5, PiFaceIN[5], null,true]);
-//            }
-//            if (PiFaceIN[6] == 'false' || PiFaceIN[6] == 'true') {
                 socket.emit("setState", [pifaceinDPs.IN6, PiFaceIN[6], null,true]);
-//            }
-//            if (PiFaceIN[7] == 'false' || PiFaceIN[7] == 'true') {
                 socket.emit("setState", [pifaceinDPs.IN7, PiFaceIN[7], null,true]);
-//            }
+
             vars_init = "0";             //Ende INIT
         }
         else {
