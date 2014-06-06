@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.36*
+*aktuelle Version: 1.0.37*
 
 ## Dokumentation
 
@@ -35,6 +35,12 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.37
+* (Smiling-Jack) Fix Addon-Install/-Update
+* (Eisbaeeer) Fix Adapter RPI
+* (Bluefox) Fix error in findDatapoint if needle empty
+* (Bluefox) Changed Adapter-firstIDs
 
 ### 1.0.36
 * (Smiling-Jack) Anpassungen für FileManager

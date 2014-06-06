@@ -36,12 +36,10 @@
 
 90000-90549                     hue adapter
 
-!  95100-?                         dreambox adapter
-!  95100-95105                     openweathermap adapter
+95100-95105                     openweathermap adapter
+95200-?                         dreambox adapter
 
-
-96000-?                         Growl adapter
-
+96000-96049                     Growl adapter
 96050-?                         sun_and_time
 
 

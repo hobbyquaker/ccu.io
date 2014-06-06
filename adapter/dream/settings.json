@@ -3,7 +3,7 @@
     "settings": {
         "messageTimeout": 5,
         "pollingInterval": 10000,
-        "firstId": 95100,
+        "firstId": 95200,
         "messageType": 1,
         "pollingEnabled": true,
         "debugEnabled": true,
