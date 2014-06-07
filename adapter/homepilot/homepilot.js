@@ -152,9 +152,11 @@ ccu_socket.on('event', function (obj) {
         val = parseFloat(val);
         if (val < 0) {
             logger.warn("adapter homepilot: invalid control value " + val + ". Value must be positive");
+            val = 0;
         }
         if (val > 1) {
             logger.warn("adapter homepilot: invalid control value " + val + ". Value must be from 0 to 1, e.g. 0.55");
+            val = 1;
         }
 
         val = Math.round(val * 100);
@@ -162,7 +164,7 @@ ccu_socket.on('event', function (obj) {
 
         // Set new status immediately
         if (id == devices[k].DPs.COMMAND) {
-            setState(devices[dev].DPs.LEVEL, devices[dev].position / 100);
+            setState(devices[dev].DPs.LEVEL, val / 100);
         }
         return;
     }
