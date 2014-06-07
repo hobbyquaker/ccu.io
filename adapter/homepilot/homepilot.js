@@ -169,7 +169,7 @@ ccu_socket.on('event', function (obj) {
             sendCommand(devices[dev].did, val ? commands['ON'] : commands['OFF']);
         } else {
             val = Math.round(val * 100);
-            if (devices[num].isRollo) {
+            if (devices[dev].isRollo) {
                 sendCommand(devices[dev].did, commands['POSITION_N'], (100 - val));
             } else {
                 sendCommand(devices[dev].did, commands['POSITION_N'], val);
