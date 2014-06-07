@@ -146,8 +146,8 @@ ccu_socket.on('event', function (obj) {
  
     logger.info ("adapter homepilot  try to control id " + id + " with " + val);
  
-    if (val === "false") { val = 0; }
-    if (val === "true")  { val = 1; }
+    if (val === "false" || val === false) { val = 0; }
+    if (val === "true"  || val === true)  { val = 1; }
 
     if (parseFloat(val) == val) {
         // If number => set position
@@ -160,13 +160,21 @@ ccu_socket.on('event', function (obj) {
             logger.warn("adapter homepilot: invalid control value " + val + ". Value must be from 0 to 1, e.g. 0.55");
             val = 1;
         }
+        if (devices[dev].isState && val != 0 && val != 1) {
+            logger.warn("adapter homepilot: invalid control value " + val + ". Value for switch must be 0/false or 1/true");
+            val = !!val;
+        }
 
         val = Math.round(val * 100);
         sendCommand(devices[dev].did, commands['POSITION_N'], val);
 
         // Set new status immediately
         if (id == devices[k].DPs.COMMAND) {
-            setState(devices[dev].DPs.LEVEL, val / 100);
+            if (devices[dev].isState) {
+                setState(devices[dev].DPs.LEVEL, val ? true : false);
+            } else {
+                setState(devices[dev].DPs.LEVEL, val / 100);
+            }
         }
         return;
     }
@@ -1829,9 +1837,13 @@ function pollStatus() {
                 for (var j = 0; j < devs.length; j++) {
                     var num = devs[j].did - 10000;
                     // If status changed
-                    if (devs[j].statusesMap && devs[j].position != devices[num].position){
+                    if (devs[j].position != devices[num].position){
                         devices[num].position = devs[j].position;
-                        setState(devices[num].DPs.LEVEL, devices[num].position / 100);
+                        if (devices[num].isState) {
+                            setState(devices[num].DPs.LEVEL, (devices[num].position == 100));
+                        } else {
+                            setState(devices[num].DPs.LEVEL, devices[num].position / 100);
+                        }
                     }
                 }
             }
@@ -1875,14 +1887,29 @@ function pollStatus() {
                     setObject(chnDp, chObject);
 
 
-                    setObject(devices[num].DPs.LEVEL, {
-                        Name:         chObject.Address+".LEVEL",
-                        ValueType:    16,
-                        ValueSubType: 29,
-                        TypeName:     "HSSDP",
-                        Value:        0,
-                        Parent:       chnDp
-                    });
+                    if (devices[num].productName == 'Steckdosenaktor' ||
+                        devices[num].productName == 'Universal-Aktor') {
+                        devices[num].isState = true;
+                        setObject(devices[num].DPs.LEVEL, {
+                            Name:         chObject.Address+".STATE",
+                            ValueType:    16,
+                            ValueSubType: 29,
+                            TypeName:     "HSSDP",
+                            Value:        0,
+                            Parent:       chnDp
+                        });
+                    }
+                    else {
+                        devices[num].isState = false;
+                        setObject(devices[num].DPs.LEVEL, {
+                            Name:         chObject.Address+".LEVEL",
+                            ValueType:    16,
+                            ValueSubType: 29,
+                            TypeName:     "HSSDP",
+                            Value:        0,
+                            Parent:       chnDp
+                        });
+                    }
 
                     setObject(devices[num].DPs.COMMAND, {
                         Name:         chObject.Address+".COMMAND",
@@ -1913,7 +1940,11 @@ function pollStatus() {
                 // Update initial states
                 for (var u = 0; u < devs.length; u++) {
                     var n = devs[u].did - 10000;
-                    setState(devices[n].DPs.LEVEL, devices[n].position / 100);
+                    if (devices[n].isState) {
+                        setState(devices[n].DPs.LEVEL, (devices[n].position == 100));
+                    } else {
+                        setState(devices[n].DPs.LEVEL, devices[n].position / 100);
+                    }
                 }
             }
         });
