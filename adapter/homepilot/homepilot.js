@@ -64,21 +64,16 @@ var objects    = {},
     };
  
 function sendCommand (did, cmd, pos) {
-    var post_data = 'cid=' + cmd + '&did=' + did + '&goto=' + ((pos === undefined) ? 0: pos) + '&command=1';
+    var data = 'cid=' + cmd + '&did=' + did + ((pos === undefined) ? '&goto=' + pos : '') + '&command=1';
 
     var options = {
-        host:   homepilotSettings.ip,
-        port:   80,
-        path:   '/deviceajax.do',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain',
-            'Content-Length': post_data.length
-        }
+        host: homepilotSettings.ip,
+        port: 80,
+        path: '/deviceajax.do?' + data
     };
-
+    logger.verbose('adapter homepilot: send command "' + data + '" to ' + homepilotSettings.ip);
     // Set up the request
-    var post_req = http.request(options, function(res) {
+    http.get(options, function(res) {
         var xmldata = '';
         res.setEncoding('utf8');
         res.on('error', function (e) {
@@ -88,15 +83,11 @@ function sendCommand (did, cmd, pos) {
             xmldata += chunk;
         });
         res.on('end', function () {
-            console.log('Response: ' + xmldata);
+            logger.verbose('adapter homepilot: Response "' + xmldata + '"');
         });
     }).on('error', function(e) {
         logger.warn("adapter homepilot: Got error by post request " + e.message);
     });;
-
-    // post the data
-    post_req.write(post_data);
-    post_req.end();
 }
  
 if (settings.ioListenPort) {
@@ -154,16 +145,24 @@ ccu_socket.on('event', function (obj) {
     logger.info ("adapter homepilot  try to control id " + id + " with " + val);
  
     if (val === "false") { val = 0; }
-    if (val === "true")  { val = 100; }
+    if (val === "true")  { val = 1; }
 
     if (parseFloat(val) == val) {
         // If number => set position
-        val = Math.round(parseFloat(val) * 100);
+        val = parseFloat(val);
+        if (val < 0) {
+            logger.warn("adapter homepilot: invalid control value " + val + ". Value must be positive");
+        }
+        if (val > 1) {
+            logger.warn("adapter homepilot: invalid control value " + val + ". Value must be from 0 to 1, e.g. 0.55");
+        }
+
+        val = Math.round(val * 100);
         sendCommand(devices[dev].did, commands['POSITION_N'], val);
 
         // Set new status immediately
         if (id == devices[k].DPs.COMMAND) {
-            setState(devices[dev].DPs.LEVEL, devices[dev].statusesMap.Position / 100);
+            setState(devices[dev].DPs.LEVEL, devices[dev].position / 100);
         }
         return;
     }
@@ -191,7 +190,7 @@ function stop() {
         process.exit();
     }, 250);
 }
- 
+/*
 var testResponse = {
 	"response": "get_visible_devices",
 	"status": "ok",
@@ -1743,7 +1742,7 @@ var testResponse = {
 		4]
 	}]
 }; 
-
+*/
 process.on('SIGINT', function () {
     stop();
 });
@@ -1826,9 +1825,9 @@ function pollStatus() {
                 for (var j = 0; j < devs.length; j++) {
                     var num = devs[j].did - 10000;
                     // If status changed
-                    if (devs[j].statusesMap && devs[j].statusesMap.Position != devices[num].statusesMap.Position){
-                        devices[num].statusesMap.Position = devs[j].statusesMap.Position;
-                        setState(devices[num].DPs.LEVEL, devices[num].statusesMap.Position / 100);
+                    if (devs[j].statusesMap && devs[j].position != devices[num].position){
+                        devices[num].position = devs[j].position;
+                        setState(devices[num].DPs.LEVEL, devices[num].position / 100);
                     }
                 }
             }
@@ -1855,7 +1854,7 @@ function pollStatus() {
                     devices[num].DPs = {
                         LEVEL:   dp+0,
                         COMMAND: dp+1
-                    }
+                    };
                     var name = (devices[num]['name']) || id;
                     name = name.replace(/ /g, '_');
                     name = name.replace(/\./g, '_');
@@ -1908,7 +1907,7 @@ function pollStatus() {
                 // Update initial states
                 for (var u = 0; u < devs.length; u++) {
                     var n = devs[u].did - 10000;
-                    setState(devices[n].DPs.LEVEL, devices[n].statusesMap.Position / 100);
+                    setState(devices[n].DPs.LEVEL, devices[n].position / 100);
                 }
             }
         });
