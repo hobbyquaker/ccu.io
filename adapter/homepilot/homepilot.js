@@ -169,7 +169,11 @@ ccu_socket.on('event', function (obj) {
             sendCommand(devices[dev].did, val ? commands['ON'] : commands['OFF']);
         } else {
             val = Math.round(val * 100);
-            sendCommand(devices[dev].did, commands['POSITION_N'], val);
+            if (devices[num].isRollo) {
+                sendCommand(devices[dev].did, commands['POSITION_N'], (100 - val));
+            } else {
+                sendCommand(devices[dev].did, commands['POSITION_N'], val);
+            }
         }
 
         // Set new status immediately
@@ -1845,7 +1849,10 @@ function pollStatus() {
                         devices[num].position = devs[j].position;
                         if (devices[num].isState) {
                             setState(devices[num].DPs.LEVEL, (devices[num].position == 100));
-                        } else {
+                        } else if (devices[num].isRollo) {
+                            setState(devices[num].DPs.LEVEL, (100 - devices[num].position) / 100);
+                        }
+                        else {
                             setState(devices[num].DPs.LEVEL, devices[num].position / 100);
                         }
                     }
@@ -1913,6 +1920,9 @@ function pollStatus() {
                             Value:        0,
                             Parent:       chnDp
                         });
+                        if (devices[num].productName.indexOf("Rollo") != -1) {
+                            devices[num].isRollo = true;                            
+                        }
                     }
 
                     setObject(devices[num].DPs.COMMAND, {
@@ -1947,7 +1957,11 @@ function pollStatus() {
                     if (devices[n].isState) {
                         setState(devices[n].DPs.LEVEL, (devices[n].position == 100));
                     } else {
-                        setState(devices[n].DPs.LEVEL, devices[n].position / 100);
+                        if (devices[num].isRollo) {
+                            setState(devices[n].DPs.LEVEL, (100 - devices[n].position) / 100);
+                        } else {
+                            setState(devices[n].DPs.LEVEL, devices[n].position / 100);
+                        }
                     }
                 }
             }
