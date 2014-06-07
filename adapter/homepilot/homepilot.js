@@ -1874,7 +1874,7 @@ function pollStatus() {
 
                     setObject(chnDp, chObject);
 
-                                    
+
                     setObject(devices[num].DPs.LEVEL, {
                         Name:         chObject.Address+".LEVEL",
                         ValueType:    16,

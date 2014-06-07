@@ -39,19 +39,24 @@ function postRequest (device, path, post_data, callback) {
 		var xmldata = '';
 		res.setEncoding('utf8'),
 		res.on('error', function (e) {
-			logger.warn ("lgtv: " + e);
-			if (callback) 
-				callback (device, null);
+			logger.warn("lgtv: " + e);
+			if (callback) {
+                callback(device, null);
+            }
 		});
 		res.on('data', function(chunk){
 			xmldata += chunk;
 		})
 		res.on('end', function () {
-			console.log('Response: ' + xmldata);
+            logger.verbose('Response: ' + xmldata);
 			if (callback) 
 				callback (device, xmldata);
 		});
 	});
+
+    post_req.on("error", function (e) {
+        logger.warn('adapter lgtv: error by request - ' + e);
+    });
 
 	// post the data
 	post_req.write(post_data);
