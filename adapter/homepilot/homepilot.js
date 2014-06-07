@@ -64,14 +64,14 @@ var objects    = {},
     };
  
 function sendCommand (did, cmd, pos) {
-    var data = 'cid=' + cmd + '&did=' + did + ((pos === undefined) ? '&goto=' + pos : '') + '&command=1';
+    var data = 'cid=' + cmd + '&did=' + did + ((pos !== undefined) ? '&goto=' + pos : '') + '&command=1';
 
     var options = {
         host: homepilotSettings.ip,
         port: 80,
         path: '/deviceajax.do?' + data
     };
-    logger.verbose('adapter homepilot: send command "' + data + '" to ' + homepilotSettings.ip);
+    logger.info('adapter homepilot: send command "' + data + '" to ' + homepilotSettings.ip);
     // Set up the request
     http.get(options, function(res) {
         var xmldata = '';
@@ -83,7 +83,7 @@ function sendCommand (did, cmd, pos) {
             xmldata += chunk;
         });
         res.on('end', function () {
-            logger.verbose('adapter homepilot: Response "' + xmldata + '"');
+            logger.info('adapter homepilot: Response "' + xmldata + '"');
         });
     }).on('error', function(e) {
         logger.warn("adapter homepilot: Got error by post request " + e.message);
@@ -1767,7 +1767,7 @@ function setObject(id, obj) {
 function setState(id, val) {
     if (datapoints[id] === undefined || datapoints[id] !== val) {
         datapoints[id] = val;
-        logger.verbose("adapter homepilot  setState " + id + " " + val);
+        logger.info("adapter homepilot  setState " + id + " " + val);
         ccu_socket.emit("setState", [id, val, null, true]);
     }
 }
