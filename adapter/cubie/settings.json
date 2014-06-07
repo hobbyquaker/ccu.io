@@ -4,7 +4,6 @@
     "settings": {
         "interval": 60000,
         "deviceName": "Cubie1",
-        "piface": false,
         "gpio": {
             "22": {
                 "direction": "in"

@@ -101,7 +101,7 @@ socket.emit("setObject", settings.adapters.rpi.firstId, {
     Address: adapterSettings.deviceName,
     Interface: "CCU.IO",
     Channels: [
-        72501
+        settings.adapters.rpi.firstId + 1
     ],
     _persistent: true
 });
@@ -405,7 +405,7 @@ var pifaceinDPs = {
     IN4:  dpId+5,
     IN5:  dpId+6,
     IN6:  dpId+7,
-    IN7:  dpId+8,
+    IN7:  dpId+8
 };
 
 socket.emit("setObject", dpId, {
@@ -499,7 +499,7 @@ var pifaceoutDPs = {
     OUT4:  dpId+5,
     OUT5:  dpId+6,
     OUT6:  dpId+7,
-    OUT7:  dpId+8,
+    OUT7:  dpId+8
 };
 
 socket.emit("setObject", dpId, {
