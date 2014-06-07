@@ -165,8 +165,12 @@ ccu_socket.on('event', function (obj) {
             val = !!val;
         }
 
-        val = Math.round(val * 100);
-        sendCommand(devices[dev].did, commands['POSITION_N'], val);
+        if (devices[dev].isState) {
+            sendCommand(devices[dev].did, val ? commands['ON'] : commands['OFF']);
+        } else {
+            val = Math.round(val * 100);
+            sendCommand(devices[dev].did, commands['POSITION_N'], val);
+        }
 
         // Set new status immediately
         if (id == devices[k].DPs.COMMAND) {
