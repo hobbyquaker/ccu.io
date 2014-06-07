@@ -512,23 +512,27 @@ function getMemUsage() {
 }
 
 function getValues() {
-    var temp = fs.readFileSync("/sys/devices/platform/sunxi-i2c.0/i2c-0/0-0034/temp1_input").toString();
-    var loadavg = fs.readFileSync("/proc/loadavg").toString().split(" ");
-    temp = parseFloat(temp) / 1000;
-    temp = temp.toFixed(1);
-    socket.emit("setState", [firstId+2, temp]);
-    socket.emit("setState", [firstId+4, parseFloat(loadavg[0])]);
-    get1wire();
-    getDiskUsage();
-    getMemUsage();
-    getBattData();
+    try {
+        var temp = fs.readFileSync("/sys/devices/platform/sunxi-i2c.0/i2c-0/0-0034/temp1_input").toString();
+        var loadavg = fs.readFileSync("/proc/loadavg").toString().split(" ");
+        temp = parseFloat(temp) / 1000;
+        temp = temp.toFixed(1);
+        socket.emit("setState", [firstId+2, temp]);
+        socket.emit("setState", [firstId+4, parseFloat(loadavg[0])]);
+        get1wire();
+        getDiskUsage();
+        getMemUsage();
+        getBattData();
+    } catch(e) {
+        log("error", e);
+    }
 }
 
 function getBattData() {
     var temp = fs.readFileSync("/sys/class/power_supply/battery/uevent").toString();
     var lines = temp.split("\n");
 
-    for (var i = 0; i < lines.count; i++) {
+    for (var i = 0; i < lines.length; i++) {
         if (!lines[i] || !lines[i].trim()) continue;
         
         var tmp = lines[i].split("=");
@@ -540,7 +544,7 @@ function getBattData() {
             socket.emit("setState", [batteryDPs.HEALTH, tmp[1]]);
         } else
         if (tmp[0] == 'POWER_SUPPLY_VOLTAGE_NOW') {
-            socket.emit("setState", [batteryDPs.VOLTAGE, (parseInt(tmp[1]) / 100000).toFixed(2)]);
+            socket.emit("setState", [batteryDPs.VOLTAGE, (parseInt(tmp[1]) / 1000000).toFixed(2)]);
         } else
         if (tmp[0] == 'POWER_SUPPLY_CURRENT_NOW') {
             socket.emit("setState", [batteryDPs.CURRENT, Math.round((parseInt(tmp[1]) / 1000))]);
