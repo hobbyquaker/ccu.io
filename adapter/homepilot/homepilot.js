@@ -117,8 +117,9 @@ ccu_socket.on('event', function (obj) {
     }
     var id = obj[0];
  
-    if (!objects[id])
+    if (!objects[id]) {
         return;
+    }
  
     var dev = null;
 
@@ -139,8 +140,9 @@ ccu_socket.on('event', function (obj) {
     var val = obj[1];
     var ack = obj[3];
        
-    if (ack)
+    if (ack) {
         return;
+    }
  
     logger.info ("adapter homepilot  try to control id " + id + " with " + val);
  
@@ -1865,21 +1867,23 @@ function pollStatus() {
                         Name:     name,
                         TypeName: "CHANNEL",
                         Address:  "Homepilot." + name,
-                        HssType:  "Homepilot",
+                        HssType:  "Homepilot" + (devices[num].productName ? '.' + devices[num].productName.replace(' ', '_') : ''),
                         DPs:      devices[num].DPs,
                         Parent:   homepilotSettings.firstId
                     };
 
                     setObject(chnDp, chObject);
 
+                                    
                     setObject(devices[num].DPs.LEVEL, {
                         Name:         chObject.Address+".LEVEL",
                         ValueType:    16,
                         ValueSubType: 29,
                         TypeName:     "HSSDP",
-                        Value:        0, // 0 - Pause, 1 - play, 2 - stop
+                        Value:        0,
                         Parent:       chnDp
                     });
+
                     setObject(devices[num].DPs.COMMAND, {
                         Name:         chObject.Address+".COMMAND",
                         ValueType:    20,
