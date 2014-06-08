@@ -84,6 +84,17 @@ function sendCommand (did, cmd, pos) {
         });
         res.on('end', function () {
             logger.info('adapter homepilot: Response "' + xmldata + '"');
+            // Analyse answer: "{"message":"Command used:9 position:77","status":"uisuccess"}"
+            var resp = null;
+            try {
+                resp = JSON.parse(xmldata);
+            } catch(e) {
+
+            }
+
+            if (resp) {
+
+            }
         });
     }).on('error', function(e) {
         logger.warn("adapter homepilot: Got error by post request " + e.message);
@@ -184,6 +195,7 @@ ccu_socket.on('event', function (obj) {
                 setState(devices[dev].DPs.LEVEL, val / 100);
             }
         }
+
         return;
     }
 
@@ -1847,12 +1859,15 @@ function pollStatus() {
                     // If status changed
                     if (devs[j].position != devices[num].position){
                         devices[num].position = devs[j].position;
+
                         if (devices[num].isState) {
+                            logger.info("adapter homepilot: detected new state - position " + devices[num].position);
                             setState(devices[num].DPs.LEVEL, (devices[num].position == 100));
                         } else if (devices[num].isRollo) {
+                            logger.info("adapter homepilot: detected new rollo state - position " + devices[num].position + ", calc state " + ((100 - devices[num].position) / 100));
                             setState(devices[num].DPs.LEVEL, (100 - devices[num].position) / 100);
-                        }
-                        else {
+                        } else {
+                            logger.info("adapter homepilot: detected new position " + devices[num].position + ", calc state " + (devices[num].position / 100));
                             setState(devices[num].DPs.LEVEL, devices[num].position / 100);
                         }
                     }
@@ -1901,6 +1916,7 @@ function pollStatus() {
                     if (devices[num].productName == 'Steckdosenaktor' ||
                         devices[num].productName == 'Universal-Aktor') {
                         devices[num].isState = true;
+                        devices[num].isRollo = false;
                         setObject(devices[num].DPs.LEVEL, {
                             Name:         chObject.Address+".STATE",
                             ValueType:    16,
@@ -1922,6 +1938,8 @@ function pollStatus() {
                         });
                         if (devices[num].productName.indexOf("Rollo") != -1) {
                             devices[num].isRollo = true;                            
+                        } else {
+                            devices[num].isRollo = false;
                         }
                     }
 
