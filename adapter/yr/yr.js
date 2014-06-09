@@ -130,12 +130,12 @@ function parseData(xml) {
 			var table = style + tableDay + tableHead + tableMiddle + tableBottom + "</tr></table>";
 			//console.log(JSON.stringify(result, null, "  "));
 
-            if (forecastArr[0].precipitation.Value != "0" || forecastArr[1].precipitation.Value != "1" || forecastArr[2].precipitation.Value != "2" || forecastArr[3].precipitation.Value != "3") {
+            if (forecastArr[0].precipitation.value != "0" || forecastArr[1].precipitation.value != "1" || forecastArr[2].precipitation.value != "2" || forecastArr[3].precipitation.value != "3") {
                 var rain24 = true;
             } else {
                 var rain24 = false;
             }
-            if (forecastArr[0].precipitation.Value != "4" || forecastArr[1].precipitation.Value != "5" || forecastArr[2].precipitation.Value != "6" || forecastArr[3].precipitation.Value != "7") {
+            if (forecastArr[0].precipitation.value != "4" || forecastArr[1].precipitation.value != "5" || forecastArr[2].precipitation.value != "6" || forecastArr[3].precipitation.value != "7") {
                 var rain48 = true;
             } else {
                 var rain48 = false;
