@@ -1973,13 +1973,14 @@ function pollStatus() {
                 for (var u = 0; u < devs.length; u++) {
                     var n = devs[u].did - 10000;
                     if (devices[n].isState) {
+                        logger.info("adapter homepilot: set initial state - position " + devices[num].position);
                         setState(devices[n].DPs.LEVEL, (devices[n].position == 100));
+                    } else if (devices[num].isRollo) {
+                        logger.info("adapter homepilot: set initial state - position " + devices[num].position + ", calc state " + ((100 - devices[num].position) / 100));
+                        setState(devices[n].DPs.LEVEL, (100 - devices[n].position) / 100);
                     } else {
-                        if (devices[num].isRollo) {
-                            setState(devices[n].DPs.LEVEL, (100 - devices[n].position) / 100);
-                        } else {
-                            setState(devices[n].DPs.LEVEL, devices[n].position / 100);
-                        }
+                        logger.info("adapter homepilot: set initial position " + devices[num].position + ", calc state " + (devices[num].position / 100));
+                        setState(devices[n].DPs.LEVEL, devices[n].position / 100);
                     }
                 }
             }
@@ -1988,11 +1989,6 @@ function pollStatus() {
 }
  
 function homepilotInit () {
-    ccu_socket.on('news', function (data) {
-        console.log(data);
-        ccu_socket.emit('my other event', { my: 'data' });
-    });
-
     pollStatus();
 
     // Try to get the list of devices
