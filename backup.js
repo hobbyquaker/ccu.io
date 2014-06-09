@@ -39,7 +39,12 @@ var deleteFolderRecursive = function(path) {
     }
 };
 
+var isTriggered = null;
+
 function copyFile (source, destination, trigger) {
+    if (trigger !== undefined) {
+        isTriggered = trigger;
+    }
     iCopied++;
     ncp (source, destination, function (err) {
         iCopied--;
@@ -47,7 +52,7 @@ function copyFile (source, destination, trigger) {
             logger.error('Cannot copy file ' + source + ' to ' + destination);
         }
 
-        if (trigger || !iCopied && (trigger === undefined)) {
+        if (!iCopied && (isTriggered === null || isTriggered)) {
             var gz = new gzip ();
             gz.compress(targetFolder+'/' + task, zipFile, function(err) {
                 if (!err) {
@@ -145,8 +150,8 @@ function createBackup (isLog, zipFileName) {
     fs.mkdirSync (bckDir + '/www/dashui');
     fs.mkdirSync (bckDir + '/www/dashui/css');
     fs.mkdirSync (bckDir + '/www/dashui/img');
-    copyFile (__dirname + '/www/dashui/css/dashui-user.css', bckDir + '/www/dashui/css/dashui-user.css');
-    copyDirectory (__dirname + '/www/dashui/img', bckDir + '/www/dashui/img', 'devices,mfd,back');
+    copyDirectory (__dirname + '/www/dashui/img', bckDir + '/www/dashui/img', 'devices,mfd,back', false);
+    copyFile (__dirname + '/www/dashui/css/dashui-user.css', bckDir + '/www/dashui/css/dashui-user.css', true);
 }
 
 function applyBackup (zipFileName) {
@@ -199,6 +204,55 @@ function applyBackup (zipFileName) {
     });
 }
 
+function randomNumber(len) {
+    var num = "";
+    for (var t = 0; t < len; t++) {
+        num += Math.round(Math.random() * 10).toString();
+    }
+    return num;
+}
+
+//Process: [{\"datetime\":\"2014-06-08 13:53:53\",\"number\":\"134567890\"},{\"datetime\":\"2014-06-07 16:33:06\",\"number\":\"077777777777\"}]
+function anonymizeNumber1(jsonObj) {
+    var data = null;
+    try {
+        data = JSON.parse(jsonObj);
+    } catch (e) {
+
+    }
+    if (data) {
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].number && data[i].number != 'Unbekannt') {
+                data[i].number = randomNumber(data[i].number.length);
+            }
+        }
+    }
+    return JSON.stringify(data);
+}
+
+// Process: "MISSED/25.04.14 17:07:41/01766666666/0;IN/11.04.14 15:10:24/0725555555/3;IN/11.04.14 15:09:49/07444444444/3"
+function anonymizeNumber2(str) {
+    var data = str.split(';');
+    for (var i = 0; i < data.length; i++) {
+        var objs = data[i].split('/');
+        objs[2] = randomNumber(objs[2].length);
+        data[i] = objs.join('/');
+    }
+    return data.join(';');
+}
+
+// Process: "<table class=\"callListTable\"><tr class='callListTableLine1'><td class='callListTableType'><img src='img/callinfailed.png' style='width:32px;height:32px' /></td><td class='callListTableImg'><img src='img/call.png' style='width:32px;height:32px' /></td><td class='callListTableTime'>25.04.14 17:07:41</td><td class='callListTableName'>Person2 Handy</td><td class='callListTableDuration'/></tr><tr class='callListTableLine0'><td class='callListTableType'><img src='img/callin.png' style='width:32px;height:32px' /></td><td class='callListTableImg'><img src='img/call.png' style='width:32px;height:32px' /></td><td class='callListTableTime'>11.04.14 15:10:24</td><td class='callListTableName'>Person3</td><td class='callListTableDuration'>00:03</td></tr></table>"
+function anonymizeNumber3(str) {
+    var data = str.split("<td class='callListTableName'>");
+    for (var i = 1; i < data.length; i++) {
+        var pos = data[i].indexOf('</td>');
+        if (pos != -1) {
+            data[i] = randomNumber(pos) + data[i].substring(pos);
+        }
+    }
+    return data.join("<td class='callListTableName'>");
+}
+
 function createSnapshot (isNotAnonymized, zipFileName) {
     var settings  = require(__dirname + '/settings.js');
     var io        = require('socket.io-client');
@@ -211,7 +265,7 @@ function createSnapshot (isNotAnonymized, zipFileName) {
     try {
         var stat = fs.lstatSync(zipFile);
         if (stat) {
-            fs.unlink (zipFile);
+            fs.unlinkSync(zipFile);
         }
     }
     catch (e) {
@@ -235,6 +289,7 @@ function createSnapshot (isNotAnonymized, zipFileName) {
         return;
     }
     var localData = {};
+    var errors = [];
 
     socket.on('connect', function () {
         socket.emit('getDatapoints', function(data) {
@@ -247,10 +302,47 @@ function createSnapshot (isNotAnonymized, zipFileName) {
                 localData.metaObjects = obj;
 
                 if (!isNotAnonymized) {
-                    for (var i in localData.metaObjects) {
-                        if (localData.metaObjects[i]["Address"]) {
-                            localData.metaObjects[i]["Address"] = 'ZZZ';
+                    try {
+                        // Anonimyze address
+                        for (var i in localData.metaObjects) {
+                            if (localData.metaObjects[i]["Address"]) {
+                                localData.metaObjects[i]["Address"] = 'ZZZ';
+                            }
                         }
+                        // Remove tel numbers
+                        if (localData.uiState['_74000']) {
+                            localData.uiState['_74000'].Value = anonymizeNumber1(localData.uiState['_74000'].Value);
+                        }
+                        if (localData.uiState['_74001']) {
+                            localData.uiState['_74001'].Value = anonymizeNumber1(localData.uiState['_74001'].Value);
+                        }
+                        if (localData.uiState['_74002']) {
+                            localData.uiState['_74002'].Value = anonymizeNumber1(localData.uiState['_74002'].Value);
+                        }
+                        if (localData.uiState['_74003']) {
+                            localData.uiState['_74003'].Value = anonymizeNumber1(localData.uiState['_74003'].Value);
+                        }
+                        if (localData.uiState['_73203']) {
+                            localData.uiState['_73203'].Value = anonymizeNumber2(localData.uiState['_73203'].Value);
+                        }
+                        if (localData.uiState['_73208']) {
+                            localData.uiState['_73208'].Value = anonymizeNumber2(localData.uiState['_73208'].Value);
+                        }
+                        if (localData.uiState['_73204']) {
+                            localData.uiState['_73204'].Value = anonymizeNumber3(localData.uiState['_73204'].Value);
+                        }
+                        if (localData.uiState['_73209']) {
+                            localData.uiState['_73209'].Value = anonymizeNumber3(localData.uiState['_73209'].Value);
+                        }
+                        if (localData.uiState['_73205'] && localData.uiState['_73205'].Value) {
+                            localData.uiState['_73205'].Value = randomNumber(localData.uiState['_73205'].Value);
+                        }
+                        if (localData.uiState['_73206'] && localData.uiState['_73206'].Value) {
+                            localData.uiState['_73206'].Value = randomNumber(localData.uiState['_73206'].Value);
+                        }
+                    } catch (e) {
+                        errors.push("create-snapshot: cannot anonimyze numbers " + e);
+                        logger.warn(errors[errors.length-1]);
                     }
                 }
 
@@ -261,37 +353,53 @@ function createSnapshot (isNotAnonymized, zipFileName) {
                     fs.writeFile(bckDir + '/datastore/local-data.json', JSON.stringify(localData, null, '  '));
 
                     try {
-                        var _jviews = fs.readFileSync(__dirname + '/datastore/dashui-views.json');
-                        var views   = JSON.parse(_jviews);
+                        var files = fs.readdirSync(__dirname + '/datastore/');
+                        for (var t = 0; t < files.length; t++) {
+                            if (files[t].indexOf('dashui-views') != -1) {
+                                var _jviews = fs.readFileSync(__dirname + '/datastore/' + files[t]);
+                                var views   = JSON.parse(_jviews);
 
-                        // Remove all cameras from views
-                        for (var view in views) {
-                            for (var widget in views[view]['widgets']) {
-                                if (views[view]['widgets'][widget] &&
-                                    views[view]['widgets'][widget].data) {
-                                    if (views[view]['widgets'][widget].data.hqoptions) {
-                                        var hqOpt = JSON.parse(views[view].widgets[widget].data.hqoptions);
-                                        if (hqOpt.ipCamImageURL) {
-                                            hqOpt.ipCamImageURL = 'http://www.river-reach.net/netcam1.jpg';
-                                            views[view]['widgets'][widget].data.hqoptions = JSON.stringify(hqOpt, null, '  ');
+                                try{
+                                    for (var view in views) {
+                                        for (var widget in views[view]['widgets']) {
+                                            if (views[view]['widgets'][widget] &&
+                                                views[view]['widgets'][widget].data) {
+
+                                                // Remove all cameras from views
+                                                if (views[view]['widgets'][widget].data.hqoptions) {
+                                                    var hqOpt = JSON.parse(views[view].widgets[widget].data.hqoptions);
+                                                    if (hqOpt.ipCamImageURL) {
+                                                        hqOpt.ipCamImageURL = 'http://www.river-reach.net/netcam1.jpg';
+                                                        views[view]['widgets'][widget].data.hqoptions = JSON.stringify(hqOpt, null, '  ');
+                                                    }
+                                                }
+                                                if (views[view]['widgets'][widget].data.refreshInterval) {
+                                                    views[view]['widgets'][widget].data.src = 'http://www.river-reach.net/netcam1.jpg';
+                                                }
+                                            }
                                         }
                                     }
-                                    if (views[view]['widgets'][widget].data.refreshInterval) {
-                                        views[view]['widgets'][widget].data.src = 'http://www.river-reach.net/netcam1.jpg';
-                                    }
+                                } catch(e) {
+                                    errors.push("create-snapshot: cannot anonimyze cameras " + e);
+                                    logger.warn(errors[errors.length-1]);
                                 }
+                                fs.writeFile(bckDir + '/datastore/' + files[t], JSON.stringify(views, null, '  '));
                             }
                         }
-                        fs.writeFile (bckDir + '/datastore/dashui-views.json', JSON.stringify(views, null, '  '))
+
                     } catch (e) {
-                        logger.warn("create-snapshot: cannot create ")
+                        errors.push("create-snapshot: cannot create " + e);
+                        logger.warn(errors[errors.length-1]);
                     }
 
                     fs.mkdirSync(bckDir + '/dashui');
                     fs.mkdirSync(bckDir + '/dashui/img');
                     copyDirectory(__dirname + '/www/dashui/img', bckDir + '/dashui/img', 'devices,mfd,back', false);
                     fs.mkdirSync(bckDir + '/dashui/css');
-                    copyFile (__dirname + '/www/dashui/css/dashui-user.css', bckDir + '/dashui/css/dashui-user.css', true);
+                    if (errors.length) {
+                        fs.writeFile(bckDir + '/datastore/errors.txt', errors.join('\n'));
+                    }
+                    copyFile(__dirname + '/www/dashui/css/dashui-user.css', bckDir + '/dashui/css/dashui-user.css', true);
                 });
             });
         });
@@ -300,10 +408,10 @@ function createSnapshot (isNotAnonymized, zipFileName) {
 var cmd = process.argv[2];
 
 if (cmd == 'create') {
-    createBackup ();
+    createBackup();
 }
 else if (cmd == 'snapshot') {
-    createSnapshot ();
+    createSnapshot();
 }
 else if (cmd) {
     applyBackup(cmd);
