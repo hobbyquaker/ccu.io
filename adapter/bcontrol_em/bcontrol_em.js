@@ -286,11 +286,11 @@ var options = {
     pasvPortRangeEnd: 5000,
     useWriteFile: true,
     getInitialCwd: function(connection, callback) {
-        logger.info("adapter bem   getInitialCwd", connection.username);
+        logger.verbose("adapter bem   getInitialCwd", connection.username);
         callback(null, '/');
     },
     getRoot: function(connection, callback) {
-        logger.info("adapter bem   getRoot", connection.username);
+        logger.verbose("adapter bem   getRoot", connection.username);
         callback(null, '/'+connection.username);
     }
 };
