@@ -2182,7 +2182,8 @@ function restartAdapter(adapter) {
             }
             setTimeout(function (_path, _adapter) {
                 logger.info("ccu.io        starting adapter "+_path);
-                childrenAdapter[_adapter] = childProcess.fork(_path);
+                if (!childrenAdapter[_adapter]) childrenAdapter[_adapter] = {};
+                childrenAdapter[_adapter].process = childProcess.fork(_path);
             }, 1000, path, adapter);
             return "adapter "+adapter+" restarting";
     }
