@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.37*
+*aktuelle Version: 1.0.38*
 
 ## Dokumentation
 
@@ -35,6 +35,18 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.38
+* (Bluefox) new Adapter: homepilot
+* (Bluefox) new Adapter: cubietruck
+* (Bluefox) Adapter fritzbox v0.5 - see changelog in fritzbox.js
+* (Bluefox) Fix creation of backup and snapshots
+* (Hobbyquaker) Fix delObject
+* (Hobbyquaker) Fix restartAdapter
+* (Hobbyquaker) Fix Adapter yr rain24/48 - thx dwm!
+* (Hobbyquaker) Adapter speedport: improved error handling
+* (Hobbyquaker) new Adapter: bcontrol_em_http
+
 
 ### 1.0.37
 * (Smiling-Jack) Fix Addon-Install/-Update
