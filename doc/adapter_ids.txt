@@ -49,5 +49,6 @@
 300000-499999                   reserviert für mitgelieferte Scripte
 300000-300007                   feiertage.js
 
-500000-565535                   B-Control EnergyManager Adapter
+500000-500199                   B-Control EnergyManager Adapter FTP
+500200-500399                   B-Control EnergyManager Adapter HTTP
 600000-601000                   ALLNET 3418v2 Adapter
