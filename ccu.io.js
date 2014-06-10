@@ -1925,10 +1925,10 @@ function initSocketIO(_io) {
 
             var obj = regaObjects[id];
             if (obj) {
-                if (regaIndex.Name[obj.Name] && regaIndex.Name[obj.Name][1] == id) {
+                if (regaIndex.Name[obj.Name] && regaIndex.Name[obj.Name][0] == id) {
                     delete regaIndex.Name[obj.Name];
                 }
-                if (regaIndex.Address[obj.Address] && regaIndex.Address[obj.Address][1] == id) {
+                if (regaIndex.Address[obj.Address] && regaIndex.Address[obj.Address][0] == id) {
                     delete regaIndex.Address[obj.Address];
                 }
             }
