@@ -3,12 +3,15 @@
  *      01'2014 Bluefox
  *      Can store incoming calls into the list.
  *
- *      Version 0.4
+ *      Version 0.5
+ *
+ * Changelog 0.5 (07.06.2014)
+ *    Unterscheide zwischen OUT und IN angenommenen Anrufen.
  *
  * Changelog 0.4 (09.02.2014)
- * IP-Adresse standardmäßig auf fritz.box geändert (anli)
- * Weitergehende Meldung im Log-Eintrag, wenn Fehler auftritt (IP prüfen und Dialmonitor aktiv prüfen) (anli)
- * kleinere Korrekturen
+ *    IP-Adresse standardmäßig auf fritz.box geändert (anli)
+ *    Weitergehende Meldung im Log-Eintrag, wenn Fehler auftritt (IP prüfen und Dialmonitor aktiv prüfen) (anli)
+ *    kleinere Korrekturen
  *
  *    Wenn man beim Telefon #96*5* eintippt, wird der TCP-Port 1012 geoffnet.
  *    Mit #96*4* wird dieser wieder geschlossen.
@@ -91,7 +94,10 @@ function getState(id, callback) {
 
 function stop() {
     logger.info("adapter fritzBox terminating");
-    socketBox.end();
+    if (socketBox) {
+        socketBox.end();
+        socketBox = null;
+    }
     setTimeout(function () {
         process.exit();
     }, 250);
@@ -224,6 +230,15 @@ function elemToJson(table, i){
         };
     }
 }
+
+function updateAllCallsList () {
+    setState(objAllCallsList,          listToText(allCallsList));
+    setState(objAllCallsListFormatted, listToHtml(allCallsList));
+    setState(objAllCallsListJson,      listToJson(allCallsList));
+    if (allCallsList.length) {
+        setState(objAllCallsListJsonAdd,   JSON.stringify(elemToJson(allCallsList, allCallsList.length - 1)));
+    }
+}
 // following json string or object is expected:
 //    '[\
 //       {"Time": "12:34:34", "Event", "Door opened", "_data":{"Type": "1", "Event" : "SomeEvent1"}, "_class" : "selected"},\
@@ -253,7 +268,11 @@ function connectToFritzBox () {
 
     socketBox.on('close', function () {
         logger.info("adapter fritzBox received 'close'");
-        socketBox.end();
+        if (socketBox) {
+            socketBox.end();
+            socketBox = null;
+        }
+
         if (!connecting){
             connecting = setTimeout(function () {
                 connectToFritzBox();
@@ -272,7 +291,11 @@ function connectToFritzBox () {
 
     socketBox.on('end', function () {
         logger.info("adapter fritzBox received 'end'");
-        socketBox.end();
+        if (socketBox) {
+            socketBox.end();
+            socketBox = null;
+        }
+
         if (!connecting){
             connecting = setTimeout(function () {
                 connectToFritzBox();
@@ -348,18 +371,25 @@ function connectToFritzBox () {
                         allCallsList.splice (0,1);
                     }
 
-                    missedList[missedList.length]     = {number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: 0};
-                    allCallsList[allCallsList.length] = {number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs, type: "MISSED"};
+                    missedList[missedList.length]     = {
+                        number:   callStatus[item.connectionId].calledNumber,
+                        time:     callStatus[item.connectionId].time,
+                        duration: 0
+                    };
+                    allCallsList[allCallsList.length] = {
+                        type:     "MISSED",
+                        number:   callStatus[item.connectionId].calledNumber,
+                        time:     callStatus[item.connectionId].time,
+                        duration: callStatus[item.connectionId].durationSecs
+                    };
                     missedCount++;
-                    setState(objMissedCalls, missedCount);
-                    setState(objMissedList, listToText(missedList));
-                    setState(objLastMissed, resolveNumber(callStatus[item.connectionId].calledNumber));
+
+                    setState(objMissedCalls,         missedCount);
+                    setState(objMissedList,          listToText(missedList));
+                    setState(objLastMissed,          resolveNumber(callStatus[item.connectionId].calledNumber));
                     setState(objMissedListFormatted, listToHtml (missedList));
 
-                    setState(objAllCallsList, listToText(allCallsList));
-                    setState(objAllCallsListFormatted, listToHtml (allCallsList));
-                    setState(objAllCallsListJson, listToJson(allCallsList));
-                    setState(objAllCallsListJsonAdd, JSON.stringify(elemToJson(allCallsList, allCallsList.length - 1)));
+                    updateAllCallsList();
                 }
                 else {
                     // Incoming and not missed
@@ -370,31 +400,53 @@ function connectToFritzBox () {
                         allCallsList.splice (0,1);
                     }
 
-                    allCallsList[allCallsList.length] = {type: "IN", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
-                    setState(objAllCallsList, listToText(allCallsList));
-                    setState(objAllCallsListFormatted, listToHtml (allCallsList));
-                    setState(objAllCallsListJson, listToJson(allCallsList));
-                    setState(objAllCallsListJsonAdd, JSON.stringify(elemToJson(allCallsList, allCallsList.length - 1)));
+                    allCallsList[allCallsList.length] = {
+                        type:     "IN",
+                        number:   callStatus[item.connectionId].calledNumber,
+                        time:     callStatus[item.connectionId].time,
+                        duration: callStatus[item.connectionId].durationSecs};
+
+                    updateAllCallsList();
                 }
             }
             else
             // If incoming call initiated
             if (callStatus[item.connectionId].type == "CONNECT") {
-                callStatus[item.connectionId].type         = item.type;
-                // incoming
-                logger.info("adapter fritzBox incoming call : "+ callStatus[item.connectionId].calledNumber + " / " +callStatus[item.connectionId].time + " TAKEN");
                 callStatus[item.connectionId].type = item.type;
+                if (callStatus[item.connectionId].direction == "OUT") {
+                    // outgoing
+                    logger.info("adapter fritzBox outgoing call : "+ callStatus[item.connectionId].calledNumber + " / " +callStatus[item.connectionId].time + " TAKEN");
 
-                // Delete oldest entry
-                if (allCallsList.length >= fritzBoxSettings.maxAll) {
-                    allCallsList.splice (0,1);
+                    // Delete oldest entry
+                    if (allCallsList.length >= fritzBoxSettings.maxAll) {
+                        allCallsList.splice (0,1);
+                    }
+
+                    allCallsList[allCallsList.length] = {
+                        type:     "OUT",
+                        number:   callStatus[item.connectionId].calledNumber,
+                        time:     callStatus[item.connectionId].time,
+                        duration: callStatus[item.connectionId].durationSecs
+                    };
+                    updateAllCallsList();
+
+                } else {
+                    // incoming
+                    logger.info("adapter fritzBox incoming call : "+ callStatus[item.connectionId].calledNumber + " / " +callStatus[item.connectionId].time + " TAKEN");
+
+                    // Delete oldest entry
+                    if (allCallsList.length >= fritzBoxSettings.maxAll) {
+                        allCallsList.splice (0,1);
+                    }
+
+                    allCallsList[allCallsList.length] = {
+                        type:     "IN",
+                        number:   callStatus[item.connectionId].calledNumber,
+                        time:     callStatus[item.connectionId].time,
+                        duration: callStatus[item.connectionId].durationSecs
+                    };
+                    updateAllCallsList();
                 }
-
-                allCallsList[allCallsList.length] = {type: "IN", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
-                setState(objAllCallsList, listToText(allCallsList));
-                setState(objAllCallsListFormatted, listToHtml(allCallsList));
-                setState(objAllCallsListJson, listToJson(allCallsList));
-                setState(objAllCallsListJsonAdd, JSON.stringify(elemToJson(allCallsList, allCallsList.length - 1)));
             }
             else
             // If outgoing call
@@ -408,14 +460,26 @@ function connectToFritzBox () {
                 }
 
                 allCallsList[allCallsList.length] = {type: "OUT", number: callStatus[item.connectionId].calledNumber, time: callStatus[item.connectionId].time, duration: callStatus[item.connectionId].durationSecs};
-                setState(objAllCallsList, listToText(allCallsList));
+                setState(objAllCallsList,          listToText(allCallsList));
                 setState(objAllCallsListFormatted, listToHtml (allCallsList));
-                setState(objAllCallsListJson, listToJson(allCallsList));
-                setState(objAllCallsListJsonAdd, JSON.stringify(elemToJson(allCallsList, allCallsList.length - 1)));
+                setState(objAllCallsListJson,      listToJson(allCallsList));
+                setState(objAllCallsListJsonAdd,   JSON.stringify(elemToJson(allCallsList, allCallsList.length - 1)));
             }
         }
         else {
+            var direction = null;
+            // Remember the direction of the call: out or in
+            if (callStatus[item.connectionId]) {
+                direction = callStatus[item.connectionId].direction;
+            }
+            if (item.type == "CALL") {
+                direction = "OUT";
+            } else
+            if (item.type == "RING") {
+                direction = "IN";
+            }
             callStatus[item.connectionId] = item;
+            callStatus[item.connectionId].direction = direction;
         }
 
         var newState = "NONE";

@@ -784,7 +784,6 @@ function getTimestamp(id) {
     return datapoints[id][0];
 }
 
-
 function executeProgram(id, callback) {
     scriptEngine.socket.emit("executeProgram", id, function () {
         if (callback) {
