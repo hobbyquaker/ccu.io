@@ -25,11 +25,11 @@ if (settings.ioListenPort) {
 
 
 socket.on('connect', function () {
-    logger.info("adapter sport  connected to ccu.io");
+    logger.info("adapter sport connected to ccu.io");
 });
 
 socket.on('disconnect', function () {
-    logger.info("adapter sport  disconnected from ccu.io");
+    logger.info("adapter sport disconnected from ccu.io");
 });
 
 socket.on('event', function (obj) {
@@ -39,7 +39,7 @@ socket.on('event', function (obj) {
 });
 
 function stop() {
-    logger.info("adapter sport  terminating");
+    logger.info("adapter sport terminating");
     setTimeout(function () {
         process.exit();
     }, 250);
@@ -80,7 +80,7 @@ var request = require('request');
 var cookieJar = request.jar();
 
 function getCallers() {
-
+    logger.info("adapter sport login on " + host);
     request.post({
         url: 'https://' + host + '/data/Login.json',
         jar: cookieJar,
@@ -93,27 +93,44 @@ function getCallers() {
             'Referer': 'https://' + host + '/html/login/index.html'
         }
     }, function (err, res, body) {
-
-        request({
-            headers: {
-                'Referer': 'https://' + host + '/html/content/phone/phone_call_list.html'
-            },
-            jar: cookieJar,
-            url: 'https://speedport.ip/data/PhoneCalls.json'
-        }, function (err, res, body) {
-            parseCalls(JSON.parse(body));
-            request.post({
-                url: 'https://' + host + '/data/Login.json',
-                jar: cookieJar,
-                form: {
-                    logout: 'byby'
-                },
+        if (body.match(/500 Server Error/)) {
+            logger.error('adapter sport 500 Server Error');
+            logout(true);
+        } else {
+            request({
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Referer': 'https://' + host + '/html/content/overview/index.html'
+                    'Referer': 'https://' + host + '/html/content/phone/phone_call_list.html'
+                },
+                jar: cookieJar,
+                url: 'https://speedport.ip/data/PhoneCalls.json'
+            }, function (err, res, body) {
+                if (body.match(/500 Server Error/)) {
+                    logger.error('adapter sport 500 Server Error');
+                    logout(true);
+                } else {
+                    parseCalls(JSON.parse(body));
+                    logout();
                 }
+
             });
-        });
+        }
+    });
+}
+
+function logout(terminate) {
+    logger.info("adapter sport logout");
+    request.post({
+        url: 'https://' + host + '/data/Login.json',
+        jar: cookieJar,
+        form: {
+            logout: 'byby'
+        },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Referer': 'https://' + host + '/html/content/overview/index.html'
+        }
+    }, function () {
+        if (terminate) stop();
     });
 }
 
@@ -154,6 +171,6 @@ function parseCalls(data) {
 getCallers();
 
 setTimeout(function () {
-    logger.info("adapter sport  force terminating");
+    logger.info("adapter sport force terminating");
     process.exit();
 }, 600000);
