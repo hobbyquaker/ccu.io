@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.37";
+settings.version = "1.0.38";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -1800,8 +1800,9 @@ function initSocketIO(_io) {
 
             fs.readFile(__dirname+"/"+name, function (err, data) {
                 if (err) {
-                    logger.error("ccu.io        failed loading file "+__dirname+"/"+name);
                     callback(undefined);
+                    if (name.slice(13) == 'io-addon.json') return;
+                    logger.error("ccu.io        failed loading file "+__dirname+"/"+name);
                 } else {
                     callback(JSON.parse(data));
                 }
