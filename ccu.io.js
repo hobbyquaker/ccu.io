@@ -1801,7 +1801,7 @@ function initSocketIO(_io) {
             fs.readFile(__dirname+"/"+name, function (err, data) {
                 if (err) {
                     callback(undefined);
-                    if (name.slice(13) == 'io-addon.json') return;
+                    if (name.slice(-13) == 'io-addon.json') return;
                     logger.error("ccu.io        failed loading file "+__dirname+"/"+name);
                 } else {
                     callback(JSON.parse(data));
