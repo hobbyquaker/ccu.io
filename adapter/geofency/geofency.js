@@ -34,15 +34,15 @@ if (settings.ioListenPort) {
 }
 
 socket.on('connect', function () {
-    logger.info("adapter geof. connected to ccu.io");
+    logger.info("adapter geofy connected to ccu.io");
 });
 
 socket.on('disconnect', function () {
-    logger.info("adapter geof. disconnected from ccu.io");
+    logger.info("adapter geofy disconnected from ccu.io");
 });
 
 function stop() {
-    logger.info("adapter geof. terminating");
+    logger.info("adapter geofy terminating");
     setTimeout(function () {
         process.exit();
     }, 500);
@@ -102,7 +102,7 @@ app.post('/*', function (req, res) {
     var id = parseInt(req.path.slice(1), 10);
     if (geoSettings.devices[id]) {
         var dpId = firstId + (id * 5);
-        logger.info("adapter geof. received webhook from device "+id);
+        logger.info("adapter geofy received webhook from device "+id);
         socket.emit("setState", [dpId, req.body.name]);
         socket.emit("setState", [dpId+1, req.body.longitude]);
         socket.emit("setState", [dpId+2, req.body.latitude]);
@@ -111,7 +111,7 @@ app.post('/*', function (req, res) {
         res.status(200);
         res.send("OK");
     } else {
-        logger.warn("adapter geof. received webhook for unknown device "+id);
+        logger.warn("adapter geofy received webhook for unknown device "+id);
         res.status(404);
         res.send("UNKNOWN DEVICE");
     }
