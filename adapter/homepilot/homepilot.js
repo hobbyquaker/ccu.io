@@ -83,7 +83,7 @@ function sendCommand (did, cmd, pos) {
             xmldata += chunk;
         });
         res.on('end', function () {
-            logger.info('adapter homepilot: Response "' + xmldata + '"');
+            logger.verbose('adapter homepilot: Response "' + xmldata + '"');
             // Analyse answer: "{"message":"Command used:9 position:77","status":"uisuccess"}"
             var resp = null;
             try {
@@ -1795,7 +1795,7 @@ function setObject(id, obj) {
 function setState(id, val) {
     if (datapoints[id] === undefined || datapoints[id] !== val) {
         datapoints[id] = val;
-        logger.info("adapter homepilot  setState " + id + " " + val);
+        logger.verbose("adapter homepilot  setState " + id + " " + val);
         ccu_socket.emit("setState", [id, val, null, true]);
     }
 }
@@ -1861,13 +1861,13 @@ function pollStatus() {
                         devices[num].position = devs[j].position;
 
                         if (devices[num].isState) {
-                            logger.info("adapter homepilot: detected new state - position " + devices[num].position);
+                            logger.verbose("adapter homepilot: detected new state - position " + devices[num].position);
                             setState(devices[num].DPs.LEVEL, (devices[num].position == 100));
                         } else if (devices[num].isRollo) {
-                            logger.info("adapter homepilot: detected new rollo state - position " + devices[num].position + ", calc state " + ((100 - devices[num].position) / 100));
+                            logger.verbose("adapter homepilot: detected new rollo state - position " + devices[num].position + ", calc state " + ((100 - devices[num].position) / 100));
                             setState(devices[num].DPs.LEVEL, (100 - devices[num].position) / 100);
                         } else {
-                            logger.info("adapter homepilot: detected new position " + devices[num].position + ", calc state " + (devices[num].position / 100));
+                            logger.verbose("adapter homepilot: detected new position " + devices[num].position + ", calc state " + (devices[num].position / 100));
                             setState(devices[num].DPs.LEVEL, devices[num].position / 100);
                         }
                     }
@@ -1973,13 +1973,13 @@ function pollStatus() {
                 for (var u = 0; u < devs.length; u++) {
                     var n = devs[u].did - 10000;
                     if (devices[n].isState) {
-                        logger.info("adapter homepilot: set initial state - position " + devices[num].position);
+                        logger.verbose("adapter homepilot: set initial state - position " + devices[num].position);
                         setState(devices[n].DPs.LEVEL, (devices[n].position == 100));
                     } else if (devices[num].isRollo) {
-                        logger.info("adapter homepilot: set initial state - position " + devices[num].position + ", calc state " + ((100 - devices[num].position) / 100));
+                        logger.verbose("adapter homepilot: set initial state - position " + devices[num].position + ", calc state " + ((100 - devices[num].position) / 100));
                         setState(devices[n].DPs.LEVEL, (100 - devices[n].position) / 100);
                     } else {
-                        logger.info("adapter homepilot: set initial position " + devices[num].position + ", calc state " + (devices[num].position / 100));
+                        logger.verbose("adapter homepilot: set initial position " + devices[num].position + ", calc state " + (devices[num].position / 100));
                         setState(devices[n].DPs.LEVEL, devices[n].position / 100);
                     }
                 }
