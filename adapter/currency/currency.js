@@ -195,8 +195,8 @@ function pollRates() {
         getRates(function (rates) {
             if (rates) {
                 for (var cur in rates) {
-					if (devices[cur].value != rates[cur].value) {
-						devices[cur].value = rates[cur].value;
+					if (devices[cur].value != rates[cur]) {
+						devices[cur].value = rates[cur];
 						setState(devices[cur].DPs.VALUE, convertValue(devices[cur].value));
 					}
                 }
