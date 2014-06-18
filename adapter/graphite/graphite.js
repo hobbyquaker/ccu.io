@@ -17,10 +17,10 @@ var nameCache = {};
 var startWait = true;
 setTimeout(function() {
     socket.emit('getObjects', function(data) {
-        logger.info("adapter graphite fetched regaObjects");
+        logger.info("adapter grpht fetched regaObjects");
         regaObjects = data;
         startWait = false;
-        logger.info("adapter graphite started");
+        logger.info("adapter grpht started");
     });
 }, 60000);
 
@@ -41,11 +41,11 @@ var regaObjects;
 
 
 socket.on('connect', function () {
-    logger.info("adapter graphite connected to ccu.io");
+    logger.info("adapter grpht connected to ccu.io");
 });
 
 socket.on('disconnect', function () {
-    logger.info("adapter graphite disconnected from ccu.io");
+    logger.info("adapter grpht disconnected from ccu.io");
 });
 
 socket.on('event', function (obj) {
@@ -111,7 +111,7 @@ function popQueue() {
 setInterval(popQueue, 100);
 
 function stop() {
-    logger.info("adapter graphite terminating");
+    logger.info("adapter grpht terminating");
     setTimeout(function () {
         process.exit();
     }, 250);

@@ -1,0 +1,10 @@
+{
+    "enabled": false,
+    "firstId": 600000,
+    "settings": {
+        "host": "0.0.0.0",
+        "port": 2122,
+        "user": "anonymous",
+        "pass": ""
+    }
+}

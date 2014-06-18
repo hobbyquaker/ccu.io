@@ -723,6 +723,17 @@ function schedule(pattern, callback) {
         var date = new Date();
         var ts = scriptEngine.suncalc.getTimes(date, scriptEngine.settings.latitude, scriptEngine.settings.longitude)[pattern.astro];
 
+        if (ts == null) {
+            // Ereignis tritt nicht auf - in 24h noch mal versuchen
+            sch = scriptEngine.scheduler.scheduleJob(ts, function () {
+                setTimeout(function () {
+                    sch = schedule(pattern, callback);
+                }, 86400000);
+            });
+            scriptEngine.schedules.push(sch);
+            return sch;
+        }
+
         if (pattern.shift) {
             ts = new Date(ts.getTime() + (pattern.shift * 60000));
         }
@@ -733,7 +744,6 @@ function schedule(pattern, callback) {
             if (pattern.shift) {
                 ts = new Date(ts.getTime() + (pattern.shift * 60000));
             }
-
         }
 
         sch = scriptEngine.scheduler.scheduleJob(ts, function () {
@@ -773,7 +783,6 @@ function getState(id, dpType) {
 function getTimestamp(id) {
     return datapoints[id][0];
 }
-
 
 function executeProgram(id, callback) {
     scriptEngine.socket.emit("executeProgram", id, function () {
@@ -885,7 +894,7 @@ function findDatapoint(needle, hssdp) {
                     needle = regaObjects[needle].DPs[hssdp];
                 }
             }
-        } else if (needle.toString().match(/[a-zA-Z-]+\.[0-9A-Za-z-]+:[0-9]+\.[A-Z_]+/)) {
+        } else if (needle && needle.toString().match(/[a-zA-Z-]+\.[0-9A-Za-z-]+:[0-9]+\.[A-Z_]+/)) {
             // Get by full BidCos-Address
             addrArr = needle.split(".");
             if (regaIndex.Address[addrArr[1]]) {

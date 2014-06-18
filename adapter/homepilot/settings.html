@@ -1,0 +1,70 @@
+<table style="font-size: 12px">
+    <tr>
+        <td>Enabled:</td>
+        <td>
+            <select id="homepilot_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Homepilot gateway IP:</td>
+        <td><input id="homepilot_settings_ip" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Poll interval (sec):</td>
+        <td><input id="homepilot_settings_poll" type="text"/></td>
+    </tr>
+
+
+</table>
+<h2>Description:</h2>
+<p>
+    This adapter is able to control the <a href="http://homepilot.rademacher.de/" target="_blank">homepilot</a> devices.
+    Possible commands:<br><br>
+    UP<br>
+    STOP<br>
+    DOWN<br>
+    POSITION_0<br>
+    POSITION_25<br>
+    POSITION_50<br>
+    POSITION_75<br>
+    POSITION_100<br>
+    ON<br>
+    OFF<br>
+    INCREMENT<br>
+    DECREMENT<br>
+    or just number between 0 and 1 (e.g. 0.65) to set the position.
+</p>
+<script type="text/javascript">
+
+    if (currentAdapterSettings.enabled) {
+        $("#homepilot_enabled option[value='false']").removeAttr("selected");
+        $("#homepilot_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#homepilot_enabled option[value='true']").removeAttr("selected");
+        $("#homepilot_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#homepilot_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#homepilot_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+  
+    $("#homepilot_settings_ip").val(currentAdapterSettings.settings.ip);
+
+    $("#homepilot_settings_ip").change(function () {
+        currentAdapterSettings.settings.ip = $("#homepilot_settings_ip").val();
+        updateAdapterSettings();
+    });
+
+    $("#homepilot_settings_poll").val(currentAdapterSettings.settings.pollIntervalSec);
+
+    $("#homepilot_settings_poll").change(function () {
+        currentAdapterSettings.settings.pollIntervalSec = $("#homepilot_settings_poll").val();
+        updateAdapterSettings();
+    });
+
+</script>

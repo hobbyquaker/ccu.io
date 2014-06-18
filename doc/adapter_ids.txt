@@ -1,4 +1,4 @@
-66000-66199                     virtuelle Favoriten, Räume und Gewerke
+﻿66000-66199                     virtuelle Favoriten, Räume und Gewerke
 
 69800-69998                     DashUI Instanzvariablen
 69999                           CCU.IO language
@@ -24,9 +24,11 @@
 73000-73099                     lirc adapter
 73100-73199                     telnet-client adapter
 
-!  73200-73295                     Fritz.box! call monitor adapter
-!  73200-73500                     lgtv adapter
-!  73300-?                         onkyo adapter
+73200-73295                     Fritz.box! call monitor adapter
+73300-?                         onkyo adapter
+73400-73500                     lgtv adapter
+
+74000-74002                     speedport adapter
 
 80000-?                         itrans adapter
 80100-?                         iCal adapter
@@ -34,14 +36,14 @@
 
 90000-90549                     hue adapter
 
-!  95100-?                         dreambox adapter
-!  95100-95105                     openweathermap adapter
+95100-95105                     openweathermap adapter
+95200-?                         dreambox adapter
 
-
-96000-?                         Growl adapter
-
+96000-96049                     Growl adapter
 96050-?                         sun_and_time
 
+97000-97499                     homepilot
+97500-97999                     cubie adapter
 
 
 100000-299999                   reserviert für eigene Scripte
@@ -49,4 +51,6 @@
 300000-499999                   reserviert für mitgelieferte Scripte
 300000-300007                   feiertage.js
 
-500000-565535                   ftp_receiver
+500000-500199                   B-Control EnergyManager Adapter FTP
+500200-500399                   B-Control EnergyManager Adapter HTTP
+600000-601000                   ALLNET 3418v2 Adapter

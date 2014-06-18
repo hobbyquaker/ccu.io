@@ -1,0 +1,25 @@
+{
+    "enabled": false,
+    "firstId": 97500,
+    "settings": {
+        "interval": 60000,
+        "deviceName": "Cubie1",
+        "gpio": {
+            "22": {
+                "direction": "in"
+            },
+            "23": {
+                "direction": "out"
+            },
+            "24": {
+                "direction": "out"
+            },
+            "25": {
+                "direction": "out"
+            }
+        },
+        "1wire": {
+
+        }
+    }
+}

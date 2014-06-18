@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.33*
+*aktuelle Version: 1.0.38*
 
 ## Dokumentation
 
@@ -35,6 +35,38 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.38
+* (Bluefox) new Adapter: homepilot
+* (Bluefox) new Adapter: cubietruck
+* (Bluefox) Adapter fritzbox v0.5 - see changelog in fritzbox.js
+* (Bluefox) Fix creation of backup and snapshots
+* (Hobbyquaker) Fix delObject
+* (Hobbyquaker) Fix restartAdapter
+* (Hobbyquaker) Fix Adapter yr rain24/48 - thx dwm!
+* (Hobbyquaker) Adapter speedport: improved error handling
+* (Hobbyquaker) new Adapter: bcontrol_em_http
+
+
+### 1.0.37
+* (Smiling-Jack) Fix Addon-Install/-Update
+* (Eisbaeeer) Fix Adapter RPI
+* (Bluefox) Fix error in findDatapoint if needle empty
+* (Bluefox) Changed Adapter-firstIDs
+
+### 1.0.36
+* (Smiling-Jack) Anpassungen für FileManager
+
+### 1.0.35
+* (Eisbaeeer) New adapter owfs - 1wire devices: This adapter allows connection to a 1-wire owfs server. The server can be installed on ccu.io host or any other host.
+* (nicx) Adapter iCal: added number of events today in iCalEventCount
+* (Hobbyquaker) Fix Astro schedule falls Ereignis nicht eintritt
+* (Hobbyquaker) Fix Adapter B-Control EnergyManager v0.2
+* (Hobbyquaker) Fix undefined checkEvent trigger
+* (Hobbyquaker) Fix CUxD checkEvent
+* (Hobbyquaker) Neuer Adapter Allnet 3418v2
+* (Hobbyquaker) Neuer Adapter speedport: IP-Telefonie - Anrufliste aus Speedport Router lesen
+
 
 ### 1.0.34
 * (Hobbyquaker) Fix loadDatapoints

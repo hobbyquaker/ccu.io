@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.34";
+settings.version = "1.0.38";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -113,6 +113,7 @@ if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
             var reinit = now - settings.binrpc.checkEvents.reinitAfter;
             for (var i = 0; i < settings.binrpc.inits.length; i++) {
                 var init = settings.binrpc.inits[i];
+                if (init.id == "io_cuxd") continue;
                 if (lastEvents[init.id] < reinit) {
 
                     if (settings.binrpc.checkEvents.testTrigger[init.id]) {
@@ -134,8 +135,12 @@ if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
                 } else if (lastEvents[init.id] < check) {
                     logger.verbose("binrpc        checking init "+init.id);
                     if (settings.binrpc.checkEvents.testTrigger[init.id]) {
-                        var id = regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]][0];
-                        regahss.script("dom.GetObject("+id+").State(true);");
+                        if (regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]]) {
+                            var id = regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]][0];
+                            regahss.script("dom.GetObject("+id+").State(true);");
+                        } else {
+                            logger.warn("binrpc        checkEvent.trigger undefined for "+init.id);
+                        }
                     } else {
                         logger.warn("binrpc        checkEvent.trigger undefined for "+init.id);
                     }
@@ -1795,8 +1800,9 @@ function initSocketIO(_io) {
 
             fs.readFile(__dirname+"/"+name, function (err, data) {
                 if (err) {
-                    logger.error("ccu.io        failed loading file "+__dirname+"/"+name);
                     callback(undefined);
+                    if (name.slice(-13) == 'io-addon.json') return;
+                    logger.error("ccu.io        failed loading file "+__dirname+"/"+name);
                 } else {
                     callback(JSON.parse(data));
                 }
@@ -1920,10 +1926,10 @@ function initSocketIO(_io) {
 
             var obj = regaObjects[id];
             if (obj) {
-                if (regaIndex.Name[obj.Name] && regaIndex.Name[obj.Name][1] == id) {
+                if (regaIndex.Name[obj.Name] && regaIndex.Name[obj.Name][0] == id) {
                     delete regaIndex.Name[obj.Name];
                 }
-                if (regaIndex.Address[obj.Address] && regaIndex.Address[obj.Address][1] == id) {
+                if (regaIndex.Address[obj.Address] && regaIndex.Address[obj.Address][0] == id) {
                     delete regaIndex.Address[obj.Address];
                 }
             }
@@ -2177,7 +2183,8 @@ function restartAdapter(adapter) {
             }
             setTimeout(function (_path, _adapter) {
                 logger.info("ccu.io        starting adapter "+_path);
-                childrenAdapter[_adapter] = childProcess.fork(_path);
+                if (!childrenAdapter[_adapter]) childrenAdapter[_adapter] = {};
+                childrenAdapter[_adapter].process = childProcess.fork(_path);
             }, 1000, path, adapter);
             return "adapter "+adapter+" restarting";
     }

@@ -20,6 +20,8 @@ var reqOptions = {
     method: 'GET'
 };
 
+//console.log(reqOptions.hostname + reqOptions.path);
+
 var http = 		require("http"),
 	xml2js = 	require("xml2js"),
     logger =    require(__dirname+'/../../logger.js');
@@ -57,7 +59,7 @@ var req = http.request(reqOptions, function(res) {
   });
 
   res.on('end', function () {
-  	parseData(data.toString());
+    parseData(data.toString());
   });
 
 });
@@ -66,14 +68,14 @@ req.on('error', function(e) {
   logger.error("adapter yr    " + e.message);
 });
 
-req.end()
-;
+req.end();
+
 function parseData(xml) {
 
 	var options = {
 		explicitArray: false,
 		mergeAttrs: true
-	}
+	};
 	var parser = new xml2js.Parser(options);
 	parser.parseString(xml, function (err, result) {
 		if (err) {
@@ -128,12 +130,12 @@ function parseData(xml) {
 			var table = style + tableDay + tableHead + tableMiddle + tableBottom + "</tr></table>";
 			//console.log(JSON.stringify(result, null, "  "));
 
-            if (forecastArr[0].precipitation.Value != "0" || forecastArr[1].precipitation.Value != "1" || forecastArr[2].precipitation.Value != "2" || forecastArr[3].precipitation.Value != "3") {
+            if (forecastArr[0].precipitation.value != "0" || forecastArr[1].precipitation.value != "1" || forecastArr[2].precipitation.value != "2" || forecastArr[3].precipitation.value != "3") {
                 var rain24 = true;
             } else {
                 var rain24 = false;
             }
-            if (forecastArr[0].precipitation.Value != "4" || forecastArr[1].precipitation.Value != "5" || forecastArr[2].precipitation.Value != "6" || forecastArr[3].precipitation.Value != "7") {
+            if (forecastArr[0].precipitation.value != "4" || forecastArr[1].precipitation.value != "5" || forecastArr[2].precipitation.value != "6" || forecastArr[3].precipitation.value != "7") {
                 var rain48 = true;
             } else {
                 var rain48 = false;
@@ -215,7 +217,7 @@ function parseData(xml) {
             });
 
             socket.emit("setObject", 70005, {
-                Name: "yr.no Temp min 24h",
+                Name: "yr.no Temp max 24h",
                 DPInfo: "maximale Temperatur in den nächsten 24h",
                 TypeName: "VARDP",
                 "ValueMin": null,
@@ -228,7 +230,7 @@ function parseData(xml) {
                 socket.emit("setState", [70005, maxTemp24]);
             });
             socket.emit("setObject", 70006, {
-                Name: "yr.no Temp min 48h",
+                Name: "yr.no Temp max 48h",
                 DPInfo: "maximale Temperatur in den darauffolgenden 24h",
                 TypeName: "VARDP",
                 "ValueMin": null,
@@ -268,3 +270,8 @@ function parseData(xml) {
 	});
 }
 
+
+setTimeout(function () {
+    logger.info("adapter yr    force terminating");
+    process.exit();
+}, 900000);
