@@ -32,7 +32,6 @@ var logger         = require(__dirname + '/../../logger.js'),
     express        = require('express');
  
 var devices    = [],
-    isGotList  = false,
     pollTimer  = null,
     ccu_socket = null,
     server     = null,
@@ -42,23 +41,22 @@ var simulate = [
     "ON",
     "OFF",
     "125",
-    "256",
+    "255",
     "ON",
     "OFF",
     "178",
     "ON"
 ];
 
-
-function sendCommand (dev, value) {
-    var data = 'cmd=' + devices[dev].port + ':' + value;
+function sendCommand (dev, port, value) {
+    var data = 'cmd=' + port + ':' + value;
 
     var options = {
-        host: megadSettings.ip,
+        host: devices[dev].ip,
         port: 80,
-        path: '/' + megadSettings.password + '/?' + data
+        path: '/' + devices[dev].password + '/?' + data
     };
-    logger.info('adapter megaD: send command "' + data + '" to ' + megadSettings.ip);
+    logger.info('adapter megaD: send command "' + data + '" to ' + devices[dev].ip);
     // Set up the request
     http.get(options, function(res) {
         var xmldata = '';
@@ -73,12 +71,12 @@ function sendCommand (dev, value) {
             logger.info('adapter megaD: Response "' + xmldata + '"');
 
             // Set state only if positive response from megaD
-            if (devices[dev].isState) {
-                setState(devices[dev].DPs.LEVEL, value ? true : false);
+            if (devices[dev].digital) {
+                setState(devices[dev].ports[port].ccu.DPs.LEVEL, value ? true : false);
             } else if (devices[dev].isRollo){
-                setState(devices[dev].DPs.LEVEL, ((255 - value) / 255).toFixed(2));
+                setState(devices[dev].ports[port].ccu.DPs.LEVEL, ((255 - value) / 255).toFixed(2));
             } else {
-                setState(devices[dev].DPs.LEVEL, (value / 255).toFixed(4));
+                setState(devices[dev].ports[port].ccu.DPs.LEVEL, (value / 255).toFixed(4));
             }
         });
     }).on('error', function(e) {
@@ -118,21 +116,29 @@ ccu_socket.on('event', function (obj) {
         return;
     }
 
-    if (id < megadSettings.firstId || id > megadSettings.firstId + 1 + megadSettings.portsCount * 3) {
+    if (id < megadSettings.firstId || id > devices.length * 30 + 1) {
         return;
     }
 
     var dev = null;
-
+    var port = null;
     // Find device by object ID
     for (var k = 0; k < devices.length; k++) {
         if (!devices[k])
             continue;
 
-        if (id == devices[k].DPs.LEVEL) {
-            dev = k;
-            break;
+        if (id < devices[k].devId || id > devices[k].devId + 30) {
+            continue;
         }
+        for (var i = 0; i < devices[k].ports.length; i++) {
+            if (id == devices[k].ports[i].ccu.DPs.LEVEL) {
+                dev = k;
+                port = i;
+                break;
+            }
+        }
+        if (dev !== null)
+            break;
     }
 
     // Device not found
@@ -141,8 +147,7 @@ ccu_socket.on('event', function (obj) {
  
     var val = obj[1];
 
-
-    logger.info ("adapter megaD  try to control port " + dev + " with " + val);
+    logger.info ("adapter megaD  try to control " + dev.name + ", port " + port + " with " + val);
  
     if (val === "false" || val === false) { val = 0; }
     if (val === "true"  || val === true)  { val = 1; }
@@ -158,19 +163,19 @@ ccu_socket.on('event', function (obj) {
             logger.warn("adapter megaD: invalid control value " + val + ". Value must be from 0 to 1, e.g. 0.55");
             val = 1;
         }
-        if (devices[dev].isState && val != 0 && val != 1) {
+        if (devices[dev].ports[port].digital && val != 0 && val != 1) {
             logger.warn("adapter megaD: invalid control value " + val + ". Value for switch must be 0/false or 1/true");
             val = val ? 1 : 0;
         }
 
-        if (devices[dev].isState) {
-            sendCommand(dev, val);
+        if (devices[dev].ports[port].digital) {
+            sendCommand(dev, port, val);
         } else {
             val = Math.round(val * 255);
-            if (devices[dev].isRollo) {
-                sendCommand(dev, (255 - val));
+            if (devices[dev].ports[port].isRollo) {
+                sendCommand(dev, port, (255 - val));
             } else {
-                sendCommand(dev, val);
+                sendCommand(dev, port, val);
             }
         }
     }
@@ -206,13 +211,13 @@ function setState(id, val) {
     ccu_socket.emit("setState", [id, val, null, true]);
 }
  
-function getPortState(port, callback) {
+function getPortState(dev, port, callback) {
     var options = {
-        host: megadSettings.ip,
+        host: devices[dev].ip,
         port: 80,
-        path: '/' + megadSettings.password + '/?pt=' + port + '&cmd=get'
+        path: '/' + devices[dev].password + '/?pt=' + port + '&cmd=get'
     };
-    console.info("adapter megaD getPortState http://" + options.host + options.path);
+    logger.info("adapter megaD getPortState http://" + options.host + options.path);
 
     http.get(options, function(res) {
         var xmldata = '';
@@ -226,191 +231,209 @@ function getPortState(port, callback) {
             // Analyse answer and updates staties
             if (callback) {
                 if (xmldata == "ON")
-                    callback(port, true, xmldata);
+                    callback(dev, port, true, xmldata);
                 else
                 if (xmldata == "OFF")
-                    callback(port, false, xmldata);
+                    callback(dev, port, false, xmldata);
                 else
-                    callback(port, parseInt(xmldata), xmldata);
+                    callback(dev, port, parseInt(xmldata), xmldata);
             }
         });
     }).on('error', function(e) {
         logger.warn("adapter megaD: Got error by request " + e.message);
         if (typeof simulate !== "undefined") {
             if (simulate[port] == "ON")
-                callback(port, true, simulate[port]);
+                callback(dev, port, true, simulate[port]);
             else
             if (simulate[port] == "OFF")
-                callback(port, false, simulate[port]);
+                callback(dev, port, false, simulate[port]);
             else
-                callback(port, parseInt(simulate[port]), simulate[port]);
+                callback(dev, port, parseInt(simulate[port]), simulate[port]);
         }
     });
 }
 
-function processPortState(_dev, value, rawValue) {
+function processPortState(_dev, _port, value, rawValue) {
     if (value !== null) {
-        if (devices[_dev].value !== undefined) {
+        if (devices[_dev].ports[_port].ccu.value !== undefined) {
             // If status changed
-            if (value !== devices[_dev].value) {
-                devices[_dev].value = value;
+            if (value !== devices[_dev].ports[_port].ccu.value) {
+                devices[_dev].ports[_port].ccu.value = value;
 
-                if (devices[_dev].isState) {
-                    logger.info("adapter megaD: detected new state for port " + _dev + ": " + devices[_dev].value);
-                    setState(devices[_dev].DPs.LEVEL, value);
+                if (devices[_dev].ports[_port].digital) {
+                    logger.info("adapter megaD: detected new state for port " + _dev + ": " + value);
+                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, value);
                 } else if (devices[_dev].isRollo) {
-                    logger.info("adapter megaD: detected new rollo state for port " + _dev + ": " + devices[_dev].value + ", calc state " + ((255 - devices[_dev].value) / 255));
-                    setState(devices[_dev].DPs.LEVEL, ((255 - devices[_dev].value) / 255).toFixed(2));
+                    logger.info("adapter megaD: detected new rollo state for port " + _dev + ": " + value + ", calc state " + ((255 - value) / 255));
+                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, ((255 - devices[_dev].value) / 255).toFixed(2));
                 } else {
-                    logger.info("adapter megaD: detected new value for port " + _dev + ": " + devices[_dev].value + ", calc state " + (devices[_dev].value / 255));
-                    setState(devices[_dev].DPs.LEVEL, (devices[_dev].value / 255).toFixed(4));
+                    logger.info("adapter megaD: detected new value for port " + _dev + ": " + value + ", calc state " + (value / 255));
+                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, (value / 255).toFixed(4));
                 }
             }
         } else {
-            if (!isGotList) {
+            if (!devices[_dev].isGotList) {
+                clearTimeout(devices[_dev].pollTimer);
+
                 // Start the status polling
-                if (megadSettings.pollIntervalSec) {
-                    pollTimer = setInterval(pollStatus, megadSettings.pollIntervalSec * 1000);
+                if (devices[_dev].pollIntervalSec) {
+                    devices[_dev].pollTimer = setInterval(pollStatus, devices[_dev].pollIntervalSec * 1000, _dev);
                 }
-                isGotList = true;
+                devices[_dev].isGotList = true;
             }
 
-            devices[_dev].isState = (rawValue == "ON" || rawValue == "OFF");
-            devices[_dev].value = null;
+            devices[_dev].ports[_port].digital = (rawValue == "ON" || rawValue == "OFF");
+            devices[_dev].ports[_port].ccu.value = null;
 
             // Create datapoints for this port
-            if (devices[_dev].isState) {
-                setObject(devices[_dev].DPs.LEVEL, {
-                    Name: devices[_dev].Address + ".STATE",
-                    ValueType: 16,
+            if (devices[_dev].ports[_port].digital) {
+                setObject(devices[_dev].ports[_port].ccu.DPs.LEVEL, {
+                    Name:         devices[_dev].ports[_port].ccu.name + ".STATE",
+                    ValueType:    16,
                     ValueSubType: 29,
-                    TypeName: "HSSDP",
-                    Value: 0,
-                    Parent: devices[_dev].chnDP
+                    TypeName:     "HSSDP",
+                    Value:        0,
+                    Parent:       devices[_dev].ports[_port].ccu.chnDP
                 });
             } else {
-                setObject(devices[_dev].DPs.LEVEL, {
-                    Name: devices[_dev].Address + ".LEVEL",
-                    ValueType: 16,
+                setObject(devices[_dev].ports[_port].ccu.DPs.LEVEL, {
+                    Name:         devices[_dev].ports[_port].ccu.name + ".LEVEL",
+                    ValueType:    16,
                     ValueSubType: 29,
-                    TypeName: "HSSDP",
-                    Value: 0,
-                    Parent: devices[_dev].chnDP
+                    TypeName:     "HSSDP",
+                    Value:        0,
+                    Parent:       devices[_dev].ports[_port].ccu.chnDP
                 });
-                /*if (devices[num].productName.indexOf("Rollo") != -1) {
-                 devices[num].isRollo = true;
-                 } else {
-                 devices[num].isRollo = false;
-                 }*/
             }
-            processPortState(_dev, value);
+            processPortState(_dev, _port, value);
         }
     }
 }
 
-function pollStatus() {
-    for (var __dev = 0; __dev < devices.length; __dev++) {
+function pollStatus(dev) {
+    for (var port = 0; port < devices[dev].ports.length; port++) {
         // Do not poll outputs
-        if (!devices[__dev].isInput) continue;
-        getPortState(__dev, processPortState);
+        if (!devices[dev].ports[port].input)
+            continue;
+
+        getPortState(dev, port, processPortState);
     }
 }
 
-// Process http://ccu.io:8090/?pt=6
+// Process http://ccu.io:8090/megaName/?pt=6
 function restApi(req, res) {
     var parts = req.url.split("=");
+    var path = req.params[0];
+    var _devs = path.split('/');
+    var _dev = null;
+    for (var i = 0; i < devices.length; i++) {
+        if (devices[i].name == _devs[0]) {
+            _dev = i;
+            break;
+        }
+    }
+    if (_dev === null) {
+        res.set('Content-Type', 'text/plain');
+        res.send('Error: unknown device name "' + _devs[0] + '"');
+        return;
+    }
     if (parts.length == 2) {
-        var _dev = parts[1];
-        if (devices[_dev]) {
+        var _port = parts[1];
+        if (devices[_dev] && devices[_dev].ports[_port]) {
             // If digital port
-            if (devices[_dev].isState) {
-                devices[_dev].value = true;
-                logger.info("adapter megaD: reported new state for port " + _dev + " - " + devices[_dev].value);
-                setState(devices[_dev].DPs.LEVEL, true);
+            if (devices[_dev].ports[_port].digital && !devices[_dev].ports[_port].switch) {
+                devices[_dev].ports[_port].ccu.value = true;
+                logger.info("adapter megaD: " + devices[_dev].name + " reported new state for port " + _port + " - " + devices[_dev].ports[_port].ccu.value);
+                setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, true);
 
                 // Set automatically the state of the port to false after 100ms
                 setTimeout(function() {
                     devices[_dev].value = false;
-                    setState(devices[_dev].DPs.LEVEL, false);
+                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, false);
                 }, 100);
             } else {
-                logger.info("adapter megaD: reported new value for port " + _dev + ", request actual value");
+                logger.info("adapter megaD: " + devices[_dev].name + " reported new value for port " + _port + ", request actual value");
                 // Get value from analog port
-                getPortState(_dev, processPortState);
+                getPortState(_dev, _port, processPortState);
             }
-            /*if (devices[_dev].isRollo) {
-                devices[_dev].value = 0; // TODO
-                logger.info("adapter megaD: reported new rollo state - position " + devices[_dev].value + ", calc state " + ((255 - devices[_dev].value) / 255));
-                setState(devices[_dev].DPs.LEVEL, (255 - devices[_dev].value) / 255);
-            } else {
-
-                /*devices[_dev].value = 0; // TODO
-                logger.info("adapter megaD: reported new value " + devices[num].value + ", calc state " + (devices[_dev].value / 255));
-                setState(devices[_dev].DPs.LEVEL, devices[_dev].value / 255);
-            }*/
+            res.set('Content-Type', 'text/plain');
+            res.send('OK');
+            return;
         }
     }
+    res.set('Content-Type', 'text/plain');
+    res.send('Error: invalid input "' + req.url + '". Expected /'+devices[_dev].name+'/?pt=X');
 }
 
 function megadInit () {
+    for (var dev in megadSettings.devices) {
+        if (!megadSettings.devices[dev].ip || megadSettings.devices[dev].ip == "0.0.0.0")
+            continue;
 
-    var dp;
-    var chnDp;
-    var devChannels = [];
+        var devChannels = [];
+        var id = parseInt(dev.substring(1)) - 1;
 
-    for (var port = 0; port < megadSettings.portsCount; port++) {
-        chnDp = megadSettings.firstId + 1 + port * 2;
-        dp    = chnDp + 1;
+        devices[id] = megadSettings.devices[dev];
+        devices[id].devId = megadSettings.firstId + id * 30;
+        devices[id].isGotList = false;
 
-        devChannels.push(chnDp);
-        devices[port] = {
-            chnDP:    chnDp,
-            name:     "MegaD." + ((port < 7) ? "IN" : "OUT") + "_Port" + port,
-            port:     port,
-            isInput:  (port < 7),
-            isState:  true,
-            Address:  "MegaD." + port,
-            DPs:      {
-                LEVEL:   dp+0
+        for (var port = 0; port < devices[id].portsCount; port++) {
+            var name = "MegaD_" + devices[id].name + "." + ((devices[id].ports[port].name == ("port" + port)) ? (((port < 7) ? "IN" : "OUT") + "_Port" + port) : devices[id].ports[port].name);
+
+            devices[id].ports[port].ccu = {
+                chnDP:    devices[id].devId + port * 2 + 1,
+                name:     name,
+                address:  "MegaD." + id + "." + port,
+                DPs:      {
+                    LEVEL:   devices[id].devId + port * 2 + 2
+                }
+            };
+
+            devChannels.push(devices[id].ports[port].ccu.chnDP);
+
+            var chObject = {
+                Name:     devices[id].ports[port].ccu.name,
+                TypeName: "CHANNEL",
+                Address:  devices[id].ports[port].ccu.address,
+                HssType:  "MegaD_" + devices[id].ports[port].input ? "IN" : "OUT",
+                DPs:      devices[id].ports[port].ccu.DPs,
+                Parent:   devices[id].devId
+            };
+
+            if (devices[id].ports[port].room) {
+                chObject.rooms = devices[id].ports[port].room;
             }
-        };
+            if (devices[id].ports[port].role) {
+                chObject.funcs = devices[id].ports[port].role;
+            }
 
-        var chObject = {
-            Name:     devices[port].name,
-            TypeName: "CHANNEL",
-            Address:  devices[port].address,
-            HssType:  "MegaD_" + devices[port].isInput ? "IN" : "OUT",
-            DPs:      devices[port].DPs,
-            Parent:   megadSettings.firstId
-        };
+            if (!devices[id].ports[port].input) {
+                setObject(devices[id].ports[port].ccu.DPs.LEVEL, {
+                    Name: chObject.Name + (devices[id].ports[port].digital ? ".STATE" : ".LEVEL"),
+                    ValueType: 16,
+                    ValueSubType: 29,
+                    TypeName: "HSSDP",
+                    Value: 0,
+                    Parent: devices[id].ports[port].ccu.chnDP
+                });
+            }
 
-        if (!devices[port].isInput) {
-            setObject(devices[port].DPs.LEVEL, {
-                Name: devices[port].Address + ".LEVEL",
-                ValueType: 16,
-                ValueSubType: 29,
-                TypeName: "HSSDP",
-                Value: 0,
-                Parent: devices[port].chnDP
-            });
+            setObject(devices[id].ports[port].ccu.chnDP, chObject);
         }
 
-        setObject(chnDp, chObject);
+        setObject(devices[id].devId, {
+            Name:      "MegaD_" + devices[id].name,
+            TypeName:  "DEVICE",
+            HssType:   "MegaD_ROOT",
+            Address:   "MegaD." + id,
+            Interface: "CCU.IO",
+            Channels:  devChannels
+        });
+        pollStatus(id);
+
+        // Try to get the list of devices
+        devices[id].pollTimer = setInterval(pollStatus, 30000, id);
     }
-
-    setObject(megadSettings.firstId, {
-        Name:      "MegaD",
-        TypeName:  "DEVICE",
-        HssType:   "MegaD_ROOT",
-        Address:   "MegaD",
-        Interface: "CCU.IO",
-        Channels:  devChannels
-    });
-
-    pollStatus();
-
-    // Try to get the list of devices
-    pollTimer = setInterval(pollStatus, 30000);
 
     if (settings.ioListenPort) {
         app = express();
