@@ -1,0 +1,96 @@
+<table style="font-size: 12px">
+    <tr>
+        <td>Enabled:</td>
+        <td>
+            <select id="megaD_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>MegaD IP or name:</td>
+        <td><input id="megaD_settings_ip" type="text"/></td>
+    </tr>
+    <tr>
+        <td>MegaD ports count:</td>
+        <td><input id="megaD_settings_ports_count" maxsize=2 size=2 type="text"/></td>
+    </tr>
+    <tr>
+        <td>MegaD password:</td>
+        <td><input id="megaD_settings_password" maxsize=3 size=3 type="text"/></td>
+    </tr>
+    <tr>
+        <td>CCU.IO Listen port:</td>
+        <td><input id="megaD_settings_listen_port" size=5 maxsize=5 type="text"/></td>
+    </tr>
+    <tr>
+        <td>Poll interval (sec):</td>
+        <td><input id="megaD_settings_poll" type="text"/></td>
+    </tr>
+</table>
+<h2>Description:</h2>
+<p>
+    This adapter is able to control the <a href="http://www.ab-log.ru/smart-house/ethernet/megad-328" target="_blank">MegaD</a> devices.
+    The digital ports can be controlled with true or false <br>
+    and the analog ports with float value from 0 to 1.<br>
+    Analog value is automatically translated to 0-255 value.<br>
+    To enable reporting of the states from MegaD use following link: <br>
+    "http://<span id="megaIp">ccu_io_ip</span>:<span id="megaPort"></span>/",<br>
+    please replace <i>ccu_io_ip</i> with the ip address of the ccu.io
+</p>
+<script type="text/javascript">
+
+    if (currentAdapterSettings.enabled) {
+        $("#megaD_enabled option[value='false']").removeAttr("selected");
+        $("#megaD_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#megaD_enabled option[value='true']").removeAttr("selected");
+        $("#megaD_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#megaD_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#megaD_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+
+    $("#megaD_settings_ports_count").val(currentAdapterSettings.settings.portsCount);
+
+    $("#megaD_settings_ports_count").change(function () {
+        currentAdapterSettings.settings.portsCount = $("#megaD_settings_ports_count").val();
+        updateAdapterSettings();
+    });
+
+    $("#megaD_settings_password").val(currentAdapterSettings.settings.password);
+
+    $("#megaD_settings_password").change(function () {
+        currentAdapterSettings.settings.password = $("#megaD_settings_password").val();
+        updateAdapterSettings();
+    });
+
+    $("#megaPort").html(currentAdapterSettings.settings.ioListenPort);
+    $("#megaD_settings_listen_port").val(currentAdapterSettings.settings.ioListenPort);
+
+    $("#megaD_settings_listen_port").change(function () {
+        currentAdapterSettings.settings.ioListenPort = $("#megaD_settings_listen_port").val();
+        $("#megaPort").html(currentAdapterSettings.settings.ioListenPort);
+        updateAdapterSettings();
+    });
+
+  
+    $("#megaD_settings_ip").val(currentAdapterSettings.settings.ip);
+
+    $("#megaD_settings_ip").change(function () {
+        currentAdapterSettings.settings.ip = $("#megaD_settings_ip").val();
+        updateAdapterSettings();
+    });
+
+    $("#megaD_settings_poll").val(currentAdapterSettings.settings.pollIntervalSec);
+
+    $("#megaD_settings_poll").change(function () {
+        currentAdapterSettings.settings.pollIntervalSec = $("#megaD_settings_poll").val();
+        updateAdapterSettings();
+    });
+
+</script>
