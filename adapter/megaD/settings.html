@@ -189,7 +189,7 @@
 
         text += '</td></tr>'
         text += '<tr><td></td><td><input type="button" value="'+ translate('del_device') + '" id="del_device_' + dev + '"></td></tr>';
-        text += '<tr><td></td><td>' + translate('helper') + ' "http://ccu_io_ip:<span class="megaPort">' + currentAdapterSettings.settings.ioListenPort + '</span>/<span id="megaName_' + dev + '">' + devSettings.name + '</span>/"</td></tr>';
+        text += '<tr><td></td><td>' + translate('helper') + ' "http://ccu_io_ip<span class="megaPort">' + (currentAdapterSettings.settings.ioListenPort != 80 ? (':' + currentAdapterSettings.settings.ioListenPort) : '') + '</span>/<span id="megaName_' + dev + '">' + devSettings.name + '</span>/"</td></tr>';
         text += '</table></td></tr>';
         return text;
     }

@@ -2,7 +2,7 @@
     "enabled": false,
     "settings": {
         "firstId":         74500,
-        "ioListenPort":    8084,
+        "ioListenPort":    80,
         "devices": {
             "_1": {
                 "name": "mega1",

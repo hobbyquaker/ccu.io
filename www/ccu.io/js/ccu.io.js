@@ -496,6 +496,11 @@ $(document).ready(function () {
             window.location.reload();
         }, 30000);
     });
+    socket.emit ("getPlatform", function (platform, pl, isService) {
+        if (isService) {
+            $("#restartCCUIO").button("disable");
+        }
+    });
 
     $("#refreshAddons").button().css("width", 300).click(function () {
         socket.emit("refreshAddons");

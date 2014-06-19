@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Stop the ccu.io
+if [ -d "/opt/ccu.io/" ]; then
+    echo "Stopping ccu.io..."
+	node /opt/ccu.io/ccu.io-server.js stop || true
+fi
