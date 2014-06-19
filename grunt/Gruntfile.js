@@ -14,7 +14,8 @@ module.exports = function(grunt) {
         pkg: pkg,
         clean: {
             all: ['.build', '.debian-pi-control', '.debian-pi-ready', '.windows-ready'],
-            'debian-pi-control': ['.debian-pi-ready/DEBIAN']
+            'debian-pi-control': ['.debian-pi-ready/DEBIAN'],
+            'debian-pi-control-sysroot': ['.debian-pi-ready/sysroot']
         },
         replace: {
             core: {
@@ -116,7 +117,7 @@ module.exports = function(grunt) {
                             '*.js',
                             'adapter/**/*',
                             '!scripts/*.js',
-                            '!adapter/sonos/cache',
+                            '!adapter/sonos/cache/*',
                             '!adapter/*.zip',
                             '!ccu.io.js',
                             '!speech.js'],
@@ -331,11 +332,11 @@ module.exports = function(grunt) {
         var size = readDirSize('.build');
 
         grunt.task.run([
-            'replace:debian-pi-version:' + (Math.round(size / 1024) + 8) + ':pi:armhf', // Settings for raspbian
+            'clean:debian-pi-control',
+            'replace:debian-pi-version:' + (Math.round(size / 1024) + 8) + ':ccu:armhf', // Settings for raspbian
             'copy:debian-pi',
-            //'compress:debian-pi-data',
-            'compress:debian-pi-control',
-            'clean:debian-pi-control'
+            'compress:debian-pi-data',
+            'clean:debian-pi-control-sysroot'
         ]);
         console.log('========= Copy .debian-pi-ready directory to Raspbery PI and start "sudo bash redeb.sh" =============');
     });

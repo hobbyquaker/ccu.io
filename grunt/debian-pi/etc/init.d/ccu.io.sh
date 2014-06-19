@@ -8,7 +8,7 @@
 # Short-Description: starts ccu.io
 # Description:       starts ccu.io
 ### END INIT INFO
-(( EUID )) && echo .You need to have root priviliges.. && exit 1
+(( EUID )) && echo .You need to have root privileges.. && exit 1
 PIDF=/opt/ccu.io/ccu.io.pid
 NODECMD=/usr/local/bin/node
 IOBROKERCMD=/opt/ccu.io/ccu.io-server.js

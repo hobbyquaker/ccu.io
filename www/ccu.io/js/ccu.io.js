@@ -488,18 +488,19 @@ $(document).ready(function () {
         window.location.reload();
     });
 
-
     $("#restartCCUIO").button().css("width", 300).click(function () {
-        socket.emit("restart");
-        $("#restarting").show();
-        setTimeout(function () {
-            window.location.reload();
-        }, 30000);
-    });
-    socket.emit ("getPlatform", function (platform, pl, isService) {
-        if (isService) {
-            $("#restartCCUIO").button("disable");
-        }
+        socket.emit ("getPlatform", function (platform, pl, isService) {
+            if (isService) {
+                $("#restartCCUIO").button("disable");
+                showMessage("CCU.IO runs as windows service. Use Restart in the Windows menu.");
+            } else {
+                socket.emit("restart");
+                $("#restarting").show();
+                setTimeout(function () {
+                    window.location.reload();
+                }, 30000);
+            }
+        });
     });
 
     $("#refreshAddons").button().css("width", 300).click(function () {

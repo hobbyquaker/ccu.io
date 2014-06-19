@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.38";
+settings.version = "1.0.39";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -1431,14 +1431,23 @@ function initSocketIO(_io) {
             updateProcess.on("close", function (code) {
                 settings.updateSelfRunning = false;
                 if (code == 0) {
-                    if (io) {
-                        io.sockets.emit("ioMessage", "Update done. Restarting...");
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("ioMessage", "Update done. Restarting...");
-                    }
                     logger.info("ccu.io        update done. restarting...");
-                    childProcess.fork(__dirname+"/ccu.io-server.js", ["restart"]);
+                    if (os.platform().match(/^win/) && fs.existsSync(__dirname + "/restart_ccu_io.bat")) {
+                        if (io) {
+                            io.sockets.emit("ioMessage", "CCU.IO runs as windows service. Use Restart in the Windows menu.");
+                        }
+                        if (ioSsl) {
+                            ioSsl.sockets.emit("ioMessage", "CCU.IO runs as windows service. Use Restart in the Windows menu.");
+                        }
+                    } else {
+                        if (io) {
+                            io.sockets.emit("ioMessage", "Update done. Restarting...");
+                        }
+                        if (ioSsl) {
+                            ioSsl.sockets.emit("ioMessage", "Update done. Restarting...");
+                        }
+                        childProcess.fork(__dirname + "/ccu.io-server.js", ["restart"]);
+                    }
                 } else {
                     logger.error("ccu.io        update failed.");
                     if (io) {
@@ -1587,11 +1596,11 @@ function initSocketIO(_io) {
             }
         });
 
-        // Get list of all IP address on device
+        // Get platform name, type and if as service under windows
         socket.on('getPlatform', function (callback) {
-            var platform = os.platform();
+            var p = os.platform();
             if (callback) {
-                var plat = platform;
+                var plat = p;
                 if (p == 'linux') {
                     plat = 'linux';
                 } else if (p.match(/^win/)) {
@@ -1599,13 +1608,13 @@ function initSocketIO(_io) {
                 } else if (p == 'darwin') {
                     plat = 'osx';
                 }
-                callback (plat, platform, fs.existsSync(__dirname + "/restart_ccu_io.bat"));
+                callback (plat, p, fs.existsSync(__dirname + "/restart_ccu_io.bat"));
             }
         });
 
         socket.on('restart', function () {
             logger.info("ccu.io        received restart command");
-            if (os.platform().match(/^win/)) {
+            if (os.platform().match(/^win/) && fs.existsSync(__dirname + "/restart_ccu_io.bat")) {
                 // Try to start script, that restarts service
                 childProcess.execFile(__dirname + "/restart_ccu_io.bat");
 

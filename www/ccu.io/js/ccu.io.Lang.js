@@ -173,5 +173,10 @@ var ccuWords = {
         "en": "Error: update failed.",
         "de": "Fehler: update konnte nicht durchgeführt werden.",
         "ru": "Ошибка: обновление не удалось."
+    },
+    "CCU.IO runs as windows service. Use Restart in the Windows menu." : {
+        "en": "CCU.IO runs as windows service. Use Restart in the Windows menu.",
+        "de": "CCU.IO ist als Windows-Service gestartet. Über Restart im Windows-Menu kann man Service neu starten.",
+        "ru": "CCU.IO запущен, как Windows сервис. Используйте Restart в Windows меню."
     }
 };
