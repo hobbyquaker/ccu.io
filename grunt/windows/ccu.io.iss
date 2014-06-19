@@ -67,7 +67,7 @@ var
 begin
   Result := '';
   if FileExists(ExpandConstant('{app}\restart_ccu_io.bat')) then begin
-     Exec(ExpandConstant('{app}\restart_ccu_io.bat'), 'stop', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+     Exec(ExpandConstant('{app}\restart_ccu_io.bat'), 'stop', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   end;
 end;
 
