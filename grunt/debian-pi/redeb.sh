@@ -5,6 +5,8 @@
 set -u
 set -e
 
+rm -f ccu.io-@@version.deb
+
 rm -rf dest
 mkdir -p dest
 rm -f *.deb

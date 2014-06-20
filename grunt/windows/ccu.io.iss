@@ -56,9 +56,9 @@ Source: "..\.windows-ready\data\*"; DestDir: "{app}"; Flags: ignoreversion recur
 [Icons]
 Name: "{group}\{#MyAppName} Settings"; Filename: "http://localhost:8080"; IconFilename: "{app}\{#MyAppIcon}"
 Name: "{group}\{#MyAppName} Uninstall"; Filename: "{uninstallexe}"
-Name: "{group}\Start {#MyAppName} Service"; Filename: "{app}\restart_ccu_io.bat start"; Parameters: "start ccu_io"
-Name: "{group}\Stop {#MyAppName} Service"; Filename: "{app}\restart_ccu_io.bat stop"; Parameters: "stop ccu_io"
-Name: "{group}\Restart {#MyAppName} Service"; Filename: "{app}\restart_ccu_io.bat"; Parameters: "restart ccu_io"
+Name: "{group}\Start {#MyAppName} Service"; Filename: "{app}\restart_ccu_io.bat"; Parameters: "start"
+Name: "{group}\Stop {#MyAppName} Service"; Filename: "{app}\restart_ccu_io.bat"; Parameters: "stop"
+Name: "{group}\Restart {#MyAppName} Service"; Filename: "{app}\restart_ccu_io.bat"; Parameters: "restart"
 
 [Code]
 function PrepareToInstall(var NeedsRestart: Boolean): String;

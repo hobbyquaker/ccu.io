@@ -142,7 +142,7 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         cwd: '.debian-pi-control/',
-                        src: ['ioBroker.sh'],
+                        src: ['ccu.io.sh'],
                         dest: '.debian-pi-ready/sysroot/etc/init.d/'
                     }
                 ]
@@ -333,7 +333,7 @@ module.exports = function(grunt) {
 
         grunt.task.run([
             'clean:debian-pi-control',
-            'replace:debian-pi-version:' + (Math.round(size / 1024) + 8) + ':ccu:armhf', // Settings for raspbian
+            'replace:debian-pi-version:' + (Math.round(size / 1024) + 8) + ':pi:armhf', // Settings for raspbian
             'copy:debian-pi',
             'compress:debian-pi-data',
             'clean:debian-pi-control-sysroot'
@@ -348,7 +348,7 @@ module.exports = function(grunt) {
                  'replace:windowsVersion',
                  'command:makeWindowsMSI'
              ]);
-             console.log('========= Please wait a little (ca 1 min). The msi file will be created in ioBroker/delivery directory after the grunt is finished.');
+             console.log('========= Please wait a little (ca 1 min). The msi file will be created in ccu.io/delivery directory after the grunt is finished.');
              console.log('========= you can start batch file .windows-ready\\createSetup.bat manually');
              // Sometimes command:makeWindowsMSI does not work, you can start batch file manually
              grunt.file.write(__dirname + '\\.windows-ready\\createSetup.bat', '"' + __dirname + '\\windows\\InnoSetup5\\ISCC.exe" "' + __dirname + '\\.windows-ready\\ccu.io.iss"');
