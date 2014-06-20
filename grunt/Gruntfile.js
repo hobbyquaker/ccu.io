@@ -110,6 +110,7 @@ module.exports = function(grunt) {
                             'doc/*',
                             'node_modules/**/*',
                             'scripts/*',
+                            'regascripts/*',
                             'www/ccu.io/**/*',
                             'www/lib/**/*',
                             'www/index.html',
