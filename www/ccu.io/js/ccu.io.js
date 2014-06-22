@@ -1,6 +1,8 @@
 var currentAdapterSettings;
 var ccuIoSettings = null;
 
+
+
 function updateAdapterSettings() {
     $("#adapter_config_json").html(JSON.stringify(currentAdapterSettings, null, "    "));
 }
@@ -265,6 +267,7 @@ $(document).ready(function () {
 
     var $datapointGrid = $("#grid_datapoints");
     var $eventGrid = $("#grid_events");
+    var $adapterGrid = $("#grid_adapter");
 
     $("#loader_message").append(translateWord("connecting to CCU.IO") + " ... <br/>");
 
@@ -284,6 +287,36 @@ $(document).ready(function () {
     }
     $("#loader_message").append(translateWord("loading settings") + " ... <br/>");
 
+    function loadAdapterSettings() {
+        var settings = ccuIoSettings;
+        console.log('loadAdapterSettings');
+        socket.emit("readdir", ["adapter"], function (data) {
+            $adapterGrid.jqGrid("clearGridData");
+            for (var i = 0; i < data.length; i++) {
+                var adapter = data[i];
+                if (adapter.match(/^skeleton/) || adapter == ".DS_Store") { continue; }
+                var adapterData = {
+                    name:   data[i],
+                    settings:   '<button class="adapter-settings translateB" data-adapter="'+adapter+'" data-lang="'+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+'">'+translateWord('configure')+'</button><button class="adapter-restart translateB" data-lang="'+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+'" data-adapter="'+adapter+'">'+translateWord('reload')+'</button>',
+                    confed:     (settings.adapters[data[i]]?"true":"false"),
+                    enabled:    (settings.adapters[data[i]]?getTrueFalse(settings.adapters[data[i]].enabled):""),
+                    mode:       ((settings.adapters[data[i]] && settings.adapters[data[i]].mode)?getWord(settings.adapters[data[i]].mode):""),
+                    period:     (settings.adapters[data[i]]?settings.adapters[data[i]].period:"")
+                };
+                $adapterGrid.jqGrid("addRowData", i, adapterData);
+                $("#loader_adapter").append(".");
+            }
+            $adapterGrid.trigger("reloadGrid");
+
+            $(".adapter-settings").click(function () {
+                editAdapterSettings($(this).attr("data-adapter"));
+            });
+            $(".adapter-restart").click(function () {
+                restartAdapter($(this).attr("data-adapter"));
+            });
+        });
+    }
+
     socket.emit("getSettings", function (settings) {
         ccuIoSettings = settings;
         $(".ccu-io-version").html(settings.version);
@@ -300,29 +333,8 @@ $(document).ready(function () {
             modal: true
         });
         $("#loader_message").append("<span id='loader_adapter'>"+translateWord("loading adapters") + " </span><br/>");
+        loadAdapterSettings();
 
-        socket.emit("readdir", ["adapter"], function (data) {
-            for (var i = 0; i < data.length; i++) {
-                var adapter = data[i];
-                if (adapter.match(/^skeleton/) || adapter == ".DS_Store") { continue; }
-                var adapterData = {
-                    name:   data[i],
-                    settings:   '<button class="adapter-settings translateB" data-adapter="'+adapter+'" data-lang="'+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+'">'+translateWord('configure')+'</button><button class="adapter-restart translateB" data-lang="'+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+'" data-adapter="'+adapter+'">'+translateWord('reload')+'</button>',
-                    confed:     (settings.adapters[data[i]]?"true":"false"),
-                    enabled:    (settings.adapters[data[i]]?getTrueFalse(settings.adapters[data[i]].enabled):""),
-                    mode:       ((settings.adapters[data[i]] && settings.adapters[data[i]].mode)?getWord(settings.adapters[data[i]].mode):""),
-                    period:     (settings.adapters[data[i]]?settings.adapters[data[i]].period:"")
-                }
-                $("#grid_adapter").jqGrid("addRowData", i, adapterData);
-                $("#loader_adapter").append(".");
-            }
-            $(".adapter-settings").click(function () {
-                editAdapterSettings($(this).attr("data-adapter"));
-            });
-            $(".adapter-restart").click(function () {
-                restartAdapter($(this).attr("data-adapter"));
-            });
-        });
     });
     $("#loader_message").append(translateWord("loading status") + " ... <br/>");
 
@@ -841,7 +853,7 @@ $(document).ready(function () {
         caption: getWord("Addons")
     });
 
-    $("#grid_adapter").jqGrid({
+    $adapterGrid.jqGrid({
         datatype: "local",
         colNames:['id', getWord('name'), getWord('settings'), getWord('confed'), getWord('enabled'), getWord('mode'), getWord('period')],
         colModel:[
@@ -1215,13 +1227,16 @@ $(document).ready(function () {
         var settingsWithoutAdapters = JSON.parse(JSON.stringify(ccuIoSettings));
         delete settingsWithoutAdapters.adapters;
         socket.emit("writeFile", "io-settings.json", settingsWithoutAdapters, function () {
-            showMessage ("CCU.IO settings saved. Please restart CCU.IO");
+            showMessage("CCU.IO settings saved. Please restart CCU.IO");
         });
     }
 
     function restartAdapter(adapter) {
+
         socket.emit("restartAdapter", adapter, function (res) {
+            loadAdapterSettings();
             showMessage(res);
+
         });
     }
 
@@ -1261,8 +1276,11 @@ $(document).ready(function () {
         var adapter = $("#adapter_name").html();
         try {
             var adapterSettings = JSON.parse($("#adapter_config_json").val());
-            socket.emit("writeFile", "adapter-"+adapter+".json", adapterSettings, function () {
-                showMessage(adapter+translateWord(" adapter settings saved. Please restart CCU.IO"));
+            ccuIoSettings.adapters[adapter] = adapterSettings;
+
+            socket.emit("writeAdapterSettings", adapter, adapterSettings, function () {
+                showMessage(adapter + " " + translateWord("settings saved."));
+                loadAdapterSettings(adapter);
             });
             return true;
         } catch (e) {
