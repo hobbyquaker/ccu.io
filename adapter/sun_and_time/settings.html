@@ -92,7 +92,11 @@
     $('#sad_enabled option[value=' + currentAdapterSettings.enabled + ']').attr("selected", true);
 
     $("#sad_enabled").change(function () {
-        currentAdapterSettings.enabled = $(this).val();
+        if ($(this).val() == "false" ){
+            currentAdapterSettings.enabled = false;   
+        }else{
+            currentAdapterSettings.enabled = true; 
+        }
         updateAdapterSettings();
     });
 
