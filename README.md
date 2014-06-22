@@ -29,17 +29,24 @@ siehe http://ccu.io/
 * Doku, Doku, Doku
 * CMS für Homepage?
 * CCU2-Paket für einfache Installation
+* .msi für einfache Installation unter Windows (ccu.io als Service registrieren)
 * .pkg für einfache Installation unter Mac OS X
 * BIN-RPC Implementierung vervollständigen
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
 
-
 ### 1.0.39
-* (Bluefox) windows MSI packet
+* (Bluefox) Add currency rates adapter
+* (Bluefox) Make some logs verbose in homepilot adapter
+* (Bluefox) Add windows installer
 * (Bluefox) adapter MegaDevice
 * (Bluefox) grunt build
+* (Bluefox) Create debian package. If user pi does not exist tt will be created.
+* (Bluefox) fix gruntfile.js for regascripts
+* (Bluefox) Add gismeteo adapter (as demo)
+* (smiling-Jack) Bugfix sun_and_time enable/disable
+* (Hobbyquaker) improved adapter process handling
 
 ### 1.0.38
 * (Bluefox) new Adapter: homepilot
