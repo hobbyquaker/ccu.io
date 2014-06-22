@@ -1,0 +1,78 @@
+<table style="font-size: 12px">
+    <tr>
+        <td>Enabled:</td>
+        <td>
+            <select id="currency_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Poll interval (hours):</td>
+        <td><input id="currency_settings_poll" type="text"/></td>
+    </tr>
+
+
+</table>
+<h2>Description:</h2>
+<p>
+    Read currency rates from European Central Bank (http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml)<br>
+	Following rates are included (prices in EUR): <br>
+USD, 
+JPY, 
+BGN, 
+CZK, 
+DKK, 
+GBP, 
+HUF, 
+LTL, 
+PLN, 
+RON, 
+SEK, 
+CHF, 
+NOK, 
+HRK, 
+RUB, 
+TRY, 
+AUD, 
+BRL, 
+CAD, 
+CNY, 
+HKD, 
+IDR, 
+ILS, 
+INR, 
+KRW, 
+MXN, 
+MYR, 
+NZD, 
+PHP, 
+SGD, 
+THB, 
+ZAR,
+USD_RUB
+</p>
+<script type="text/javascript">
+
+    if (currentAdapterSettings.enabled) {
+        $("#currency_enabled option[value='false']").removeAttr("selected");
+        $("#currency_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#currency_enabled option[value='true']").removeAttr("selected");
+        $("#currency_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#currency_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#currency_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+    $("#currency_settings_poll").val(currentAdapterSettings.settings.pollIntervalHours);
+
+    $("#currency_settings_poll").change(function () {
+        currentAdapterSettings.settings.pollIntervalHours = $("#currency_settings_poll").val();
+        updateAdapterSettings();
+    });
+
+</script>

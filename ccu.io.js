@@ -45,7 +45,8 @@ var fs =        require('fs'),
     url =       require('url'),
     socketio =  require('socket.io'),
     scheduler = require('node-schedule'),
-    mime = require('mime'),
+    mime =      require('mime'),
+    os =        require('os'),
     app,
     appSsl,
     server,
@@ -637,7 +638,7 @@ function initRpc() {
         lastEvents[settings.binrpc.inits[i].id] = Math.floor((new Date()).getTime() / 1000);
     }
 
-    if (!homematic) {
+    if (!homematic && settings.ccuIp) {
         homematic = new binrpc({
             ccuIp: settings.ccuIp,
             listenIp: settings.binrpc.listenIp,
@@ -1430,14 +1431,23 @@ function initSocketIO(_io) {
             updateProcess.on("close", function (code) {
                 settings.updateSelfRunning = false;
                 if (code == 0) {
-                    if (io) {
-                        io.sockets.emit("ioMessage", "Update done. Restarting...");
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("ioMessage", "Update done. Restarting...");
-                    }
                     logger.info("ccu.io        update done. restarting...");
-                    childProcess.fork(__dirname+"/ccu.io-server.js", ["restart"]);
+                    if (os.platform().match(/^win/) && fs.existsSync(__dirname + "/restart_ccu_io.bat")) {
+                        if (io) {
+                            io.sockets.emit("ioMessage", "CCU.IO runs as windows service. Use Restart in the Windows menu.");
+                        }
+                        if (ioSsl) {
+                            ioSsl.sockets.emit("ioMessage", "CCU.IO runs as windows service. Use Restart in the Windows menu.");
+                        }
+                    } else {
+                        if (io) {
+                            io.sockets.emit("ioMessage", "Update done. Restarting...");
+                        }
+                        if (ioSsl) {
+                            ioSsl.sockets.emit("ioMessage", "Update done. Restarting...");
+                        }
+                        childProcess.fork(__dirname + "/ccu.io-server.js", ["restart"]);
+                    }
                 } else {
                     logger.error("ccu.io        update failed.");
                     if (io) {
@@ -1568,9 +1578,53 @@ function initSocketIO(_io) {
             loadRegaData(0, null, true);
         });
 
+        // Get list of all IP address on device
+        socket.on('getIpAddresses', function (callback) {
+            var ifaces=os.networkInterfaces();
+            var ipArr = [];
+            for (var dev in ifaces) {
+                var alias=0;
+                ifaces[dev].forEach(function(details){
+                    if (details.family=='IPv4') {
+                        ipArr.push ({name: dev+(alias?':'+alias:''), address: details.address});
+                        ++alias;
+                    }
+                });
+            }
+            if (callback) {
+                callback (ipArr);
+            }
+        });
+
+        // Get platform name, type and if as service under windows
+        socket.on('getPlatform', function (callback) {
+            var p = os.platform();
+            if (callback) {
+                var plat = p;
+                if (p == 'linux') {
+                    plat = 'linux';
+                } else if (p.match(/^win/)) {
+                    plat = 'windows';
+                } else if (p == 'darwin') {
+                    plat = 'osx';
+                }
+                callback (plat, p, fs.existsSync(__dirname + "/restart_ccu_io.bat"));
+            }
+        });
+
         socket.on('restart', function () {
             logger.info("ccu.io        received restart command");
-            childProcess.fork(__dirname+"/ccu.io-server.js", ["restart"]);
+            if (os.platform().match(/^win/) && fs.existsSync(__dirname + "/restart_ccu_io.bat")) {
+                // Try to start script, that restarts service
+                childProcess.execFile(__dirname + "/restart_ccu_io.bat");
+
+                // If after 3 seconds this process still alive, try to restart over ccu.io-server.js
+                setTimeout(function () {
+                    childProcess.fork(__dirname + "/ccu.io-server.js", ["restart"]);
+                }, 3000);
+            } else {
+                childProcess.fork(__dirname + "/ccu.io-server.js", ["restart"]);
+            }
         });
 
         socket.on('restartRPC', function () {

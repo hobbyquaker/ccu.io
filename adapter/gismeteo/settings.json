@@ -1,0 +1,8 @@
+{
+    "enabled": false,
+    "settings": {
+        "firstId":           71300,
+        "cityId":            28722,
+        "pollIntervalHours": 6
+    }
+}

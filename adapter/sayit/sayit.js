@@ -16,7 +16,7 @@
  *      and "amixer cset numid=3 1" for analog output (replace 1 with: 0=auto, 1=analog, 2=hdmi)
  *
  */
-var settings = require(__dirname+'/../../settings.js');
+var settings = require(__dirname + '/../../settings.js');
 
 if (!settings.adapters.sayit || !settings.adapters.sayit.enabled) {
     process.exit();
@@ -27,7 +27,7 @@ var sayIndex             = 0;
 var sayLastGeneratedText = "";
 var sayLastVolume        = null;
 
-var logger      = require(__dirname+'/../../logger.js'),
+var logger      = require(__dirname + '/../../logger.js'),
     io          = require('socket.io-client'),
     fs          = require('fs'),
     http        = require('http'),

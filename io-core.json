@@ -1,0 +1,11 @@
+{
+	"name":      "ccu.io",
+	"version":   "1.0.39",
+	"platforms": "windows, linux, macOS",
+	"hardware":  "RaspberryPi, PC, Mac",
+	"description": {
+		"en": "ccu.io",
+		"de": "ccu.io",
+		"ru": "ccu.io"
+	}
+}

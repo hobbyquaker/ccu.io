@@ -1,0 +1,7 @@
+{
+    "enabled": false,
+    "settings": {
+        "firstId":    73500,
+        "pollIntervalHours": 6
+    }
+}

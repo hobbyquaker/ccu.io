@@ -28,18 +28,19 @@ var rega = function(options) {
 
     this.options = options;
 
-    request('http://'+options.ccuIp+'/ise/checkrega.cgi', function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            if (body == "OK") {
-                options.ready();
+    if (options.ccuIp) {
+        request('http://'+options.ccuIp+'/ise/checkrega.cgi', function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                if (body == "OK") {
+                    options.ready();
+                } else {
+                    options.ready("ReGaHSS down");
+                }
             } else {
-                options.ready("ReGaHSS down");
+                options.ready("CCU unreachable");
             }
-        } else {
-            options.ready("CCU unreachable");
-        }
-    });
-
+        });
+    }
 };
 
 rega.prototype = {

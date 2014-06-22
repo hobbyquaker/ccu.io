@@ -1,0 +1,102 @@
+{
+    "enabled": false,
+    "settings": {
+        "firstId":         74500,
+        "ioListenPort":    80,
+        "devices": {
+            "_1": {
+                "name": "mega1",
+                "ip": "192.168.1.100",
+                "pollIntervalSec": 30,
+                "portsCount": 14,
+                "password": "sec",
+                "ports": [
+                    {
+                        "name": "port0",
+                        "input": true,
+                        "switch": true,
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "port1",
+                        "input": true,
+                        "switch": true,
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "port2",
+                        "input": true,
+                        "switch": true,
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "port3",
+                        "input": true,
+                        "switch": true,
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "port4",
+                        "input": true,
+                        "switch": true,
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "port5",
+                        "input": true,
+                        "switch": true,
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "port6",
+                        "input": true,
+                        "switch": true,
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "port7",
+                        "input": false,
+                        "digital": true
+                    },
+                    {
+                        "name": "port8",
+                        "input": false,
+                        "digital": true
+                    },
+                    {
+                        "name": "port9",
+                        "input": false,
+                        "digital": true
+                    },
+                    {
+                        "name": "port10",
+                        "input": false,
+                        "digital": true
+                    },
+                    {
+                        "name": "port11",
+                        "input": false,
+                        "digital": true
+                    },
+                    {
+                        "name": "port12",
+                        "input": false,
+                        "digital": true
+                    },
+                    {
+                        "name": "port13",
+                        "input": false,
+                        "digital": true
+                    }
+                ]
+            }
+        }
+    }
+}

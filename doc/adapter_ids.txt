@@ -26,7 +26,8 @@
 
 73200-73295                     Fritz.box! call monitor adapter
 73300-?                         onkyo adapter
-73400-73500                     lgtv adapter
+73400-73499                     lgtv adapter
+73500-73999                     currency rates adapter
 
 74000-74002                     speedport adapter
 

@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.38*
+*aktuelle Version: 1.0.39*
 
 ## Dokumentation
 
@@ -29,12 +29,17 @@ siehe http://ccu.io/
 * Doku, Doku, Doku
 * CMS für Homepage?
 * CCU2-Paket für einfache Installation
-* .msi für einfache Installation unter Windows (ccu.io als Service registrieren)
 * .pkg für einfache Installation unter Mac OS X
 * BIN-RPC Implementierung vervollständigen
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+
+### 1.0.39
+* (Bluefox) windows MSI packet
+* (Bluefox) adapter MegaDevice
+* (Bluefox) grunt build
 
 ### 1.0.38
 * (Bluefox) new Adapter: homepilot

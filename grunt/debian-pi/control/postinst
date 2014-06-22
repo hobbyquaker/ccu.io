@@ -1,0 +1,39 @@
+#!/bin/bash
+#Create empty directories
+if [ ! -d "/opt/ccu.io/tmp" ]; then
+  mkdir /opt/ccu.io/tmp
+fi
+if [ ! -d "/opt/ccu.io/datastore" ]; then
+  mkdir /opt/ccu.io/datastore
+fi
+if [ ! -d "/opt/ccu.io/log" ]; then
+  mkdir /opt/ccu.io/log
+fi
+
+#Check if user @@user exists
+if [ $(cat /etc/passwd | grep "/home" |cut -d: -f1 | grep '^pi$' | wc -l) -eq 0 ]
+then
+    read -p "User pi does not exist. Create?" yn
+    case $yn in
+        [Yy]* ) echo "Create user @@user ...";
+		        apt-get install sudo;
+		        adduser @@user;
+				adduser @@user sudo;
+				visudo -f /etc/sudoers;
+				break;;
+        [Nn]* ) echo "The start of CCU.IO at system start will not work!";;
+        * ) echo "Please answer yes or no.";;
+    esac
+fi
+
+#Set rights
+echo "Set permissions..."
+find /opt/ccu.io/ -type d -exec chmod 777 {} \;
+find /opt/ccu.io/ -type f -exec chmod 777 {} \;
+chown -R @@user:@@user /opt/ccu.io/
+chmod 777 /etc/init.d/ccu.io.sh
+chown root:root /etc/init.d/ccu.io.sh
+
+# Start the service!
+echo "Start ccu.io..."
+node /opt/ccu.io/ccu.io-server.js start
