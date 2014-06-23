@@ -1,7 +1,7 @@
 /**
  *  Adapter für B-control Energy Manager HTTP/JSON
  *
- *  Version 0.1
+ *  Version 0.2
  *
  *  (c) 6'2014 hobbyquaker
  *
@@ -37,7 +37,7 @@ if (settings.ioListenPort) {
 
 var adapterSettings = settings.adapters.bcontrol_em_http.settings;
 var firstId = settings.adapters.bcontrol_em_http.firstId;
-
+var numMeters;
 
 
 
@@ -47,12 +47,12 @@ function getAuthCookie(callback) {
         url: 'http://' + adapterSettings.host + '/index.php',
         jar: cookieJar
     }, function (err, res, body) {
-        //if (err) {
-        //    logger.error('adapter bem2  auth failed');
-        //    stop();
-        //} else {
+        if (err) {
+            logger.error('adapter bem2  auth failed');
+            stop();
+        } else {
             callback();
-        //}
+        }
     });
 }
 var createObjects = [];
@@ -73,6 +73,7 @@ function getMeters(callback) {
             return;
         }
         logger.info("adapter bem2  found " + data.length + " sensors");
+        numMeters = data.length;
         for (var i = 0; i < data.length; i++) {
             var obj = {
                 Name: (data[i].label == "Teridian" ? 'BEM Gesamtverbrauch' : 'BEM ' + data[i].label) + ' ' + data[i].serial + ":" + data[i].model + ":" + data[i].type,
@@ -96,6 +97,7 @@ function getMeters(callback) {
             }
 
         }
+
         createObject();
     });
 }
@@ -122,7 +124,7 @@ var meter_index = 0;
 
 
 function startLoop() {
-    if (++meter_index > 8) meter_index = 0;
+    if (++meter_index >= numMeters) meter_index = 0;
     getValue(meter_index, function () {
         setTimeout(startLoop, adapterSettings.pause);
     });
@@ -131,7 +133,7 @@ function startLoop() {
 function getValue(meter_id, callback) {
     request.post({
         jar: cookieJar,
-        url: 'http://172.16.23.138/mum-webservice/consumption.php?meter_id=' + meter_id
+        url: 'http://' + adapterSettings.host + '/mum-webservice/consumption.php?meter_id=' + meter_id
     }, function (err, res, body) {
         var data = JSON.parse(body);
         if (data.authentication == false) {
