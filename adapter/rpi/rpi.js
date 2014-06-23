@@ -1,5 +1,5 @@
 /**
- *      CCU.IO RaspberryPi Adapter 0.6
+ *      CCU.IO RaspberryPi Adapter 0.6.1
  *
  *      20140123  Eisbaeeer - added PiFace
  *                enable|disable PiFace with "piface": false|true
@@ -101,7 +101,7 @@ socket.emit("setObject", settings.adapters.rpi.firstId, {
     Address: adapterSettings.deviceName,
     Interface: "CCU.IO",
     Channels: [
-        settings.adapters.rpi.firstId + 1
+        72501
     ],
     _persistent: true
 });
@@ -405,7 +405,7 @@ var pifaceinDPs = {
     IN4:  dpId+5,
     IN5:  dpId+6,
     IN6:  dpId+7,
-    IN7:  dpId+8
+    IN7:  dpId+8,
 };
 
 socket.emit("setObject", dpId, {
@@ -413,7 +413,7 @@ socket.emit("setObject", dpId, {
     TypeName: "CHANNEL",
     Address: adapterSettings.deviceName+".PIFACEIN",
     HssType: "PiFace-IN",
-    DPs: swapDPs,
+    DPs: pifaceinDPs,
     Parent: settings.adapters.rpi.firstId +35
 });
 
@@ -499,7 +499,7 @@ var pifaceoutDPs = {
     OUT4:  dpId+5,
     OUT5:  dpId+6,
     OUT6:  dpId+7,
-    OUT7:  dpId+8
+    OUT7:  dpId+8,
 };
 
 socket.emit("setObject", dpId, {
@@ -507,7 +507,7 @@ socket.emit("setObject", dpId, {
     TypeName: "CHANNEL",
     Address: adapterSettings.deviceName+".PIFACEOUT",
     HssType: "PiFace-OUT",
-    DPs: swapDPs,
+    DPs: pifaceoutDPs,
     Parent: settings.adapters.rpi.firstId
 });
 

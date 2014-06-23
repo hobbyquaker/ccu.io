@@ -9,6 +9,9 @@ Als eine weitere Ein/Ausgabe Karte kann das PiFace verwendet werden. Das PiFace 
 
 ## Changelog
 
+### 0.6.1 - 20140622 by Eisbaeeer
+* BugFix: PiFace issue - Datapoints not shown in ScriptGUI
+
 ### 0.6 - 20140606 by Eisbaeeer
 * PiFace issue through init of inputs
 
