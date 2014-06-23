@@ -3,7 +3,7 @@
  *      01'2014 Eisbaeeer
  *      mail: Eisbaeeer@gmail.com 
  
- *      Version 0.9.4
+ *      Version 1.0
  *      
  *      Get this code on Github
  *      https://github.com/Eisbaeeer/Onkyo 
@@ -736,6 +736,99 @@ function sleep(milliseconds) {
 
 function OnkyoInit() {
 	
+  socket.emit("setObject", onkyoSettings.firstId+40, {
+    Name: "Onkyo-Receiver",
+    TypeName: "DEVICE",
+    HssType: "Receiver",
+    Address: onkyoSettings.firstId+40,
+    Interface: "CCU.IO",
+    Channels: [
+      onkyoSettings.firstId+41,
+      onkyoSettings.firstId+42,
+      onkyoSettings.firstId+43  
+    ],
+    _persistent: true
+  });
+  
+  var mainDPs = {
+    Onkyo_Command:                    onkyoSettings.firstId,
+    Onkyo_NET_USB_Artist_Name_Info:   onkyoSettings.firstId+1,
+    Onkyo_NET_USB_Time_Info:          onkyoSettings.firstId+2,
+    Onkyo_NET_USB_Album_Name_Info:    onkyoSettings.firstId+3,
+    Onkyo_NET_USB_Track_Info:         onkyoSettings.firstId+4,
+    Onkyo_NET_USB_Track_Info:         onkyoSettings.firstId+5,
+    Onkyo_NET_MENU_0:                 onkyoSettings.firstId+20,
+    Onkyo_NET_MENU_1:                 onkyoSettings.firstId+21,
+    Onkyo_NET_MENU_2:                 onkyoSettings.firstId+22,
+    Onkyo_NET_MENU_3:                 onkyoSettings.firstId+23,
+    Onkyo_NET_MENU_4:                 onkyoSettings.firstId+24,
+    Onkyo_NET_MENU_5:                 onkyoSettings.firstId+25,
+    Onkyo_NET_MENU_6:                 onkyoSettings.firstId+26,
+    Onkyo_NET_MENU_7:                 onkyoSettings.firstId+27,
+    Onkyo_NET_MENU_8:                 onkyoSettings.firstId+28,
+    Onkyo_NET_MENU_9:                 onkyoSettings.firstId+29,
+    Onkyo_NET_NAVIGATION:             onkyoSettings.firstId+30,
+    Onkyo_NET_POSITION:               onkyoSettings.firstId+31,
+    Onkyo_NET_POSITION_SUMM:          onkyoSettings.firstId+32,
+    Onkyo_Listening_Mode:             onkyoSettings.firstId+33,
+    Onkyo_Audio_Information:          onkyoSettings.firstId+34,
+    Onkyo_Video_Information:          onkyoSettings.firstId+35,
+    Onkyo_NET_Play_Status:            onkyoSettings.firstId+36,
+    Onkyo_NET_Repeat_Status:          onkyoSettings.firstId+37,
+    Onkyo_NET_Shuffle_Status:         onkyoSettings.firstId+38,
+    Onkyo_Connect_Status:             onkyoSettings.firstId+39     
+  };
+  
+  var zone1DPs = {
+    Onkyo_Volume_Zone1:                 onkyoSettings.firstId+6,
+    Onkyo_Tuning_Zone1:                 onkyoSettings.firstId+8,
+    Onkyo_Internet_Radio_Preset_Zone1:  onkyoSettings.firstId+10,
+    Onkyo_Input_Select_Zone1:           onkyoSettings.firstId+12,
+    Onkyo_Audio_Mute_Zone1:             onkyoSettings.firstId+14,
+    Onkyo_Tuner_Preset_Zone1:           onkyoSettings.firstId+16,
+    Onkyo_Power_Zone1:                  onkyoSettings.firstId+18  
+  };
+  
+  var zone2DPs = {
+    Onkyo_Volume_Zone2:                 onkyoSettings.firstId+7,
+    Onkyo_Tuning_Zone2:                 onkyoSettings.firstId+9,
+    Onkyo_Internet_Radio_Preset_Zone2:  onkyoSettings.firstId+11,
+    Onkyo_Input_Select_Zone2:           onkyoSettings.firstId+13,
+    Onkyo_Audio_Mute_Zone2:             onkyoSettings.firstId+15,
+    Onkyo_Tuner_Preset_Zone2:           onkyoSettings.firstId+17,
+    Onkyo_Power_Zone2:                  onkyoSettings.firstId+19    
+  };
+  
+  socket.emit("setObject", onkyoSettings.firstId+41, {
+    Name: "Onkyo Main",
+    TypeName: "CHANNEL",
+    Address: onkyoSettings.firstId+41,
+    HssType: "Onkyo Main Features",
+    DPs: mainDPs,
+    Parent: onkyoSettings.firstId+40,
+    _persistent: true
+  });
+  
+  socket.emit("setObject", onkyoSettings.firstId+42, {
+    Name: "Onkyo Zone 1",
+    TypeName: "CHANNEL",
+    Address: onkyoSettings.firstId+42,
+    HssType: "Onkyo Zone 1",
+    DPs: zone1DPs,
+    Parent: onkyoSettings.firstId+40,
+    _persistent: true
+  });
+  
+   socket.emit("setObject", onkyoSettings.firstId+43, {
+    Name: "Onkyo Zone 2",
+    TypeName: "CHANNEL",
+    Address: onkyoSettings.firstId+43,
+    HssType: "Onkyo Zone 2",
+    DPs: zone2DPs,
+    Parent: onkyoSettings.firstId+40,
+    _persistent: true
+  });    
+  
 	setObject(onkyoSettings.firstId, {
 	  Name: "Onkyo_Command",
 	  TypeName: "VARDP"

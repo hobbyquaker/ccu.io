@@ -1,8 +1,8 @@
 Onkyo adapter
 ======
 
-* Aktuelle Version: 0.9.4
-* Anzahl verwendeter Variablen in ccu.io: 40
+* Aktuelle Version: 1.0
+* Anzahl verwendeter Variablen in ccu.io: 44
 
 getestet mit Onkyo TX-NR626; TX-NR515 
 
@@ -84,6 +84,9 @@ Debug:    true|false
 * Requests to Eisbaeeer@gmail.com
 
 ## Changelog
+
+### 1.0
+* BugFix: Onkyo issue - Datapoints not shown in ScriptGUI - Added "Device" and "Channels"
 
 ### 0.9.4
 * Major changes in variable structur (combining set and feedback vars in front
