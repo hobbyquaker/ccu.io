@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.39*
+*aktuelle Version: 1.0.40*
 
 ## Dokumentation
 
@@ -35,6 +35,12 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.40
+* (Eisbaeeer) Fix Adapter Onkyo - datapoints not schown in ScriptGUI
+* (Eisbaeeer) Fix Adapter RPI - PiFace datapoints not shown in ScriptGUI
+* (Hobbyquaker) Fix Only 20 adapters shown in CCU.IO UI
+* (Hobbyquaker) Fix Adapter bcontrol_em_http
 
 ### 1.0.39
 * (Bluefox) Add currency rates adapter
