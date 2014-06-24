@@ -1,0 +1,270 @@
+<table style="font-size: 12px">
+    <tr>
+        <td class="translate">Enabled:</td>
+        <td>
+            <select id="netalarm_enabled">
+                <option value="false" class="translate">false</option>
+                <option value="true" class="translate">true</option>
+            </select>
+        </td>
+    </tr>
+</table>
+<table id="netalarmList">
+</table>
+<input type="button" id="add_device" class="translateV" value="add_device"/><br><br>
+<style>
+.ports_table table, .ports_table th, .ports_table td, .ports_table tr
+{
+    border-spacing: 0px;
+    border-collapse: collapse;
+    margin: 0px;
+    padding: 1px;
+    border:1px solid black;
+    text-align: center;
+}
+.ports_header {
+    color: white;
+    background: grey;
+}
+</style>
+<h2 class="translate">Description:</h2>
+<p class="translate">description</p>
+<script type="text/javascript">
+    var adapterWords = {
+        "false":              {"en": "false",                "de": "nein",                 "ru": "нет"},
+        "true":               {"en": "true",                 "de": "ja",                   "ru": "да"},
+        "auto":               {"en": "auto",                 "de": "auto",                 "ru": "авто"},
+        "Enabled:":           {"en": "Enabled:",             "de": "Aktiviert:",           "ru": "Активно:"},
+        "Description:":       {"en": "Description:",         "de": "Beschreibung:",        "ru": "Описание:"},
+        "add_device":         {"en": "Add new device",       "de": "Gerät hinzufügen",     "ru": "Добавить новый прибор"},
+        "IP:":                {"en": "IP:",                  "de": "IP:",                  "ru": "IP:"},
+        "Name:":              {"en": "Name:",                "de": "Name:",                "ru": "Имя прибора:"},
+        "Poll interval(sec):":{"en": "Poll interval(sec):",  "de": "Pollinterval(sek):",   "ru": "Интервал опроса(сек)"},
+        "Ports:":             {"en": "Ports:",               "de": "Ports:",               "ru": "Порты:"},
+        "Num":                {"en": "Num",                  "de": "Num",                  "ru": "Номер"},
+        "Name":               {"en": "Name",                 "de": "Name",                 "ru": "Имя"},
+        "Factor":             {"en": "Factor",               "de": "Faktor",               "ru": "Множитель"},
+        "Offset":             {"en": "Offset",               "de": "Offset",               "ru": "Сдвиг"},
+        "Room":               {"en": "Room",                 "de": "Zimmer",               "ru": "Комната"},
+        "Role":               {"en": "Role",                 "de": "Rolle",                "ru": "Роль"},
+        "del_device":         {"en": "Delete this device",   "de": "Diese Gerät entfernen","ru": "Удалить этот прибор"},
+        "description":        {
+            "en":  'This adapter is able to control the <a href="http://www.ab-log.ru/smart-house/ethernet/netalarm-328" target="_blank">netalarm</a> devices.' +
+                   'The digital ports can be controlled with true or false <br>' +
+                   'and the analog ports with float value from 0 to 1.<br>' +
+                   'Analog value is automatically translated to 0-255 value.<br>',
+            "de":  'This adapter is able to control the <a href="http://www.ab-log.ru/smart-house/ethernet/netalarm-328" target="_blank">netalarm</a> devices.' +
+                   'The digital ports can be controlled with true or false <br>' +
+                   'and the analog ports with float value from 0 to 1.<br>' +
+                    'Analog value is automatically translated to 0-255 value.<br>',
+            "ru":  'С помощью этого драйвера можно управлять и получать данные с <a href="http://www.ab-log.ru/smart-house/ethernet/netalarm-328" target="_blank">МегаДевайса</a>.<br>' +
+                   'В цифровые порты можно записать значения true или false,<br>' +
+                   'а в аналоговые значения от 0 до 1, например 0.5<br>' +
+                   'Все аналоговые значения будут переконвертированы в значения 0-255<br>'+
+                   'Свойство "Переключатель" используется только для цифровых входов и говорит о том: подключена кнопка или переключатель к этому входу.'
+        }
+    };
+
+    if (currentAdapterSettings.enabled) {
+        $("#netalarm_enabled option[value='false']").removeAttr("selected");
+        $("#netalarm_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#netalarm_enabled option[value='true']").removeAttr("selected");
+        $("#netalarm_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#netalarm_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#netalarm_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+    function showPort(dev, port) {
+        var portSettings = currentAdapterSettings.settings.devices[dev].ports[port];
+        var text = '<tr>';
+        text += '<td>' + port + '</td>';
+        text += '<td><input type="text"  id="port_name_'+dev+'_' + port + '" value="' + portSettings.name + '"></td>';
+        text += '<td><input style="display: ' + ((port > 4) ? 'none': '') + '" type="text" id="port_factor_' + dev + '_' + port + '"  size="4" value="'+ (portSettings.factor === undefined ? 1 : portSettings.factor)+ '"></td>';
+        text += '<td><input style="display: ' + ((port > 4) ? 'none': '') + '" type="text" id="port_offset_' + dev + '_' + port + '"  size="4" value="'+ (portSettings.offset === undefined ? 1 : portSettings.offset)+ '"></td>';
+        text += '<td><input type="text" id="port_room_' + dev + '_' + port + '" value="'+ (portSettings.room === undefined ? '' : portSettings.room)+ '"></td>';
+        text += '<td><input type="text" id="port_role_' + dev + '_' + port + '" value="'+ (portSettings.role === undefined ? '' : portSettings.role)+ '"></td>';
+
+        text += '</tr>';
+        return text;
+    }
+
+    function showPorts(dev) {
+        var devSettings = currentAdapterSettings.settings.devices[dev];
+        var text = '<table class="ports_table"><tr class="ports_header"><td>'+ translate('Num') +
+                '</td><td>'+ translate('Name') +
+                '</td><td>'+ translate('Factor') +
+                '</td><td>'+ translate('Offset') +
+                '</td><td>'+ translate('Room') +
+                '</td><td>'+ translate('Role') +
+                '</td></tr>';
+        for (var i = 0; i < devSettings.ports.length; i++) {
+            text += showPort(dev, i);
+        }
+        text += '</table>';
+
+        return text;
+    }
+    function translate(word) {
+        return translateWord(word, '', adapterWords);
+    }
+    function showDevice(dev) {
+        var devSettings = currentAdapterSettings.settings.devices[dev];
+        var text = '<tr><td><table style="border: 1px solid black">';
+        text += '<tr><td>'+ translate('IP:') + '</td><td><input type="text" id="dev_ip_' + dev + '" value="' + devSettings.ip + '"></td></tr>';
+        text += '<tr><td>'+ translate('Name:') + '</td><td><input type="text" id="dev_name_' + dev + '" value="' + devSettings.name + '"></td></tr>';
+        text += '<tr><td>'+ translate('Poll interval(sec):') + '</td><td><input type="text" id="dev_poll_' + dev + '" value="' + devSettings.pollIntervalSec + '"></td></tr>';
+
+        text += '<tr><td style="vertical-align: top">'+ translate('Ports:') + '</td><td id="dev_ports_' + dev + '">';
+        text += showPorts(dev);
+
+        text += '</td></tr>'
+        text += '<tr><td></td><td><input type="button" value="'+ translate('del_device') + '" id="del_device_' + dev + '"></td></tr>';
+        text += '</table></td></tr>';
+        return text;
+    }
+
+    function setPortsHandlers (dev) {
+        var devSettings = currentAdapterSettings.settings.devices[dev];
+        for (var i = 0; i < devSettings.ports.length; i++) {
+            $('#port_name_' + dev + '_' + i).change(function () {
+                var id = $(this).attr('id').substring("port_name_".length);
+                var pos = id.lastIndexOf('_');
+                var port = id.substring(pos);
+                id = id.substring(0, pos);
+                currentAdapterSettings.settings.devices[id].ports[port].name = $(this).val();
+                updateAdapterSettings();
+            });
+            $('#port_factor_' + dev + '_' + i).change(function () {
+                var id = $(this).attr('id').substring("port_factor_".length);
+                var pos = id.lastIndexOf('_');
+                var port = id.substring(pos + 1);
+                id = id.substring(0, pos);
+                currentAdapterSettings.settings.devices[id].ports[port].factor = $(this).val();
+                updateAdapterSettings();
+            });
+            $('#port_room_' + dev + '_' + i).change(function () {
+                var id = $(this).attr('id').substring("port_room_".length);
+                var pos = id.lastIndexOf('_');
+                var port = id.substring(pos + 1);
+                id = id.substring(0, pos);
+                currentAdapterSettings.settings.devices[id].ports[port].room = $(this).val();
+                updateAdapterSettings();
+            });
+            $('#port_role_' + dev + '_' + i).change(function () {
+                var id = $(this).attr('id').substring("port_role_".length);
+                var pos = id.lastIndexOf('_');
+                var port = id.substring(pos + 1);
+                id = id.substring(0, pos);
+                currentAdapterSettings.settings.devices[id].ports[port].role = $(this).val();
+                updateAdapterSettings();
+            });
+        }
+    }
+
+    function showDevices () {
+        console.log("A");
+        var text = "";
+        for (var dev in currentAdapterSettings.settings.devices) {
+            text += showDevice(dev);
+        }
+        $('#netalarmList').html(text);
+
+        //Install handlers
+        for (var dev in currentAdapterSettings.settings.devices) {
+            $('#dev_ip_' + dev).change(function () {
+                var id = $(this).attr('id').substring("dev_ip_".length);
+                currentAdapterSettings.settings.devices[id].ip = $(this).val();
+                updateAdapterSettings();
+            });
+
+            $('#dev_name_' + dev).change(function () {
+                var id = $(this).attr('id').substring("dev_name_".length);
+                currentAdapterSettings.settings.devices[id].name = $(this).val();
+                $('#megaName_' + id).html($(this).val());
+                updateAdapterSettings();
+            }).keyup(function() {$(this).trigger("change");});
+
+            $('#dev_poll_' + dev).change(function () {
+                var id = $(this).attr('id').substring("dev_poll_".length);
+                currentAdapterSettings.settings.devices[id].pollIntervalSec = $(this).val();
+                updateAdapterSettings();
+            });
+
+            setPortsHandlers(dev);
+            $('#del_device_' + dev).button().click(function () {
+                var id = $(this).attr('id').substring("del_device_".length);
+                delete currentAdapterSettings.settings.devices[id];
+                showDevices();
+                updateAdapterSettings();
+            });
+        }
+    }
+
+    $('#add_device').button().click(function () {
+        // Find free id
+        var i = 1;
+        while (currentAdapterSettings.settings.devices["_"+i]) i++;
+
+        currentAdapterSettings.settings.devices["_" + i] = {
+            "name":            "netAlarm" + i,
+            "ip":              "0.0.0.0",
+            "pollIntervalSec": 30,
+            "ports": [
+                {
+                    "name": "T_0",
+                    "offset": 0,
+                    "factor": 1
+                },
+                {
+                    "name": "T_1",
+                    "offset": 0,
+                    "factor": 1
+                },
+                {
+                    "name": "T_2",
+                    "offset": 0,
+                    "factor": 1
+                },
+                {
+                    "name": "A_3",
+                    "offset": 0,
+                    "factor": 1
+                },
+                {
+                    "name": "A_4",
+                    "offset": 0,
+                    "factor": 1
+                },
+                {
+                    "name": "IN_5"
+                },
+                {
+                    "name": "IN_6"
+                },
+                {
+                    "name": "IN_7"
+                },
+                {
+                    "name": "IN_8"
+                },
+                {
+                    "name": "OUT_9"
+                },
+                {
+                    "name": "OUT_10"
+                }
+            ]
+        };
+
+        showDevices();
+        updateAdapterSettings();
+    });
+
+
+    translateAll(ccuIoSettings.language, adapterWords);
+    showDevices();
+</script>

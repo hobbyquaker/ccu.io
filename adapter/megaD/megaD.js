@@ -4,7 +4,7 @@
 *      Lets control the MegaD-328 over ethernet (http://www.ab-log.ru/smart-house/ethernet/megad-328)
 *
 *      Version 0.1
-*     
+*
 *      The device has 14 ports, 0-7 inputs and 8-13 outputs.
 *      To read the state of the port call
 *      http://mega_ip/sec/?pt=4&cmd=get , where sec is password (max 3 chars), 4 is port number
@@ -19,18 +19,18 @@
 *
 */
 var settings = require(__dirname + '/../../settings.js');
- 
+
 if (!settings.adapters.megaD || !settings.adapters.megaD.enabled) {
     process.exit();
 }
- 
+
 var megadSettings = settings.adapters.megaD.settings;
- 
+
 var logger         = require(__dirname + '/../../logger.js'),
-    io_client      = require('socket.io-client'), 
+    io_client      = require('socket.io-client'),
     http           = require('http'),
     express        = require('express');
- 
+
 var devices    = [],
     pollTimer  = null,
     ccu_socket = null,
@@ -83,7 +83,7 @@ function sendCommand (dev, port, value) {
         logger.warn("adapter megaD: Got error by post request " + e.message);
     });
 }
- 
+
 if (settings.ioListenPort) {
     ccu_socket = io_client.connect("127.0.0.1", {
         port: settings.ioListenPort
@@ -96,15 +96,15 @@ if (settings.ioListenPort) {
 } else {
     process.exit();
 }
- 
+
 ccu_socket.on('connect', function () {
     logger.info("adapter megaD  connected to ccu.io");
 });
- 
+
 ccu_socket.on('disconnect', function () {
     logger.info("adapter megaD  disconnected from ccu.io");
 });
- 
+
 ccu_socket.on('event', function (obj) {
     if (!obj || !obj[0]) {
         return;
@@ -144,11 +144,11 @@ ccu_socket.on('event', function (obj) {
     // Device not found
     if (dev === null)
         return;
- 
+
     var val = obj[1];
 
     logger.info ("adapter megaD  try to control " + dev.name + ", port " + port + " with " + val);
- 
+
     if (val === "false" || val === false) { val = 0; }
     if (val === "true"  || val === true)  { val = 1; }
 
@@ -180,15 +180,15 @@ ccu_socket.on('event', function (obj) {
         }
     }
 });
- 
+
 function stop() {
     if (pollTimer) {
         clearInterval(pollTimer);
         pollTimer = null;
     }
- 
+
     logger.info("adapter megaD  terminating");
- 
+
     setTimeout(function () {
         process.exit();
     }, 250);
@@ -197,20 +197,20 @@ function stop() {
 process.on('SIGINT', function () {
     stop();
 });
- 
+
 process.on('SIGTERM', function () {
     stop();
 });
- 
+
 function setObject(id, obj) {
     ccu_socket.emit("setObject", id, obj);
 }
- 
+
 function setState(id, val) {
     logger.info("adapter megaD  setState " + id + " " + val);
     ccu_socket.emit("setState", [id, val, null, true]);
 }
- 
+
 function getPortState(dev, port, callback) {
     var options = {
         host: devices[dev].ip,
@@ -327,7 +327,7 @@ function restApi(req, res) {
     var _devs = path.split('/');
     var _dev = null;
     for (var i = 0; i < devices.length; i++) {
-        if (devices[i].name == _devs[0]) {
+        if ((_devs[0] && devices[i].name == _devs[0]) || devices[i].ip == req.connection.remoteAddress) {
             _dev = i;
             break;
         }
@@ -447,5 +447,5 @@ function megadInit () {
         logger.info("megaD     listening on port " + megadSettings.ioListenPort);
     }
 }
- 
+
 megadInit ();

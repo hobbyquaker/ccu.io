@@ -1,0 +1,58 @@
+{
+    "enabled": false,
+    "settings": {
+        "firstId":         75000,
+        "devices": {
+            "_1": {
+                "name": "netAlarm1",
+                "ip": "192.168.1.100",
+                "pollIntervalSec": 30,
+                "ports": [
+                    {
+                        "name": "T_0",
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "T_1",
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "T_2",
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "A_3",
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "A_4",
+                        "offset": 0,
+                        "factor": 1
+                    },
+                    {
+                        "name": "IN_5"
+                    },
+                    {
+                        "name": "IN_6"
+                    },
+                    {
+                        "name": "IN_7"
+                    },
+                    {
+                        "name": "IN_8"
+                    },
+                    {
+                        "name": "OUT_9"
+                    },
+                    {
+                        "name": "OUT_10"
+                    }
+                ]
+            }
+        }
+    }
+}
