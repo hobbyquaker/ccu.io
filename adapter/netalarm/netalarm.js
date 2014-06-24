@@ -251,7 +251,7 @@ function processPortStates(_dev, isShort, response) {
             // parse answer
             var vals = response.split(':');
             for (var i = 0; i < vals.length; i++) {
-                if (!devices[_dev].ports[i])
+                if (!devices[_dev].ports[i] || !devices[_dev].ports[i].ccu)
                     break;
                 vals[i] = parseInt(vals[i]);
                 if (devices[_dev].ports[i].ccu.digital) {
@@ -261,7 +261,7 @@ function processPortStates(_dev, isShort, response) {
                         setState(devices[_dev].ports[i].ccu.DPs.LEVEL, devices[_dev].ports[i].ccu.value);
                     }
                 }else {
-                    var f = (data[2] / 1024) * devices[_dev].ports[i].factor + devices[_dev].ports[i].offset;
+                    var f = (vals[i] / 1024) * devices[_dev].ports[i].factor + devices[_dev].ports[i].offset;
                     if (f != devices[_dev].ports[i].ccu.value) {
                         devices[_dev].ports[i].ccu.value = vals[i] / 1024;
                         logger.info("adapter netalarm: detected new value for port " + _dev + "[" + i + "]: " + devices[_dev].ports[i].ccu.value);
@@ -280,14 +280,65 @@ function processPortStates(_dev, isShort, response) {
                 devices[_dev].isGotList = true;
             }
             var vals = response.split(';');
+
             for (var i = 0; i < vals.length; i++) {
                 if (!devices[_dev].ports[i])
                     break;
 
+                var devChannels = [];
+
                 var data = vals[i].split(':');
-                if (data[1]) {
-                    devices[_dev].ports[i].ccu.name += "_" + data[1];
+                var types = [];
+                if (data[0].indexOf('T') == 0) {
+                    types[0] = 'T';
+                    types[1] = data[0].substring(1);
+                } else
+                if (data[0].indexOf('IN') == 0) {
+                    types[0] = 'IN';
+                    types[1] = data[0].substring(2);
+                } else
+                if (data[0].indexOf('OUT') == 0) {
+                    types[0] = 'OUT';
+                    types[1] = data[0].substring(3);
+                } else
+                if (data[0].indexOf('A') == 0) {
+                    types[0] = 'A';
+                    types[1] = data[0].substring(1);
                 }
+                var name = "netalarm." + devices[_dev].name + '_' + data[0];
+                if (data[1]) {
+                    name += "_" + data[1];
+                }
+
+                devices[_dev].ports[i].ccu = {
+                    chnDP:    devices[_dev].devId + i * 2 + 1,
+                    name:     name,
+                    address:  "netalarm." + _dev + "." + i,
+                    DPs:      {
+                        LEVEL:   devices[_dev].devId + i * 2 + 2
+                    },
+                    digital: (types[0] != 'A' &&  types[0] != 'T')
+                };
+
+                devChannels.push(devices[_dev].ports[i].ccu.chnDP);
+
+                var chObject = {
+                    Name:     devices[_dev].ports[i].ccu.name,
+                    TypeName: "CHANNEL",
+                    Address:  devices[_dev].ports[i].ccu.address,
+                    HssType:  "netalarm_" + types[0],
+                    DPs:      devices[_dev].ports[i].ccu.DPs,
+                    Parent:   devices[_dev].devId
+                };
+                if (devices[_dev].ports[i].room) {
+                    chObject.rooms = devices[_dev].ports[i].room;
+                }
+                if (devices[_dev].ports[i].role) {
+                    chObject.funcs = devices[_dev].ports[i].role;
+                }
+
+                setObject(devices[_dev].ports[i].ccu.chnDP, chObject);
+
                 data[2] = parseInt(data[2]);
                 if (devices[_dev].ports[i].ccu.digital) {
                     devices[_dev].ports[i].ccu.value = !!data[2];
@@ -312,6 +363,16 @@ function processPortStates(_dev, isShort, response) {
                 }
                 setState(devices[_dev].ports[i].ccu.DPs.LEVEL, devices[_dev].ports[i].ccu.value);
             }
+            setObject(devices[_dev].devId, {
+                Name:      "netalarm." + devices[_dev].name,
+                TypeName:  "DEVICE",
+                HssType:   "netalarm_ROOT",
+                Address:   "netalarm." + _dev,
+                Interface: "CCU.IO",
+                Channels:  devChannels
+            });
+
+
         }
     }
 }
@@ -320,49 +381,12 @@ function netalarmInit () {
         if (!netalarmSettings.devices[dev].ip || netalarmSettings.devices[dev].ip == "0.0.0.0")
             continue;
 
-        var devChannels = [];
         var id = parseInt(dev.substring(1)) - 1;
-        var config = [
-            "T_0",
-            "T_1",
-            "T_2",
-            "A_3",
-            "A_4",
-            "IN_5",
-            "IN_6",
-            "IN_7",
-            "IN_8",
-            "OUT_9",
-            "OUT_10"
-        ]
-        devices[id] = netalarmSettings.devices[dev];
-        devices[id].devId = netalarmSettings.firstId + id * 12;
+
+        devices[id]          = netalarmSettings.devices[dev];
+        devices[id].devId    = netalarmSettings.firstId + id * 64;
         devices[id].isGotList = false;
-
-        for (var port = 0; port < config.length; port++) {
-            var name = "netalarm_" + devices[id].name + "." + config[port];
-            var types = config[port].split('_');
-
-            devices[id].ports[port].ccu = {
-                chnDP:    devices[id].devId + port * 2 + 1,
-                name:     name,
-                address:  "netalarm." + id + "." + port,
-                DPs:      {
-                    LEVEL:   devices[id].devId + port * 2 + 2
-                },
-                digital: (types[0] != 'A' &&  types[0] != 'T')
-            };
-
-            devChannels.push(devices[id].ports[port].ccu.chnDP);
-
-            var chObject = {
-                Name:     devices[id].ports[port].ccu.name,
-                TypeName: "CHANNEL",
-                Address:  devices[id].ports[port].ccu.address,
-                HssType:  "netalarm_" + types[0],
-                DPs:      devices[id].ports[port].ccu.DPs,
-                Parent:   devices[id].devId
-            };
+        for (var port = 0; port < devices[id].portsCount; port++) {
             if (devices[id].ports[port].factor) {
                 devices[id].ports[port].factor = parseFloat(devices[id].ports[port].factor);
             } else {
@@ -373,24 +397,8 @@ function netalarmInit () {
             } else {
                 devices[id].ports[port].offset = 0;
             }
-            if (devices[id].ports[port].room) {
-                chObject.rooms = devices[id].ports[port].room;
-            }
-            if (devices[id].ports[port].role) {
-                chObject.funcs = devices[id].ports[port].role;
-            }
-
-            setObject(devices[id].ports[port].ccu.chnDP, chObject);
         }
 
-        setObject(devices[id].devId, {
-            Name:      "netalarm_" + devices[id].name,
-            TypeName:  "DEVICE",
-            HssType:   "netalarm_ROOT",
-            Address:   "netalarm." + id,
-            Interface: "CCU.IO",
-            Channels:  devChannels
-        });
         getPortStates(id, false, processPortStates);
 
         // Try to get the list of devices

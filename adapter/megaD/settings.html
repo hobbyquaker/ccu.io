@@ -130,7 +130,7 @@
         text += '<td><input style="display: ' + (portSettings.input ? 'none': '') + '" type="checkbox" id="port_digital_'+dev+'_' + port + '" '+ (portSettings.digital ? 'checked' : '')+ '><span style="display: '+(!portSettings.input ? 'none': '')+'" id="port_digital_'+dev+'_' + port + '_auto">'+ translate('auto') + '</span></td>';
         text += '<td><input style="display: ' + (!portSettings.input ? 'none': '') + '" type="checkbox" id="port_switch_'+dev+'_' + port + '" '+ (portSettings.switch ? 'checked' : '')+ '></td>';
         text += '<td><input style="display: ' + ((!portSettings.input && portSettings.digital) ? 'none': '') + '" type="text" id="port_factor_'+dev+'_' + port + '"  size="4" value="'+ (portSettings.factor === undefined ? 1 : portSettings.factor)+ '"></td>';
-        text += '<td><input style="display: ' + ((!portSettings.input && portSettings.digital) ? 'none': '') + '" type="text" id="port_offset_'+dev+'_' + port + '"  size="4" value="'+ (portSettings.offset === undefined ? 1 : portSettings.offset)+ '"></td>';
+        text += '<td><input style="display: ' + ((!portSettings.input && portSettings.digital) ? 'none': '') + '" type="text" id="port_offset_'+dev+'_' + port + '"  size="4" value="'+ (portSettings.offset === undefined ? 0 : portSettings.offset)+ '"></td>';
         text += '<td><input type="text" id="port_room_'+dev+'_' + port + '" value="'+ (portSettings.room === undefined ? '' : portSettings.room)+ '"></td>';
         text += '<td><input type="text" id="port_role_'+dev+'_' + port + '" value="'+ (portSettings.role === undefined ? '' : portSettings.role)+ '"></td>';
 

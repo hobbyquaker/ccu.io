@@ -7,49 +7,50 @@
                 "name": "netAlarm1",
                 "ip": "192.168.1.100",
                 "pollIntervalSec": 30,
+                "portsCount": 11,
                 "ports": [
                     {
-                        "name": "T_0",
+                        "name": "port1",
                         "offset": 0,
                         "factor": 1
                     },
                     {
-                        "name": "T_1",
+                        "name": "port2",
                         "offset": 0,
                         "factor": 1
                     },
                     {
-                        "name": "T_2",
+                        "name": "port3",
                         "offset": 0,
                         "factor": 1
                     },
                     {
-                        "name": "A_3",
+                        "name": "port4",
                         "offset": 0,
                         "factor": 1
                     },
                     {
-                        "name": "A_4",
+                        "name": "port5",
                         "offset": 0,
                         "factor": 1
                     },
                     {
-                        "name": "IN_5"
+                        "name": "port6"
                     },
                     {
-                        "name": "IN_6"
+                        "name": "port7"
                     },
                     {
-                        "name": "IN_7"
+                        "name": "port8"
                     },
                     {
-                        "name": "IN_8"
+                        "name": "port9"
                     },
                     {
-                        "name": "OUT_9"
+                        "name": "port10"
                     },
                     {
-                        "name": "OUT_10"
+                        "name": "port11"
                     }
                 ]
             }
