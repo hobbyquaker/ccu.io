@@ -706,16 +706,33 @@ function log(msg) {
     scriptEngine.logger.info("script        "+msg);
 }
 
-function subscribe(pattern, callback) {
+function subscribe(pattern, callbackOrId, value) {
 	if (typeof pattern != "object") {
 		pattern = {id: pattern, change: "ne"};
 	}
-	
+    // enable calls like: on("ADAPTER.LIGHT.SWITCH.STATE", "ADAPTER.LIGHT.RELAY.STATE"); // Set state of SWITCH to RELAY if state of SWITCH changes
+    // and
+    // on("ADAPTER.LIGHT.SWITCH.STATE", "ADAPTER.LIGHT.RELAY.STATE", 1); // Set 1 to RELAY if state of SWITCH changes
+    var callb = null;
+	if (typeof callbackOrId != "function") {
+        if (typeof value != 'undefined') {
+            callb = function (obj) {
+                setState(callbackOrId, value);
+            }
+        } else {
+            callb = function (obj) {
+                setState(callbackOrId, getState(obj.id));
+            }
+        }
+    } else {
+        callb = callbackOrId;
+    }
     scriptEngine.subscribers.push({
         pattern: pattern,
-        callback: callback
+        callback: callb
     });
 }
+var on = subscribe;
 
 function schedule(pattern, callback) {
     var sch;
