@@ -1,9 +1,10 @@
 Package: ccu.io
 Version: @@version
-Section: base
-Priority: optional
-Architecture: @@architecture
+Section: misc
+Priority: extra
+Architecture: all
 Installed-Size: @@size
-Depends:
+Depends: nodejs
 Maintainer: ccu.io <support@ccu.io>
+Homepage: http://ccu.io
 Description: ccu.io is automation platform on NodeJS.
