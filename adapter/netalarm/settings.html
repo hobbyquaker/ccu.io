@@ -49,19 +49,25 @@
         "Role":               {"en": "Role",                 "de": "Rolle",                "ru": "Роль"},
         "del_device":         {"en": "Delete this device",   "de": "Diese Gerät entfernen","ru": "Удалить этот прибор"},
         "description":        {
-            "en":  'This adapter is able to control the <a href="http://www.ab-log.ru/smart-house/ethernet/netalarm-328" target="_blank">netalarm</a> devices.' +
+            "en":  'This adapter is able to read data from <a href="http://www.avislab.com/blog/enc28j60/" target="_blank">netAlarm</a> devices.' +
+                   'The digital ports have values: true or false <br>' +
+                   'and the analog ports with float value from 0 to 1.<br>' + 
+                   'Settings "factor" and "offset" will be used to modify the analog value:<br>\n' +
+                   'Value for ccu.io = (value from MegaD / 1024) * factor + offset<br>'+
+                   'value for меги = ((value from ccu.io - offset) / factor) * 1024<br>\n',
+            "de":  'This adapter is able to control the <a href="http://www.avislab.com/blog/enc28j60/" target="_blank">netAlarm</a> devices.' +
                    'The digital ports can be controlled with true or false <br>' +
-                   'and the analog ports with float value from 0 to 1.<br>' +
-                   'Analog value is automatically translated to 0-255 value.<br>',
-            "de":  'This adapter is able to control the <a href="http://www.ab-log.ru/smart-house/ethernet/netalarm-328" target="_blank">netalarm</a> devices.' +
-                   'The digital ports can be controlled with true or false <br>' +
-                   'and the analog ports with float value from 0 to 1.<br>' +
-                    'Analog value is automatically translated to 0-255 value.<br>',
-            "ru":  'С помощью этого драйвера можно управлять и получать данные с <a href="http://www.ab-log.ru/smart-house/ethernet/netalarm-328" target="_blank">МегаДевайса</a>.<br>' +
-                   'В цифровые порты можно записать значения true или false,<br>' +
-                   'а в аналоговые значения от 0 до 1, например 0.5<br>' +
-                   'Все аналоговые значения будут переконвертированы в значения 0-255<br>'+
-                   'Свойство "Переключатель" используется только для цифровых входов и говорит о том: подключена кнопка или переключатель к этому входу.'
+                   'and the analog ports with float value from 0 to 1.<br>' + 
+                   'Analog value is automatically translated to 0-255 value.<br>'+
+                   'Einstellungen "Faktor" und "Offset" werden für die Umrechnung von Analogwerten verwendet:<br>\n'+
+                   'Wert ccu.io = (Wert aus MegaD / 1024) * Faktor + Offset<br>'+
+                   'Wert für меги = ((Wert aus ccu.io - Offset) / Faktor) * 1024<br>\n',
+            "ru":  'С помощью этого драйвера можно получать данные с <a href="http://www.avislab.com/blog/enc28j60/" target="_blank">netAlarm</a>.<br>' +
+                   'Цифровые порты могут иметь значения true или false,<br>' +
+                   'а аналоговые значения от 0 до 1, например 0.5<br>' +
+                   'Настройки "фактор" и "сдвиг" используются для модификации аналоговых значений:<br>\n'+
+                   'значение ccu.io = (значение из меги / 1024) * фактор + сдвиг<br>'+
+                   'значение для меги = ((значение ccu.io - сдвиг) / фактор) * 1024<br>\n'
         }
     };
 

@@ -171,9 +171,10 @@ ccu_socket.on('event', function (obj) {
         if (devices[dev].ports[port].digital) {
             sendCommand(dev, port, val);
         } else {
-            val = Math.round(val * 255);
+            val = (val - devices[dev].ports[port].offset) / devices[dev].ports[port].factor * 256;
+            val = Math.round(val);
             if (devices[dev].ports[port].isRollo) {
-                sendCommand(dev, port, (255 - val));
+                sendCommand(dev, port, (256 - val));
             } else {
                 sendCommand(dev, port, val);
             }
@@ -264,11 +265,12 @@ function processPortState(_dev, _port, value, rawValue) {
                     logger.info("adapter megaD: detected new state for port " + _dev + ": " + value);
                     setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, value);
                 } else if (devices[_dev].isRollo) {
-                    logger.info("adapter megaD: detected new rollo state for port " + _dev + ": " + value + ", calc state " + ((255 - value) / 255));
-                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, ((255 - devices[_dev].value) / 255).toFixed(2));
+                    logger.info("adapter megaD: detected new rollo state for port " + _dev + ": " + value + ", calc state " + ((256 - value) / 256));
+                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, ((256 - devices[_dev].value) / 256).toFixed(2));
                 } else {
-                    logger.info("adapter megaD: detected new value for port " + _dev + ": " + value + ", calc state " + (value / 255));
-                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, (value / 255).toFixed(4));
+                    logger.info("adapter megaD: detected new value for port " + _dev + ": " + value + ", calc state " + (value / 256));
+                    var f = (value / 256) * devices[_dev].ports[_port].factor + devices[_dev].ports[_port].offset;
+                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, f.toFixed(4));
                 }
             }
         } else {
@@ -379,6 +381,17 @@ function megadInit () {
 
         for (var port = 0; port < devices[id].portsCount; port++) {
             var name = "MegaD_" + devices[id].name + "." + ((devices[id].ports[port].name == ("port" + port)) ? (((port < 7) ? "IN" : "OUT") + "_Port" + port) : devices[id].ports[port].name);
+
+            if (devices[id].ports[port].factor) {
+                devices[id].ports[port].factor = parseFloat(devices[id].ports[port].factor);
+            } else {
+                devices[id].ports[port].factor = 1;
+            }
+            if (devices[id].ports[port].offset) {
+                devices[id].ports[port].offset = parseFloat(devices[id].ports[port].offset);
+            } else {
+                devices[id].ports[port].offset = 0;
+            }
 
             devices[id].ports[port].ccu = {
                 chnDP:    devices[id].devId + port * 2 + 1,
