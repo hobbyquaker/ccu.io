@@ -2,6 +2,6 @@
 
 # Stop the ccu.io
 if [ -d "/opt/ccu.io/" ]; then
-    echo "Stopping ccu.io..."
-	node /opt/ccu.io/ccu.io-server.js stop || true
+	/etc/init.d/ccu.io.sh stop || true
+	update-rc.d ccu.io.sh remove || true
 fi

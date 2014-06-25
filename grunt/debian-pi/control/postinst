@@ -34,6 +34,6 @@ chown -R @@user:@@user /opt/ccu.io/
 chmod 777 /etc/init.d/ccu.io.sh
 chown root:root /etc/init.d/ccu.io.sh
 
+update-rc.d ccu.io.sh defaults
 # Start the service!
-echo "Start ccu.io..."
-node /opt/ccu.io/ccu.io-server.js start
+/etc/init.d/ccu.io.sh start
