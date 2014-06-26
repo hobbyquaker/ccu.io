@@ -231,33 +231,23 @@ function getPortState(dev, port, callback) {
         res.on('end', function () {
             // Analyse answer and updates staties
             if (callback) {
-                if (xmldata == "ON")
-                    callback(dev, port, true, xmldata);
-                else
-                if (xmldata == "OFF")
-                    callback(dev, port, false, xmldata);
-                else
-                    callback(dev, port, parseInt(xmldata), xmldata);
+                callback(dev, port, xmldata);
             }
         });
     }).on('error', function(e) {
         logger.warn("adapter megaD: Got error by request " + e.message);
         if (typeof simulate !== "undefined") {
-            if (simulate[port] == "ON")
-                callback(dev, port, true, simulate[port]);
-            else
-            if (simulate[port] == "OFF")
-                callback(dev, port, false, simulate[port]);
-            else
-                callback(dev, port, parseInt(simulate[port]), simulate[port]);
+            callback(dev, port, simulate[port]);
         }
     });
 }
 
-function processPortState(_dev, _port, value, rawValue) {
+function processPortState(_dev, _port, value) {
     if (value !== null) {
+        // Value can be OFF/5 or 27/0 or 27 or ON
         var t = value.split("/");
         value = t[0];
+        var rawValue = value;
         t = null;
         if (value == 'OFF') {
             value = 0;
