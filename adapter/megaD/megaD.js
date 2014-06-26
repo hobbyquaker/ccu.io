@@ -325,10 +325,6 @@ function processPortState(_dev, _port, value, rawValue) {
 
 function pollStatus(dev) {
     for (var port = 0; port < devices[dev].ports.length; port++) {
-        // Do not poll outputs
-        if (!devices[dev].ports[port].input)
-            continue;
-
         getPortState(dev, port, processPortState);
     }
 }
