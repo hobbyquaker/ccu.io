@@ -256,6 +256,17 @@ function getPortState(dev, port, callback) {
 
 function processPortState(_dev, _port, value, rawValue) {
     if (value !== null) {
+        var t = value.split("/");
+        value = t[0];
+        t = null;
+        if (value == 'OFF') {
+            value = 0;
+        } else
+        if (value == 'ON') {
+            value = 1;
+        }
+        value = parseInt(value);
+
         if (devices[_dev].ports[_port].ccu.value !== undefined) {
             // If status changed
             if (value !== devices[_dev].ports[_port].ccu.value) {
@@ -263,7 +274,7 @@ function processPortState(_dev, _port, value, rawValue) {
 
                 if (devices[_dev].ports[_port].digital) {
                     logger.info("adapter megaD: detected new state for port " + _dev + ": " + value);
-                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, value);
+                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, !!value);
                 } else if (devices[_dev].isRollo) {
                     logger.info("adapter megaD: detected new rollo state for port " + _dev + ": " + value + ", calc state " + ((256 - value) / 256));
                     setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, ((256 - devices[_dev].value) / 256).toFixed(2));
