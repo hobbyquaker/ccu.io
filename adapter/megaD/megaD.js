@@ -38,14 +38,20 @@ var devices    = [],
     app        = null;
 
 var simulate = [
-    "ON/5",
-    "OFF/0",
-    "125",
-    "255",
-    "ON/8",
-    "OFF/6",
-    "178",
-    "ON"
+    "OFF/0<br>",
+    "ON/607<br>",
+    "OFF/0<br>",
+    "OFF/0<br>",
+    "OFF/12<br>",
+    "OFF/6<br>",
+    "OFF/4<br>",
+    "OFF",
+    "OFF",
+    "OFF",
+    "OFF",
+    "OFF",
+    "OFF",
+    "0"
 ];
 
 function sendCommand (dev, port, value) {
@@ -208,7 +214,7 @@ function setObject(id, obj) {
 }
 
 function setState(id, val) {
-    logger.info("adapter megaD  setState " + id + " " + val);
+    logger.info("adapter megaD setState " + id + " " + val);
     ccu_socket.emit("setState", [id, val, null, true]);
 }
 
@@ -267,13 +273,13 @@ function processPortState(_dev, _port, value) {
                 devices[_dev].ports[_port].ccu.value = value;
 
                 if (devices[_dev].ports[_port].digital) {
-                    logger.info("adapter megaD: detected new state for " + devices[_dev].ip + "[" + _port + "]: " + value);
+                    logger.info("adapter megaD detected new state for " + devices[_dev].ip + "[" + _port + "]: " + value);
                     setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, !!value);
                 } else if (devices[_dev].isRollo) {
-                    logger.info("adapter megaD: detected new rollo state for " + devices[_dev].ip + "[" + _port + "]: " + value + ", calc state " + ((256 - value) / 256));
+                    logger.info("adapter megaD detected new rollo state for " + devices[_dev].ip + "[" + _port + "]: " + value + ", calc state " + ((256 - value) / 256));
                     setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, ((256 - devices[_dev].value) / 256).toFixed(2));
                 } else {
-                    logger.info("adapter megaD: detected new value for " + devices[_dev].ip + "[" + _port + "]: " + value + ", calc state " + (value / 256));
+                    logger.info("adapter megaD detected new value for " + devices[_dev].ip + "[" + _port + "]: " + value + ", calc state " + (value / 256));
                     var f = (value / 256) * devices[_dev].ports[_port].factor + devices[_dev].ports[_port].offset;
                     setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, f.toFixed(4));
                 }

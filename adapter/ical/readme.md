@@ -28,7 +28,7 @@ Bedeutung der Optionen im Konfigfile:
 - "preview" : 7 heisst, dass Termine 7 Tage im voraus angezeigt werden
 - "runEveryMinutes": 30 bedeutet dass der Adapter automatisch alle 30min den Kalender neu einliesst. Bei 0 wird nicht automatisch eingelesen
 - "colorize": true Termine am heutigen Tag werden rot gefärbt, Termine am morgigen Tag orange, diese Option überstimmt die Option everyCalOneColor
-- "debug": false bei true werden werden erweiterte Ausgaben ins CCU.IO Log geschrieben
+- "debug": false bei true werden erweiterte Ausgaben ins CCU.IO Log geschrieben
 - "defColor": "white" legt die Standardfarbe der Kalendereinträge fest 
 - "fulltime": " " legt fest durch welchen String bei ganztägigen Terminen die Uhrzeit 00:00 ersetzt wird. Bei Leerzeichen (zwischen den Hochkommas) wird dir Uhrzeit bei ganztägigen Terminen weggelassen
 - "replaceDates": true Bei true wird bei heutigen Terminen das heutige Datum durch den String todayString ersetzt (z.B. "Heute"). Bei morgigen Terminen durch den String tomorrowString
