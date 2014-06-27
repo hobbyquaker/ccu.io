@@ -19,6 +19,19 @@
         </select></td>
     </tr>
     <tr>
+        <td class="translate">Cache enabled:</td>
+        <td>
+            <select id="sayit_settings_cache_enabled">
+                <option value="false" class="translate">false</option>
+                <option value="true" class="translate">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td class="translate">Cache path:</td>
+        <td><input id="sayit_settings_cache_path" type="text" /></td>
+    </tr>
+    <tr>
         <td class="translate">Output on Raspberry PI:</td>
         <td><select id="sayit_settings_rasp_output">
             <option value="0">Auto</option>
@@ -73,6 +86,8 @@
         "false":             {"en": "false",             "de": "nein",            "ru": "нет"},
         "true":              {"en": "true",              "de": "ja",              "ru": "да"},
         "Enabled:":          {"en": "Enabled:",          "de": "Aktiviert:",      "ru": "Активно:"},
+        "Cache enabled:":    {"en": "Cache enabled:",    "de": "Cache aktiviert:",      "ru": "Cache enabled:"},
+        "Cache path:":       {"en": "Cache path:",       "de": "Cache Pfad:",     "ru": "Cache path:"},
         "Output on Raspberry PI:": {"en": "Output on Raspberry PI:", "de": "Ausgabe auf Raspberry PI:", "ru": "Вывод на Raspberry PI:"},
         "Start volume 0 - 100:": {"en": "Start volume 0 - 100:", "de": "Initial-Lautstärke 0 - 100:", "ru": "Начальная громкость 0 - 100:"},
         "Home24-Mediaplayer IP:":{"en": "Home24-Mediaplayer IP:", "de": "Home24-Mediaplayer IP:",  "ru": "Home24-Mediaplayer IP:"},
@@ -108,7 +123,7 @@
         		 +"The mp3/wav files can be played to by wrinting its name into the object. (e.g. \"dashui/img/door-bell.mp3\")<br>"
         		 +"If the variable has no specific setings for MP24_IP or FTP the common adapter settings will be used.",
 
-        	"du": "SayIt Adapter kann den Text in die Sprache umwandeln. Man muss mit dem Skript die eingestellte Variable beschreiben, damit man was hören kann.<br>"
+        	"de": "SayIt Adapter kann den Text in die Sprache umwandeln. Man muss mit dem Skript die eingestellte Variable beschreiben, damit man was hören kann.<br>"
         		 +"Z.B. falls die Variable 72910 ist, dann kann man die mit dem Text \"Sag es im Browser\" beschreiben.<br>"
         		 +"Die Variable <b>72903</b> schreibt den Text in allen eingestellten Variablen automatisch rein.<br>"
        		     +" Für jede Variable kann es eingestellt sein, wo die abgespielt wird. Momentan sind folgende Ausgänge unterstützt:"
@@ -170,6 +185,26 @@
         storeSettings();
     });
 
+    if (currentAdapterSettings.settings.cache_enabled) {
+        $("#sayit_settings_cache_enabled option[value='false']").removeAttr("selected");
+        $("#sayit_settings_cache_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#sayit_settings_cache_enabled option[value='true']").removeAttr("selected");
+        $("#sayit_settings_cache_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#sayit_settings_cache_enabled").change(function () {
+        currentAdapterSettings.settings.cache_enabled = ($("#sayit_settings_cache_enabled option:selected").val() == "false" ? false : true);
+        storeSettings();
+    });
+    
+     $("#sayit_settings_cache_path [value='"+((currentAdapterSettings.settings.cache_path === undefined) ? "tmp" : currentAdapterSettings.settings.cache_path) + "']").attr("selected", "selected");
+
+    $("#sayit_settings_cache_path").change(function () {
+        currentAdapterSettings.settings.cache_path = $("#sayit_settings_cache_path").val();
+        storeSettings();
+    });
+    
     $("#sayit_settings_language [value='"+currentAdapterSettings.settings.language+"']").attr("selected", "selected");
 
     $("#sayit_settings_language").change(function () {
