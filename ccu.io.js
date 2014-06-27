@@ -1633,7 +1633,10 @@ function initSocketIO(_io) {
 
         socket.on('reloadScriptEngine', function (callback) {
             if (settings.scriptEngineEnabled) {
-                childScriptEngine.kill();
+            	if (childScriptEngine) {
+                	childScriptEngine.kill();
+                	delete childScriptEngine;
+            	}
                 setTimeout(function () {
                     startScriptEngine();
                     if (callback) {
