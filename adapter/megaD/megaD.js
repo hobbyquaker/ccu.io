@@ -449,16 +449,20 @@ function megadInit () {
         devices[id].pollTimer = setInterval(pollStatus, 30000, id);
     }
 
-    if (settings.ioListenPort) {
-        app = express();
-        server = require('http').createServer(app);
-    }
-    if (app) {
-        app.get('/*', restApi);
-    }
-    if (server) {
-        server.listen(megadSettings.ioListenPort);
-        logger.info("megaD     listening on port " + megadSettings.ioListenPort);
+    try {
+        if (settings.ioListenPort) {
+            app = express();
+            server = require('http').createServer(app);
+        }
+        if (app) {
+            app.get('/*', restApi);
+        }
+        if (server) {
+            server.listen(megadSettings.ioListenPort);
+            logger.info("adapter megaD listening on port " + megadSettings.ioListenPort);
+        }
+    } catch (e) {
+        logger.error("adapter megaD cannot start listening server on port " + megadSettings.ioListenPort + ": " + e);
     }
 }
 
