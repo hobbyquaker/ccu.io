@@ -38,12 +38,12 @@ var devices    = [],
     app        = null;
 
 var simulate = [
-    "ON",
-    "OFF",
+    "ON/5",
+    "OFF/0",
     "125",
     "255",
-    "ON",
-    "OFF",
+    "ON/8",
+    "OFF/6",
     "178",
     "ON"
 ];
@@ -223,12 +223,13 @@ function getPortState(dev, port, callback) {
     http.get(options, function(res) {
         var xmldata = '';
         res.on('error', function (e) {
-            logger.warn ("megaD: " + e);
+            logger.warn("megaD: " + e);
         });
         res.on('data', function(chunk){
             xmldata += chunk;
         });
         res.on('end', function () {
+            logger.info("adapter megaD response for " + devices[dev].ip + "[" + port + "]: " + xmldata);
             // Analyse answer and updates staties
             if (callback) {
                 callback(dev, port, xmldata);
@@ -244,18 +245,21 @@ function getPortState(dev, port, callback) {
 
 function processPortState(_dev, _port, value) {
     if (value !== null) {
-        // Value can be OFF/5 or 27/0 or 27 or ON
-        var t = value.split("/");
-        value = t[0];
         var rawValue = value;
-        t = null;
-        if (value == 'OFF') {
-            value = 0;
-        } else
-        if (value == 'ON') {
-            value = 1;
+        // Value can be OFF/5 or 27/0 or 27 or ON
+        if (typeof value == "string") {
+            var t = value.split("/");
+            value = t[0];
+            rawValue = value;
+            t = null;
+            if (value == 'OFF') {
+                value = 0;
+            } else
+            if (value == 'ON') {
+                value = 1;
+            }
+            value = parseInt(value);
         }
-        value = parseInt(value);
 
         if (devices[_dev].ports[_port].ccu.value !== undefined) {
             // If status changed

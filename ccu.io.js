@@ -2250,12 +2250,12 @@ function restartAdapter(adapter) {
             default:
                 if (childrenAdapter[adapter] && childrenAdapter[adapter].process) {
                     try {
-                        logger.info("ccu.io        killing adapter "+adapter);
+                        logger.info("ccu.io        killing adapter " + adapter);
                         childrenAdapter[adapter].process.kill();
-                        return "adapter "+adapter+" killed";
+                        return "adapter " + adapter + " killed";
                     } catch (e) {
-                        logger.error("ccu.io        killing adapter failed: "+e)
-                        return "error: killing adapter "+adapter+" failed";
+                        logger.error("ccu.io        killing adapter failed: " + e)
+                        return "error: killing adapter " + adapter + " failed";
                     }
                 } else {
 
