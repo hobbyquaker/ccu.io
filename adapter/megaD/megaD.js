@@ -122,7 +122,7 @@ ccu_socket.on('event', function (obj) {
         return;
     }
 
-    if (id < megadSettings.firstId || id > devices.length * 30 + 1) {
+    if (id < megadSettings.firstId || id > megadSettings.firstId + devices.length * 30 + 1) {
         return;
     }
 

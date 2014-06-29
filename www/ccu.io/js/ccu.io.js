@@ -106,6 +106,8 @@ $(document).ready(function () {
 
 
     var installedAddons = [];
+    var objGridInited = false;
+    var dataGridInited = false;
 
     var regaObjects,
         regaIndex;
@@ -264,10 +266,22 @@ $(document).ready(function () {
             resizeGrids();
         }
     });
+    $subTabs5.tabs({
+        activate: function (e, ui) {
+            if (!objGridInited && ui.newPanel.selector == '#subTab57') {
+                objGridInited = true;
+                buildDevicesGrid();
+            } else
+            if (!dataGridInited && ui.newPanel.selector == '#subTab53') {
+                dataGridInited = true;
+                buildDatapointsGrid();
+            }
+        }
+    })
 
     var $datapointGrid = $("#grid_datapoints");
-    var $eventGrid = $("#grid_events");
-    var $adapterGrid = $("#grid_adapter");
+    var $eventGrid     = $("#grid_events");
+    var $adapterGrid   = $("#grid_adapter");
 
     $("#loader_message").append(translateWord("connecting to CCU.IO") + " ... <br/>");
 
@@ -668,7 +682,7 @@ $(document).ready(function () {
     var datapointsEditing = false;
 
 
-    $("#grid_datapoints").jqGrid({
+    $datapointGrid.jqGrid({
         datatype: "local",
 
         colNames:['id', getWord('TypeName'), getWord('Name'), getWord('Address'), getWord('Parent Name'), getWord('Value'), getWord('Timestamp'), getWord('ack'), getWord('lastChange'), 'persistent'],
@@ -697,10 +711,10 @@ $(document).ready(function () {
         caption: getWord("datapoints"),
         onSelectRow: function(id){
             if(id && id!==datapointsLastSel){
-                $('#grid_datapoints').restoreRow(datapointsLastSel);
-                datapointsLastSel=id;
+                $datapointGrid.restoreRow(datapointsLastSel);
+                datapointsLastSel = id;
             }
-            $('#grid_datapoints').editRow(id, true, function () {
+            $datapointGrid.editRow(id, true, function () {
                 // onEdit
                 datapointsEditing = true;
             }, function (obj) {
@@ -709,7 +723,7 @@ $(document).ready(function () {
                 // afterSave
                 datapointsEditing = false;
                 //console.log(datapointsLastSel+ " "+$("#grid_datapoints").jqGrid("getCell", datapointsLastSel, "val"));
-                socket.emit('setState', [datapointsLastSel, $("#grid_datapoints").jqGrid("getCell", datapointsLastSel, "val")]);
+                socket.emit('setState', [datapointsLastSel, $datapointGrid.jqGrid("getCell", datapointsLastSel, "val")]);
             });
         },
         loadComplete: function () {
@@ -722,13 +736,12 @@ $(document).ready(function () {
             });
         }
     }).jqGrid('filterToolbar',{
-            autosearch: true,
-            searchOnEnter: false,
-            enableClear: false
-        }).navGrid('#pager_datapoints',{search:false, refresh: false, edit:false,add:true,addicon: "ui-icon-refresh", del:false, addfunc: function() {
-            $datapointGrid.jqGrid("clearGridData");
-            loadDatapoints();
-        }});
+        autosearch: true,
+        searchOnEnter: false,
+        enableClear: false
+    }).navGrid('#pager_datapoints',{search:false, refresh: false, edit:false,add:true,addicon: "ui-icon-refresh", del:false, addfunc: function() {
+        buildDatapointsGrid();
+    }});
 
     $("#loader_message").append(translateWord("loading index") + " ... <br/>");
 
@@ -740,8 +753,6 @@ $(document).ready(function () {
         socket.emit('getObjects', function(obj) {
             regaObjects = obj;
             $("#meta").html(JSON.stringify(obj, null, "  "));
-
-            buildDevicesGrid();
 
             socket.on('event', function(obj) {
 
@@ -801,38 +812,11 @@ $(document).ready(function () {
                 }
             });
 
-            loadDatapoints();
-
+            $("#loader").remove();
+            $(".favicon").attr('href', 'favicon.ico');
         });
     });
 
-    function loadDatapoints() {
-        $("#loader_message").append(translateWord("loading datapoints") + " ... <br/>");
-
-        socket.emit('getDatapoints', function(obj) {
-            var i = 1;
-            for (var id in obj) {
-                if (isNaN(id)) { continue; }
-                var data = {
-                    id: id,
-                    name: (regaObjects[id] ? regaObjects[id].Name : ""),
-                    address: (regaObjects[id] ? regaObjects[id].Address : ""),
-                    parent: (regaObjects[id] && regaObjects[id].Parent && regaObjects[regaObjects[id].Parent] ? regaObjects[regaObjects[id].Parent].Name : ""),
-                    type: (regaObjects[id] ? regaObjects[id].TypeName : ""),
-                    val: $('<div/>').text(obj[id][0]).html(),
-                    timestamp: (obj[id][1] == "1970-01-01 01:00:00" ? "" : obj[id][1]),
-                    ack: obj[id][2],
-                    lastChange: (obj[id][3] == "1970-01-01 01:00:00" ? "" : obj[id][3]),
-                    persistent: (regaObjects[id] && regaObjects[id]._persistent ? "<input class='delObject' data-del-id='"+id+"' type='button' value='x'/>" : "")
-                };
-                $("#grid_datapoints").jqGrid('addRowData',id,data);
-            }
-            $("#loader").remove();
-            $(".favicon").attr('href', 'favicon.ico');
-            $("#grid_datapoints").trigger("reloadGrid");
-
-        });
-    }
     function getWord (word) {
         return "<span class='translate' data-lang='"+((ccuIoSettings && ccuIoSettings.language) ? ccuIoSettings.language : 'en')+"'>"+translateWord(word)+"</span>";
     }
@@ -931,7 +915,6 @@ $(document).ready(function () {
         }
     }).jqGrid('filterToolbar',{
         defaultSearch:'cn',
-
         autosearch: true,
         searchOnEnter: false,
         enableClear: false
@@ -1340,6 +1323,31 @@ $(document).ready(function () {
             }
         }
         $("#grid_objecttree").trigger("reloadGrid");
+    }
+
+    function buildDatapointsGrid() {
+        $("#loader_message").append(translateWord("loading datapoints") + " ... <br/>");
+        $datapointGrid.jqGrid("clearGridData");
+
+        socket.emit('getDatapoints', function(obj) {
+            for (var id in obj) {
+                if (isNaN(id)) { continue; }
+                var data = {
+                    id:         id,
+                    name:       (regaObjects[id] ?  regaObjects[id].Name : ""),
+                    address:    (regaObjects[id] ?  regaObjects[id].Address : ""),
+                    parent:     (regaObjects[id] && regaObjects[id].Parent && regaObjects[regaObjects[id].Parent] ? regaObjects[regaObjects[id].Parent].Name : ""),
+                    type:       (regaObjects[id] ?  regaObjects[id].TypeName : ""),
+                    val:        $('<div/>').text(obj[id][0]).html(),
+                    timestamp:  (obj[id][1] == "1970-01-01 01:00:00" ? "" : obj[id][1]),
+                    ack:        obj[id][2],
+                    lastChange: (obj[id][3] == "1970-01-01 01:00:00" ? "" : obj[id][3]),
+                    persistent: (regaObjects[id] && regaObjects[id]._persistent ? "<input class='delObject' data-del-id='"+id+"' type='button' value='x'/>" : "")
+                };
+                $datapointGrid.jqGrid('addRowData', id, data);
+            }
+            $datapointGrid.trigger("reloadGrid");
+        });
     }
 
     function subGridObjecttree(grid_id, row_id) {
