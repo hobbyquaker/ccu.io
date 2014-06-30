@@ -7,4 +7,4 @@ Installed-Size: @@size
 Depends: nodejs
 Maintainer: ccu.io <support@ccu.io>
 Homepage: http://ccu.io
-Description: ccu.io is automation platform on NodeJS.
+Description: ccu.io is automation platform on NodeJS. 

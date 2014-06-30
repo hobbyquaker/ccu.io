@@ -15,7 +15,7 @@ if [ $(cat /etc/passwd | grep "/home" |cut -d: -f1 | grep '^pi$' | wc -l) -eq 0 
 then
     read -p "User pi does not exist. Create?" yn
     case $yn in
-        [Yy]* ) echo "Create user @@user ...";
+        [Yy]* ) echo "Create user @@user  ...";
 		        apt-get install sudo;
 		        adduser @@user;
 				adduser @@user sudo;

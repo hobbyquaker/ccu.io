@@ -2,7 +2,7 @@
 
 # Installs node if it isn't already installed
 #
-# Don't steamroll over a previously installed node version
+# Don't steamroll over a  previously installed node version
 # TODO provide a local version of node?
 
 VER="0.10.29"
