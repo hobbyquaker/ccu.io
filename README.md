@@ -44,6 +44,9 @@ siehe http://ccu.io/
 * (Bluefox) Fix debian packet.
 * (Bluefox) ScriptEngine: enable calls like: on("ADAPTER.LIGHT.SWITCH.STATE", "ADAPTER.LIGHT.RELAY.STATE");// Set state of SWITCH to RELAY if state of SWITCH changes
 * (Bluefox) netAlarm adapter.
+* (SGiersch) Add Adapter Prowl
+* (BasGo)   changed adapters owm
+* (BasGo)   cache generated voice messages by sayIt adapter
 
 ### 1.0.40
 * (Eisbaeeer) Fix Adapter Onkyo - datapoints not schown in ScriptGUI

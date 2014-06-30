@@ -33,6 +33,7 @@
 74500-74999                     megaDevice
 
 75000-75499                     netAlarm
+75500-75520                     prowl
 
 80000-?                         itrans adapter
 80100-?                         iCal adapter

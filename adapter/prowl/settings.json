@@ -1,8 +1,8 @@
 {
     "enabled": false,
-    "firstID": 75000,
+    "firstID": 75500,
     "settings": {
         "apikey": "",
-        "application": "Nachricht von deiner CCU.IO"
+        "application": "Message from your CCU.IO"
     }
 }
