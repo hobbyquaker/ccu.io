@@ -47,6 +47,7 @@ siehe http://ccu.io/
 * (SGiersch) Add Adapter Prowl
 * (BasGo)   changed adapters owm
 * (BasGo)   cache generated voice messages by sayIt adapter
+* (Bluefox) (Bluefox) Optimize ccu.io web interface settings
 
 ### 1.0.40
 * (Eisbaeeer) Fix Adapter Onkyo - datapoints not schown in ScriptGUI
