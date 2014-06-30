@@ -9,6 +9,8 @@
         "mediaPlayer": "",
         "rasp_output": "0",
         "start_volume": "100",
+        "cache_enabled": false,
+        "cache_path": "tmp/sayIt",
 		"vars" : {
 			"_1": {"id": "72910", "name": "First", "options": "all", "ftp_port":"", "ftp_user":"", "ftp_pass":"","rasp_output":"", "mediaPlayer":""}
 		}

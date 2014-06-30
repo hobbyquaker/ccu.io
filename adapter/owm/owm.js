@@ -3,7 +3,7 @@
  *      02'2014 BasGo
  *      mail: basgo@gmx.de
  *
- *      Version 0.1
+ *      Version 0.2
  *
  *      development at https://github.com/BasGo/ccu.io/tree/master/adapter/owm
  *
@@ -16,6 +16,8 @@ if (!settings.adapters.owm || !settings.adapters.owm.enabled) {
 
 var owmSettings = settings.adapters.owm.settings;
 
+var pollingInterval = owmSettings.period || 5;
+
 var reqOptions = {
     host: 'api.openweathermap.org',
     port: 80,
@@ -27,6 +29,7 @@ var logger = require(__dirname + '/../../logger.js'),
     io     = require('socket.io-client'),
     http   = require('http');
 
+	
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
         port: settings.ioListenPort
@@ -77,22 +80,6 @@ process.on('SIGTERM', function () {
     stop();
 });
 
-var req = http.get(reqOptions, function(res) {
-    var pageData = "";
-    res.on('data', function (chunk) {
-        pageData += chunk;
-    });
-    res.on('end', function () {
-        var result = JSON.parse(pageData);
-        analyzeResult(result);
-    });
-});
-
-req.on('error', function(e) {
-    logWarning("received error: "+e.message);
-});
-
-req.end();
 
 function analyzeResult(result) {
     var curTimestamp     = result["dt"];
@@ -104,79 +91,152 @@ function analyzeResult(result) {
     var curWindDirection = result["wind"]["deg"];
     var curClouds        = result["clouds"]["all"];
 
-    logDebug("got data with timestamp: "+convertedTime.toString());
-    logDebug("received data (temp: "+curTemp+", humidity: "+curHumidity+", pressure: "+curPressure+")");
+    logInfo("got data with timestamp: "+convertedTime.toString());
+    logInfo("received data (temp: "+curTemp+", humidity: "+curHumidity+", pressure: "+curPressure+")");
 
-    socket.emit("setObject", owmSettings.firstId + 0, {
-        Name: "OPENWEATHERMAP.TEMPERATURE",
+    socket.emit("setState", [owmSettings.firstId + 2, curTemp]);
+    socket.emit("setState", [owmSettings.firstId + 3, curHumidity]);
+    socket.emit("setState", [owmSettings.firstId + 4, curPressure]);
+
+    socket.emit("setState", [owmSettings.firstId + 5, curWindSpeed]);
+    socket.emit("setState", [owmSettings.firstId + 6, result["wind"]["deg"]]);
+    socket.emit("setState", [owmSettings.firstId + 7, curClouds]);
+
+}
+
+function getValues() {
+    logDebug("Checking values ...");
+    var req = http.get(reqOptions, function(res) {
+    var pageData = "";
+    res.on('data', function (chunk) {
+        pageData += chunk;
+    });
+    res.on('end', function () {
+        var result = JSON.parse(pageData);
+        analyzeResult(result);
+    });
+    });
+
+    req.on('error', function(e) {
+    logWarning("received error: "+e.message);
+    });
+
+    req.end();
+}
+
+function OwmInit() {
+
+    socket.emit("setObject", owmSettings.firstId, {
+        Name: "OpenWeatherMap",
+        TypeName: "DEVICE",
+        HssType: "OWM",
+        Address: "OpenWeatherMap",
+        Interface: "CCU.IO",
+        Channels: [
+            owmSettings.firstId + 1,
+            owmSettings.firstId + 2
+        ],
+        _persistent: true
+    });
+
+    socket.emit("setObject", owmSettings.firstId + 1, {
+        Name: "OpenWeatherMap Wetterdaten",
+        TypeName: "CHANNEL",
+        Address: "OpenWeatherMap Wetterdaten",
+        HssType: "OWM-DATA",
+        DPs: {
+            TEMPERATURE: owmSettings.firstId + 2,
+            HUMIDITY: owmSettings.firstId + 3,
+            PRESSURE: owmSettings.firstId + 4,
+            WINDSPEED: owmSettings.firstId + 5,
+            WINDDIRECTION: owmSettings.firstId + 6,
+            CLOUDS: owmSettings.firstId + 7
+        },
+        Parent: owmSettings.firstId,
+        _persistent: true
+    });
+
+    socket.emit("setObject", owmSettings.firstId + 2, {
+        Name: "Lufttemperatur",
         DPInfo: "Lufttemperatur",
         TypeName: "VARDP",
         "ValueMin": null,
         "ValueMax": null,
         "ValueUnit": "°C",
-        "ValueType": 4
-    }, function() {
-        socket.emit("setState", [owmSettings.firstId + 0, curTemp]);
+        "ValueType": 4,
+        "Parent": owmSettings.firstId + 1,
+        _persistent: true
     });
 
-    socket.emit("setObject", owmSettings.firstId + 1, {
-        Name: "OPENWEATHERMAP.HUMIDITY",
+    socket.emit("setObject", owmSettings.firstId + 3, {
+        Name: "Luftfeuchtigkeit",
         DPInfo: "Luftfeuchtigkeit",
         TypeName: "VARDP",
         "ValueMin": null,
         "ValueMax": null,
         "ValueUnit": "%",
-        "ValueType": 4
-    }, function() {
-        socket.emit("setState", [owmSettings.firstId + 1, curHumidity]);
+        "ValueType": 4,
+        "Parent": owmSettings.firstId + 1,
+        _persistent: true
     });
 
-    socket.emit("setObject", owmSettings.firstId + 2, {
-        Name: "OPENWEATHERMAP.PRESSURE",
+    socket.emit("setObject", owmSettings.firstId + 4, {
+        Name: "Luftdruck",
         DPInfo: "Luftdruck",
         TypeName: "VARDP",
         "ValueMin": null,
         "ValueMax": null,
         "ValueUnit": "hpa",
-        "ValueType": 4
-    }, function() {
-        socket.emit("setState", [owmSettings.firstId + 2, curPressure]);
+        "ValueType": 4,
+        "Parent": owmSettings.firstId + 1,
+        _persistent: true
     });
 
-    socket.emit("setObject", owmSettings.firstId + 3, {
-        Name: "OPENWEATHERMAP.WIND.SPEED",
+    socket.emit("setObject", owmSettings.firstId + 5, {
+        Name: "Windgeschwindigkeit",
         DPInfo: "Windgeschwindigkeit",
         TypeName: "VARDP",
         "ValueMin": null,
         "ValueMax": null,
         "ValueUnit": "m/s",
-        "ValueType": 4
-    }, function() {
-        socket.emit("setState", [owmSettings.firstId + 3, curWindSpeed]);
+        "ValueType": 4,
+        "Parent": owmSettings.firstId + 1,
+        _persistent: true
     });
 
-    socket.emit("setObject", owmSettings.firstId + 4, {
-        Name: "OPENWEATHERMAP.WIND.DIRECTION",
+    socket.emit("setObject", owmSettings.firstId + 6, {
+        Name: "Windrichtung",
         DPInfo: "Windrichtung",
         TypeName: "VARDP",
         "ValueMin": null,
         "ValueMax": null,
         "ValueUnit": "°",
-        "ValueType": 4
-    }, function() {
-        socket.emit("setState", [owmSettings.firstId + 4, result["wind"]["deg"]]);
+        "ValueType": 4,
+        "Parent": owmSettings.firstId + 1,
+        _persistent: true
     });
 
-    socket.emit("setObject", owmSettings.firstId + 5, {
-        Name: "OPENWEATHERMAP.CLOUDS",
+    socket.emit("setObject", owmSettings.firstId + 7, {
+        Name: "Wolkendichte",
         DPInfo: "Wolkendichte",
         TypeName: "VARDP",
         "ValueMin": null,
         "ValueMax": null,
         "ValueUnit": "%",
-        "ValueType": 4
-    }, function() {
-        socket.emit("setState", [owmSettings.firstId + 5, curClouds]);
-        setTimeout(stop, 10000);
+        "ValueType": 4,
+        "Parent": owmSettings.firstId + 1,
+        _persistent: true
     });
+
+    // Fix polling interval if too short
+    if (pollingInterval <= 1) {
+        pollingInterval = 1;
+    }
+
+    logInfo("polling enabled - interval " + pollingInterval + " minutes");
+
+    setInterval(getValues, pollingInterval * 60 * 1000);
+    getValues();
 }
+
+OwmInit();

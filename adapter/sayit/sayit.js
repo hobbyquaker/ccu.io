@@ -2,7 +2,7 @@
  *      CCU.IO SayIt Adapter
  *      12'2013-2014 Bluefox
  *
- *      Version 0.4
+ *      Version 0.5
  *      
  *      It uses unofficial Google Translate TTS and it can be closed any time.
  *      
@@ -36,11 +36,14 @@ var logger      = require(__dirname + '/../../logger.js'),
     ftp         = require('jsftp'),
     querystring = require('querystring'),
     cp          = require('child_process'),
+    crypto      = require('crypto'),
     os          = require('os');
 
 
 sayitSettings.language     = sayitSettings.language || 'de';
 sayitSettings.start_volume = (sayitSettings.start_volume === undefined) ? 100: sayitSettings.start_volume;
+sayitSettings.cache_enabled    = sayitSettings.cache_enabled || false;
+var cacheDir = __dirname+"/../../" + (sayitSettings.cache_path || "tmp") + "/";
 
 var objTrigger  = sayitSettings.firstId;
 var objFileName = sayitSettings.firstId + 1;
@@ -78,6 +81,7 @@ socket.on('event', function (obj) {
 
 socket.on('connect', function () {
     logger.info("adapter sayIt connected to ccu.io");
+    logger.info("adapter sayIt settings (cache: " + sayitSettings.cache_enabled + ", path: " + cacheDir + ")");
 });
 
 socket.on('disconnect', function () {
@@ -108,7 +112,33 @@ function setState(id, val) {
 	socket.emit("setState", [id,val,null,true]);
 }
 
+function copyFile(i_, text, language, volume, source, dest, callback) {
+    var input = fs.createReadStream(source);                // Input stream
+    var output = fs.createWriteStream(dest);                // Output stream
+    
+    input.on("data", function(d) { output.write(d); });     // Copy in to out
+    input.on("error", function(err) { throw err; });        // Raise errors
+    input.on("end", function() {                            // When input ends
+        output.end();                                       // close output
+        logger.info("adapter sayIt copied file '" + source + "' to '" + dest + "'");
+        if (callback) {                                     // And notify callback            
+            callback (i_, text, language, volume);
+        }                     
+    });
+}
+
 function sayItGetSpeechGoogle (i_, text, language, volume, callback) {
+    if (text.length == 0) {
+        return;
+    }
+
+    var md5filename = cacheDir + crypto.createHash('md5').update((language || sayitSettings.language) + ";" + text).digest('hex') + ".mp3";
+
+    fs.exists(md5filename, function(exists) {
+        if (exists) {
+            copyFile(i_, text, language, volume, md5filename, __dirname+"/../../www/say.mp3", callback)
+        } else {
+            //logger.info("adapter sayIt cache file '" + md5filename + "' does not exist, fetching new file ...");
     var options = {
         host: 'translate.google.com',
         //port: 80,
@@ -137,12 +167,17 @@ function sayItGetSpeechGoogle (i_, text, language, volume, callback) {
                 if (err)
                     logger.error ('File error:' + err);
                 else {
+                            if (sayitSettings.cache_enabled) {
+                                copyFile (i_, text, language, volume, __dirname+"/../../www/say.mp3", md5filename);
+                            }
                     if (callback) {
                         callback (i_, text, language, volume);
                     }
                 }
             });
         })
+    });
+        }
     });
 }
 
@@ -407,6 +442,11 @@ function sayItExecute (i_, text, language, volume) {
 function sayIt (objId, text, language) {
 	var volume    = null;
     var oldVolume = null;
+
+    if (text.length == 0) {
+        return;
+    }
+    
     logger.info("adapter sayIt saying: " + text);
 
     // Extract language from "en;Text to say"
