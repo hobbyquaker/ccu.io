@@ -8,6 +8,7 @@
 			"debug": false,
 			"defColor": "white",
 			"fulltime": " ",
+            "dataPaddingWithZeros": true,
 			"replaceDates": true,
 			"todayString": "Heute",
 			"tomorrowString": "Morgen",

@@ -4,7 +4,7 @@
 *      Lets control the MegaD-328 over ethernet (http://www.ab-log.ru/smart-house/ethernet/megad-328)
 *
 *      Version 0.1
-*     
+*
 *      The device has 14 ports, 0-7 inputs and 8-13 outputs.
 *      To read the state of the port call
 *      http://mega_ip/sec/?pt=4&cmd=get , where sec is password (max 3 chars), 4 is port number
@@ -19,18 +19,18 @@
 *
 */
 var settings = require(__dirname + '/../../settings.js');
- 
+
 if (!settings.adapters.megaD || !settings.adapters.megaD.enabled) {
     process.exit();
 }
- 
+
 var megadSettings = settings.adapters.megaD.settings;
- 
+
 var logger         = require(__dirname + '/../../logger.js'),
-    io_client      = require('socket.io-client'), 
+    io_client      = require('socket.io-client'),
     http           = require('http'),
     express        = require('express');
- 
+
 var devices    = [],
     pollTimer  = null,
     ccu_socket = null,
@@ -38,14 +38,20 @@ var devices    = [],
     app        = null;
 
 var simulate = [
-    "ON",
+    "OFF/0<br>",
+    "ON/607<br>",
+    "OFF/0<br>",
+    "OFF/0<br>",
+    "OFF/12<br>",
+    "OFF/6<br>",
+    "OFF/4<br>",
     "OFF",
-    "125",
-    "255",
-    "ON",
     "OFF",
-    "178",
-    "ON"
+    "OFF",
+    "OFF",
+    "OFF",
+    "OFF",
+    "0"
 ];
 
 function sendCommand (dev, port, value) {
@@ -83,7 +89,7 @@ function sendCommand (dev, port, value) {
         logger.warn("adapter megaD: Got error by post request " + e.message);
     });
 }
- 
+
 if (settings.ioListenPort) {
     ccu_socket = io_client.connect("127.0.0.1", {
         port: settings.ioListenPort
@@ -96,15 +102,15 @@ if (settings.ioListenPort) {
 } else {
     process.exit();
 }
- 
+
 ccu_socket.on('connect', function () {
     logger.info("adapter megaD  connected to ccu.io");
 });
- 
+
 ccu_socket.on('disconnect', function () {
     logger.info("adapter megaD  disconnected from ccu.io");
 });
- 
+
 ccu_socket.on('event', function (obj) {
     if (!obj || !obj[0]) {
         return;
@@ -116,7 +122,7 @@ ccu_socket.on('event', function (obj) {
         return;
     }
 
-    if (id < megadSettings.firstId || id > devices.length * 30 + 1) {
+    if (id < megadSettings.firstId || id > megadSettings.firstId + devices.length * 30 + 1) {
         return;
     }
 
@@ -144,11 +150,11 @@ ccu_socket.on('event', function (obj) {
     // Device not found
     if (dev === null)
         return;
- 
+
     var val = obj[1];
 
     logger.info ("adapter megaD  try to control " + dev.name + ", port " + port + " with " + val);
- 
+
     if (val === "false" || val === false) { val = 0; }
     if (val === "true"  || val === true)  { val = 1; }
 
@@ -171,24 +177,25 @@ ccu_socket.on('event', function (obj) {
         if (devices[dev].ports[port].digital) {
             sendCommand(dev, port, val);
         } else {
-            val = Math.round(val * 255);
+            val = (val - devices[dev].ports[port].offset) / devices[dev].ports[port].factor * 256;
+            val = Math.round(val);
             if (devices[dev].ports[port].isRollo) {
-                sendCommand(dev, port, (255 - val));
+                sendCommand(dev, port, (256 - val));
             } else {
                 sendCommand(dev, port, val);
             }
         }
     }
 });
- 
+
 function stop() {
     if (pollTimer) {
         clearInterval(pollTimer);
         pollTimer = null;
     }
- 
+
     logger.info("adapter megaD  terminating");
- 
+
     setTimeout(function () {
         process.exit();
     }, 250);
@@ -197,20 +204,20 @@ function stop() {
 process.on('SIGINT', function () {
     stop();
 });
- 
+
 process.on('SIGTERM', function () {
     stop();
 });
- 
+
 function setObject(id, obj) {
     ccu_socket.emit("setObject", id, obj);
 }
- 
+
 function setState(id, val) {
-    logger.info("adapter megaD  setState " + id + " " + val);
+    logger.info("adapter megaD setState " + id + " " + val);
     ccu_socket.emit("setState", [id, val, null, true]);
 }
- 
+
 function getPortState(dev, port, callback) {
     var options = {
         host: devices[dev].ip,
@@ -222,53 +229,59 @@ function getPortState(dev, port, callback) {
     http.get(options, function(res) {
         var xmldata = '';
         res.on('error', function (e) {
-            logger.warn ("megaD: " + e);
+            logger.warn("megaD: " + e);
         });
         res.on('data', function(chunk){
             xmldata += chunk;
         });
         res.on('end', function () {
+            logger.info("adapter megaD response for " + devices[dev].ip + "[" + port + "]: " + xmldata);
             // Analyse answer and updates staties
             if (callback) {
-                if (xmldata == "ON")
-                    callback(dev, port, true, xmldata);
-                else
-                if (xmldata == "OFF")
-                    callback(dev, port, false, xmldata);
-                else
-                    callback(dev, port, parseInt(xmldata), xmldata);
+                callback(dev, port, xmldata);
             }
         });
     }).on('error', function(e) {
         logger.warn("adapter megaD: Got error by request " + e.message);
         if (typeof simulate !== "undefined") {
-            if (simulate[port] == "ON")
-                callback(dev, port, true, simulate[port]);
-            else
-            if (simulate[port] == "OFF")
-                callback(dev, port, false, simulate[port]);
-            else
-                callback(dev, port, parseInt(simulate[port]), simulate[port]);
+            callback(dev, port, simulate[port]);
         }
     });
 }
 
-function processPortState(_dev, _port, value, rawValue) {
+function processPortState(_dev, _port, value) {
     if (value !== null) {
+        var rawValue = value;
+        // Value can be OFF/5 or 27/0 or 27 or ON
+        if (typeof value == "string") {
+            var t = value.split("/");
+            value = t[0];
+            rawValue = value;
+            t = null;
+            if (value == 'OFF') {
+                value = 0;
+            } else
+            if (value == 'ON') {
+                value = 1;
+            }
+            value = parseInt(value);
+        }
+
         if (devices[_dev].ports[_port].ccu.value !== undefined) {
             // If status changed
             if (value !== devices[_dev].ports[_port].ccu.value) {
                 devices[_dev].ports[_port].ccu.value = value;
 
                 if (devices[_dev].ports[_port].digital) {
-                    logger.info("adapter megaD: detected new state for port " + _dev + ": " + value);
-                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, value);
+                    logger.info("adapter megaD detected new state for " + devices[_dev].ip + "[" + _port + "]: " + value);
+                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, !!value);
                 } else if (devices[_dev].isRollo) {
-                    logger.info("adapter megaD: detected new rollo state for port " + _dev + ": " + value + ", calc state " + ((255 - value) / 255));
-                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, ((255 - devices[_dev].value) / 255).toFixed(2));
+                    logger.info("adapter megaD detected new rollo state for " + devices[_dev].ip + "[" + _port + "]: " + value + ", calc state " + ((256 - value) / 256));
+                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, ((256 - devices[_dev].value) / 256).toFixed(2));
                 } else {
-                    logger.info("adapter megaD: detected new value for port " + _dev + ": " + value + ", calc state " + (value / 255));
-                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, (value / 255).toFixed(4));
+                    logger.info("adapter megaD detected new value for " + devices[_dev].ip + "[" + _port + "]: " + value + ", calc state " + (value / 256));
+                    var f = (value / 256) * devices[_dev].ports[_port].factor + devices[_dev].ports[_port].offset;
+                    setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, f.toFixed(4));
                 }
             }
         } else {
@@ -312,10 +325,6 @@ function processPortState(_dev, _port, value, rawValue) {
 
 function pollStatus(dev) {
     for (var port = 0; port < devices[dev].ports.length; port++) {
-        // Do not poll outputs
-        if (!devices[dev].ports[port].input)
-            continue;
-
         getPortState(dev, port, processPortState);
     }
 }
@@ -327,7 +336,7 @@ function restApi(req, res) {
     var _devs = path.split('/');
     var _dev = null;
     for (var i = 0; i < devices.length; i++) {
-        if (devices[i].name == _devs[0]) {
+        if ((_devs[0] && devices[i].name == _devs[0]) || devices[i].ip == req.connection.remoteAddress) {
             _dev = i;
             break;
         }
@@ -379,6 +388,17 @@ function megadInit () {
 
         for (var port = 0; port < devices[id].portsCount; port++) {
             var name = "MegaD_" + devices[id].name + "." + ((devices[id].ports[port].name == ("port" + port)) ? (((port < 7) ? "IN" : "OUT") + "_Port" + port) : devices[id].ports[port].name);
+
+            if (devices[id].ports[port].factor) {
+                devices[id].ports[port].factor = parseFloat(devices[id].ports[port].factor);
+            } else {
+                devices[id].ports[port].factor = 1;
+            }
+            if (devices[id].ports[port].offset) {
+                devices[id].ports[port].offset = parseFloat(devices[id].ports[port].offset);
+            } else {
+                devices[id].ports[port].offset = 0;
+            }
 
             devices[id].ports[port].ccu = {
                 chnDP:    devices[id].devId + port * 2 + 1,
@@ -435,17 +455,21 @@ function megadInit () {
         devices[id].pollTimer = setInterval(pollStatus, 30000, id);
     }
 
-    if (settings.ioListenPort) {
-        app = express();
-        server = require('http').createServer(app);
-    }
-    if (app) {
-        app.get('/*', restApi);
-    }
-    if (server) {
-        server.listen(megadSettings.ioListenPort);
-        logger.info("megaD     listening on port " + megadSettings.ioListenPort);
+    try {
+        if (settings.ioListenPort) {
+            app = express();
+            server = require('http').createServer(app);
+        }
+        if (app) {
+            app.get('/*', restApi);
+        }
+        if (server) {
+            server.listen(megadSettings.ioListenPort);
+            logger.info("adapter megaD listening on port " + megadSettings.ioListenPort);
+        }
+    } catch (e) {
+        logger.error("adapter megaD cannot start listening server on port " + megadSettings.ioListenPort + ": " + e);
     }
 }
- 
+
 megadInit ();

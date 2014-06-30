@@ -78,16 +78,25 @@
             "en":  'This adapter is able to control the <a href="http://www.ab-log.ru/smart-house/ethernet/megad-328" target="_blank">MegaD</a> devices.' +
                    'The digital ports can be controlled with true or false <br>' +
                    'and the analog ports with float value from 0 to 1.<br>' +
-                   'Analog value is automatically translated to 0-255 value.<br>',
+                   'Analog value is automatically translated to 0-255 value.<br>' +
+                   'Settings "factor" and "offset" will be used to modify the analog value:<br>\n'+
+                   'Value for ccu.io = (value from MegaD / 256) * factor + offset<br>'+
+                   'value for меги = ((value from ccu.io - offset) / factor) * 256<br>\n',
             "de":  'This adapter is able to control the <a href="http://www.ab-log.ru/smart-house/ethernet/megad-328" target="_blank">MegaD</a> devices.' +
                    'The digital ports can be controlled with true or false <br>' +
                    'and the analog ports with float value from 0 to 1.<br>' +
-                    'Analog value is automatically translated to 0-255 value.<br>',
+                   'Analog value is automatically translated to 0-255 value.<br>'+
+                   'Einstellungen "Faktor" und "Offset" werden für die Umrechnung von Analogwerten verwendet:<br>\n'+
+                   'Wert ccu.io = (Wert aus MegaD / 256) * Faktor + Offset<br>'+
+                   'Wert für меги = ((Wert aus ccu.io - Offset) / Faktor) * 256<br>\n',
             "ru":  'С помощью этого драйвера можно управлять и получать данные с <a href="http://www.ab-log.ru/smart-house/ethernet/megad-328" target="_blank">МегаДевайса</a>.<br>' +
                    'В цифровые порты можно записать значения true или false,<br>' +
                    'а в аналоговые значения от 0 до 1, например 0.5<br>' +
                    'Все аналоговые значения будут переконвертированы в значения 0-255<br>'+
-                   'Свойство "Переключатель" используется только для цифровых входов и говорит о том: подключена кнопка или переключатель к этому входу.'
+                   'Свойство "Переключатель" используется только для цифровых входов и говорит о том: подключена кнопка или переключатель к этому входу.<br>\n' +
+                   'Настройки "фактор" и "сдвиг" используются для модификации аналоговых значений:<br>\n'+
+                   'значение ccu.io = (значение из меги / 256) * фактор + сдвиг<br>'+
+                   'значение для меги = ((значение ccu.io - сдвиг) / фактор) * 256<br>\n'
         },
         "helper": {
             "en":  'To enable reporting of the states from MegaD use following link<br>'+
@@ -130,7 +139,7 @@
         text += '<td><input style="display: ' + (portSettings.input ? 'none': '') + '" type="checkbox" id="port_digital_'+dev+'_' + port + '" '+ (portSettings.digital ? 'checked' : '')+ '><span style="display: '+(!portSettings.input ? 'none': '')+'" id="port_digital_'+dev+'_' + port + '_auto">'+ translate('auto') + '</span></td>';
         text += '<td><input style="display: ' + (!portSettings.input ? 'none': '') + '" type="checkbox" id="port_switch_'+dev+'_' + port + '" '+ (portSettings.switch ? 'checked' : '')+ '></td>';
         text += '<td><input style="display: ' + ((!portSettings.input && portSettings.digital) ? 'none': '') + '" type="text" id="port_factor_'+dev+'_' + port + '"  size="4" value="'+ (portSettings.factor === undefined ? 1 : portSettings.factor)+ '"></td>';
-        text += '<td><input style="display: ' + ((!portSettings.input && portSettings.digital) ? 'none': '') + '" type="text" id="port_offset_'+dev+'_' + port + '"  size="4" value="'+ (portSettings.offset === undefined ? 1 : portSettings.offset)+ '"></td>';
+        text += '<td><input style="display: ' + ((!portSettings.input && portSettings.digital) ? 'none': '') + '" type="text" id="port_offset_'+dev+'_' + port + '"  size="4" value="'+ (portSettings.offset === undefined ? 0 : portSettings.offset)+ '"></td>';
         text += '<td><input type="text" id="port_room_'+dev+'_' + port + '" value="'+ (portSettings.room === undefined ? '' : portSettings.room)+ '"></td>';
         text += '<td><input type="text" id="port_role_'+dev+'_' + port + '" value="'+ (portSettings.role === undefined ? '' : portSettings.role)+ '"></td>';
 
@@ -189,7 +198,7 @@
 
         text += '</td></tr>'
         text += '<tr><td></td><td><input type="button" value="'+ translate('del_device') + '" id="del_device_' + dev + '"></td></tr>';
-        text += '<tr><td></td><td>' + translate('helper') + ' "http://ccu_io_ip<span class="megaPort">' + (currentAdapterSettings.settings.ioListenPort != 80 ? (':' + currentAdapterSettings.settings.ioListenPort) : '') + '</span>/<span id="megaName_' + dev + '">' + devSettings.name + '</span>/"</td></tr>';
+        text += '<tr><td></td><td>' + translate('helper') + ' "http://ccu_io_ip<span class="megaPort">' + (currentAdapterSettings.settings.ioListenPort != 80 ? (':' + currentAdapterSettings.settings.ioListenPort) : '') + '</span>/"</td></tr>';
         text += '</table></td></tr>';
         return text;
     }
