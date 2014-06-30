@@ -106,8 +106,10 @@ $(document).ready(function () {
 
 
     var installedAddons = [];
-    var objGridInited = false;
+    var objGridInited  = false;
     var dataGridInited = false;
+    var metaGridInited = false;
+    var idxGridInited  = false;
 
     var regaObjects,
         regaIndex;
@@ -263,6 +265,10 @@ $(document).ready(function () {
 
     $mainTabs.tabs({
         activate: function (e, ui) {
+            if (!metaGridInited && ui.newPanel.selector == '#mainTab5') {
+                metaGridInited = true;
+                buildMetaData();
+            }
             resizeGrids();
         }
     });
@@ -275,6 +281,14 @@ $(document).ready(function () {
             if (!dataGridInited && ui.newPanel.selector == '#subTab53') {
                 dataGridInited = true;
                 buildDatapointsGrid();
+            } else
+            if (!metaGridInited && ui.newPanel.selector == '#subTab51') {
+                metaGridInited = true;
+                buildMetaData();
+            }else
+            if (!idxGridInited && ui.newPanel.selector == '#subTab52') {
+                idxGridInited = true;
+                buildIndexData();
             }
         }
     })
@@ -451,23 +465,23 @@ $(document).ready(function () {
             header: false,
             selectedList: 1
         }).change(function () {
-                var file = ($("#select_datastore option:selected").val());
-                if (file == "") {
-                    $("textarea#datastore").val("");
-                    $("#datastoreSave").button("disable");
-                } else {
+            var file = ($("#select_datastore option:selected").val());
+            if (file == "") {
+                $("textarea#datastore").val("");
+                $("#datastoreSave").button("disable");
+            } else {
 
-                    $("textarea#datastore").val("");
-                    $("#datastoreSave").button("disable");
+                $("textarea#datastore").val("");
+                $("#datastoreSave").button("disable");
 
-                    socket.emit("readFile", [file], function (data) {
-                        if (data) {
-                            $("textarea#datastore").val(JSON.stringify(data, null, 2));
-                            $("#datastoreSave").button("enable");
-                        }
-                    });
-                }
-            });
+                socket.emit("readFile", [file], function (data) {
+                    if (data) {
+                        $("textarea#datastore").val(JSON.stringify(data, null, 2));
+                        $("#datastoreSave").button("enable");
+                    }
+                });
+            }
+        });
     });
 
     $("#datastoreSave").button().button("disable").click(function () {
@@ -606,8 +620,8 @@ $(document).ready(function () {
     $("#metaRefresh").button().click(function() {
         $("#meta").html("");
         socket.emit('getObjects', function(obj) {
-            $("#meta").html(JSON.stringify(obj, null, "  "));
             regaObjects = obj;
+            buildMetaData();
         });
     });
 
@@ -621,15 +635,15 @@ $(document).ready(function () {
                 anon[id].Address = regaObjects[id].Address.replace(/[A-Z]EQ[0-9]{7}/, "*EQ*******");
             }
         }
-        $("#meta").html(JSON.stringify(anon, null, "  "));
+        buildMetaData(anon);
     });
 
 
     $("#indexRefresh").button().click(function() {
         $("#index").html("");
         socket.emit('getIndex', function(obj) {
+            buildIndexData();
             regaIndex = obj;
-            $("#index").html(JSON.stringify(obj, null, "  "));
         });
     });
 
@@ -647,7 +661,7 @@ $(document).ready(function () {
                 }
             }
         }
-        $("#index").html(JSON.stringify(anon, null, "  "));
+        buildIndexData(anon);
     });
 
 
@@ -746,13 +760,11 @@ $(document).ready(function () {
     $("#loader_message").append(translateWord("loading index") + " ... <br/>");
 
     socket.emit('getIndex', function(obj) {
-        $("#index").html(JSON.stringify(obj, null, "  "));
         regaIndex = obj;
         $("#loader_message").append(translateWord("loading objects") + " ... <br/>");
 
         socket.emit('getObjects', function(obj) {
             regaObjects = obj;
-            $("#meta").html(JSON.stringify(obj, null, "  "));
 
             socket.on('event', function(obj) {
 
@@ -1325,6 +1337,15 @@ $(document).ready(function () {
         $("#grid_objecttree").trigger("reloadGrid");
     }
 
+    function buildMetaData(data) {
+        data = data || regaObjects;
+        $('#meta').html(JSON.stringify(data, null, "  "));
+    }
+
+    function buildIndexData(data) {
+        data = data || regaIndex;
+        $('#index').html(JSON.stringify(data, null, "  "));
+    }
     function buildDatapointsGrid() {
         $("#loader_message").append(translateWord("loading datapoints") + " ... <br/>");
         $datapointGrid.jqGrid("clearGridData");
