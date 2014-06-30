@@ -29,12 +29,21 @@ siehe http://ccu.io/
 * Doku, Doku, Doku
 * CMS für Homepage?
 * CCU2-Paket für einfache Installation
-* .msi für einfache Installation unter Windows (ccu.io als Service registrieren)
 * .pkg für einfache Installation unter Mac OS X
 * BIN-RPC Implementierung vervollständigen
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.41 [2014.06.30]
+* (Bluefox) describe demo adapter gismeteo
+* (Bluefox) modify ical adapter (JSON table added)
+* (Bluefox) make ccu.io settings page with UTF-8
+* (Bluefox) fixes for adapter megaD
+* (Bluefox) Check childScriptEngine by restart.
+* (Bluefox) Fix debian packet.
+* (Bluefox) ScriptEngine: enable calls like: on("ADAPTER.LIGHT.SWITCH.STATE", "ADAPTER.LIGHT.RELAY.STATE");// Set state of SWITCH to RELAY if state of SWITCH changes
+* (Bluefox) netAlarm adapter.
 
 ### 1.0.40
 * (Eisbaeeer) Fix Adapter Onkyo - datapoints not schown in ScriptGUI
