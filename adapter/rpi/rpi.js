@@ -42,11 +42,11 @@ var adapterSettings = settings.adapters.rpi.settings,
 
 
 if (settings.ioListenPort) {
-    var socket = io.connect(settings.binrpc.listenIp, {
+    var socket = io.connect(connIP, {
         port: settings.ioListenPort
     });
 } else if (settings.ioListenPortSsl) {
-    var socket = io.connect(settings.binrpc.listenIp, {
+    var socket = io.connect(connIP, {
         port: settings.ioListenPortSsl,
         secure: true
     });
