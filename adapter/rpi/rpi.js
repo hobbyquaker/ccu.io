@@ -36,7 +36,8 @@ var adapterSettings = settings.adapters.rpi.settings,
     gpio =      require("gpio"),
     gpioIDs =   {},
     gpioObjs =  {},
-    wireIDs =   {};
+    wireIDs =   {},
+    connIP =    (process.argv[2] == "--standalone") ? (settings.binrpc.listenIp || '127.0.0.1') : '127.0.0.1';
 
 
 if (settings.ioListenPort) {
