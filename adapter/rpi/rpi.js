@@ -1,7 +1,8 @@
 /**
- *      CCU.IO RaspberryPi Adapter 0.6.1
+ *      CCU.IO RaspberryPi Adapter 0.6.2
  *
- *      20140123  Eisbaeeer - added PiFace
+ *      2014 07 01 Bluefox - fix auth error if run on ccu.io device
+ *      2014 01 23  Eisbaeeer - added PiFace
  *                enable|disable PiFace with "piface": false|true
  *                in settings.json
  *
