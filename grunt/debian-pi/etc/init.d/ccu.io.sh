@@ -1,5 +1,5 @@
 #!/bin/bash
-###  BEGIN INIT INFO
+### BEGIN INIT INFO
 # Provides:          ccu.io.sh
 # Required-Start:    $network $local_fs $remote_fs
 # Required-Stop::    $network $local_fs $remote_fs
