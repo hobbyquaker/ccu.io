@@ -1,11 +1,11 @@
 CCU.IO
 ======
 
-*aktuelle Version: 1.0.41*
+*actual Version: 1.0.42*
 
-## Dokumentation
+## Documentation
 
-siehe http://ccu.io/
+visit http://ccu.io/ or http://dashui.ccu.io/ru/
 
 
 ## Todo/Roadmap (unsortiert)
@@ -34,6 +34,10 @@ siehe http://ccu.io/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.42 [2014.07.06]
+* (Bluefox) change download link for DashUI
+* (Bluefox) improve textCommands adapter
 
 ### 1.0.41 [2014.06.30]
 * (Bluefox) describe demo adapter gismeteo

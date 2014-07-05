@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.40";
+settings.version = "1.0.42";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -66,7 +66,13 @@ var fs =        require('fs'),
     initsDone = false,
     extDone = false,
     lastEvents = {},
-    authHash = "";
+    authHash = "",
+    restApiDelayed = {
+        timer:        null,
+        responseType: '',
+        response:     null,
+        waitId:       0
+    };
 
 
 if (settings.ioListenPort) {
@@ -856,12 +862,31 @@ function restApiPost(req, res) {
     }
 }
 
+function restApiDelayedAnswer() {
+    clearTimeout(restApiDelayed.timer);
+    restApiDelayed.timer = null;
+    restApiDelayed.id = 0;
+    switch (restApiDelayed.responseType) {
+        case "json":
+            restApiDelayed.res.json(restApiDelayed.response);
+            break;
+        case "plain":
+            restApiDelayed.res.set('Content-Type', 'text/plain');
+            restApiDelayed.res.send(restApiDelayed.response);
+            break;
+    }
+    restApiDelayed.res      = null;
+    restApiDelayed.response = null;
+
+}
+
 function restApi(req, res) {
 
     var path = req.params[0];
     var tmpArr = path.split("/");
     var command = tmpArr[0];
     var response;
+    var wait = 0;
 
     var responseType = "json";
     var status = 500;
@@ -932,9 +957,11 @@ function restApi(req, res) {
             var value;
             if (req.query) {
                 value = req.query.value;
+                wait  = req.query.wait || 0;
             }
             if (!value) {
                 response = {error: "no value given"};
+                wait = 0;
             } else {
                 if (value === "true") {
                     value = true;
@@ -945,7 +972,7 @@ function restApi(req, res) {
                 }
                 setState(dp, value);
                 status = 200;
-                response = {id:dp,value:value};
+                response = {id: dp, value: value};
             }
             break;
         case "toggle":
@@ -1011,19 +1038,26 @@ function restApi(req, res) {
             status = 200;
             break;
         default:
-            response = {error: "command "+command+" unknown"};
-    }
-    switch (responseType) {
-        case "json":
-            res.json(response);
-            break;
-        case "plain":
-            res.set('Content-Type', 'text/plain');
-            res.send(response);
-            break;
-
+            response = {error: "command " + command + " unknown"};
     }
 
+    if (wait && response && response.id) {
+        restApiDelayed.responseType = responseType;
+        restApiDelayed.response     = response;
+        restApiDelayed.id           = response.id;
+        restApiDelayed.res          = res;
+        restApiDelayed.timer = setTimeout(restApiDelayedAnswer, wait);
+    } else {
+        switch (responseType) {
+            case "json":
+                res.json(response);
+                break;
+            case "plain":
+                res.set('Content-Type', 'text/plain');
+                res.send(response);
+                break;
+        }
+    }
 }
 
 function initExtensions() {
@@ -1146,7 +1180,10 @@ function setState(id,val,ts,ack, callback) {
     if (!ts) {
         ts = formatTimestamp();
     }
-
+    if (ack && restApiDelayed.id == id) {
+        restApiDelayed.response.value = val;
+        restApiDelayedAnswer();
+    }
 
     // console.log("id="+id+" val="+val+" ts="+ts+" ack="+ack);
     // console.log("datapoints[id][0]="+datapoints[id][0]);
@@ -1206,7 +1243,6 @@ function setState(id,val,ts,ack, callback) {
     }
 
     setDatapoint(id, val, ts, ack);
-
 
     // Virtual Datapoint
     if (id > 65535) {
@@ -1316,7 +1352,6 @@ function clearRegaData() {
     }
     regaIndex.PROGRAM = tmpArr;
 }
-
 
 function initSocketIO(_io) {
 	_io.configure(function () {

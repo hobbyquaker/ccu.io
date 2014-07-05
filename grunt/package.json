@@ -10,6 +10,7 @@
     "grunt-contrib-commands": "~0.1.6",
     "grunt-contrib-jshint": "~0.10.0",
     "grunt-jscs-checker": "~0.4.1",
+	"grunt-lineending": "~0.2.2",
     "grunt-zip": "~0.13.0"
   }
 }

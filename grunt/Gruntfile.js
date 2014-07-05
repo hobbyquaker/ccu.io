@@ -17,13 +17,30 @@ module.exports = function(grunt) {
             'debian-pi-control': ['.debian-pi-ready/DEBIAN'],
             'debian-pi-control-sysroot': ['.debian-pi-ready/sysroot']
         },
+        lineending: {               // Task
+            dist: {                   // Target
+                options: {              // Target options
+                    eol: 'cr'
+                },
+                files: [{
+                        expand:  true,
+                        flatten: true,
+                        src:     ['.debian-pi-control/**/*'],
+                        dest:    '.debian-pi-control/a/'
+                }]
+            }
+        },
         replace: {
             core: {
                 options: {
                     patterns: [
                         {
                             match: /settings\.version = "[\.0-9]*";/g,
-                            replacement: 'settings.version = "'+iocore.version+'";'
+                            replacement: 'settings.version = "' + iocore.version + '";'
+                        },
+                        {
+                            match: /actual Version: [\.0-9]*/g,
+                            replacement: 'actual Version: ' + iocore.version
                         }
                     ]
                 },
@@ -31,8 +48,8 @@ module.exports = function(grunt) {
                     {
                         expand:  true,
                         flatten: true,
-                        src:     [srcDir + 'ccu.io.js'],
-                        dest:    '.build/'
+                        src:     [srcDir + 'ccu.io.js', srcDir + 'README.md'],
+                        dest:    '../'
                     }
                 ]
             },
@@ -63,7 +80,7 @@ module.exports = function(grunt) {
                         expand:  true,
                         flatten: true,
                         src:     ['debian-pi/control/*'],
-                        dest:    '.debian-pi-control/control/'
+                        dest:    '.debian-pi-control/**/*'
                     },
                     {
                         expand:  true,
@@ -120,7 +137,6 @@ module.exports = function(grunt) {
                             '!scripts/*.js',
                             '!adapter/sonos/cache/*',
                             '!adapter/*.zip',
-                            '!ccu.io.js',
                             '!speech.js'],
                         dest: '.build/'
                     }
@@ -301,6 +317,7 @@ module.exports = function(grunt) {
         'grunt-contrib-commands',
         'grunt-contrib-jshint',
         'grunt-jscs-checker',
+        'grunt-lineending',
         'grunt-zip'
     ];
     var i;
@@ -336,6 +353,7 @@ module.exports = function(grunt) {
             'clean:debian-pi-control',
             'replace:debian-pi-version:' + (Math.round(size / 1024) + 8) + ':pi:armhf', // Settings for raspbian
             'copy:debian-pi',
+            'lineending',
             'compress:debian-pi-data',
             'clean:debian-pi-control-sysroot'
         ]);
