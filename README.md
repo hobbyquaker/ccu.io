@@ -38,6 +38,7 @@ visit http://ccu.io/ or http://dashui.ccu.io/ru/
 ### 1.0.42 [2014.07.06]
 * (Bluefox) change download link for DashUI
 * (Bluefox) improve textCommands adapter
+* (SGiersch) Changes in Adapter Prowl
 
 ### 1.0.41 [2014.06.30]
 * (Bluefox) describe demo adapter gismeteo
