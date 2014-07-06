@@ -18,7 +18,7 @@ CCU.IO это открытое программное обеспечение.
 Требования: для платформы нужен работающий бинарный файл Node.js с версией больше 0.10. Скачать можно либо с официального сайта [http://nodejs.org/download/](http://nodejs.org/download/) или [здесь](http://ccu.io/download.html).
  
 ### Инсталляция под Windows:
-- Скачать [http://dashui.ccu.io/download/ccu.ioInstaller.1.0.39.exe](http://dashui.ccu.io/download/ccu.ioInstaller.1.0.39.exe) и запустить (Node.js дополнительно не нужен)
+- Скачать [http://dashui.ccu.io/download/ccu.ioInstaller.latest.exe](http://dashui.ccu.io/download/ccu.ioInstaller.latest.exe) и запустить (Node.js дополнительно не нужен)
 
 ### Инсталляция Debian-пакета (RaspberyPI):
 Войти в консоль raspberry под именем "pi" и для инсталляции Node.js и CCU.IO выполнить:

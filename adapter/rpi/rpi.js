@@ -1,7 +1,8 @@
 /**
- *      CCU.IO RaspberryPi Adapter 0.6.1
+ *      CCU.IO RaspberryPi Adapter 0.6.2
  *
- *      20140123  Eisbaeeer - added PiFace
+ *      2014 07 01 Bluefox - fix auth error if run on ccu.io device
+ *      2014 01 23  Eisbaeeer - added PiFace
  *                enable|disable PiFace with "piface": false|true
  *                in settings.json
  *
@@ -36,15 +37,16 @@ var adapterSettings = settings.adapters.rpi.settings,
     gpio =      require("gpio"),
     gpioIDs =   {},
     gpioObjs =  {},
-    wireIDs =   {};
+    wireIDs =   {},
+    connIP =    (process.argv[2] == "--standalone") ? (settings.binrpc.listenIp || '127.0.0.1') : '127.0.0.1';
 
 
 if (settings.ioListenPort) {
-    var socket = io.connect(settings.binrpc.listenIp, {
+    var socket = io.connect(connIP, {
         port: settings.ioListenPort
     });
 } else if (settings.ioListenPortSsl) {
-    var socket = io.connect(settings.binrpc.listenIp, {
+    var socket = io.connect(connIP, {
         port: settings.ioListenPortSsl,
         secure: true
     });

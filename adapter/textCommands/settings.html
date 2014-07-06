@@ -1,8 +1,6 @@
 <table style="font-size: 12px">
     <tr>
-        <td>
-            Enabled:
-        </td>
+        <td>Enabled:</td>
         <td>
             <select id="textCommands_enabled">
                 <option value="false">false</option>
@@ -124,6 +122,7 @@
 		var sText = '<tr class="textCommands-optrule">';
         var freeNames = [];
         for (var rule in commands) {
+            if (commands[rule].invisible) continue;
             var isFound = false;
             if (commands[rule].unique) {
                 for (var z = 0; z < currentAdapterSettings.settings.rules.length; z++) {

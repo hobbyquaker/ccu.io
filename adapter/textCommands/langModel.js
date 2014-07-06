@@ -5,6 +5,7 @@ var commands = {
 			'de': "Wie spät ist das?",
 			'ru': "Сколько время?"
 		},
+        invisible: true,
 		unique:   true,
 		editable: false,
 		words: {
@@ -19,6 +20,7 @@ var commands = {
 			'de': "Wie heißt du?",
 			'ru': "Как тебя зовут?"
 		},
+        invisible: true,
 		unique:   true,
 		editable: false,
 		words: {
@@ -134,6 +136,41 @@ var commands = {
             'en': "Program ID",
             'de': "Programm-ID",
             'ru': "ID программы"
+        }
+    },
+    'goodBoy' : {
+        description: {
+            'en': "You are good",
+            'de': "Du bist gut",
+            'ru': "Молодец"
+        },
+        invisible: true,
+        unique:   true,
+        editable: false,
+        words: {
+            'en': "good",
+            'de': "gut",
+            'ru': "молодец/хорошая/хороший"
+        }
+    },
+    'thankYou' : {
+        description: {
+            'en': "Thank you",
+            'de': "Danke",
+            'ru': "Спасибо"
+        },
+        invisible: true,
+        unique:   true,
+        editable: false,
+        words: {
+            'en': "thank",
+            'de': "danke",
+            'ru': "спасибо"
+        },
+        ack: {
+            'en': ["No problem", "You are welcome"],
+            'de': ["Kein problem", "Bitte", "Bitte sehr"],
+            'ru': ["Пожалуйста", "Всегда пожалуйста", "Не за что", "С радостью"]
         }
     }
 };

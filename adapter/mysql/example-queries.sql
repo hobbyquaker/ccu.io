@@ -1,4 +1,5 @@
 -- Geräte-, Kanal- und Datenpunkt-Namen zu einer gegebenen Datenpunkt-ID abfragen
+-- Get for some specific ID the device-, channel, or datapoint names 
 SELECT  datapoint.name AS datapointName,
         device.name AS deviceName,
         channel.name AS channelName
@@ -8,12 +9,14 @@ LEFT JOIN objects AS device ON channel.parent = device.id
 WHERE datapoint.id = 14450
 
 -- Liste der Räume in dem sich ein gegebener Kanal befindet
+-- LIst of the rooms for some specific channel
 SELECT rooms.name AS roomName
 FROM refs
 LEFT JOIN objects AS rooms ON rooms.id = refs.enum_id
 WHERE refs.object_id = 14425
 
 -- Liste aller vorhandenen Geräte-Typen und deren Anzahl
+-- List of all available device types and count them
 SELECT  devices.hssType AS deviceHssType,
         COUNT( devices.id ) AS deviceCount
 FROM  objects AS devices
@@ -21,6 +24,7 @@ WHERE devices.type = 'DEVICE'
 GROUP BY deviceHssType
 
 -- Liste aller Kanäle vom Typ DIMMER oder SWITCH deren STATE bzw LEVEL Datenpunkt nicht den Wert 0 oder false hat
+-- List of all channels with type DIMMER or SWITCH, which STATE/LEVEL is not false or 0
 SELECT  channels.name AS channelName,
         dpvalues.val AS stateOrLevel
 FROM objects AS channels
@@ -38,6 +42,8 @@ WHERE   channels.type =  "CHANNEL"
         AND dpvalues.val != 0
 
 -- Liste aller Datenpunkte mit Wert und Einheit
+-- List of all datapoints with value and unit
+-- Список всех конечных данных со значением и еденицей измерения
 SELECT  datapoints.id AS datapointId,
         dpObjects.type AS datapointType,
         devices.name AS deviceName,
