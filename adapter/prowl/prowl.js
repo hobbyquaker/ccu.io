@@ -1,10 +1,9 @@
 /**
- *		Prowl Adapter v0.1
+ *		Prowl Adapter v0.2
  *		
- *		2014-6 SGiersch.de
+ *		2014-7 SGiersch.de
  *		
  *		Todo:
- *		- Das &-Zeichen aus einem Text abfangen, alles nach diesem Zeichen wird nicht gesendet.
  *		- Test des APIKey beim Ausfüllen der Settings ermöglichen.
  */
 
@@ -60,9 +59,10 @@ socket.on('event', function (obj) {
 		
 		if (obj[0] == settings_firstid) {
 			getvari(function() {
-			sendprowl(obj)
-		});
-	}
+				var text = replacetext(obj[1]);
+				sendprowl(text)
+			});
+		}
 });
 
 function stop() {
@@ -80,6 +80,20 @@ process.on('SIGTERM', function () {
 	stop();
 });
 
+function replacetext(testtext){
+	var newString = '';
+	newString = testtext.replace(/~/g,'%7e');
+	newString = newString.replace(/#/g,'%23');
+	newString = newString.replace(/&/g,'%26');
+	newString = newString.replace(/§/g,'%C2%A7');
+	newString = newString.replace(/>\"</g,'%22');
+	newString = newString.replace(/>Smiley</g,'%E2%98%BA');
+	newString = newString.replace(/<<</g,'%0A');
+	newString = newString.replace(/>NOEntry</g,'%E2%9B%94');
+	newString = newString.replace(/>Check</g,'%E2%9C%85');
+	return newString;
+}
+
 function getState(id, callback) {
 	logger.verbose("adapter prowl getState "+id);
 	socket.emit("getDatapoint", [id], function (id, obj) {
@@ -90,7 +104,7 @@ function getState(id, callback) {
 function getvari(callback) {
 	// Danke an Bluefox
 	getState (settings_firstid+2, function (id, obj) {
-		variable_Event = obj[0];
+		variable_Event = replacetext(obj[0]);
 		logger.verbose("adapter prowl    get event: "+variable_Event);
 		getState (settings_firstid+1, function (id, obj) {
 			variable_PriorityID = obj[0];
@@ -101,12 +115,12 @@ function getvari(callback) {
 	});
 }
 
-function sendprowl(obj) {	
+function sendprowl(msg) {	
 	url = 'https://api.prowlapp.com/publicapi/add'
 	url += '?application='+settings_application
 	url += '&priority='+variable_PriorityID
 	url += '&event='+variable_Event
-	url += '&description='+obj[1]
+	url += '&description='+msg
 	url += '&apikey='+settings_api_key;
 	logger.verbose("adapter prowl    url event: "+variable_Event);
 	logger.verbose("adapter prowl    url priority: "+variable_PriorityID);
@@ -117,7 +131,7 @@ function sendprowl(obj) {
 				logger.info("adapter prowl    Nachricht gesendet --> ");
 				logger.info("adapter prowl     - application: "+settings_application);
 				logger.info("adapter prowl     - event: "+variable_Event);
-				logger.info("adapter prowl     - description: "+obj[1]);
+				logger.info("adapter prowl     - description: "+msg);
 				logger.info("adapter prowl     - priority: "+variable_PriorityID);
 				break;
 			case 400:

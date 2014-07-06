@@ -23,22 +23,22 @@
 <li>"Prowl Priority" = Die Nachrichten Priorität, dieser Wert kann zwischen -2 und +2 liegen (+2 ist die höchste Priorität).</li>
 <li>"Prowl Message" = Die eigentliche Nachricht. Durch das ändern dieser Variable, wird sofort eine Nachricht gesendet.</li>
 
-<h3>Die Zeichen -&- und -#- sollten vorläufig nicht in einem Text benutzt werden.</h3>
+
 <br>
 <br>
 <h4>Beispielscript:</h4>
 <p>
 var idButton        = ####;  // Die ID eines Buttons (Schalters, oder etwas ähnliches), bei Auslösen auf true kommt eine Meldung.<br>
 <br>
-var idProwlEvent	= 75002; // Prowl Variable, ein frei wählbarer Hinweistext (z.B. Alarm, Meldung, Hinweis oder etwas anderes)<br>
-var idProwlPriority	= 75001; // Prowl Variable der Priorität (-2 über 0 bis +2)<br>
-var idProwlMessage	= 75000; // Prowl Variable zum Senden (Prowl Message)<br>
+var idProwlEvent	= 75502; // Prowl Variable, ein frei wählbarer Hinweistext (z.B. Alarm, Meldung, Hinweis oder etwas anderes)<br>
+var idProwlPriority	= 75501; // Prowl Variable der Priorität (-2 über 0 bis +2)<br>
+var idProwlMessage	= 75500; // Prowl Variable zum Senden (Prowl Message)<br>
 <br>
 // Beim Knopfdrucken (Auslösen auf true) geht eine Meldung an Prowl<br>
 subscribe({id: idButton, val: true}, function (obj) {<br>
-<span style="white-space:pre">&#9;</span>setState (idProwlEvent, "TestEvent" );<br>
+<span style="white-space:pre">&#9;</span>setState (idProwlEvent, "TestEvent >Check<" );<br>
 <span style="white-space:pre">&#9;</span>setState (idProwlPriority, -2 );<br>
-<span style="white-space:pre">&#9;</span>setState (idProwlMessage, "Test des Prowl-Adapter");<br>
+<span style="white-space:pre">&#9;</span>setState (idProwlMessage, "Test des Prowl-Adapter <<< mit einem Zeilenumbruch. <<< Auch Sonderzeichen sind möglich: #*!&sect;$%&/()=? <<< Eine kleine Auswahl an Emoji ist ebenfalls möglich >Smiley< >NOEntry< >Check<");<br>
 });<br>
 </p>
 
