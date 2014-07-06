@@ -1,7 +1,1 @@
-#!/bin/bash
-
-# Stop the  ccu.io
-if [ -d "/opt/ccu.io/" ]; then
-	/etc/init.d/ccu.io.sh stop || true
-	update-rc.d ccu.io.sh remove || true
-fi
+#!/bin/bash# Stop the  ccu.ioif [ -d "/opt/ccu.io/" ]; then	/etc/init.d/ccu.io.sh stop || true	update-rc.d ccu.io.sh remove || truefi

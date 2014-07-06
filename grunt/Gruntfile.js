@@ -20,14 +20,26 @@ module.exports = function(grunt) {
         lineending: {               // Task
             dist: {                   // Target
                 options: {              // Target options
-                    eol: 'cr'
+                    eol: 'cr',
+                    overwrite: true
                 },
-                files: [{
+                files: [
+                    {
                         expand:  true,
                         flatten: true,
-                        src:     ['.debian-pi-control/**/*'],
-                        dest:    '.debian-pi-control/a/'
-                }]
+                        src:     ['debian-pi/control/*']
+                    },
+                    {
+                        expand:  true,
+                        flatten: true,
+                        src:     ['debian-pi/etc/init.d/*']
+                    },
+                    {
+                        expand:  true,
+                        flatten: true,
+                        src:     ['debian-pi/redeb.sh']
+                    }
+                ]
             }
         },
         replace: {
@@ -80,7 +92,7 @@ module.exports = function(grunt) {
                         expand:  true,
                         flatten: true,
                         src:     ['debian-pi/control/*'],
-                        dest:    '.debian-pi-control/**/*'
+                        dest:    '.debian-pi-control/control/'
                     },
                     {
                         expand:  true,
@@ -351,9 +363,9 @@ module.exports = function(grunt) {
 
         grunt.task.run([
             'clean:debian-pi-control',
+            'lineending',
             'replace:debian-pi-version:' + (Math.round(size / 1024) + 8) + ':pi:armhf', // Settings for raspbian
             'copy:debian-pi',
-            'lineending',
             'compress:debian-pi-data',
             'clean:debian-pi-control-sysroot'
         ]);
