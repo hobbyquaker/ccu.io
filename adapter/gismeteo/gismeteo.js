@@ -34,16 +34,50 @@
 //      "pollIntervalHours": 6
 //    }
 //  }
-// - Войти в папку с ccu.io
+// - Войти в папку ccu.io в коммандной строке (cmd.exe или shell)
 // - вызвать: node adapter/gismeteo/gismeteo.js 
 // - смотреть встроенные выводы, через console.log 
-
+//
 // Можно использовать для отладки браузер Chrome (http://greenido.wordpress.com/2013/08/27/debug-nodejs-like-a-pro/)
 // или при помощи WebStorm
 
-// How to debug channel !!!
 
+// Wie kann man Adapter debuggen:
+// - Einstellen den Adapter in  ccu.io/datastore/adapter-gismeteo.json
+//     {
+//    "enabled": true,
+//    "settings": {
+//      "firstId": 71300,
+//      "cityId": 28722,
+//      "pollIntervalHours": 6
+//    }
+//  }
+// - Das Verzeichnis ccu.io wählen in der Kommandozeile (cmd.exe oder shell)
+// - Aufrufen: node adapter/gismeteo/gismeteo.js 
+// - console.log Ausgaben betrachten
+// 
+// Man kann auch Chrome für Debugging benutzen (http://greenido.wordpress.com/2013/08/27/debug-nodejs-like-a-pro/)
+// oder WebStorm.
 
+// How to debug the adapter:
+// - Set up the den Adapter in  ccu.io/datastore/adapter-gismeteo.json
+//     {
+//    "enabled": true,
+//    "settings": {
+//      "firstId": 71300,
+//      "cityId": 28722,
+//      "pollIntervalHours": 6
+//    }
+//  }
+//
+// - Go to directory ccu.io in command console (cmd.exe or shell)
+// - Call: node adapter/gismeteo/gismeteo.js 
+// - Analyse the outputs of console.log 
+// 
+// You can debug with Chrome (http://greenido.wordpress.com/2013/08/27/debug-nodejs-like-a-pro/) too
+// or WebStorm.
+
+//--------------------------------------------------------------------------------------------------------
 // Считать файл с настройками
 // Lese die Datei mit Adapter-Einstellungen
 // Read the file with adapter settings
