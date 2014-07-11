@@ -8,13 +8,13 @@
 // Вызвав ссылку с xml можно посмотреть на формат данных. Они приведены ниже в коде.
 // Читайте коментарии на русском и, надеюсь, кое сто будет понятно.
 
-// Es sit ein Demo-Adapter. Der wurde dafür geschrieben um zu erklären, wie man einen Adapter kreirt.
-// Nehmen wir einen Web-Service gismeteo.ru. Service gibt zurück die Vorhersage für Morgan und aktuelle Daten für jetzt in einer bestiemten Stadt.
-// Leider unterstützt der Service keine nicht russische Städte, aber es ist doch nur einen Beispiel.
-// Man kann auf der Seite http://informer.gismeteo.com/getcode/xml.php eine ID für die Stadt finden.
-// Z.B. http://informer.gismeteo.com/xml/27612_1.xml ist für Moskau, wo 27612 ist ID für Moskau.
-// Wenn man das Link aufruft, kann man die Struktur von XML Antwort sehen. Einen Beispiel kann man unten im Kode sehen.
-// Lesen sie die Kommentare auf Deutsch und, hoffentlich, wird einiges klare.
+// Es ist ein Demo-Adapter. Der wurde dafür geschrieben um zu erklären, wie man einen Adapter kreiert.
+// Nehmen wir einen Web-Service gismeteo.ru. Service gibt zurück die Vorhersage für Morgen und aktuelle Daten für jetzt in einer bestimmten Stadt.
+// Leider unterstützt der Service keine nicht russischen Städte, aber es ist doch nur einen Beispiel.
+// Man kann auf der Seite http:informer.gismeteo.com/getcode/xml.php eine ID für die Stadt finden.
+// Z.B. http:informer.gismeteo.com/xml/27612_1.xml ist für Moskau, wo 27612 ist ID für Moskau.
+// Wenn man das Link aufruft, kann man die Struktur von XML Antwort sehen. Ein Beispiel kann man unten im Kode sehen.
+// Lesen Sie die Kommentare auf Deutsch und, hoffentlich, wird einiges klare.
 
 // This is a demo adapter. This adapter was written as instruction for own adapter creation.
 // Let's take the web service gismeteo.ru. The service returns the weather forecast for tomorrow and actual weather data for todey in some specific city.
@@ -79,16 +79,16 @@
 
 //--------------------------------------------------------------------------------------------------------
 // Считать файл с настройками
-// Lese die Datei mit Adapter-Einstellungen
+// Lese die Datei mit der Adapter-Einstellungen
 // Read the file with adapter settings
 var settings = require(__dirname + '/../../settings.js');
 
 // Если настройки для драйвера не существуют или драйвер деактивирован
-// Falls keine Einstellungen oder Adapter ist deaktiviert
+// Falls keine Einstellungen oder Adapter deaktiviert ist
 // If no settings for adapter or adapter is deactivated
 if (!settings.adapters.gismeteo || !settings.adapters.gismeteo.enabled) {
     // Завершаем процесс и не тратим память впустую
-    // Beenden wir den Prozess und verschenden die Ressourcen nicht.
+    // Beenden wir den Prozess und verschwenden die Ressourcen nicht.
     // Stop the process and save the memory and CPU time.
     process.exit();
 }
@@ -105,7 +105,7 @@ var logger =    require(__dirname + '/../../logger.js'),// Own ccu.io module
     http =        require('http'),
 
     // А также модуль парсинга XML, т.к. ГисМетео отдает результаты в XML
-    // Und noch einen Module für XML-Parsing.
+    // Und noch einen Modul für XML-Parsing.
     // And another module for xml parsing
     parseString =  require('xml2js').parseString;
 
@@ -124,7 +124,7 @@ var logger =    require(__dirname + '/../../logger.js'),// Own ccu.io module
 //                  => Datenpunkt3
 // Gerät2 => Kanal3 => Datenpunkt4
 //           Kanal4 => Datenpunkt5
-// Das heißt im Root sind die Geäte die eine Liste von Kanälen haben. Jeder Kanal soll die Liste mit mindestens einem Kind haben.
+// Das heißt im Root sind die Geräte die eine Liste von Kanälen haben. Jeder Kanal soll die Liste mit mindestens einem Kind haben.
 
 // You should think about the data structure of the channel. The data in CCU.IO looks like:
 // Device1 => Channel1 => Data point1
@@ -217,7 +217,7 @@ var pollTimer        = null, // Таймер для опроса gismeteo
                                                             // The variable with adapter settings (we will talk about it later)
    
 // Соединяемся с CCU.IO
-// Verbinden mi CCU.IO
+// Verbinden mit CCU.IO
 // Connect with CCU.IO
 if (settings.ioListenPort) {
     socket = io.connect("127.0.0.1", {
@@ -234,7 +234,7 @@ if (settings.ioListenPort) {
 }
 
 // Реакция на события из сокета
-// Reaktion auf die Ereignise von CCU.IO
+// Reaktion auf die Ereignisse  von CCU.IO
 // Handlers for events from CCU.IO
 
 // При соединении
@@ -242,14 +242,14 @@ if (settings.ioListenPort) {
 // If connection established
 socket.on('connect', function () {
     // драйвер соединился с ccu.io
-    // Adapter ist mit CCU.IO Verbunden
+    // Adapter ist mit CCU.IO verbunden
     // Adapter is connected with CCU.IO
     logger.info("adapter gismeteo connected to ccu.io");
 });
 
 socket.on('disconnect', function () {
     // драйвер потерял соединение с ccu.io. Ничего делать не надо. Он сам снова соединится.
-    // Adapter hat die Verbindung mit CCU.IO verlohren. Man muss nichts machen. Die Verbindung wird wieder von selbst aufgebaut.
+    // Adapter hat die Verbindung mit CCU.IO verloren. Man muss nichts machen. Die Verbindung wird wieder von selbst aufgebaut.
     // Adapter has lost the connection with CCU.IO. The connection will be reestablished automatically.
     logger.info("adapter gismeteo disconnected from ccu.io");
 });
@@ -272,25 +272,29 @@ socket.on('event', function (obj) {
                       // If the direction is "true" that means the data is from other internal adapter or from ourself. "false" means the data is from GUI/DashUI or from script engine.
     var ts  = obj[3];
 
+	// Мы на хотим реагировать на изменения, которые сами же внесли
+	// Wir wollen auf eigene Änderungs-Ereignisse nicht reagieren
     // We don' want to process our own changes.
 	if (dir) {
 		return;
 	}
 
-    // If date has value true => reload the data immediately
+	// Если в переменную DATE записали значение TRUE => одновить погодные данные немедленно
+	// Falls DATE hat den Wert TRUE => Updaten die Wetterdaten sofort
+    // If date has value TRUE => reload the data immediately
 	if ((ID == nowChannel_DPs.DATE || ID == nextChannel_DPs.DATE) && val == true) {
 		pollGismeteo();
 	}	
 });
 
 // Функция завершения драйвера. Очень важно, иначе драйвер при перезапуске CCU.IO останется висеть в памяти и будет дальше пытаться соединится
-// Die Funktion um Adapter runterzufahren. Es ist sehr wichtig. Sonst es kann sein, dass zwei instanzen von Adapter laufen werden.
+// Die Funktion um Adapter runterzufahren. Es ist sehr wichtig. Sonst es kann sein, dass zwei Instanzen  von Adapter laufen werden.
 // Driver termination function. It is very important, elsewise it can be possible, that two instances of the driver run simultaneously.
 function stop() {
     logger.info("adapter gismeteo terminating");
 
 	// Останавливаем таймер
-    // Anhalten der Poll-Timer
+    // Anhalten den Poll-Timer
     // Stop the poll timer
 	if (pollTimer) {
 		clearInterval(pollTimer);
@@ -307,6 +311,8 @@ function stop() {
     }, 250);
 }
 
+// Сигналы от ОС Linux
+// Meldungen vom Betriebssystem Linux
 // Signals under linux
 process.on('SIGINT', function () {
     stop();
@@ -326,7 +332,7 @@ function setState(id, val) {
 }
 
 // Теперь создаем объекты. Здесь важно использовать настройки для драйвера, которая определяет адресное пространство драйвера firstId
-// Jetzt kreiren wir die Datenobjekte in CCU.IO. Es ist wichtig die Einstellungen für Adapter zu nutzen. firstId beschriebt die erste ID für diesen Adapter.
+// Jetzt kreieren wir die Datenobjekte in CCU.IO. Es ist wichtig die Einstellungen für Adapter zu nutzen. firstId beschriebt die erste ID für diesen Adapter.
 // Now create the data objects in CCU.IO for adapter. It is important to use firtsId variable in adpater settings to start the object IDs of adapter from it.
 var rootDevice = gismeteoSettings.firstId;
 var nowChannel = rootDevice + 1;
@@ -348,19 +354,20 @@ var nextChannel_DPs = {
 	};
 
 // Создаем объекты в CCU.IO при старте
-// Objekten beim Adapterstart erzeugen
+// Die Objekten beim Adapterstart erzeugen
 // Create data objects by adapter start
 function initGismeteo () {
 	// Сначала переменные для канала сегодня
-    // Erst die Objekte für jetzt
+    // Erst die Datenpunkte für jetzt
+    // First the datapoints for NOW
 	setObject(nowChannel_DPs.DATE, {
 		Name:     "gismeteo.now.DATE",
 		TypeName: "HSSDP",     // HSSDP говорит CCU.IO, что это переменная содержит реальные значения а не просто структурный элемент, т.е. это datapoint
-                               // HSSDP sagt in CCU.IO, dass es ein Datenpunkt ist und das Objekt die konkrete Daten hat.
+                               // HSSDP sagt in CCU.IO, dass es ein Datenpunkt ist und das Objekt die konkreten Daten hat.
                                // HSSDP says in CCU.IO, that this is a datapoint and not just a structure element.
                                
 		Parent:   nowChannel   // Говорит ID корневого элемента/канала (Важно)
-		                       // ID von dem übergerodnetem Kanal (Wichtig)
+		                       // ID von dem übergeordneten Kanal (Wichtig)
 		                       // Id of the parent channel. Must be defined
 	});
 	setObject(nowChannel_DPs.PRESSURE_MIN, {
@@ -399,7 +406,7 @@ function initGismeteo () {
 		                            // Address is unimportant and is not reuired
 		                            
 		HssType:  "gismeteo",       // Тип канала. Это свойство можно опустить
-		                            // Kanaltyp. Ist unwichtig
+		                            // Kanal-Typ. Ist unwichtig
 		                            // Channel type. Can be ignored
 		                            
 		DPs:      nowChannel_DPs,   // Список ID данных, принадлежащих этому каналу. Тип array. Обязателен
@@ -407,7 +414,7 @@ function initGismeteo () {
 		                            // Data points ID list of the channel (as JS array). Must be defined.
 		                            
 		Parent:   rootDevice        // Говорит ID корневого элемента (Важно)
-		                            // ID von dem übergerodnetem Gerät (Wichtig)
+		                            // ID von dem übergeordneten Gerät (Wichtig)
 		                            // Id of the parent device. Must be defined
 	});
 	
@@ -454,9 +461,10 @@ function initGismeteo () {
 	
 	// И напоследок корневой элемент
 	// Und am Ende das Root-Element
+	// And at the end the root element
 	setObject(rootDevice, {
 		Name:      "gismeteo",      // Имя устройства (Важно)
-		                            // GeräteName (Wichtig)
+		                            // Gerätname (Wichtig)
 		                            // Device name (Important)
 		                         
 		TypeName:  "DEVICE",        // Важно. Говорит CCU.IO, что это устройство
@@ -482,18 +490,19 @@ function initGismeteo () {
 	});
 	
 	// Выполняем один раз опрос
-	// Frage zum ersten mal 
+	// Fragen zum ersten Mal 
 	// Request for the first time
 	pollGismeteo();
 	
 	// и запускаем циклический таймер
-	// und zyklische Timer starten
+	// und zyklischen Timer starten
 	// and start the cyclic timer
     pollTimer = setInterval(pollGismeteo, gismeteoSettings.pollIntervalHours * 3600000 /* ms */);
 }
 
-// запрашиваем объект 
-// requ
+// запрашиваем объект c gismeteo.ru
+// fragen bei gismeteo.ru für XML Daten
+// request xml data at gismeteo.ru
 function getXmlResponse(callback) {
     var options = {
         host: 'informer.gismeteo.com',
@@ -503,6 +512,11 @@ function getXmlResponse(callback) {
 
     console.log('http://informer.gismeteo.com/xml/' + gismeteoSettings.cityId + '_1.xml');
 
+	// Здесь можно почитать, как использовать http.get
+	// Hier kann man mehr Information über "http.get" finden
+	// You can find more information about http.get here
+	// http://nodejs.org/api/http.html#http_http_get_options_callback
+	
     http.get(options, function(res) {
         var xmldata = '';
         res.setEncoding('utf8');
@@ -837,14 +851,14 @@ function getXmlResponse(callback) {
                             }
                         } catch(e) {
                         	// Сервер вернул неправильный формат XML файла
-                        	// Der Server hat mit flaschem XMl Format geanwortet
+                        	// Der Server hat mit falschem XMl Format geantwortet
                         	// Server returns invalid XML formatted answer
                             logger.warn("adapter gismeteo: cannot parse xml answer");
                         }
                         callback(result);
                     } else {
                     	// Есть ответ от gismeteo, но он с ошибкой (Например: сервис не доступен)
-                    	// Es gibt einen Antwort vom server, aber der hat einen Fehler (e.g. Service ist nicht online)
+                    	// Es gibt eine Antwort vom Server, aber der hat einen Fehler (e.g. Service ist nicht online)
                     	// There is an answer from server, but it has error, e.g. "service not available"
                         logger.warn("adapter gismeteo: cannot parse xml answer - " + err);
                     }
@@ -853,20 +867,20 @@ function getXmlResponse(callback) {
         });
     }).on('error', function(e) {
     	// Нет соединения с gismeteo.ru
-    	// Keine verbindung mit gismeteo.ru
+    	// Keine Verbindung  mit gismeteo.ru
     	// There is no connection with gismeteo.ru
         logger.warn("adapter gismeteo: Got error by request " + e.message);
     });
 }
 
 // опрашивем gismeteo и сохраняем результаты
-// Frage gismeteo ein Mal und speichere den Antwort in CCU.IO Datenpunkten
+// Frage gismeteo ein Mal und speichere die Antwort in CCU.IO Datenpunkten
 // request data from gismeteo one time and store the responses in CCU.IO data points
 function pollGismeteo () {
 	getXmlResponse(function (data) {
 		if (data) {
 			// Передать данные для сейчас
-			// Speicere für Kanal - Jetzt
+			// Speichere für Kanal - Jetzt
 			// Store for channel - now
 			setState(nowChannel_DPs.DATE,         data.now.DATE);
 			setState(nowChannel_DPs.PRESSURE_MIN, data.now.PRESSURE_MIN);
