@@ -380,6 +380,7 @@ function setDatapoint(id, val, ts, ack, lc) {
 }
 
 function tryReconnect() {
+    if (settings.ccuIp != '0.0.0.0') {
     if (regahss && regahss.options && regahss.options.ccuIp) {
         logger.info("ccu.io        trying to reconnect to CCU");
         request('http://'+regahss.options.ccuIp+'/ise/checkrega.cgi', function (error, response, body) {
@@ -406,6 +407,7 @@ function tryReconnect() {
             }
         });
     }
+  }
 
 }
 
