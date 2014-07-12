@@ -381,6 +381,12 @@ function setDatapoint(id, val, ts, ack, lc) {
 
 function tryReconnect() {
     if (regahss && regahss.options && regahss.options.ccuIp) {
+    	if (regahss.options.ccuIp == "0.0.0.0") {
+        	logger.warn("ccu.io        invalid CCU ip address " + regahss.options.ccuIp);
+    		regahss.options.ccuIp = "";
+    		return;
+    	}
+    	
         logger.info("ccu.io        trying to reconnect to CCU");
         request('http://'+regahss.options.ccuIp+'/ise/checkrega.cgi', function (error, response, body) {
             if (!error && response.statusCode == 200) {
