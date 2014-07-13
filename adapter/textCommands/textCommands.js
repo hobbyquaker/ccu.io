@@ -212,6 +212,7 @@ function sayName (lang, text, withLang, arg1, arg2, arg3) {
 
 function sayIt(lang, withLang, text) {
     if (text) {
+        logger.info("adapter textCommands: response - '" + cmd + "'");
         // Write answer back
         setState(objProcess, (withLang ? (lang ? lang + ";" : "") : "") + text);
 
@@ -500,7 +501,6 @@ function controlLight (lang, text, withLang, arg1, arg2, arg3, ack) {
     var valPercent = null;
     var sRoom = "";
     var cmdWords = text.split(" ");
-    logger.info("---+++++" + lang)
     if (lang == "ru") {
         // test operation
         if (findWord (cmdWords, "включить") || findWord (cmdWords, "включи") || findWord (cmdWords, "ключи")) {
@@ -535,7 +535,6 @@ function controlLight (lang, text, withLang, arg1, arg2, arg3, ack) {
         logger.error ("Language " + lang + " is not supported");
         return;
     }
-    logger.info("1---+++++" + lang)
 
     // test room
     for (var room in rooms) {
@@ -550,7 +549,6 @@ function controlLight (lang, text, withLang, arg1, arg2, arg3, ack) {
             break;
         }
     }
-    logger.info("2---+++++" + lang)
 
     // Find any number
     var words = text.split(" ");
@@ -628,7 +626,7 @@ function processCommand (cmd) {
         sayIt(lang, withLang, "Not ready");
         return;
     }
-    logger.info("adapter textCommands: " + cmd);
+    logger.info("adapter textCommands: request  - '" + cmd + "'");
 
     var isNothingFound = true;
     var withLang = false;
@@ -636,15 +634,12 @@ function processCommand (cmd) {
     var lang = textCommandsSettings.language;
     cmd = cmd.toLowerCase();
 
-    logger.warn("--------------" + lang);
-
     if (ix != -1) {
         withLang = true;
         lang = cmd.substring (0, ix);
         cmd = cmd.substring(ix + 1);
     }
     var cmdWords = cmd.split(" ");
-    logger.warn("--------------" + lang);
 
 	for (var i = 0; i < textCommandsSettings.rules.length; i++) {
 		var command = textCommandsSettings.rules[i];
