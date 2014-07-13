@@ -178,5 +178,11 @@ var ccuWords = {
         "en": "CCU.IO runs as windows service. Use Restart in the Windows menu.",
         "de": "CCU.IO ist als Windows-Service gestartet. Über Restart im Windows-Menu kann man Service neu starten.",
         "ru": "CCU.IO запущен, как Windows сервис. Используйте Restart в Windows меню."
+    },
+    "Localhost can be used only if runs on CCU2 directly" : {
+        "en": "Localhost can be used only if runs on CCU2 directly",
+        "de": "Localhost kann nur benutzt werden, falls CCU.IO direkt auf CCU2 läuft",
+        "ru": "Localhost не имеет смысла. Введите адрес хоста, где запущена CCU.IO"
     }
+    
 };

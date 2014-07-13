@@ -381,6 +381,12 @@ function setDatapoint(id, val, ts, ack, lc) {
 
 function tryReconnect() {
     if (regahss && regahss.options && regahss.options.ccuIp) {
+    	if (regahss.options.ccuIp == "0.0.0.0") {
+        	logger.warn("ccu.io        invalid CCU ip address " + regahss.options.ccuIp);
+    		regahss.options.ccuIp = "";
+    		return;
+    	}
+    	
         logger.info("ccu.io        trying to reconnect to CCU");
         request('http://'+regahss.options.ccuIp+'/ise/checkrega.cgi', function (error, response, body) {
             if (!error && response.statusCode == 200) {
@@ -804,7 +810,7 @@ function findDatapoint(needle, hssdp) {
                     needle = regaObjects[needle].DPs[hssdp];
                 }
             }
-        } else if (needle.match(/[a-zA-Z-]+\.[0-9A-Za-z-]+:[0-9]+\.[A-Z_]+/)) {
+        } else if (needle && needle.match(/[a-zA-Z-]+\.[0-9A-Za-z-]+:[0-9]+\.[A-Z_]+/)) {
             // Get by full BidCos-Address
             addrArr = needle.split(".");
             if (regaIndex.Address[addrArr[1]]) {
@@ -1226,7 +1232,7 @@ function setState(id,val,ts,ack, callback) {
         // Bei Update von Thermostaten den nächsten Event von SET_TEMPERATURE und CONTROL_MODE ignorieren!
         if (regaObjects[id] && regaObjects[id].Name) {
 
-            if (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/) || regaObjects[id].Name.match(/SETPOINT$/)) {
+            if (regaObjects[id].Name && (regaObjects[id].Name.match(/SET_TEMPERATURE$/) || regaObjects[id].Name.match(/MANU_MODE$/) || regaObjects[id].Name.match(/SETPOINT$/))) {
                 var parent = regaObjects[regaObjects[id].Parent];
                 var setTemp = parent.DPs.SET_TEMPERATURE;
                 var ctrlMode = parent.DPs.CONTROL_MODE;
@@ -1638,7 +1644,7 @@ function initSocketIO(_io) {
                 var plat = p;
                 if (p == 'linux') {
                     plat = 'linux';
-                } else if (p.match(/^win/)) {
+                } else if (p && p.match(/^win/)) {
                     plat = 'windows';
                 } else if (p == 'darwin') {
                     plat = 'osx';
@@ -1682,7 +1688,7 @@ function initSocketIO(_io) {
         });
 
         socket.on('readdir', function (path, callback) {
-            path = __dirname+"/"+path;
+            path = __dirname + "/" + path;
             logger.verbose("socket.io <-- readdir "+path);
             fs.readdir(path, function (err, data) {
                 if (err) {
@@ -1701,8 +1707,8 @@ function initSocketIO(_io) {
                 var data = [];
                 if (err) {
                     callback(undefined);
-                }
-                if (files.length == 0) {
+                } else
+                if (!files || files.length == 0) {
                     callback(undefined);
                 } else {
                     files.forEach(function(file) {
@@ -1914,7 +1920,7 @@ function initSocketIO(_io) {
         socket.on('readJsonFile', function (name, callback) {
             logger.verbose("socket.io <-- readFile "+name);
 
-            fs.readFile(__dirname+"/"+name, function (err, data) {
+            fs.readFile(__dirname + "/" + name, function (err, data) {
                 if (err) {
                     callback(undefined);
                     if (name.slice(-13) == 'io-addon.json') return;
@@ -1926,7 +1932,12 @@ function initSocketIO(_io) {
         });
 
         socket.on('getUrl', function (url, callback) {
-            logger.info("ccu.io        GET "+url);
+            logger.info("ccu.io        GET " + url);
+            if (!url) {
+                logger.error("ccu.io        GET '" + url + "' " + e.message);
+                return;
+            }
+            
             if (url.match(/^https/)) {
                 https.get(url, function(res) {
                     var body = "";
@@ -1938,8 +1949,8 @@ function initSocketIO(_io) {
                     });
 
                 }).on('error', function(e) {
-                        logger.error("ccu.io        GET "+url+" "+ e.message);
-                    });
+                    logger.error("ccu.io        GET "+url+" "+ e.message);
+                });
             } else {
                 http.get(url, function(res) {
                     var body = "";
