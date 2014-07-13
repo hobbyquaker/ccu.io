@@ -20,7 +20,7 @@ module.exports = function(grunt) {
         lineending: {               // Task
             dist: {                   // Target
                 options: {              // Target options
-                    eol: 'cr',
+                    eol: 'lf',
                     overwrite: true
                 },
                 files: [
