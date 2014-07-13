@@ -76,7 +76,7 @@
 		<th></th>
     </tr>
 </table>
-<input type="button" id="add_variable" value="add variable"/>
+<input type="button" id="add_variable" class="translateV" value="add variable"/>
 <p>
     <h1 class="translate">Description</h1>
     <span class="translate">Description text</span>
@@ -86,11 +86,11 @@
         "false":             {"en": "false",             "de": "nein",            "ru": "нет"},
         "true":              {"en": "true",              "de": "ja",              "ru": "да"},
         "Enabled:":          {"en": "Enabled:",          "de": "Aktiviert:",      "ru": "Активно:"},
-        "Cache enabled:":    {"en": "Cache enabled:",    "de": "Cache aktiviert:",      "ru": "Cache enabled:"},
-        "Cache path:":       {"en": "Cache path:",       "de": "Cache Pfad:",     "ru": "Cache path:"},
-        "Output on Raspberry PI:": {"en": "Output on Raspberry PI:", "de": "Ausgabe auf Raspberry PI:", "ru": "Вывод на Raspberry PI:"},
-        "Start volume 0 - 100:": {"en": "Start volume 0 - 100:", "de": "Initial-Lautstärke 0 - 100:", "ru": "Начальная громкость 0 - 100:"},
-        "Home24-Mediaplayer IP:":{"en": "Home24-Mediaplayer IP:", "de": "Home24-Mediaplayer IP:",  "ru": "Home24-Mediaplayer IP:"},
+        "Cache enabled:":    {"en": "Cache enabled:",    "de": "Cache aktiviert:","ru": "Кэш активна:"},
+        "Cache path:":       {"en": "Cache path:",       "de": "Cache Pfad:",     "ru": "Путь к для кэширования:"},
+        "Output on Raspberry PI:": {"en": "Output on Raspberry PI:", "de": "Ausgabe auf Raspberry PI:",   "ru": "Вывод на Raspberry PI:"},
+        "Start volume 0 - 100:":   {"en": "Start volume 0 - 100:",   "de": "Initial-Lautstärke 0 - 100:", "ru": "Начальная громкость 0 - 100:"},
+        "Home24-Mediaplayer IP:":  {"en": "Home24-Mediaplayer IP:",  "de": "Home24-Mediaplayer IP:",      "ru": "Home24-Mediaplayer IP:"},
         "Use FTP server for Mediaplayer. FTP Port:": {"en": "Use FTP server for Mediaplayer. FTP Port:", "de": "Benutze FTP Server für Mediaplayer. FTP Port:", "ru": "Использовать FTP сервер для Mediaplayer. FTP Port:"},
         "FTP login:":        {"en": "FTP login:",        "de": "FTP Login:",      "ru": "FTP логин:"},
         "FTP password:":     {"en": "FTP password:",     "de": "FTP Kennwort:",   "ru": "FTP пароль:"},
@@ -106,6 +106,7 @@
         "FTP User":          {"en": "FTP User",          "de": "FTP Login",       "ru": "FTP логин"},
         "FTP Pass":          {"en": "FTP Pass",          "de": "FTP Kennwort",    "ru": "FTP пароль"},
         "Description":       {"en": "Description",       "de": "Beschreibung",    "ru": "Описание"},
+        "add variable":      {"en": "Add new output",    "de": "Ausgang einfügen","ru": "Добавить устройство вывода"},
         "Description text":  {
         	"en": "SayIt Adapter can convert text to speech and play it on some device or different devices. The specific variable should be written with the script to hear the voice.<br>"
         		 +"E.g. if the variable has ID 72910, it can be written with text \"Say it in browser\".<br>"
@@ -147,7 +148,7 @@
             	 +"<li><b>Browser</b> - текст будет проигран в броузере, где открыта DashUI. Почти все десктопные браузеры и <span style=\"color:red\">очень мало</span> мобильных броузеров поддерживают эту функцию.</li>"
         		 +"    <li><b><a href=\"http://www.home-24.net/index.php?app=media\">Home24- MediaPlayer</a></b> - текст будет отправлен и проигран на Android устройстве, где установлен Home24 - MediaPlayer. При этом используется андроидовский TTS движок. Порт не может быть изменен и установлен на 50000.</li>"
         		 +"    <li><b><a href=\"https://play.google.com/store/apps/details?id=lutey.FTPServer\">Home24 - MediaPlayer и FTP Server</a></b> - текст будет отправлен и проигран на Android устройстве, где установлен Home24 - MediaPlayer. При этом используется Google Speach API, т.е. данные отсылаются на Google. Сгенерированные MP3 файлы пересылаются через FTP на андроид устройство и проигрываюься там при помощи Home24 - MediaPlayer."
-        		 +"        Оба Es müss nur in beiden Apps das gleiche Home-Verzeichnis eingestellen sein. (Z.B. Root-Verzeichnis von \"sd card\" benutzen).</li>"
+        		 +"        Оба приложения должны иметь одинаковые папки для чтения и хранения файлов. (Например использовать корневую папку \"sd card\").</li>"
         		 +"    <li><b>System</b> - текст будет проигрываться на системе, где установлен CCU.IO. Поддерживаются следующие системы: Windows, linux, Mac OSx</li>"
         		 +"    <li><b>Windows engine</b> - текст будет проигрываться на системе, где установлен CCU.IO. При этом будет использоваться встроенный Windows TTS engine. В Windows все должно быть настроено зараниее пользователем.</li>"
         		 +"</ul>"
