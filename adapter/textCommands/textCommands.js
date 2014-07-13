@@ -71,7 +71,7 @@ socket.on('connect', function () {
     socket.emit('getIndex', function(index) {
         regaIndex = index;
         socket.emit('getObjects', function(objects) {
-            logger.info("adaptr textCommands fetched regaObjects")
+            logger.info("adapter textCommands fetched regaObjects")
             regaObjects = objects;
         });
     });
@@ -358,15 +358,15 @@ function userProgramExec (lang, text, withLang, arg1, arg2, arg3, ack) {
 }
 
 var rooms = {
-    "livingRoom": {"ru" : "зал",          "de": "wohnzimmer",           "en": "living" },
-    "bedroom":    {"ru" : "спальн",       "de": "schlafzimmer",         "en": "bedroom" },
-    "bathroom":   {"ru" : "ванн",         "de": "bad",                  "en": "bath" },
-    "office":     {"ru" : "кабинет",      "de": "arbeitszimmer/kabinet","en": "working/office" },
-    "nursery":    {"ru" : "детск",        "de": "kinder",               "en": "kids/child/nursery" },
-    "wc":         {"ru" : "туалет",       "de": "wc",                   "en": "wc/closet" },
-    "floor":      {"ru" : "прихож",       "de": "diele/eingang/flür",   "en": "floor/enter" },
-    "kitchen":    {"ru" : "кухня/кухне",  "de": "küche",                "en": "kitchen" },
-    "everywhere": {"ru" : "везде/все/всё","de": "alle/überall",         "en": "all/everywhere" }
+    "livingRoom": {"ru" : "зал",            "de": "wohnzimmer",           "en": "living" },
+    "bedroom":    {"ru" : "спальн",         "de": "schlafzimmer",         "en": "bedroom" },
+    "bathroom":   {"ru" : "ванн",           "de": "bad",                  "en": "bath" },
+    "office":     {"ru" : "кабинет",        "de": "arbeitszimmer/kabinet","en": "working/office" },
+    "nursery":    {"ru" : "детск",          "de": "kinder",               "en": "kids/child/nursery" },
+    "wc":         {"ru" : "туалет",         "de": "wc",                   "en": "wc/closet" },
+    "floor":      {"ru" : "прихож/коридор", "de": "diele/eingang/flür",   "en": "floor/enter" },
+    "kitchen":    {"ru" : "кухн",           "de": "küche",                "en": "kitchen" },
+    "everywhere": {"ru" : "везде/все/всё",  "de": "alle/überall",         "en": "all/everywhere" }
 }
 
 function findWord (cmdWords, word) {
@@ -474,8 +474,8 @@ function controlBlinds (lang, text, withLang, arg1, arg2, arg3, ack) {
 
     if (!regaChannels && regaIndex["CHANNEL"]) {
         for (var devs in regaIndex["CHANNEL"]) {
-            if (regaObjects[regaChannels[devs]].HssType == "BLIND") {
-                var dev = regaObjects[regaChannels[devs]];
+            if (regaObjects[regaIndex["CHANNEL"][devs]] && regaObjects[regaIndex["CHANNEL"][devs]].HssType == "BLIND") {
+                var dev = regaObjects[regaIndex["CHANNEL"][devs]];
                 if (dev.DPs && dev.DPs["LEVEL"])
                     setState (dev.DPs["LEVEL"], valPercent);
             }
@@ -598,8 +598,8 @@ function controlLight (lang, text, withLang, arg1, arg2, arg3, ack) {
 
     if (!regaChannels && regaIndex["CHANNEL"]) {
         for (var devs in regaIndex["CHANNEL"]) {
-            if (regaObjects[regaChannels[devs]].HssType == "SWITCH") {
-                var dev = regaObjects[regaChannels[devs]];
+            if (regaObjects[regaIndex["CHANNEL"][devs]] && regaObjects[regaIndex["CHANNEL"][devs]].HssType == "SWITCH") {
+                var dev = regaObjects[regaIndex["CHANNEL"][devs]];
                 if (dev.DPs && dev.DPs["STATE"])
                     setState (dev.DPs["STATE"], valPercent);
             }
