@@ -1,6 +1,6 @@
 {
 	"name":      "ccu.io",
-	"version":   "1.0.42",
+	"version":   "1.0.43",
 	"platforms": "windows, linux, macOS",
 	"hardware":  "RaspberryPi, PC, Mac",
 	"description": {
@@ -9,8 +9,12 @@
 		"ru": "ccu.io"
 	},
     "whatsNew" : [
-        "(Bluefox) improve textCommands adapter",
-        "(Bluefox) change load path for DashUI"
+        "(Eisbaeeer) Check ccu ip address '0.0.0.0'",
+        "(Bluefox) improve textCommands for Home Commander",
+        "(Bluefox) check localhost address.",
+        "(Bluefox) fix ping adapter.",
+        "(Bluefox) Fix demo-adapter  gismeteo.js",
+        "(Bluefox) Fix some null pointer errors in getUrl, match, readdir"
     ]
 
 }

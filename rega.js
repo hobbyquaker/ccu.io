@@ -69,7 +69,7 @@ rega.prototype = {
 
 
         request.get({ url: 'http://' + that.options.ccuIp + '/webui/js/lang/'+lang+'/translate.lang.js', encoding: null }, function(err, res, body) {
-            if (res.statusCode == 200) {
+            if (res && res.statusCode == 200) {
                 try {
                     var HMIdentifier = {}, langJSON = {};
                     var str = unescape(iconv.decode(body, 'ISO-8859-1'));

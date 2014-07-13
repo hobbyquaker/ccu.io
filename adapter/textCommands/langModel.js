@@ -39,8 +39,8 @@ var commands = {
 		editable: false,
 		words: {
 			'en': "outside temperature",
-			'de': "aussen/draußen temperatur",
-			'ru': "температура"
+			'de': "aussen/draußen kalt/warm/temperatur",
+			'ru': "температура снаружи/улице"
 		},
 		arg1: {
 			'en': "Outside temperature ID",
@@ -58,7 +58,7 @@ var commands = {
 		editable: false,
 		words: {
 			'en': "inside temperature",
-			'de': "intern/drin temperatur",
+			'de': "kalt/warm/temperatur",
 			'ru': "температура дома/внутри/квартире"
 		},
         arg1: {
@@ -96,8 +96,8 @@ var commands = {
         editable: false,
         words: {
             'en': "blinds up/down",
-            'de': "rollladen/rolllade auf/zu/hoch/runter",
-            'ru': "ставни/окно/окна поднять/подними/опустить/опусти/открой/открыть/закрыть/закрой"
+            'de': "rolladen/rollade/fenster/laden auf/zu/hoch/runter/machen",
+            'ru': "ставни/окно/окна/жалюзи поднять/подними/опустить/опусти/открой/открыть/закрыть/закрой"
         },
         ack:  {
             'en': "If acknowledge must be spoken",
@@ -151,6 +151,11 @@ var commands = {
             'en': "good",
             'de': "gut",
             'ru': "молодец/хорошая/хороший"
+        },
+        ack: {
+            'en': ["Thank you", "You are welcome"],
+            'de': ["Danke", "Freut mich"],
+            'ru': ["Спасибо"]
         }
     },
     'thankYou' : {
