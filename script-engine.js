@@ -939,9 +939,12 @@ process.on('SIGTERM', function () {
 });
 
 try {
-    var script = scriptEngine.fs.readFileSync(__dirname+"/scripts/global.js");
-    scriptEngine.logger.info("script-engine executing global.js");
-    eval(script.toString());
+    // Check if file exists
+    if (scriptEngine.fs.existsSync(__dirname+"/scripts/global.js")) {
+        var script = scriptEngine.fs.readFileSync(__dirname + "/scripts/global.js");
+        scriptEngine.logger.info("script-engine executing global.js");
+        eval(script.toString());
+    }
 } catch (e) {
     scriptEngine.logger.warn("script-engine global.js: "+e);
 }

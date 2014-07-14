@@ -410,9 +410,9 @@ $(document).ready(function () {
 
         for (var i = 0; i < data.length; i++) {
             var addon = data[i];
-            if (addon == "lib" || addon == "ccu.io" || addon == "index.html") { continue; }
+            if (addon == "lib" || addon == "ccu.io" || addon == "index.html" || addon.indexOf(".mp3") != -1) { continue; }
 
-            socket.emit("readJsonFile", "www/"+addon+"/io-addon.json", function(meta) {
+            socket.emit("readJsonFile", "www/" + addon + "/io-addon.json", function(meta) {
 
                 if (meta) {
                     var hp = meta.urlHomepage.match(/[http|https]:\/\/(.*)/);
