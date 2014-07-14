@@ -131,8 +131,9 @@ function sayItGetSpeechGoogle (i_, text, language, volume, callback) {
     if (text.length == 0) {
         return;
     }
+    language = language || sayitSettings.language;
 
-    var md5filename = cacheDir + crypto.createHash('md5').update((language || sayitSettings.language) + ";" + text).digest('hex') + ".mp3";
+    var md5filename = cacheDir + crypto.createHash('md5').update(language + ";" + text).digest('hex') + ".mp3";
 
     fs.exists(md5filename, function(exists) {
         if (exists) {
@@ -142,7 +143,7 @@ function sayItGetSpeechGoogle (i_, text, language, volume, callback) {
     var options = {
         host: 'translate.google.com',
         //port: 80,
-        path: '/translate_tts?q=' + querystring.escape(text) + '&tl='+(language || sayitSettings.language)
+        path: '/translate_tts?q=' + querystring.escape(text) + '&tl=' + language
     };
 
     if (language == "ru") {
