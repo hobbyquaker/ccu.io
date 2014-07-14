@@ -30,7 +30,7 @@ var logger   = require(__dirname + '/../../logger.js'),
     io       = require('socket.io-client'),
     http     = require('http'),
     https    = require('https'),
-	commands = require(__dirname + '/langModel.js');
+	model    = require(__dirname + '/langModel.js');
 
 var textCommandsSettings = settings.adapters.textCommands.settings;
 
@@ -356,18 +356,6 @@ function userProgramExec (lang, text, arg1, arg2, arg3, ack) {
     }
 }
 
-var rooms = {
-    "livingRoom": {"ru" : "зал",          "de": "wohnzimmer",           "en": "living" },
-    "bedroom":    {"ru" : "спальн",       "de": "schlafzimmer",         "en": "bedroom" },
-    "bathroom":   {"ru" : "ванн",         "de": "bad",                  "en": "bath" },
-    "office":     {"ru" : "кабинет",      "de": "arbeitszimmer/kabinet","en": "working/office" },
-    "nursery":    {"ru" : "детск",        "de": "kinder",               "en": "kids/child/nursery" },
-    "wc":         {"ru" : "туалет",       "de": "wc",                   "en": "wc/closet" },
-    "floor":      {"ru" : "прихож",       "de": "diele/eingang/flür",   "en": "floor/enter" },
-    "kitchen":    {"ru" : "кухня/кухне",  "de": "küche",                "en": "kitchen" },
-    "everywhere": {"ru" : "везде/все/всё","de": "alle/überall",         "en": "all/everywhere" }
-}
-
 function findWord (cmdWords, word) {
     for (var t = 0; t < cmdWords.length; t++) {
         if (cmdWords[t] == word) {
@@ -417,8 +405,8 @@ function controlBlinds (lang, text, arg1, arg2, arg3, ack) {
     }
 
     // test room
-    for (var room in rooms) {
-        var words = rooms[room][lang].split("/");
+    for (var room in model.rooms) {
+        var words = model.rooms[room][lang].split("/");
         for (var w = 0; w < words.length; w++) {
             if (text.indexOf (words[w]) != -1) {
                 sRoom = room;
@@ -444,8 +432,8 @@ function controlBlinds (lang, text, arg1, arg2, arg3, ack) {
     for (var i = 0; i < regaRooms.length; i++) {
         if (regaObjects[regaRooms[i]] && regaObjects[regaRooms[i]].Name) {
             var regaName = regaObjects[regaRooms[i]].Name.toLowerCase();
-            for (var lang in rooms[sRoom]) {
-                var words = rooms[sRoom][lang].split("/");
+            for (var lang in model.rooms[sRoom]) {
+                var words = model.rooms[sRoom][lang].split("/");
                 for (var w = 0; w < words.length; w++) {
                     if (regaName.indexOf (words[w]) != -1) {
                         regaChannels = regaObjects[regaRooms[i]].Channels;
@@ -523,8 +511,8 @@ function controlLight (lang, text, arg1, arg2, arg3, ack) {
     }
 
     // test room
-    for (var room in rooms) {
-        var words = rooms[room][lang].split("/");
+    for (var room in model.rooms) {
+        var words = model.rooms[room][lang].split("/");
         for (var w = 0; w < words.length; w++) {
             if (text.indexOf (words[w]) != -1) {
                 sRoom = room;
@@ -550,8 +538,8 @@ function controlLight (lang, text, arg1, arg2, arg3, ack) {
     for (var i = 0; i < regaRooms.length; i++) {
         if (regaObjects[regaRooms[i]] && regaObjects[regaRooms[i]].Name) {
             var regaName = regaObjects[regaRooms[i]].Name.toLowerCase();
-            for (var lang in rooms[sRoom]) {
-                var words = rooms[sRoom][lang].split("/");
+            for (var lang in model.rooms[sRoom]) {
+                var words = model.rooms[sRoom][lang].split("/");
                 for (var w = 0; w < words.length; w++) {
                     if (regaName.indexOf (words[w]) != -1) {
                         regaChannels = regaObjects[regaRooms[i]].Channels;
@@ -604,7 +592,7 @@ function processCommand (cmd) {
 	for (var i = 0; i < textCommandsSettings.rules.length; i++) {
 		var command = textCommandsSettings.rules[i];
 		//console.log ("Check: " + command.name);
-		var words = (commands[command.name].words) ? commands[command.name].words[lang] : null;
+		var words = (model.commands[command.name].words) ? model.commands[command.name].words[lang] : null;
 
         if (!words) {
             words = textCommandsSettings.rules[i].words;
@@ -637,7 +625,7 @@ function processCommand (cmd) {
 		}
 		if (isFound) {
             isNothingFound = false;
-			console.log ("Found: " + commands[command.name].description);
+			console.log ("Found: " + model.commands[command.name].description);
 			if (commandsCallbacks [command.name])
 				commandsCallbacks [command.name] (lang, cmd, command["arg1"], command["arg2"], command["arg3"], command["ack"]);
 			else {
@@ -648,7 +636,7 @@ function processCommand (cmd) {
                         sayIt(lang, getRandomPhrase(command.ack));
                     }
                 } else {
-                    console.log ("No callback for " + commands[command.name].description);
+                    console.log ("No callback for " + model.commands[command.name].description);
                 }
 			}
 			break;
@@ -689,14 +677,14 @@ if (!textCommandsSettings.rules) {
     textCommandsSettings.rules = [];
 }
 
-for (var cmd in commands) {
-    if (commands[cmd].invisible) {
+for (var cmd in model.commands) {
+    if (model.commands[cmd].invisible) {
         var obj = {
             name: cmd,
-            words: commands[cmd].words
+            words: model.commands[cmd].words
         };
-        if (commands[cmd].ack) {
-            obj.ack = commands[cmd].ack;
+        if (model.commands[cmd].ack) {
+            obj.ack = model.commands[cmd].ack;
         }
 
         textCommandsSettings.rules.push(obj);

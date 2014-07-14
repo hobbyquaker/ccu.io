@@ -175,6 +175,18 @@ var commands = {
     }
 };
 
+var rooms = {
+    "livingRoom": {"ru" : "зал",          "de": "wohnzimmer",           "en": "living" },
+    "bedroom":    {"ru" : "спальн",       "de": "schlafzimmer",         "en": "bedroom" },
+    "bathroom":   {"ru" : "ванн",         "de": "bad",                  "en": "bath" },
+    "office":     {"ru" : "кабинет",      "de": "arbeitszimmer/kabinet","en": "working/office" },
+    "nursery":    {"ru" : "детск",        "de": "kinder",               "en": "kids/child/nursery" },
+    "wc":         {"ru" : "туалет",       "de": "wc",                   "en": "wc/closet" },
+    "floor":      {"ru" : "прихож",       "de": "diele/eingang/flür",   "en": "floor/enter" },
+    "kitchen":    {"ru" : "кухня/кухне",  "de": "küche",                "en": "kitchen" },
+    "everywhere": {"ru" : "везде/все/всё","de": "alle/überall",         "en": "all/everywhere" }
+};
+
 if (module) {
-	module.exports = commands;
+	module.exports = {commands: commands, rooms: rooms};
 }
