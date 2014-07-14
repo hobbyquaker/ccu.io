@@ -1,8 +1,9 @@
 /**
  *
- * MySQL Adapter for CCU.IO v1.3
+ * MySQL Adapter for CCU.IO v1.3.1
  *
  * Copyright (c) 10'2013 hobbyquaker http://hobbyquaker.github.io
+ *               07'2014 Sandomor - Fehlerkorrekturen 
  *
  */
 
@@ -67,10 +68,18 @@ socket.on('event', function (obj) {
                 name = regaObjects[obj[0]].Name;
             }
 
-            var sql = "REPLACE INTO datapoints (id, val, ack, timestamp, lastchange) VALUES('"+obj[0]+"', '"+obj[1]+"', "+(obj[3]?"true":"false")+", '"+obj[2]+"', '"+obj[4]+"');";
+            var sql = "REPLACE INTO datapoints (id, val, ack, timestamp, lastchange) VALUES('"+obj[0]+"', '"+obj[1]+"', "+(obj[3]?"true":"false")+", '"+obj[2]+"', ";
+            if(obj[4] ==   null ) {
+              sql = sql + "null);";
+              } else {
+              sql = sql + "'" + obj[4] +"');";
+              }
             connection.query(sql, function(err) {
                 if (err) {
-                    logger.error("adapter mysql REPLACE INTO datapoints "+err)
+                    logger.error("adapter mysql REPLACE INTO datapoints " + err);
+                    logger.error("adapter mysql SQL ERROR:" + sql);
+                } else {
+	                logger.debug("adapter mysql SQL OK:" + sql);
                 }
             });
 
@@ -95,7 +104,10 @@ socket.on('event', function (obj) {
                 var sql = "INSERT INTO events (id, name, val, ack, timestamp, lastchange) VALUES('"+obj[0]+"', '"+name+"', '"+obj[1]+"', "+(obj[3]?"true":"false")+", '"+obj[2]+"', '"+obj[4]+"');";
                 connection.query(sql, function(err) {
                     if (err) {
-                        logger.error("adapter mysql INSERT INTO events "+err)
+                        logger.error("adapter mysql INSERT INTO events " + err)
+                        logger.error("adapter mysql SQL ERROR:" + sql);
+                    } else {
+                        logger.debug("adapter mysql SQL OK:"+sql);
                     }
                 });
             }
@@ -184,7 +196,10 @@ function updateObjects() {
                 connection.query(sql, function(err) {
                     if (err) {
                         logger.error("adapter mysql REPLACE INTO refs "+err)
+                        logger.error("adapter mysql SQL ERROR:"+sql);
                         console.log(err);
+                    } else {
+                        logger.debug("adapter mysql SQL OK:"+sql);
                     }
                 });
             }
@@ -193,29 +208,31 @@ function updateObjects() {
         }
 
         var sql = "REPLACE INTO objects (id, parent, name, type, info, hssType, address, interface, operations, chnDirection, chnType, chnLabel, valueMin, valueMax, valueType, valueSubType, valueUnit, valueList) VALUES ('" +
-            (id?id:"") + "', '" +
-            (parent?parent:"") + "', '" +
+            (id?id:"") + "', " +
+            (parent ? "'" + parent + "'" : "null") + ", '" +
             (name?name:"") + "', '" +
             (type?type:"") + "', '" +
             (info?escapeQuote(info):"") + "', '" +
             (hssType?hssType:"") + "', '" +
             (address?address:"") + "', '" +
-            (iface?iface:"") + "', '" +
-            (operations?operations:"") + "', '" +
-            (chnDirection?chnDirection:"") + "', '" +
+            (iface?iface:"") + "', " +
+            (operations?"'"+operations+"'":"null") + ", " +
+            (chnDirection?"'"+chnDirection+"'":"null") + ", '" +
             (chnType?chnType:"") + "', '" +
             (chnLabel?chnLabel:"") + "', '" +
             (valueMin?valueMin:"") + "', '" +
-            (valueMax?valueMax:"") + "', '" +
-            (valueType?valueType:"") + "', '" +
-            (valueSubType?valueSubType:"") + "', '" +
+            (valueMax?valueMax:"") + "', " +
+            (valueType?"'"+valueType+"'":"null") + ", " +
+            (valueSubType?"'"+valueSubType+"'":"null") + ", '" +
             (valueUnit?valueUnit:"") + "', '" +
             (valueList?valueList:"") + "');";
-
+        
         connection.query(sql, function(err) {
             if (err) {
-                logger.error("adapter mysql REPLACE INTO objects "+err)
-                console.log(err);
+                logger.error("adapter mysql REPLACE INTO objects " + err);
+                logger.error("adapter mysql SQL ERROR:" + sql);
+            } else {
+                logger.debug("adapter mysql SQL OK:"+sql);
             }
         });
 
@@ -241,13 +258,15 @@ function updateDatapoints() {
             val = escapeQuote(dp[0]),
             ack = (dp[2]?"true":"false"),
             ts = dp[1],
-            lc = dp[3];
+            lc = (dp[3]?"'"+dp[3]+"'":"null");
 
-        var sql = "REPLACE INTO datapoints (id, val, ack, timestamp, lastchange) VALUES('"+id+"', '"+val+"', '"+ack+"', '"+ts+"', '"+lc+"');";
+        var sql = "REPLACE INTO datapoints (id, val, ack, timestamp, lastchange) VALUES('"+id+"', '"+val+"', "+ack+", '"+ts+"', "+lc+");";
         connection.query(sql, function(err) {
             if (err) {
                 logger.error("adapter mysql REPLACE INTO datapoints "+err);
-                console.log(err);
+                logger.error("adapter mysql SQL ERROR:" + sql);
+            } else {
+                logger.debug("adapter mysql SQL:" + sql);
             }
         });
     }
