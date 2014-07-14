@@ -20,7 +20,7 @@
  * (Free for non-commercial use).
  */
 
-var settings = require(__dirname+'/../../settings.js');
+var settings = require(__dirname + '/../../settings.js');
 
 if (!settings.adapters.textCommands || !settings.adapters.textCommands.enabled) {
     process.exit();
@@ -212,7 +212,7 @@ function sayName (lang, text, withLang, arg1, arg2, arg3) {
 
 function sayIt(lang, withLang, text) {
     if (text) {
-        logger.info("adapter textCommands: response - '" + cmd + "'");
+        logger.info("adapter textCommands: response - '" + ((withLang ? (lang ? lang + ";" : "") : "") + text) + "'");
         // Write answer back
         setState(objProcess, (withLang ? (lang ? lang + ";" : "") : "") + text);
 
@@ -366,7 +366,8 @@ var rooms = {
     "wc":         {"ru" : "туалет",         "de": "wc",                   "en": "wc/closet" },
     "floor":      {"ru" : "прихож/коридор", "de": "diele/eingang/flür",   "en": "floor/enter" },
     "kitchen":    {"ru" : "кухн",           "de": "küche",                "en": "kitchen" },
-    "everywhere": {"ru" : "везде/все/всё",  "de": "alle/überall",         "en": "all/everywhere" }
+    "everywhere": {"ru" : "везде/все/всё",  "de": "alle/überall",         "en": "all/everywhere" },
+    "terrace":    {"ru" : "балкон/терасс",  "de": "balkon/terrasse",      "en": "balcony/terrace/patio " }
 }
 
 function findWord (cmdWords, word) {
@@ -470,6 +471,16 @@ function controlBlinds (lang, text, withLang, arg1, arg2, arg3, ack) {
     if (valPercent === null) {
         sayIDontUnderstand (lang, text, withLang);
         return;
+    }
+
+    if (lang == 'en') {
+        sayIt (lang, withLang, getRandomPhrase('Execute: ') + text);
+    } else
+    if (lang == 'de') {
+        sayIt (lang, withLang, getRandomPhrase('Führe aus: ') + text);
+    } else
+    if (lang == 'ru') {
+        sayIt (lang, withLang, getRandomPhrase('Выполняю: ') + text);
     }
 
     if (!regaChannels && regaIndex["CHANNEL"]) {
@@ -585,7 +596,7 @@ function controlLight (lang, text, withLang, arg1, arg2, arg3, ack) {
         sayIDontUnderstand (lang, text, withLang);
         return;
     }
-    logger.warn("language: " + lang)
+
     if (lang == 'en') {
         sayIt (lang, withLang, getRandomPhrase('Execute: ') + text);
     } else
