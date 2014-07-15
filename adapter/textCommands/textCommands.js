@@ -48,8 +48,8 @@ var commandsCallbacks = {
 	'outsideTemperature' : sayOutsideTemperature,
 	'insideTemperature' :  sayInsideTemperature,
     'userDeviceControl' :  userDeviceControl,
-    'switchOnOff' :        controlLight,
-    'blindsUpDown' :       controlBlinds
+    'blindsUpDown' :       controlBlinds,
+    'roleOnOff' :          controlRole
 }
 
 if (settings.ioListenPort) {
@@ -257,6 +257,63 @@ function sayIDontUnderstand (lang, text, withLang) {
 	}	
 }
 
+function sayNoSuchRoom (lang, text, withLang) {
+	var toSay;
+	if (lang == 'en') {
+		toSay = getRandomPhrase(['Room not present', 'Room not found', 'You don\'t have such a room']);
+	} else
+	if (lang == 'de') {
+		toSay = getRandomPhrase(['Raum ist nicht gefunden', 'Es gibt kein Zimmer mit dem Namen', 'Man muss sagen im welchen Raum oder überall']);
+	} else
+	if (lang == 'ru') {
+		toSay = getRandomPhrase(['Комната не найдена', 'Надо сказать в какой комнате или сказать везде']);
+	} else {
+		toSay = "";
+	}			
+
+	if (toSay) {
+		sayIt(lang, withLang, toSay);
+	}
+}
+
+function sayNothingToDo (lang, text, withLang) {
+	var toSay;
+	if (lang == 'en') {
+		toSay = getRandomPhrase(['I don\'t know, what to do', 'No action defined']);
+	} else
+	if (lang == 'de') {
+		toSay = getRandomPhrase(['Ich weiß nicht, was ich machen soll', 'Aktion ist nicht definiert']);
+	} else
+	if (lang == 'ru') {
+		toSay = getRandomPhrase(['Непонятно, что делать', 'Не задано действие']);
+	} else {
+		toSay = "";
+	}			
+
+	if (toSay) {
+		sayIt(lang, withLang, toSay);
+	}
+}
+
+function sayNoSuchRole (lang, text, withLang) {
+	var toSay;
+	if (lang == 'en') {
+		toSay = getRandomPhrase(['Role not present', 'Role not found', 'You don\'t have such a device']);
+	} else
+	if (lang == 'de') {
+		toSay = getRandomPhrase(['Die Rolle ist nicht gefunden', 'Es gibt keine Rolle mit dem Namen', 'Man muss sagen womit man was machen will']);
+	} else
+	if (lang == 'ru') {
+		toSay = getRandomPhrase(['Устройство не найдено', 'Надо сказать с чем произвести действие']);
+	} else {
+		toSay = "";
+	}			
+
+	if (toSay) {
+		sayIt(lang, withLang, toSay);
+	}
+}
+
 function sayOutsideTemperature (lang, text, withLang, arg1, arg2, arg3) {
 	if (!arg1) {
 		sayIDontKnow (lang, withLang);
@@ -367,10 +424,86 @@ function findWord (cmdWords, word) {
     return false;
 }
 
+function findRoom (text) {
+	var sRoom = "";
+    for (var room in model.rooms) {
+        var words = model.rooms[room][lang].split("/");
+        for (var w = 0; w < words.length; w++) {
+            if (text.indexOf (words[w]) != -1) {
+                sRoom = room;
+                break;
+            }
+        }
+        if (sRoom) {
+            break;
+        }
+    }
+	return sRoom;
+}
+
+function findAnyNumber (text) {
+	var valPercent = null
+    // Find any number
+    var words = text.split(" ");
+    for (var w = 0; w < words.length; w++) {
+        if (words[w][0] >= '0' && words[w][0] <= '9') {
+            valPercent = parseInt(words[w]) / 100;
+            break;
+        }
+    }
+	return valPercent;
+}
+
+function getChannel (sWhat, sWhere) {
+	if (!regaIndex || !regaIndex[sWhere] || !sWhat) {
+		return null;
+	}
+    var regaList = regaIndex[sWhere];
+    var regaChannels = null;
+	if (regaList) {	
+		for (var i = 0; i < regaList.length; i++) {
+			if (regaObjects[regaList[i]] && regaObjects[regaList[i]].Name) {
+				var regaName = regaObjects[regaList[i]].Name.toLowerCase();
+				for (var lang in model.rooms[sWhat]) {
+					var words = model.rooms[sWhat][lang].split("/");
+					for (var w = 0; w < words.length; w++) {
+						if (regaName.indexOf (words[w]) != -1) {
+							regaChannels = regaObjects[regaList[i]].Channels; //Array if IDs
+							break;
+						}
+					}
+					if (regaChannels) {
+						break;
+					}
+				}
+				if (regaChannels) {
+					break;
+				}
+			}
+		}
+	}
+	return regaChannels;
+}
+
+function getRoomChannel (sRoom) {
+    if (sRoom != "everywhere") {
+		return getChannel(sRoom, "ENUM_ROOMS"); 
+    }
+	return null;
+}
+
+function getRoleChannel (sRole) {
+	if (sRoom != "all") {
+		return getChannel(sRoom, "ENUM_FUNCTIONS"); 
+    }
+	return null;
+}
+
 function controlBlinds (lang, text, withLang, arg1, arg2, arg3, ack) {
-    var valPercent = null;
-    var sRoom = "";
     var cmdWords = text.split(" ");
+	var valPercent = null;
+	var toSay = "";
+	
     if (lang == "ru") {
         // test operation
         if (text.indexOf ("открыть") != -1 || text.indexOf ("подними") != -1 || text.indexOf ("открой") != -1 || text.indexOf ("поднять") != -1) {
@@ -411,76 +544,66 @@ function controlBlinds (lang, text, withLang, arg1, arg2, arg3, ack) {
         return;
     }
 
-    // test room
-    for (var room in model.rooms) {
-        var words = model.rooms[room][lang].split("/");
-        for (var w = 0; w < words.length; w++) {
-            if (text.indexOf (words[w]) != -1) {
-                sRoom = room;
-                break;
-            }
-        }
-        if (sRoom) {
-            break;
-        }
-    }
+    // find room
+    var sRoom = findRoom(text);
 
     // Find any number
-    var words = text.split(" ");
-    for (var w = 0; w < words.length; w++) {
-        if (words[w][0] >= '0' && words[w][0] <= '9') {
-            valPercent = parseInt(words[w]) / 100;
-            break;
-        }
-    }
-
-    var regaRooms = regaIndex["ENUM_ROOMS"];
-    var regaChannels = null;
-    if (sRoom != "everywhere") {
-	    for (var i = 0; i < regaRooms.length; i++) {
-	        if (regaObjects[regaRooms[i]] && regaObjects[regaRooms[i]].Name) {
-	            var regaName = regaObjects[regaRooms[i]].Name.toLowerCase();
-	            for (var lang in model.rooms[sRoom]) {
-	                var words = model.rooms[sRoom][lang].split("/");
-	                for (var w = 0; w < words.length; w++) {
-	                    if (regaName.indexOf (words[w]) != -1) {
-	                        regaChannels = regaObjects[regaRooms[i]].Channels;
-	                        break;
-	                    }
-	                }
-	                if (regaChannels) {
-	                    break;
-	                }
-	            }
-	            if (regaChannels) {
-	                break;
-	            }
-	        }
-	    }
-    }
+	var num = findAnyNumber(text);
+	if (num !== null) {
+		valPercent = num;		
+	}
+	
+	// Don't know what to do
     if (valPercent === null) {
-        sayIDontUnderstand (lang, text, withLang);
+        sayNothingToDo(lang, text, withLang);
         return;
     }
-
-	if (sRoom == "everywhere" || regaChannels) {
-	    if (lang == 'en') {
-	        sayIt (lang, withLang, getRandomPhrase('Execute: ') + text);
-	    } else
-	    if (lang == 'de') {
-	        sayIt (lang, withLang, getRandomPhrase('Führe aus: ') + text);
-	    } else
-	    if (lang == 'ru') {
-	        sayIt (lang, withLang, getRandomPhrase('Выполняю: ') + text);
-	    }
+	
+    var regaChannels = null;
+    if (sRoom != "everywhere") {
+	    regaChannel = getRoomChannel(sRoom);
+		// Unknown room
+		if (!regaChannel) {
+			sayNoSuchRoom(lang, text, withLang);
+			return;
+		}
+    }
+	
+	var isSaid = false;
+	if (!toSay) {
+		if (lang == 'en') {
+			toSay += ((valPercent > 0.5) ? 'Open' : 'Close') + 
+			' the shutter ' + 
+			model.roomsDative[sRoom][lang] + 
+			((valPercent != 0 && valPercent != 1) ? ' on ' + (valPercent * 100) + ' percent': '');
+		} else
+		if (lang == 'de') {
+			toSay += 'Mache' + 
+			' die Rolladen ' + 
+			model.roomsDative[sRoom][lang] + 
+			((valPercent != 0 && valPercent != 1) ? ' auf ' + (valPercent * 100) + ' Perzent': '') + 
+			((valPercent > 0.5) ? ' auf' : ' zu');
+		} else
+		if (lang == 'ru') {
+			toSay += ((valPercent > 0.5) ? 'Открываю' : 'Закрываю') + 
+			' окна ' + 
+			(sRoom != "everywhere") ? model.roomsDative[sRoom][lang] : 'по всему дому' + 
+			((valPercent != 0 && valPercent != 1) ? ' на ' + (valPercent * 100) + ' процентов': '');
+		}
 	}
 
-    if (!regaChannels && sRoom == "everywhere" && regaIndex["CHANNEL"]) {
+    if (sRoom == "everywhere" && regaIndex["CHANNEL"]) {
         for (var devs in regaIndex["CHANNEL"]) {
             if (regaObjects[regaIndex["CHANNEL"][devs]] && regaObjects[regaIndex["CHANNEL"][devs]].HssType == "BLIND") {
                 var dev = regaObjects[regaIndex["CHANNEL"][devs]];
-                if (dev.DPs && dev.DPs["LEVEL"])
+                if (dev.DPs && dev.DPs["LEVEL"]) {
+					if (!isSaid) {
+						sayIt (lang, withLang, toSay);
+						isSaid = true;
+					}
+				
                     setState (dev.DPs["LEVEL"], valPercent);
+				}
             }
         }
     } else
@@ -489,22 +612,42 @@ function controlBlinds (lang, text, withLang, arg1, arg2, arg3, ack) {
         for (var devs in regaChannels) {
             if (regaObjects[regaChannels[devs]].HssType == "BLIND") {
                 var dev = regaObjects[regaChannels[devs]];
-                if (dev.DPs && dev.DPs["LEVEL"])
-                    setState (dev.DPs["LEVEL"], valPercent);
+                if (dev.DPs && dev.DPs["LEVEL"]) {
+					if (!isSaid) {
+						sayIt (lang, withLang, toSay);
+						isSaid = true;
+					}
+                    setState (dev.DPs["LEVEL"], valPercent);					
+				}
             }
         }
     }
-    else {
-        sayIDontUnderstand (lang, text, withLang);
-        return;
-    }
+	
+	// You dont have it in this room
+	if (!isSaid) {
+		if (lang == 'en') {
+			toSay = 'There is no blinds ' + model.roomsDative[sRoom][lang];
+		} else
+		if (lang == 'de') {
+			toSay = 'Es sind keine Rolladen ' +  model.roomsDative[sRoom][lang] + ' gefunden');
+		} else
+		if (lang == 'ru') {
+			toSay =  model.roomsDative[sRoom][lang] + ' нет жалюзей');
+		} else {
+			toSay = "";
+		}
+		
+		if (toSay) {
+			sayIt (lang, withLang, toSay);	
+		}
+	}
 }
 
-function controlLight (lang, text, withLang, arg1, arg2, arg3, ack) {
-    var valPercent = null;
-    var sRoom = "";
+function controlRole (lang, text, withLang, arg1, arg2, arg3, ack) {
+	var valPercent = null;
+	var toSay = "";
     var cmdWords = text.split(" ");
-
+	
     if (lang == "ru") {
         // test operation
         if (findWord (cmdWords, "включить") || findWord (cmdWords, "включи") || findWord (cmdWords, "ключи")) {
@@ -540,94 +683,141 @@ function controlLight (lang, text, withLang, arg1, arg2, arg3, ack) {
         return;
     }
 
-    // test room
-    for (var room in model.rooms) {
-        var words = model.rooms[room][lang].split("/");
-        for (var w = 0; w < words.length; w++) {
-            if (text.indexOf (words[w]) != -1) {
-                sRoom = room;
-                break;
-            }
-        }
-        if (sRoom) {
-            break;
-        }
-    }
+	// find room
+    var sRoom = findRoom(text);
 
+	// find role
+	var sRole = findRole(text);
+	
     // Find any number
-    var words = text.split(" ");
-    for (var w = 0; w < words.length; w++) {
-        if (words[w][0] >= '0' && words[w][0] <= '9') {
-            valPercent = parseInt(words[w]) / 100;
-            break;
-        }
-    }
-
-    var regaRooms = regaIndex["ENUM_ROOMS"];
-    var regaChannels = null;
-    if (sRoom != "everywhere") {
-	    for (var i = 0; i < regaRooms.length; i++) {
-	        if (regaObjects[regaRooms[i]] && regaObjects[regaRooms[i]].Name) {
-	            var regaName = regaObjects[regaRooms[i]].Name.toLowerCase();
-	            for (var lang in model.rooms[sRoom]) {
-	                var words = model.rooms[sRoom][lang].split("/");
-	                for (var w = 0; w < words.length; w++) {
-	                    if (regaName.indexOf (words[w]) != -1) {
-	                        regaChannels = regaObjects[regaRooms[i]].Channels;
-	                        break;
-	                    }
-	                }
-	                if (regaChannels) {
-	                    break;
-	                }
-	            }
-	            if (regaChannels) {
-	                break;
-	            }
-	        }
-	    }
-    }
+	var num = findAnyNumber(text);
+	if (num !== null) {
+		valPercent = num;
+	}
+	
+	// Don't know what to do
     if (valPercent === null) {
-        sayIDontUnderstand (lang, text, withLang);
+        sayNothingToDo(lang, text, withLang);
         return;
     }
+	
+    var regaRoom = null;
+    if (sRoom != "everywhere") {
+	    regaChannel = getRoomChannel(sRoom);
+		// Unknown room
+		if (!regaChannel) {
+			sayNoSuchRoom(lang, text, withLang);
+			return;
+		}
+    }
 
-	if (sRoom == "everywhere" || regaChannels) {
-	    if (lang == 'en') {
-	        sayIt (lang, withLang, getRandomPhrase('Execute: ') + text);
-	    } else
-	    if (lang == 'de') {
-	        sayIt (lang, withLang, getRandomPhrase('Führe aus: ') + text);
-	    } else
-	    if (lang == 'ru') {
-	        sayIt (lang, withLang, getRandomPhrase('Выполняю: ') + text);
-	    }
+    var regaRole = null;
+    if (sRole != "all") {
+	    regaRole = getRoleChannel(sRole);
+		// Unknown function/role
+		if (!regaRole) {
+			sayNoSuchRole(lang, text, withLang);
+			return;
+		}
+    }	
+	var isSaid = false;
+	if (lang == 'en') {
+		if (valPercent == 1) {
+			toSay = "Switch on ";
+		} else
+		if (valPercent == 0) {
+			toSay = "Switch off ";
+		} else {
+			toSay = "Set ";
+		}
+		toSay += model.rolesAccusative[sRole][lang] + ' ';
+		toSay += model.roomsDative[sRole][lang];
+		if (valPercent != 0 && valPercent != 1) {
+			toSay += ' to ' + valPercent * 100 + ' percent';
+		}
+	} else
+	if (lang == 'de') {
+		toSay = (valPercent == 0 || valPercent == 1) ? "Schalte " : "Setzte ";
+		toSay += model.rolesAccusative[sRole][lang] + ' ';
+		toSay += model.roomsDative[sRole][lang];
+		if (valPercent != 0 && valPercent != 1) {
+			toSay += ' auf ' + valPercent * 100 + ' Prozent';
+		}
+		if (valPercent == 0) {
+			toSay = " aus";
+		} else 		
+		if (valPercent == 1) {
+			toSay = " an";
+		}		
+	} else
+	if (lang == 'ru') {
+		if (valPercent == 1) {
+			toSay = "Включаю ";
+		} else
+		if (valPercent == 0) {
+			toSay = "Выключаю ";
+		} else {
+			toSay = "Устанавливаю ";
+		}
+		toSay += model.rolesAccusative[sRole][lang] + ' ';
+		toSay += model.roomsDative[sRole][lang];
+		if (valPercent != 0 && valPercent != 1) {
+			toSay += ' на ' + valPercent * 100 + ' процентов';
+		}
 	}
 
-
-    if (!regaChannels && sRoom == "everywhere" && regaIndex["CHANNEL"]) {
+    if (sRoom == "everywhere" && regaIndex["CHANNEL"]) {
         for (var devs in regaIndex["CHANNEL"]) {
-            if (regaObjects[regaIndex["CHANNEL"][devs]] && regaObjects[regaIndex["CHANNEL"][devs]].HssType == "SWITCH") {
+            if (regaObjects[regaIndex["CHANNEL"][devs]]) {
                 var dev = regaObjects[regaIndex["CHANNEL"][devs]];
-                if (dev.DPs && dev.DPs["STATE"])
-                    setState (dev.DPs["STATE"], valPercent);
+				if (dev.DPs && dev.DPs["STATE"]) {
+					// Check the role
+					if (regaRole.indexOf(regaIndex["CHANNEL"][devs]) != -1) {
+						if (!isSaid) {
+							sayIt (lang, withLang, toSay);
+							isSaid = true;
+						}
+						setState (dev.DPs["STATE"], valPercent);
+					}
+				}
             }
         }
     } else
-    if (regaChannels) {
+    if (regaRoom) {
         // Try to find blinds in this room
-        for (var devs in regaChannels) {
-            if (regaObjects[regaChannels[devs]].HssType == "SWITCH") {
-                var dev = regaObjects[regaChannels[devs]];
-                if (dev.DPs && dev.DPs["STATE"])
-                    setState (dev.DPs["STATE"], valPercent);
-            }
+        for (var devs in regaRoom) {
+			var dev = regaObjects[regaRoom[devs]];
+			if (dev && dev.DPs && dev.DPs["STATE"]) {
+				// Check the role
+				if (regaRole.indexOf(regaRoom[devs]) != -1) {				
+					if (!isSaid) {
+						sayIt (lang, withLang, toSay);
+						isSaid = true;
+					}
+					setState (dev.DPs["STATE"], valPercent);
+				}
+			}
         }
     }
-    else {
-        sayIDontUnderstand (lang, text, withLang);
-        return;
-    }
+	
+	// You dont have it in this room
+	if (!isSaid) {
+		if (lang == 'en') {
+			toSay = 'There is no ' + model.rolesGenitive[sRole][lang] + ' ' + model.roomsDative[sRoom][lang];
+		} else
+		if (lang == 'de') {
+			toSay = 'Es gibt kein' + model.rolesGenitive[sRole][lang] + ' ' + model.roomsDative[sRoom][lang] + ' gefunden');
+		} else
+		if (lang == 'ru') {
+			toSay =  model.roomsDative[sRoom][lang] + ' нет ' + model.rolesGenitive[sRole][lang]);
+		} else {
+			toSay = "";
+		}
+		
+		if (toSay) {
+			sayIt (lang, withLang, toSay);	
+		}
+	}	
 }
 
 function processCommand (cmd) {
