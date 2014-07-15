@@ -202,6 +202,15 @@ var rooms = {
     "summerHouse":{"ru" : "теплиц",       "de": "gartenhaus",           "en": "summer" }
 };
 
+// Translation of roles
+var roles = {
+    "light":      {"ru" : "свет/лампу/лампа",   "de": "licht/lampe",    "en": "light/lamp" },
+    "backlight":  {"ru" : "подсветк/светильник","de": "beleuchtung/rücklicht", "en": "back light/back light/rear light" },
+    "heating":    {"ru" : "отопление/батаре",   "de": "heizung",        "en": "heating" },
+    "shutter":    {"ru" : "жалюзи/ставни",      "de": "rollade",        "en": "shutter" },
+    "music":      {"ru" : "музык",              "de": "musik",          "en": "music" }
+};
+
 if (module) {
-	module.exports = {commands: commands, rooms: rooms};
+	module.exports = {commands: commands, rooms: rooms, roles: roles};
 }
