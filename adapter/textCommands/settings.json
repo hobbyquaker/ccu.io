@@ -1,9 +1,23 @@
 {
-    "enabled": false,
-    "settings": {
-		"firstId":  72970,
-		"language": "de",
-		"sayIt"   : 72903,
-		"rules":    []
+    "enabled" : false,
+    "settings" : {
+        "firstId" : 72970,
+        "language" : "de",
+        "sayIt" : 72903,
+        "rules" : [{
+            "name" : "blindsUpDown",
+            "words" : ""
+        }, {
+            "name" : "roleOnOff",
+            "words" : ""
+        }, {
+            "name" : "outsideTemperature",
+            "words" : "",
+            "arg1" : ""
+        }, {
+            "name" : "insideTemperature",
+            "words" : "",
+            "arg1" : ""
+        }]
     }
 }
