@@ -175,16 +175,31 @@ var commands = {
     }
 };
 
+// Translations for rooms
 var rooms = {
     "livingRoom": {"ru" : "зал",          "de": "wohnzimmer",           "en": "living" },
     "bedroom":    {"ru" : "спальн",       "de": "schlafzimmer",         "en": "bedroom" },
     "bathroom":   {"ru" : "ванн",         "de": "bad",                  "en": "bath" },
-    "office":     {"ru" : "кабинет",      "de": "arbeitszimmer/kabinet","en": "working/office" },
+    "office":     {"ru" : "кабинет",      "de": "arbeitszimmer/kabinet/büro","en": "working/office" },
     "nursery":    {"ru" : "детск",        "de": "kinder",               "en": "kids/child/nursery" },
     "wc":         {"ru" : "туалет",       "de": "wc",                   "en": "wc/closet" },
-    "floor":      {"ru" : "прихож",       "de": "diele/eingang/flür",   "en": "floor/enter" },
+    "floor":      {"ru" : "прихож/вход",  "de": "diele/eingang/flur",   "en": "floor/enter" },
     "kitchen":    {"ru" : "кухня/кухне",  "de": "küche",                "en": "kitchen" },
-    "everywhere": {"ru" : "везде/все/всё","de": "alle/überall",         "en": "all/everywhere" }
+    "everywhere": {"ru" : "везде/все/всё","de": "alle/überall",         "en": "all/everywhere" },
+    "terrace":    {"ru" : "балкон/терасс","de": "balkon/terrasse",      "en": "balcony/terrace/patio" },
+    "dinningRoom":{"ru" : "столовая",     "de": "esszimmer",            "en": "dinning" },
+    "garage":     {"ru" : "гараж",        "de": "garage",               "en": "garage" },
+    "stairs":     {"ru" : "лестниц",      "de": "treppe",               "en": "stair" },
+    "garden":     {"ru" : "сад",          "de": "garten",               "en": "garden" },
+    "court":      {"ru" : "двор",         "de": "hof",                  "en": "court/yard" },
+    "guestroom":  {"ru" : "гостей",       "de": "gästezimmer/gast",     "en": "guestroom" },
+    "attic":      {"ru" : "кладовк",      "de": "speicher",             "en": "attic" },
+    "roof":       {"ru" : "крыше/крыша",  "de": "dachstuhl",            "en": "roof" },
+    "terminal":   {"ru" : "сени/сенях",   "de": "anschlussraum",        "en": "terminal" },
+    "washRoom":   {"ru" : "прачечн",      "de": "waschraum",            "en": "wash" },
+    "heatRoom":   {"ru" : "котельн",      "de": "heizungsraum",         "en": "heat room" },
+    "hovel":      {"ru" : "сарай/сарае",  "de": "schuppen/scheune",     "en": "hovel" },
+    "summerHouse":{"ru" : "теплиц",       "de": "gartenhaus",           "en": "summer" }
 };
 
 if (module) {
