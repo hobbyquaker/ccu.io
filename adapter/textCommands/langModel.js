@@ -67,18 +67,18 @@ var commands = {
 			'ru': "ID сенсора дома '.TEMPERATURE'"
 		}
 	},
-    'switchOnOff': {
+    'roleOnOff': {
         description: {
-            'en': "Switch light on/off",
-            'de': "Schalte das Licht an oder aus",
-            'ru': "Включить/выключить свет"
+            'en': "Switch role on/off",
+            'de': "Schalte Gewerk an oder aus",
+            'ru': "Включить/выключить приборы"
         },
         unique:   true,
         editable: false,
         words: {
-            'en': "switch light on/off",
-            'de': "licht einschalten/ausschalten/ein/aus/an",
-            'ru': "свет ключи/включи/включить/выключи/выключить/потушить/потуши/зажги/зажечь"
+            'en': "switch on/off",
+            'de': "einschalten/ausschalten/ein/aus/an",
+            'ru': "ключи/включи/включить/выключи/выключить/потушить/потуши/зажги/зажечь"
         },
         ack:  {
             'en': "If acknowledge must be spoken",
@@ -89,7 +89,7 @@ var commands = {
     'blindsUpDown': {
         description: {
             'en': "Open/close blinds",
-            'de': "Rolladen auf/zu machen",
+            'de': "Rollladen auf/zu machen",
             'ru': "Поднять опустить ставни"
         },
         unique:   true,
@@ -185,21 +185,47 @@ var rooms = {
     "wc":         {"ru" : "туалет",       "de": "wc",                   "en": "wc/closet" },
     "floor":      {"ru" : "прихож/вход",  "de": "diele/eingang/flur",   "en": "floor/enter" },
     "kitchen":    {"ru" : "кухня/кухне",  "de": "küche",                "en": "kitchen" },
-    "everywhere": {"ru" : "везде/все/всё","de": "alle/überall",         "en": "all/everywhere" },
+    "everywhere": {"ru" : "везде",        "de": "alle/überall",         "en": "everywhere" },
     "terrace":    {"ru" : "балкон/терасс","de": "balkon/terrasse",      "en": "balcony/terrace/patio" },
     "dinningRoom":{"ru" : "столовая",     "de": "esszimmer",            "en": "dinning" },
     "garage":     {"ru" : "гараж",        "de": "garage",               "en": "garage" },
     "stairs":     {"ru" : "лестниц",      "de": "treppe",               "en": "stair" },
     "garden":     {"ru" : "сад",          "de": "garten",               "en": "garden" },
     "court":      {"ru" : "двор",         "de": "hof",                  "en": "court/yard" },
-    "guestroom":  {"ru" : "гостей",       "de": "gästezimmer/gast",     "en": "guestroom" },
+    "guestroom":  {"ru" : "гостей",       "de": "gästezimmer/gast",     "en": "guest room" },
     "attic":      {"ru" : "кладовк",      "de": "speicher",             "en": "attic" },
     "roof":       {"ru" : "крыше/крыша",  "de": "dachstuhl",            "en": "roof" },
     "terminal":   {"ru" : "сени/сенях",   "de": "anschlussraum",        "en": "terminal" },
-    "washRoom":   {"ru" : "прачечн",      "de": "waschraum",            "en": "wash" },
+    "washRoom":   {"ru" : "прачечн",      "de": "waschraum",            "en": "wash room" },
     "heatRoom":   {"ru" : "котельн",      "de": "heizungsraum",         "en": "heat room" },
     "hovel":      {"ru" : "сарай/сарае",  "de": "schuppen/scheune",     "en": "hovel" },
     "summerHouse":{"ru" : "теплиц",       "de": "gartenhaus",           "en": "summer" }
+};
+// In room
+var roomsDative = {
+    "livingRoom": {"ru" : "в зале",       "de": "im Wohnzimmer",        "en": "in the living room" },
+    "bedroom":    {"ru" : "в спальне",    "de": "im Schlafzimmer",      "en": "in the bedroom" },
+    "bathroom":   {"ru" : "в ванной",     "de": "im Bad",               "en": "in the bath" },
+    "office":     {"ru" : "в кабинете",   "de": "im Arbeitszimmer",     "en": "in the office" },
+    "nursery":    {"ru" : "в детской",    "de": "im Kinderzimmer",      "en": "in the kids room" },
+    "wc":         {"ru" : "в туалете",    "de": "im WC",                "en": "in wc" },
+    "floor":      {"ru" : "в прихожей",   "de": "im Flur",              "en": "in the floor" },
+    "kitchen":    {"ru" : "на кухне",     "de": "in der Küche",         "en": "in the kitchen" },
+    "everywhere": {"ru" : "во всём доме", "de": "überall",              "en": "everywhere" },
+    "terrace":    {"ru" : "на балконе",   "de": "auf dem Balkon",       "en": "on the balcony" },
+    "dinningRoom":{"ru" : "в столовой",   "de": "im Esszimmer",         "en": "in the dinning room" },
+    "garage":     {"ru" : "в гараже",     "de": "in der Garage",        "en": "in the garage" },
+    "stairs":     {"ru" : "на лестнице",  "de": "auf der Treppe",       "en": "on the stairs" },
+    "garden":     {"ru" : "в саду",       "de": "im Garten",            "en": "in the garden" },
+    "court":      {"ru" : "во дворе",     "de": "im Hof",               "en": "in the court" },
+    "guestroom":  {"ru" : "в гостевой",   "de": "im Gästezimmer/gast",  "en": "in the guest room" },
+    "attic":      {"ru" : "в кладовке",   "de": "im Speicher",          "en": "in the attic" },
+    "roof":       {"ru" : "на крыше",     "de": "im Dachstuhl",         "en": "on the roof" },
+    "terminal":   {"ru" : "в сенях",      "de": "im Anschlussraum",     "en": "in the terminal" },
+    "washRoom":   {"ru" : "в прачечной",  "de": "im Waschraum",         "en": "in the wash room" },
+    "heatRoom":   {"ru" : "в котельной",  "de": "im Heizungsraum",      "en": "in the heat room" },
+    "hovel":      {"ru" : "в сарае",      "de": "in der Schuppen",      "en": "in the hovel" },
+    "summerHouse":{"ru" : "в теплице",    "de": "im Gartenhaus",        "en": "in the summer house" }
 };
 
 // Translation of roles
@@ -207,9 +233,31 @@ var roles = {
     "light":      {"ru" : "свет/лампу/лампа",   "de": "licht/lampe",    "en": "light/lamp" },
     "backlight":  {"ru" : "подсветк/светильник","de": "beleuchtung/rücklicht", "en": "back light/back light/rear light" },
     "heating":    {"ru" : "отопление/батаре",   "de": "heizung",        "en": "heating" },
-    "shutter":    {"ru" : "жалюзи/ставни",      "de": "rollade",        "en": "shutter" },
-    "music":      {"ru" : "музык",              "de": "musik",          "en": "music" }
+    "shutter":    {"ru" : "жалюзи/ставни",      "de": "rolllade",       "en": "shutter" },
+    "music":      {"ru" : "музык",              "de": "musik",          "en": "music" },
+    "all":        {"ru" : "всё/все",            "de": "alles",          "en": "all" }
 };
+
+// There is no this role
+var rolesGenitive = {
+    "light":      {"ru" : "ламп",               "de": "e Lampen",       "en": "light" },
+    "backlight":  {"ru" : "подсветки",          "de": "e Beleuchtung",  "en": "back light" },
+    "heating":    {"ru" : "отопленияе",         "de": "e Heizung",      "en": "heating" },
+    "shutter":    {"ru" : "жалюзей",            "de": "e Rolllade",     "en": "shutter" },
+    "music":      {"ru" : "музыки",             "de": "e Musik",        "en": "music" },
+    "all":        {"ru" : "всего",              "de": " alles",         "en": "all" }
+};
+// Switch the role on/off
+var rolesAccusative = {
+    "light":      {"ru" : "свет",               "de": "das Licht",      "en": "light" },
+    "backlight":  {"ru" : "подсветку",          "de": "die Beleuchtung","en": "back light" },
+    "heating":    {"ru" : "отопление",          "de": "die Heizung",    "en": "heating" },
+    "shutter":    {"ru" : "жалюзи",             "de": "die Rolllade",   "en": "shutter" },
+    "music":      {"ru" : "музыку",             "de": "die Musik",      "en": "music" },
+    "all":        {"ru" : "всё",                "de": "alles",          "en": "all" }
+};
+
+// TODO place IDontKnow and co here
 
 if (module) {
 	module.exports = {commands: commands, rooms: rooms, roles: roles};
