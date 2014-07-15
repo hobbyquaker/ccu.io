@@ -97,7 +97,7 @@ var commands = {
         words: {
             'en': "blinds up/down",
             'de': "rollladen/rolllade auf/zu/hoch/runter",
-            'ru': "ставни/окно/окна поднять/подними/опустить/опусти/открой/открыть/закрыть/закрой"
+            'ru': "ставни/окно/окна поднять/подними/опустить/опусти/открой/открою/открыть/закрою/закрыть/закрой"
         },
         ack:  {
             'en': "If acknowledge must be spoken",
@@ -183,7 +183,7 @@ var rooms = {
     "office":     {"ru" : "кабинет",      "de": "arbeitszimmer/kabinet/büro","en": "working/office" },
     "nursery":    {"ru" : "детск",        "de": "kinder",               "en": "kids/child/nursery" },
     "wc":         {"ru" : "туалет",       "de": "wc",                   "en": "wc/closet" },
-    "floor":      {"ru" : "прихож/вход",  "de": "diele/eingang/flur",   "en": "floor/enter" },
+    "floor":      {"ru" : "прихож/вход/коридор",  "de": "diele/eingang/flur",   "en": "floor/enter" },
     "kitchen":    {"ru" : "кухня/кухне",  "de": "küche",                "en": "kitchen" },
     "everywhere": {"ru" : "везде",        "de": "alle/überall",         "en": "everywhere" },
     "terrace":    {"ru" : "балкон/терасс","de": "balkon/terrasse",      "en": "balcony/terrace/patio" },
@@ -230,8 +230,8 @@ var roomsDative = {
 
 // Translation of roles
 var roles = {
-    "light":      {"ru" : "свет/лампу/лампа",   "de": "licht/lampe",    "en": "light/lamp" },
     "backlight":  {"ru" : "подсветк/светильник","de": "beleuchtung/rücklicht", "en": "back light/back light/rear light" },
+    "light":      {"ru" : "свет/лампу/лампа",   "de": "licht/lampe",    "en": "light/lamp" },
     "heating":    {"ru" : "отопление/батаре",   "de": "heizung",        "en": "heating" },
     "shutter":    {"ru" : "жалюзи/ставни",      "de": "rolllade",       "en": "shutter" },
     "music":      {"ru" : "музык",              "de": "musik",          "en": "music" },
@@ -260,5 +260,12 @@ var rolesAccusative = {
 // TODO place IDontKnow and co here
 
 if (module) {
-	module.exports = {commands: commands, rooms: rooms, roles: roles};
+	module.exports = {
+        commands:        commands,
+        rooms:           rooms,
+        roles:           roles,
+        rolesAccusative: rolesAccusative,
+        rolesGenitive:   rolesGenitive,
+        roomsDative:     roomsDative
+    };
 }
