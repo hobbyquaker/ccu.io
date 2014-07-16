@@ -231,11 +231,13 @@ var roomsDative = {
 // Translation of roles
 var roles = {
     "backlight":  {"ru" : "подсветк/светильник","de": "beleuchtung/rücklicht", "en": "back light/back light/rear light" },
-    "light":      {"ru" : "свет/лампу/лампа",   "de": "licht/lampe",    "en": "light/lamp" },
-    "heating":    {"ru" : "отопление/батаре",   "de": "heizung",        "en": "heating" },
-    "shutter":    {"ru" : "жалюзи/ставни",      "de": "rolllade",       "en": "shutter" },
-    "music":      {"ru" : "музык",              "de": "musik",          "en": "music" },
-    "all":        {"ru" : "всё/все",            "de": "alles",          "en": "all" }
+    "light":      {"ru" : "свет/лампу/лампа",   "de": "licht/lampe",     "en": "light/lamp" },
+    "heating":    {"ru" : "отопление/батаре",   "de": "heizung",         "en": "heating" },
+    "shutter":    {"ru" : "жалюзи/ставни",      "de": "rolllade",        "en": "shutter" },
+    "music":      {"ru" : "музык",              "de": "musik",           "en": "music" },
+    "security":   {"ru" : "сигнал",             "de": "sicherheit",      "en": "security" },
+    "lock":       {"ru" : "замок",              "de": "verschluß/schloß","en": "lock" },
+    "all":        {"ru" : "всё/все",            "de": "alles",           "en": "all" }
 };
 
 // There is no this role
@@ -245,6 +247,8 @@ var rolesGenitive = {
     "heating":    {"ru" : "отопленияе",         "de": "e Heizung",      "en": "heating" },
     "shutter":    {"ru" : "жалюзей",            "de": "e Rolllade",     "en": "shutter" },
     "music":      {"ru" : "музыки",             "de": "e Musik",        "en": "music" },
+    "security":   {"ru" : "сигнализации",       "de": "e Sicherheitssystem", "en": "security" },
+    "lock":       {"ru" : "замков",             "de": "e Verschluße",   "en": "lock" },
     "all":        {"ru" : "всего",              "de": " alles",         "en": "all" }
 };
 // Switch the role on/off
@@ -254,6 +258,8 @@ var rolesAccusative = {
     "heating":    {"ru" : "отопление",          "de": "die Heizung",    "en": "heating" },
     "shutter":    {"ru" : "жалюзи",             "de": "die Rolllade",   "en": "shutter" },
     "music":      {"ru" : "музыку",             "de": "die Musik",      "en": "music" },
+    "security":   {"ru" : "сигнализацию",       "de": "das Sicherheitssystem", "en": "security" },
+    "lock":       {"ru" : "замок",              "de": "den Verschluß",  "en": "lock" },
     "all":        {"ru" : "всё",                "de": "alles",          "en": "all" }
 };
 
