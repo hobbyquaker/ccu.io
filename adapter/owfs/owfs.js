@@ -2,10 +2,11 @@
  *   CCU.IO OWFS Adapter - owfs.js
  *
  *   Initial Version : 05. Mar 2014
- *   Current Version : 0.1 Alpha 1
+ *   Current Version : 0.3.0 [17.07.2014]
  *   
  *   Change Notes:
  *   - Initial Version 0.2.1 
+ *   - Version 0.3.0 (Bluefox) Support of multiple IPs and up to 50 sensors per server
  *
  *   Authors: 
  *   Ralf Muenk [muenk@getcom.de]
@@ -31,48 +32,10 @@ if (!settings.adapters.owfs || !settings.adapters.owfs.enabled) {
 
 var adapterSettings = settings.adapters.owfs.settings;
 
-var logger =    require(__dirname + '/../../logger.js'),
-    io =        require('socket.io-client'),
+var logger     = require(__dirname + '/../../logger.js'),
+    io         = require('socket.io-client'),
     // call node module 'owfs'
-    owfs =      require('owfs');
-    
-var Client = require("owfs").Client,
-     host  = adapterSettings.IPs._1.ip,
-     port  = adapterSettings.IPs._1.port;
-
-var rootId    = settings.adapters.owfs.firstId;
-var channelId = rootId + 1;
-var sensorDPs = {};
-
-var con = new Client(host, port);         
-
-// create express HTTP server
-//var app = require('express')() 
-//  , server = require('http').createServer(app), // express HTTP server
-//    port = process.env.PORT || '8888'; //use environment variable $PORT as port; if not set default is 8888
-  
-//server.listen(port);
-
-// Further in your code to get your files passed to the browser...
-
-//app.get('/', function (req, res) {
-//    res.sendfile(__dirname + '/index.html');
-//});
-//app.get('/img/minus-5-32.png', function (req, res) {
-//    res.sendfile(__dirname + '/img/minus-5-32.png');
-//});
-//app.get('/img/plus-5-32.png', function (req, res) {
-//    res.sendfile(__dirname + '/img/plus-5-32.png');
-//});
-//app.get('/img/search-5-32.png', function (req, res) {
-//    res.sendfile(__dirname + '/img/search-5-32.png');
-//});
-//app.get('/owfs-dirlisting.js', function (req, res) {
-//    res.sendfile(__dirname + '/owfs-dirlisting.js');
-//});
-//end express HTTP server
-
-
+    owfsClient = require('owfs').Client;
 
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
@@ -86,7 +49,6 @@ if (settings.ioListenPort) {
 } else {
     process.exit();
 }
-
 
 socket.on('connect', function () {
     logger.info("adapter owfs connected to ccu.io");
@@ -122,70 +84,122 @@ function setObject(id, obj) {
     socket.emit("setObject", id, obj);
 }
 
-function readWire(_id) {
-    if (adapterSettings && adapterSettings.wire.["_" + _id]) {
-        con.read("/" + adapterSettings.wire.["_" + _id].id + "/" + (adapterSettings.wire.["_" + _id].property || "temperature"), 
+// create express HTTP server
+//var app = require('express')() 
+//  , server = require('http').createServer(app), // express HTTP server
+//    port = process.env.PORT || '8888'; //use environment variable $PORT as port; if not set default is 8888
+  
+//server.listen(port);
+
+// Further in your code to get your files passed to the browser...
+
+//app.get('/', function (req, res) {
+//    res.sendfile(__dirname + '/index.html');
+//});
+//app.get('/img/minus-5-32.png', function (req, res) {
+//    res.sendfile(__dirname + '/img/minus-5-32.png');
+//});
+//app.get('/img/plus-5-32.png', function (req, res) {
+//    res.sendfile(__dirname + '/img/plus-5-32.png');
+//});
+//app.get('/img/search-5-32.png', function (req, res) {
+//    res.sendfile(__dirname + '/img/search-5-32.png');
+//});
+//app.get('/owfs-dirlisting.js', function (req, res) {
+//    res.sendfile(__dirname + '/owfs-dirlisting.js');
+//});
+//end express HTTP server
+	
+
+// Fix old settings
+if (adapterSettings.wire && adapterSettings.IPs._1) {
+	adapterSettings.IPs._1.wire = adapterSettings.wire;
+}
+	
+var id = 1;
+var rootId    = settings.adapters.owfs.firstId;
+var channelId = rootId + 1;
+var channelsIDs = [];
+
+
+
+function readWire(ipID, wireID) {
+    if (adapterSettings && adapterSettings.wire.["_" + ipID]) {
+        adapterSettings.IPs["_" + ipID].con.read("/" + adapterSettings.wire.["_" + wireID].id + "/" + (adapterSettings.wire.["_" + wireID].property || "temperature"), 
             function(result) {
-                socket.emit("setState", [channelId + _id, result, null, true]);
+                socket.emit("setState", [adapterSettings.IPs["_" + ipID].channelId + wireID, result, null, true]);
             }
         );
     }
 }
 
-function owfsServerGetValues (){
-    var id = 1;
-    while (adapterSettings.wire["_" + id]) {
-        readWire(id);
-        id++;
-    }
+function owfsServerGetValues (ipID){
+	if (adapterSettings.IPs["_" + ipID]) {
+		var id = 1;
+		while (adapterSettings.wire["_" + id]) {
+			readWire(ipID, id);
+			id++;
+		}
+	}
 }
 
-// Create Datapoints in CCU.IO
+void createPointsForServer(ipID) {
+	// Create Datapoints in CCU.IO
+	var id = 1;
+	var channelId = (ipID - 1) * 50 + 1;
+	adapterSettings.IPs["_" + ipID].channelId = channelId;
+	adapterSettings.IPs["_" + ipID].sensorDPs = {};
+	adapterSettings.IPs["_" + ipID].con       = new owfsClient(adapterSettings.IPs["_" + ipID].ip, adapterSettings.IPs["_" + ipID].port);         
+
+	while (adapterSettings.IPs["_" + ipID].wire && adapterSettings.IPs["_" + ipID].wire["_" + id]) {		
+		adapterSettings.IPs["_" + ipID].sensorDPs["Sensor" + id] = channelId + id;
+		socket.emit("setObject", channelId + id, {
+			"Name":       "OWFS." + adapterSettings.IPs["_" + ipID].alias + ".SENSORS." + adapterSettings.IPs["_" + ipID].wire.["_" + id].alias,
+			"TypeName":   "HSSDP",
+			"Operations": 5,
+			"ValueType":  4,
+			"ValueUnit":  "°C",
+			"Parent":     channelId,
+			_persistent:  true
+		});    
+		id++;
+	};
+
+	socket.emit("setObject", channelId, {
+		Name:        "OWFS." + adapterSettings.IPs["_" + ipID].alias + ".SENSORS",
+		TypeName:    "CHANNEL",
+		Address:     "OWFS." + adapterSettings.IPs["_" + ipID].alias + ".SENSORS",
+		HssType:     "1WIRE-SENSORS",
+		DPs:         adapterSettings.IPs["_" + ipID].sensorDPs,
+		Parent:      rootId
+	});
+
+	// Request first time
+	owfsServerGetValues(ipID);
+	
+	// Interval to read values from owfs-server
+	setInterval(owfsServerGetValues, adapterSettings.IPs["_" + ipID].interval || adapterSettings.owserverInterval || 30000, ipID);
+	channelsIDs.push(channelId);
+}
+
 var id = 1;
-
-while (adapterSettings.wire && adapterSettings.wire["_" + id]) {
-
-    sensorDPs["Sensor" + id] = channelId + id;
-    
-    socket.emit("setObject", sensorDPs["Sensor" + id], {
-        "Name":       adapterSettings.IPs.["_" + id].alias + ".SENSORS." + adapterSettings.wire.["_" + id].alias,
-        "TypeName":   "HSSDP",
-        "Operations": 5,
-        "ValueType":  4,
-        "ValueUnit":  "°C",
-        "Parent":     channelId,
-        _persistent:  true
-    });    
-    id++;
-};
+while (adapterSettings.IPs["_" + id]) {
+	createPointsForServer(id);
+	id++;
+}
 
 socket.emit("setObject", rootId, {
-    Name:        adapterSettings.IPs._1.alias,
-    TypeName:    "DEVICE",
-    HssType:     "1WIRE",
-    Address:     adapterSettings.IPs._1.alias,
-    Interface:   "CCU.IO",
-    Channels:    [channelId],
-    _persistent: true
+	Name:        "OWFS",
+	TypeName:    "DEVICE",
+	HssType:     "1WIRE",
+	Address:     "OWFS",
+	Interface:   "CCU.IO",
+	Channels:    channelsIDs
 });
-
-socket.emit("setObject", channelId, {
-    Name:        adapterSettings.IPs._1.alias + ".SENSORS",
-    TypeName:    "CHANNEL",
-    Address:     adapterSettings.IPs._1.alias + ".SENSORS",
-    HssType:     "1WIRE-SENSORS",
-    DPs:         sensorDPs,
-    Parent:      rootId,
-    _persistent: true
-});
-
 
 logger.info("adapter owfs created datapoints. Starting at: " + rootId);
   
-// Interval to read values from owfs-server
-setInterval(owfsServerGetValues, adapterSettings.owserverInterval || 30000);
-
 //set var for displaying in datastore (Bluefox: But why??)
-socket.emit("setState", [rootId,    null,null,true]);
-socket.emit("setState", [channelId, null,null,true]);
+//socket.emit("setState", [rootId,    null, null, true]);
+//socket.emit("setState", [channelId, null, null, true]);
 
