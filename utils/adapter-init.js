@@ -115,6 +115,7 @@ function createAdapter(name, onEvent) {
 	    	});
         };
 	}
+	return this;
 }
 
 module.exports.Adapter = createAdapter;
