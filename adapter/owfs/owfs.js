@@ -23,7 +23,7 @@
  *
 **/
 
-var settings = require(__dirname+'/../../settings.js');
+var settings = require(__dirname + '/../../settings.js');
 
 if (!settings.adapters.owfs || !settings.adapters.owfs.enabled) {
     process.exit();
@@ -31,15 +31,19 @@ if (!settings.adapters.owfs || !settings.adapters.owfs.enabled) {
 
 var adapterSettings = settings.adapters.owfs.settings;
 
-var logger =    require(__dirname+'/../../logger.js'),
+var logger =    require(__dirname + '/../../logger.js'),
     io =        require('socket.io-client'),
     // call node module 'owfs'
     owfs =      require('owfs');
     
 var Client = require("owfs").Client,
-     host = adapterSettings.IPs._1.ip,
-     port = adapterSettings.IPs._1.port;
-     
+     host  = adapterSettings.IPs._1.ip,
+     port  = adapterSettings.IPs._1.port;
+
+var rootId    = settings.adapters.owfs.firstId;
+var channelId = rootId + 1;
+var sensorDPs = {};
+
 var con = new Client(host, port);         
 
 // create express HTTP server
@@ -118,211 +122,70 @@ function setObject(id, obj) {
     socket.emit("setObject", id, obj);
 }
 
+function readWire(_id) {
+    if (adapterSettings && adapterSettings.wire.["_" + _id]) {
+        con.read("/" + adapterSettings.wire.["_" + _id].id + "/" + (adapterSettings.wire.["_" + _id].property || "temperature"), 
+            function(result) {
+                socket.emit("setState", [channelId + _id, result, null, true]);
+            }
+        );
+    }
+}
+
 function owfsServerGetValues (){
-         con.read("/"+settings.adapters.owfs.settings.wire._1.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+2, result,null,true]);
-         })
-         con.read("/"+settings.adapters.owfs.settings.wire._2.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+3, result,null,true]);
-         })
-         con.read("/"+settings.adapters.owfs.settings.wire._3.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+4, result,null,true]);                  
-         })
-         con.read("/"+settings.adapters.owfs.settings.wire._4.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+5, result,null,true]);                  
-         })
-         con.read("/"+settings.adapters.owfs.settings.wire._5.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+6, result,null,true]);                  
-         })
-         con.read("/"+settings.adapters.owfs.settings.wire._6.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+7, result,null,true]);                  
-         })
-         con.read("/"+settings.adapters.owfs.settings.wire._7.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+8, result,null,true]);                  
-         })
-         con.read("/"+settings.adapters.owfs.settings.wire._8.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+9, result,null,true]);                  
-         })
-         con.read("/"+settings.adapters.owfs.settings.wire._9.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+10, result,null,true]);                  
-         })
-         con.read("/"+settings.adapters.owfs.settings.wire._10.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+11, result,null,true]);                  
-         })
-         con.read("/"+settings.adapters.owfs.settings.wire._11.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+12, result,null,true]);                  
-         })
-         con.read("/"+settings.adapters.owfs.settings.wire._12.id+"/temperature", function(result){
-         socket.emit("setState", [settings.adapters.owfs.firstId+13, result,null,true]);                  
-         })
+    var id = 1;
+    while (adapterSettings.wire["_" + id]) {
+        readWire(id);
+        id++;
+    }
 }
 
 // Create Datapoints in CCU.IO
-var dpId = settings.adapters.owfs.firstId;
+var id = 1;
 
-var sensorDPs = {
-    Sensor1:  dpId+2,
-    Sensor2:  dpId+3,
-    Sensor3:  dpId+4,
-    Sensor4:  dpId+5,
-    Sensor5:  dpId+6,
-    Sensor6:  dpId+7,
-    Sensor7:  dpId+8,
-    Sensor8:  dpId+9,
-    Sensor9:  dpId+10,
-    Sensor10:  dpId+11,
-    Sensor11:  dpId+12,
-    Sensor12:  dpId+13    
+while (adapterSettings.wire && adapterSettings.wire["_" + id]) {
+
+    sensorDPs["Sensor" + id] = channelId + id;
+    
+    socket.emit("setObject", sensorDPs["Sensor" + id], {
+        "Name":       adapterSettings.IPs.["_" + id].alias + ".SENSORS." + adapterSettings.wire.["_" + id].alias,
+        "TypeName":   "HSSDP",
+        "Operations": 5,
+        "ValueType":  4,
+        "ValueUnit":  "Â°C",
+        "Parent":     channelId,
+        _persistent:  true
+    });    
+    id++;
 };
 
-socket.emit("setObject", dpId, {
-    Name: adapterSettings.IPs._1.alias,
-    TypeName: "DEVICE",
-    HssType: "1WIRE",
-    Address: adapterSettings.IPs._1.alias,
-    Interface: "CCU.IO",
-    Channels: [
-        74301
-    ],
+socket.emit("setObject", rootId, {
+    Name:        adapterSettings.IPs._1.alias,
+    TypeName:    "DEVICE",
+    HssType:     "1WIRE",
+    Address:     adapterSettings.IPs._1.alias,
+    Interface:   "CCU.IO",
+    Channels:    [channelId],
     _persistent: true
 });
 
-socket.emit("setObject", dpId+1, {
-    Name: adapterSettings.IPs._1.alias+".SENSORS",
-    TypeName: "CHANNEL",
-    Address: adapterSettings.IPs._1.alias+".SENSORS",
-    HssType: "1WIRE-SENSORS",
-    DPs: sensorDPs,
-    Parent: settings.adapters.owfs.firstId,
+socket.emit("setObject", channelId, {
+    Name:        adapterSettings.IPs._1.alias + ".SENSORS",
+    TypeName:    "CHANNEL",
+    Address:     adapterSettings.IPs._1.alias + ".SENSORS",
+    HssType:     "1WIRE-SENSORS",
+    DPs:         sensorDPs,
+    Parent:      rootId,
     _persistent: true
 });
 
-socket.emit("setObject", dpId+2, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._1.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
 
-socket.emit("setObject", dpId+3, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._2.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
-
-socket.emit("setObject", dpId+4, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._3.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
-
-socket.emit("setObject", dpId+5, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._4.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
-
-socket.emit("setObject", dpId+6, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._5.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
-
-socket.emit("setObject", dpId+7, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._6.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
-
-socket.emit("setObject", dpId+8, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._7.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
-
-socket.emit("setObject", dpId+9, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._8.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
-
-socket.emit("setObject", dpId+10, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._9.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
-
-socket.emit("setObject", dpId+11, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._10.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
-
-socket.emit("setObject", dpId+12, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._11.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
-
-socket.emit("setObject", dpId+13, {
-    "Name": adapterSettings.IPs._1.alias+".SENSORS."+settings.adapters.owfs.settings.wire._12.alias,
-    "TypeName": "HSSDP",
-    "Operations": 5,
-    "ValueType": 4,
-    "ValueUnit": "°C",
-    "Parent": settings.adapters.owfs.firstId+1,
-    _persistent: true
-});
-
-  logger.info("adapter owfs created datapoints. Starting at: "+dpId);
+logger.info("adapter owfs created datapoints. Starting at: " + rootId);
   
 // Interval to read values from owfs-server
-setInterval(owfsServerGetValues, settings.adapters.owfs.settings.owserverInterval);
+setInterval(owfsServerGetValues, adapterSettings.owserverInterval || 30000);
 
-//set var for displaying in datastore
-socket.emit("setState", [settings.adapters.owfs.firstId, null,null,true]);
-socket.emit("setState", [settings.adapters.owfs.firstId+1, null,null,true]);
+//set var for displaying in datastore (Bluefox: But why??)
+socket.emit("setState", [rootId,    null,null,true]);
+socket.emit("setState", [channelId, null,null,true]);
 
