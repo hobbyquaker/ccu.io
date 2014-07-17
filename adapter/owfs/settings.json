@@ -8,7 +8,8 @@
             "_1": {
                 "ip": "127.0.0.1",
                 "port": "3001",
-                "alias": "OWFS-Server1"
+                "alias": "OWFS-Server1",
+                "interval": 30000,
                 "wire": {
                     "_1": {
                         "alias": "Sensor1",
