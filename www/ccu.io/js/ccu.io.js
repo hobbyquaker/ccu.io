@@ -667,8 +667,7 @@ $(document).ready(function () {
     $('#binrpc_listenIp').keyup(function() {
         var val = $(this).val();
         if (val == "localhost" || val == "127.0.0.1") {
-            alert(translateWord("Localhost can be used only if runs on CCU2 directly"));
-            $(this).val("");
+            alert(translateWord("Localhost can be used only if runs on CCU2 or on LXCCU directly "));
         }    
     });
 
