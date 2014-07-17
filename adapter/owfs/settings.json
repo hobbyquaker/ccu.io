@@ -16,7 +16,8 @@
                 "alias": "Sensor1",
                 "id": "10.C8F148010800",
                 "family": "10",
-                "type": "DS18S20"
+                "type": "DS18S20",
+                "property": "temperature"
             },
             "_2": {
                 "alias": "Sensor2",
