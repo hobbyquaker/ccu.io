@@ -20,7 +20,7 @@
  * (Free for non-commercial use).
  */
 
-var settings = require(__dirname+'/../../settings.js');
+var settings = require(__dirname + '/../../settings.js');
 
 if (!settings.adapters.textCommands || !settings.adapters.textCommands.enabled) {
     process.exit();
@@ -214,7 +214,6 @@ function sayIt(lang, withLang, text) {
     if (text) {
         logger.info("adapter textCommands: response - '" + ((withLang ? (lang ? lang + ";" : "") : "") + text) + "'");
         // Write answer back
-
         setState(objProcess, (withLang ? (lang ? lang + ";" : "") : "") + text);
 
         if (textCommandsSettings.sayIt) {
@@ -900,7 +899,7 @@ function processCommand (cmd) {
         cmd = cmd.substring(ix + 1);
     }
     var cmdWords = cmd.split(" ");
-	
+
 	for (var i = 0; i < textCommandsSettings.rules.length; i++) {
 		var command = textCommandsSettings.rules[i];
         if (!model.commands[command.name]) continue;

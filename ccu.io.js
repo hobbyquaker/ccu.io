@@ -13,7 +13,7 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.42";
+settings.version = "1.0.43";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
@@ -978,7 +978,7 @@ function restApi(req, res) {
                 }
                 setState(dp, value);
                 status = 200;
-                response = {id: dp, value: value};
+                response = {id:dp,value:value};
             }
             break;
         case "toggle":
@@ -1044,7 +1044,7 @@ function restApi(req, res) {
             status = 200;
             break;
         default:
-            response = {error: "command " + command + " unknown"};
+            response = {error: "command "+command+" unknown"};
     }
 
     if (wait && response && response.id) {
@@ -1054,16 +1054,16 @@ function restApi(req, res) {
         restApiDelayed.res          = res;
         restApiDelayed.timer = setTimeout(restApiDelayedAnswer, wait);
     } else {
-        switch (responseType) {
-            case "json":
-                res.json(response);
-                break;
-            case "plain":
-                res.set('Content-Type', 'text/plain');
-                res.send(response);
-                break;
-        }
+    switch (responseType) {
+        case "json":
+            res.json(response);
+            break;
+        case "plain":
+            res.set('Content-Type', 'text/plain');
+            res.send(response);
+            break;
     }
+}
 }
 
 function initExtensions() {

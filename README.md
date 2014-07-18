@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*actual Version: 1.0.42*
+*actual Version: 1.0.43*
 
 ## Documentation
 
@@ -35,9 +35,19 @@ visit http://ccu.io/ or http://dashui.ccu.io/ru/
 
 ## Changelog
 
+
+### 1.0.43 [2014.07.13]
+* (Eisbaeeer) Check ccu ip address "0.0.0.0"
+* (Bluefox) improve textCommands for Home Commander
+* (Bluefox) check localhost address.
+* (Bluefox) fix ping adapter.
+* (Bluefox) Fix demo-adapter  gismeteo.js
+* (Bluefox) Fix some null pointer errors in getUrl, match, readdir
+
 ### 1.0.42 [2014.07.06]
 * (Bluefox) change download link for DashUI
 * (Bluefox) improve textCommands adapter
+* (SGiersch) Changes in Adapter Prowl
 
 ### 1.0.41 [2014.06.30]
 * (Bluefox) describe demo adapter gismeteo
