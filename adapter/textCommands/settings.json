@@ -5,10 +5,10 @@
         "language" : "de",
         "sayIt" : 72903,
         "rules" : [{
-            "name" : "switchOnOff",
+            "name" : "blindsUpDown",
             "words" : ""
         }, {
-            "name" : "blindsUpDown",
+            "name" : "roleOnOff",
             "words" : ""
         }, {
             "name" : "outsideTemperature",

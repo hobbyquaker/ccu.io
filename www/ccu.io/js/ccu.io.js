@@ -410,9 +410,9 @@ $(document).ready(function () {
 
         for (var i = 0; i < data.length; i++) {
             var addon = data[i];
-            if (addon == "lib" || addon == "ccu.io" || addon == "index.html") { continue; }
+            if (addon == "lib" || addon == "ccu.io" || addon == "index.html" || addon.indexOf(".mp3") != -1) { continue; }
 
-            socket.emit("readJsonFile", "www/"+addon+"/io-addon.json", function(meta) {
+            socket.emit("readJsonFile", "www/" + addon + "/io-addon.json", function(meta) {
 
                 if (meta) {
                     var hp = meta.urlHomepage.match(/[http|https]:\/\/(.*)/);
@@ -667,8 +667,7 @@ $(document).ready(function () {
     $('#binrpc_listenIp').keyup(function() {
         var val = $(this).val();
         if (val == "localhost" || val == "127.0.0.1") {
-            alert(translateWord("Localhost can be used only if runs on CCU2 directly"));
-            $(this).val("");
+            alert(translateWord("Localhost can be used only if runs on CCU2 or on LXCCU directly "));
         }    
     });
 

@@ -35,6 +35,8 @@
 75000-75499                     netAlarm
 75500-75520                     prowl
 
+77100-77150                     roomba
+
 80000-?                         itrans adapter
 80100-?                         iCal adapter
 81000-81005                     german_holidays adapter

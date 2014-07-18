@@ -40,6 +40,8 @@ var rega = function(options) {
                 options.ready("CCU unreachable");
             }
         });
+    } else {
+        options.ready("CCU unreachable");
     }
 };
 

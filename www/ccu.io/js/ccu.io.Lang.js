@@ -15,7 +15,7 @@ var ccuWords = {
     "CCU.IO available Version:" : {"en": "CCU.IO available Version:", "de": "Verfügbare CCU.IO Version:", "ru": "Доступная версия CCU.IO"},
     "update"            : {"en": "update",               "de": "update",              "ru": "обновить"},
     "check"             : {"en": "check",                "de": "prüfen",              "ru": "проверить"},
-    "CCU reachable:"    : {"en": "CCU reachable:",       "de": "CCU erreichbar:",     "ru": "CCU подлключена:"},
+    "CCU reachable:"    : {"en": "CCU reachable:",       "de": "CCU erreichbar:",     "ru": "CCU подключена:"},
     "ReGa Up:"          : {"en": "ReGa Up:",             "de": "ReGa erreichbar:",    "ru": "ReGa запущена:"},
     "ReGa Data loaded:" : {"en": "ReGa Data loaded:",    "de": "ReGa-Data geladen:",  "ru": "Данные ReGa загружены:"},
     "RPC Inits:"        : {"en": "RPC Inits:",           "de": "RPC Inits:",          "ru": "RPC Inits:"},
