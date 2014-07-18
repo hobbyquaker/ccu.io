@@ -35,7 +35,7 @@ var adapterSettings = settings.adapters.owfs.settings;
 var logger     = require(__dirname + '/../../logger.js'),
     io         = require('socket.io-client');
     // call node module 'owfs'
-    //owfsClient = require('owfs').Client;
+    owfsClient = require('owfs').Client;
 
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
@@ -146,7 +146,7 @@ function createPointsForServer(ipID) {
 	var channelId = (ipID - 1) * 50 + 1;
 	adapterSettings.IPs["_" + ipID].channelId = channelId;
 	adapterSettings.IPs["_" + ipID].sensorDPs = {};
-	//adapterSettings.IPs["_" + ipID].con       = new owfsClient(adapterSettings.IPs["_" + ipID].ip, adapterSettings.IPs["_" + ipID].port);
+	adapterSettings.IPs["_" + ipID].con       = new owfsClient(adapterSettings.IPs["_" + ipID].ip, adapterSettings.IPs["_" + ipID].port);
 
 	while (adapterSettings.IPs["_" + ipID].wire && adapterSettings.IPs["_" + ipID].wire.hasOwnProperty("_" + id)) {
 		adapterSettings.IPs["_" + ipID].sensorDPs["Sensor" + id] = channelId + id;
