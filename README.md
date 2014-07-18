@@ -35,6 +35,15 @@ visit http://ccu.io/ or http://dashui.ccu.io/ru/
 
 ## Changelog
 
+### 1.0.44 [2014.07.18]
+* (Bluefox) if no CCU IP, make ccu.io still working
+* (Bluefox) new adapter help module adapter-init.js
+* (Bluefox) owfs adapter: write support, expand owfs for not only temperature
+* (Bluefox) fix crash of OWM adapter
+* (Bluefox) add roomba IDs
+* (Bluefox) allow localhost in settings, but warn.
+* (Bluefox) support in textCommand : switch [Device] in [Room] on/off
+* (Sandomor) some small fixes for mysql adapter
 
 ### 1.0.43 [2014.07.13]
 * (Eisbaeeer) Check ccu ip address "0.0.0.0"
