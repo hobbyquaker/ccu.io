@@ -33,7 +33,7 @@ if (!settings.adapters.owfs || !settings.adapters.owfs.enabled) {
 var adapterSettings = settings.adapters.owfs.settings;
 
 var logger     = require(__dirname + '/../../logger.js'),
-    io         = require('socket.io-client');
+    io         = require('socket.io-client'),
     // call node module 'owfs'
     owfsClient = require('owfs').Client;
 
