@@ -44,6 +44,7 @@ visit http://ccu.io/ or http://dashui.ccu.io/ru/
 * (Bluefox) allow localhost in settings, but warn.
 * (Bluefox) support in textCommand : switch [Device] in [Room] on/off
 * (Sandomor) some small fixes for mysql adapter
+* (Pix) roomba adapter
 
 ### 1.0.43 [2014.07.13]
 * (Eisbaeeer) Check ccu ip address "0.0.0.0"
