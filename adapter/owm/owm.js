@@ -101,24 +101,28 @@ function analyzeResult(result) {
     socket.emit("setState", [owmSettings.firstId + 5, curWindSpeed]);
     socket.emit("setState", [owmSettings.firstId + 6, result["wind"]["deg"]]);
     socket.emit("setState", [owmSettings.firstId + 7, curClouds]);
-
 }
 
 function getValues() {
     logDebug("Checking values ...");
     var req = http.get(reqOptions, function(res) {
-    var pageData = "";
-    res.on('data', function (chunk) {
-        pageData += chunk;
-    });
-    res.on('end', function () {
-        var result = JSON.parse(pageData);
-        analyzeResult(result);
-    });
+	    var pageData = "";
+	    res.on('data', function (chunk) {
+	        pageData += chunk;
+	    });
+	    res.on('end', function () {
+	    	try {
+		        var result = JSON.parse(pageData);
+		        analyzeResult(result);
+	    	} catch (e)
+	    	{
+	    		logger.error("adapter owm    Cannot parse answer: " + pageData + " (" + e + ")");
+	    	}
+	    });
     });
 
     req.on('error', function(e) {
-    logWarning("received error: "+e.message);
+    	logWarning("received error: "+e.message);
     });
 
     req.end();
