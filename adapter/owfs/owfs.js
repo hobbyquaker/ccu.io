@@ -143,7 +143,7 @@ function owfsServerGetValues (ipID){
 function createPointsForServer(ipID) {
 	// Create Datapoints in CCU.IO
 	var id = 1;
-	var channelId = (ipID - 1) * 50 + 1;
+	var channelId = rootId + (ipID - 1) * 50 + 1;
 	adapterSettings.IPs["_" + ipID].channelId = channelId;
 	adapterSettings.IPs["_" + ipID].sensorDPs = {};
 	adapterSettings.IPs["_" + ipID].con       = new owfsClient(adapterSettings.IPs["_" + ipID].ip, adapterSettings.IPs["_" + ipID].port);
