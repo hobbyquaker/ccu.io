@@ -216,7 +216,9 @@ var regahss = new rega({
             updateStatus();
             tryReconnect();
         } else if (err == "CCU unreachable") {
-            logger.error("ccu.io        CCU unreachable");
+            if (settings.ccuIp && settings.ccuIp != '0.0.0.0') {
+                logger.error("ccu.io        CCU unreachable");
+            }
             ccuReachable = false;
             ccuRegaUp = false;
             if (io) {
@@ -240,8 +242,6 @@ var regahss = new rega({
             });
 
             updateStatus();
-
-
         }
     }
 });
@@ -2347,7 +2347,7 @@ function startAdapters () {
         return false;
     }
     var i = 0;
-    for (adapter in settings.adapters) {
+    for (var adapter in settings.adapters) {
         if (!settings.adapters[adapter] || !settings.adapters[adapter].enabled) {
             continue;
         }
