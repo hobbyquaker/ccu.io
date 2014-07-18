@@ -7,11 +7,13 @@
  *   Change Notes:
  *   - Initial Version 0.2.1 
  *   - Version 0.3.0 (Bluefox) Support of multiple IPs and up to 50 sensors per server
+ *   - Version 0.3.1 (Bluefox) Possible write and use new adapter packet
  *
  *   Authors: 
  *   Ralf Muenk [muenk@getcom.de]
  *   (c) getcom IT Services
  *   Eisbaeeer  [Eisbaeeer@gmail.com]
+ *   Bluefox (dogafox@gmail.com)
  *     
  *
  *   This is a part of the iXmaster project started in 2014.
@@ -23,117 +25,61 @@
  *   For more information visit http://www.gnu.org.
  *
 **/
-
-var settings = require(__dirname + '/../../settings.js');
-
-if (!settings.adapters.owfs || !settings.adapters.owfs.enabled) {
-    process.exit();
-}
-
-var adapterSettings = settings.adapters.owfs.settings;
-
-var logger     = require(__dirname + '/../../logger.js'),
-    io         = require('socket.io-client'),
-    // call node module 'owfs'
-    owfsClient = require('owfs').Client;
-
-if (settings.ioListenPort) {
-    var socket = io.connect("127.0.0.1", {
-        port: settings.ioListenPort
-    });
-} else if (settings.ioListenPortSsl) {
-    var socket = io.connect("127.0.0.1", {
-        port: settings.ioListenPortSsl,
-        secure: true
-    });
-} else {
-    process.exit();
-}
-
-socket.on('connect', function () {
-    logger.info("adapter owfs connected to ccu.io");
-});
-
-socket.on('disconnect', function () {
-    logger.info("adapter owfs disconnected from ccu.io");
-});
-
-socket.on('event', function (obj) {
-    if (!obj || !obj[0]) {
-        return;
-    }
-});
-
-function stop() {
-    logger.info("adapter owfs terminating");
-    setTimeout(function () {
-        process.exit();
-    }, 250);
-}
-
-
-process.on('SIGINT', function () {
-    stop();
-});
-
-process.on('SIGTERM', function () {
-    stop();
-});
-
-function setObject(id, obj) {
-    socket.emit("setObject", id, obj);
-}
-
-// create express HTTP server
-//var app = require('express')() 
-//  , server = require('http').createServer(app), // express HTTP server
-//    port = process.env.PORT || '8888'; //use environment variable $PORT as port; if not set default is 8888
-  
-//server.listen(port);
-
-// Further in your code to get your files passed to the browser...
-
-//app.get('/', function (req, res) {
-//    res.sendfile(__dirname + '/index.html');
-//});
-//app.get('/img/minus-5-32.png', function (req, res) {
-//    res.sendfile(__dirname + '/img/minus-5-32.png');
-//});
-//app.get('/img/plus-5-32.png', function (req, res) {
-//    res.sendfile(__dirname + '/img/plus-5-32.png');
-//});
-//app.get('/img/search-5-32.png', function (req, res) {
-//    res.sendfile(__dirname + '/img/search-5-32.png');
-//});
-//app.get('/owfs-dirlisting.js', function (req, res) {
-//    res.sendfile(__dirname + '/owfs-dirlisting.js');
-//});
-//end express HTTP server
-	
+var adapter    = require(__dirname + '/../../utils/adapter-init.js').Adapter("owfs");
+var owfsClient = require('owfs').Client;
 
 // Fix old settings
-if (adapterSettings.wire && adapterSettings.IPs._1) {
-	adapterSettings.IPs._1.wire = adapterSettings.wire;
+if (adapter.settings.wire && adapter.settings.IPs._1) {
+	adapter.settings.IPs._1.wire = adapter.settings.wire;
 }
-	
+
+adapter.onEvent = function (id, val, ts, ack){
+    if (ack)
+        return;
+
+    // process event here
+    if (id >= adapter.firstId && id <= adapter.firstId + 1000) {
+        // First find which IP
+        var ipID   = Math.floor((id - adapter.firstId - 1) / 50) + 1;
+        var wireID = id - ((ipID - 1) * 50 + adapter.firstId + 1);
+
+        if (adapter.settings.IPs["_" + ipID] && adapter.settings.IPs["_" + ipID].wire["_" + wireID]){
+            // Control some wire
+            writeWire(ipID, wireID, val);
+        }
+    }
+}
+
 var id          = 1;
-var rootId      = settings.adapters.owfs.firstId;
+var rootId      = adapter.firstId;
 var channelsIDs = [];
 
-function readWire(ipID, wireID) {
-    if (adapterSettings && adapterSettings.IPs["_" + ipID].wire["_" + ipID] && adapterSettings.IPs["_" + ipID].con) {
-        adapterSettings.IPs["_" + ipID].con.read("/" + adapterSettings.IPs["_" + ipID].wire["_" + wireID].id + "/" + (adapterSettings.IPs["_" + ipID].wire["_" + wireID].property || "temperature"),
+function writeWire(ipID, wireID, value) {
+    if (adapter.settings && adapter.settings.IPs["_" + ipID].wire["_" + ipID] && adapter.settings.IPs["_" + ipID].con) {
+        adapter.settings.IPs["_" + ipID].con.write(
+            "/" + adapter.settings.IPs["_" + ipID].wire["_" + wireID].id + "/" + (adapter.settings.IPs["_" + ipID].wire["_" + wireID].property || "temperature"),
+            value,
             function(result) {
-                socket.emit("setState", [adapterSettings.IPs["_" + ipID].channelId + wireID, result, null, true]);
+                //no idea what is received here
+            }
+        );
+    }
+}
+
+function readWire(ipID, wireID) {
+    if (adapter.settings && adapter.settings.IPs["_" + ipID].wire["_" + ipID] && adapter.settings.IPs["_" + ipID].con) {
+        adapter.settings.IPs["_" + ipID].con.read("/" + adapter.settings.IPs["_" + ipID].wire["_" + wireID].id + "/" + (adapter.settings.IPs["_" + ipID].wire["_" + wireID].property || "temperature"),
+            function(result) {
+                adapter.setState(adapter.settings.IPs["_" + ipID].channelId + wireID, result);
             }
         );
     }
 }
 
 function owfsServerGetValues (ipID){
-	if (adapterSettings.IPs["_" + ipID]) {
+	if (adapter.settings.IPs["_" + ipID]) {
 		var id = 1;
-		while (adapterSettings.IPs["_" + ipID].wire["_" + id]) {
+		while (adapter.settings.IPs["_" + ipID].wire["_" + id]) {
 			readWire(ipID, id);
 			id++;
 		}
@@ -144,14 +90,16 @@ function createPointsForServer(ipID) {
 	// Create Datapoints in CCU.IO
 	var id = 1;
 	var channelId = rootId + (ipID - 1) * 50 + 1;
-	adapterSettings.IPs["_" + ipID].channelId = channelId;
-	adapterSettings.IPs["_" + ipID].sensorDPs = {};
-	adapterSettings.IPs["_" + ipID].con       = new owfsClient(adapterSettings.IPs["_" + ipID].ip, adapterSettings.IPs["_" + ipID].port);
+	adapter.settings.IPs["_" + ipID].channelId = channelId;
+	adapter.settings.IPs["_" + ipID].sensorDPs = {};
+    if (typeof owfsClient != "undefined") {
+        adapter.settings.IPs["_" + ipID].con   = new owfsClient(adapter.settings.IPs["_" + ipID].ip, adapter.settings.IPs["_" + ipID].port);
+    }
 
-	while (adapterSettings.IPs["_" + ipID].wire && adapterSettings.IPs["_" + ipID].wire.hasOwnProperty("_" + id)) {
-		adapterSettings.IPs["_" + ipID].sensorDPs["Sensor" + id] = channelId + id;
-		socket.emit("setObject", channelId + id, {
-			"Name":       "OWFS." + adapterSettings.IPs["_" + ipID].alias + ".SENSORS." + adapterSettings.IPs["_" + ipID].wire["_" + id].alias,
+	while (adapter.settings.IPs["_" + ipID].wire && adapter.settings.IPs["_" + ipID].wire.hasOwnProperty("_" + id)) {
+		adapter.settings.IPs["_" + ipID].sensorDPs["Sensor" + id] = channelId + id;
+		adapter.setObject(channelId + id, {
+			"Name":       "OWFS." + adapter.settings.IPs["_" + ipID].alias + ".SENSORS." + adapter.settings.IPs["_" + ipID].wire["_" + id].alias,
 			"TypeName":   "HSSDP",
 			"Operations": 5,
 			"ValueType":  4,
@@ -162,12 +110,12 @@ function createPointsForServer(ipID) {
 		id++;
 	};
 
-	socket.emit("setObject", channelId, {
-		Name:        "OWFS." + adapterSettings.IPs["_" + ipID].alias + ".SENSORS",
+    adapter.setObject(channelId, {
+		Name:        "OWFS." + adapter.settings.IPs["_" + ipID].alias + ".SENSORS",
 		TypeName:    "CHANNEL",
-		Address:     "OWFS." + adapterSettings.IPs["_" + ipID].alias + ".SENSORS",
+		Address:     "OWFS." + adapter.settings.IPs["_" + ipID].alias + ".SENSORS",
 		HssType:     "1WIRE-SENSORS",
-		DPs:         adapterSettings.IPs["_" + ipID].sensorDPs,
+		DPs:         adapter.settings.IPs["_" + ipID].sensorDPs,
 		Parent:      rootId
 	});
 
@@ -175,17 +123,17 @@ function createPointsForServer(ipID) {
 	owfsServerGetValues(ipID);
 	
 	// Interval to read values from owfs-server
-	setInterval(owfsServerGetValues, adapterSettings.IPs["_" + ipID].interval || adapterSettings.owserverInterval || 30000, ipID);
+	setInterval(owfsServerGetValues, adapter.settings.IPs["_" + ipID].interval || adapter.settings.owserverInterval || 30000, ipID);
 	channelsIDs.push(channelId);
 }
 
 var id = 1;
-while (adapterSettings.IPs["_" + id]) {
+while (adapter.settings.IPs["_" + id]) {
 	createPointsForServer(id);
 	id++;
 }
 
-socket.emit("setObject", rootId, {
+adapter.setObject(rootId, {
 	Name:        "OWFS",
 	TypeName:    "DEVICE",
 	HssType:     "1WIRE",
@@ -194,7 +142,7 @@ socket.emit("setObject", rootId, {
 	Channels:    channelsIDs
 });
 
-logger.info("adapter owfs created datapoints. Starting at: " + rootId);
+adapter.logger.info("adapter owfs created datapoints. Starting at: " + rootId);
   
 //set var for displaying in datastore (Bluefox: But why??)
 //socket.emit("setState", [rootId,    null, null, true]);
