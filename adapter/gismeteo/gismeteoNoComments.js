@@ -1,3 +1,4 @@
+// Same as gismeteo.js, but without comments
 var adapter     = require(__dirname + '/../../utils/adapter-init.js').Adapter("gismeteo"),
     http        = require('http'),
     parseString = require('xml2js').parseString;
