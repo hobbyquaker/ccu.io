@@ -33,9 +33,9 @@ if (!settings.adapters.owfs || !settings.adapters.owfs.enabled) {
 var adapterSettings = settings.adapters.owfs.settings;
 
 var logger     = require(__dirname + '/../../logger.js'),
-    io         = require('socket.io-client'),
+    io         = require('socket.io-client');
     // call node module 'owfs'
-    owfsClient = require('owfs').Client;
+    //owfsClient = require('owfs').Client;
 
 if (settings.ioListenPort) {
     var socket = io.connect("127.0.0.1", {
@@ -44,7 +44,7 @@ if (settings.ioListenPort) {
 } else if (settings.ioListenPortSsl) {
     var socket = io.connect("127.0.0.1", {
         port: settings.ioListenPortSsl,
-        secure: true,
+        secure: true
     });
 } else {
     process.exit();
@@ -116,16 +116,13 @@ if (adapterSettings.wire && adapterSettings.IPs._1) {
 	adapterSettings.IPs._1.wire = adapterSettings.wire;
 }
 	
-var id = 1;
-var rootId    = settings.adapters.owfs.firstId;
-var channelId = rootId + 1;
+var id          = 1;
+var rootId      = settings.adapters.owfs.firstId;
 var channelsIDs = [];
 
-
-
 function readWire(ipID, wireID) {
-    if (adapterSettings && adapterSettings.wire.["_" + ipID]) {
-        adapterSettings.IPs["_" + ipID].con.read("/" + adapterSettings.wire.["_" + wireID].id + "/" + (adapterSettings.wire.["_" + wireID].property || "temperature"), 
+    if (adapterSettings && adapterSettings.IPs["_" + ipID].wire["_" + ipID] && adapterSettings.IPs["_" + ipID].con) {
+        adapterSettings.IPs["_" + ipID].con.read("/" + adapterSettings.IPs["_" + ipID].wire["_" + wireID].id + "/" + (adapterSettings.IPs["_" + ipID].wire["_" + wireID].property || "temperature"),
             function(result) {
                 socket.emit("setState", [adapterSettings.IPs["_" + ipID].channelId + wireID, result, null, true]);
             }
@@ -136,25 +133,25 @@ function readWire(ipID, wireID) {
 function owfsServerGetValues (ipID){
 	if (adapterSettings.IPs["_" + ipID]) {
 		var id = 1;
-		while (adapterSettings.wire["_" + id]) {
+		while (adapterSettings.IPs["_" + ipID].wire["_" + id]) {
 			readWire(ipID, id);
 			id++;
 		}
 	}
 }
 
-void createPointsForServer(ipID) {
+function createPointsForServer(ipID) {
 	// Create Datapoints in CCU.IO
 	var id = 1;
 	var channelId = (ipID - 1) * 50 + 1;
 	adapterSettings.IPs["_" + ipID].channelId = channelId;
 	adapterSettings.IPs["_" + ipID].sensorDPs = {};
-	adapterSettings.IPs["_" + ipID].con       = new owfsClient(adapterSettings.IPs["_" + ipID].ip, adapterSettings.IPs["_" + ipID].port);         
+	//adapterSettings.IPs["_" + ipID].con       = new owfsClient(adapterSettings.IPs["_" + ipID].ip, adapterSettings.IPs["_" + ipID].port);
 
-	while (adapterSettings.IPs["_" + ipID].wire && adapterSettings.IPs["_" + ipID].wire["_" + id]) {		
+	while (adapterSettings.IPs["_" + ipID].wire && adapterSettings.IPs["_" + ipID].wire.hasOwnProperty("_" + id)) {
 		adapterSettings.IPs["_" + ipID].sensorDPs["Sensor" + id] = channelId + id;
 		socket.emit("setObject", channelId + id, {
-			"Name":       "OWFS." + adapterSettings.IPs["_" + ipID].alias + ".SENSORS." + adapterSettings.IPs["_" + ipID].wire.["_" + id].alias,
+			"Name":       "OWFS." + adapterSettings.IPs["_" + ipID].alias + ".SENSORS." + adapterSettings.IPs["_" + ipID].wire["_" + id].alias,
 			"TypeName":   "HSSDP",
 			"Operations": 5,
 			"ValueType":  4,
