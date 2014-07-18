@@ -7,7 +7,7 @@
  *   Change Notes:
  *   - Initial Version 0.2.1 
  *   - Version 0.3.0 (Bluefox) Support of multiple IPs and up to 50 sensors per server
- *   - Version 0.3.1 (Bluefox) Possible write and use new adapter packet
+ *   - Version 0.3.1 (Bluefox) Possible write and use new adapter module
  *
  *   Authors: 
  *   Ralf Muenk [muenk@getcom.de]
@@ -98,26 +98,28 @@ function createPointsForServer(ipID) {
 
 	while (adapter.settings.IPs["_" + ipID].wire && adapter.settings.IPs["_" + ipID].wire.hasOwnProperty("_" + id)) {
 		adapter.settings.IPs["_" + ipID].sensorDPs["Sensor" + id] = channelId + id;
-		adapter.setObject(channelId + id, {
-			"Name":       "OWFS." + adapter.settings.IPs["_" + ipID].alias + ".SENSORS." + adapter.settings.IPs["_" + ipID].wire["_" + id].alias,
-			"TypeName":   "HSSDP",
-			"Operations": 5,
-			"ValueType":  4,
-			"ValueUnit":  "°C",
-			"Parent":     channelId,
-			_persistent:  true
-		});    
+
+        adapter.createDP(
+            channelId + id,
+            channelId,
+            "OWFS." + adapter.settings.IPs["_" + ipID].alias + ".SENSORS." + adapter.settings.IPs["_" + ipID].wire["_" + id].alias,
+            true,
+            {
+                "Operations": 5,
+                "ValueType":  4,
+                "ValueUnit":  "°C"
+		    }
+        );
 		id++;
 	};
 
-    adapter.setObject(channelId, {
-		Name:        "OWFS." + adapter.settings.IPs["_" + ipID].alias + ".SENSORS",
-		TypeName:    "CHANNEL",
-		Address:     "OWFS." + adapter.settings.IPs["_" + ipID].alias + ".SENSORS",
-		HssType:     "1WIRE-SENSORS",
-		DPs:         adapter.settings.IPs["_" + ipID].sensorDPs,
-		Parent:      rootId
-	});
+    adapter.createChannel(
+        channelId,
+        rootId,
+        "OWFS." + adapter.settings.IPs["_" + ipID].alias + ".SENSORS",
+        adapter.settings.IPs["_" + ipID].sensorDPs,
+        {HssType:     "1WIRE-SENSORS"}
+    );
 
 	// Request first time
 	owfsServerGetValues(ipID);
@@ -127,24 +129,15 @@ function createPointsForServer(ipID) {
 	channelsIDs.push(channelId);
 }
 
-var id = 1;
-while (adapter.settings.IPs["_" + id]) {
-	createPointsForServer(id);
-	id++;
+function initOWFS (){
+    var id = 1;
+    while (adapter.settings.IPs["_" + id]) {
+        createPointsForServer(id);
+        id++;
+    }
+    adapter.createDevice(rootId, "OWFS", channelsIDs, {HssType: "1WIRE"});
+    adapter.log("info", "created datapoints. Starting at: " + rootId);
 }
 
-adapter.setObject(rootId, {
-	Name:        "OWFS",
-	TypeName:    "DEVICE",
-	HssType:     "1WIRE",
-	Address:     "OWFS",
-	Interface:   "CCU.IO",
-	Channels:    channelsIDs
-});
-
-adapter.logger.info("adapter owfs created datapoints. Starting at: " + rootId);
-  
-//set var for displaying in datastore (Bluefox: But why??)
-//socket.emit("setState", [rootId,    null, null, true]);
-//socket.emit("setState", [channelId, null, null, true]);
+initOWFS();
 
