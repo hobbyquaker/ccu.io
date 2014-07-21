@@ -7,37 +7,40 @@ Denon adapter
 
 * Dieser Adapter ermöglicht die Anbindung eines Denon Reveivers an ccu.io
 * Es werden Variable in der ccu.io erstellt.
-* Die erste Variable kann als Sendevariable zum Denon verwendet werden. Wird dort
+* Die Variable Denon_Command kann als Sendevariable zum Denon verwendet werden. Wird dort
   z.B. ein "MUON" gesetzt, wird der Befehl "Mute On" an den Denon 
   gesendet. Anschließend wird die Variable wieder geleert. Eine Übersicht der 
   möglichen Befehle gibt es in der offiziellen Dokumentation von Denon 
   http://assets.denoneu.com/DocumentMaster/DE/AVRX3000_PROTOCOL(10.2.0)_V01.pdf
-* In der zweiten Variable wird der Wert 'Denon' gesetzt, wenn der letzte interpretierbare 
-  Befehl vom Receiver empfangenen wurde. Hintergrund ist, dass ich ein CCU.IO-Script 
-  parallel laufen habe, dass auf Basis der CCU.IO-Variablen Homematic-Variablen setzt 
-  bzw. CuxD-Geräte schaltet. Eine Variable 'Denon AVR sendCommand' nimmt den Wert FALSE 
-  an, wenn der Denon einen Wert gesetzt hat. Ein HM-Programm prüft, ob die Variable den 
-  Wert FALSE annimmt und setzt die CCU.IO-Variable 3 Sekunden verzögert auf den Wert 'RESET'.
-  Dies hat den Vorteil, dass z.B. beim Ändern der Lautstärke über die Fernbedienung zwar 
-  sofort der aktuelle Wert in der HM empfangen wird. Das Programm, dass jedoch den 
-  HM-Lautstärkewert über CCU.IO an den Receiver sendet für eben diese 3 Sekunden unterdrückt wird.
-  Sorry, für diesen bestimmt schwierig nachzuvollziehenden Weg, aber mir ist kein anderer eingefallen.
-  Für alle anderen, denen es reicht, die Werte über CCU.IO zu setzen, spielt die zweite Variable keine Rolle.
+  Zur Integration in DashUI bitte auch die Hilfestellungen im Forum zum onkyo-Adapter beachten. 
+  Das Vorgehen ist absolut identisch.
+* Die Variable Denon_CommandSender zeigt an, welches Gerät zuletzt einen Befehl abgesetzt hat.
+* Die Variable Denon_Conect_Status zeigt den Verbindungsstatus an. Sollte die Verbindung einmal verloren gehen, dann versucht der Adapter sie wieder aufzubauen.
   
 * Konfiguration über settings.js unter adapter:
-  enabled:  true|false
-  IP:       xxx.xxx.xxx.xxx (Onkyo Reveiver)
-  Port:     xxxxx  (Denon Port)
-  FirstId:  xxxxxx  (Erste ID, über 100000 verwenden!) 
-  Debug: 	true|false (bei true werden die empfangenen Befehle des Denons in die ccu.io.log geschrieben
+  enabled:  		true|false
+  IP:       		xxx.xxx.xxx.xxx (Onkyo Reveiver)
+  Port:     		xxxxx  (Denon Port)
+  FirstId:  		xxxxxx  (Erste ID, über 100000 verwenden!) 
+  Raum Mainzone:	Id des Raumes, zu dem die Mainzone-Denon-Werte ergänzt werden sollen; es kann auch der Name eines neuen Raumes angelegt werden oder das Feld bleibt leer
+  Raum Zone2:		Id des Raumes, zu dem die Zone2-Denon-Werte ergänzt werden sollen; es kann auch der Name eines neuen Raumes angelegt werden oder das Feld bleibt leer
+  Gewerke:			Alle Denon-Werte können zu einem bestehendem Gewerk (Id eingeben) oder zu einem neuen Gewerk hinzugefügt werden (Name eingeben) oder das Feld bleibt leer
+  Favoriten:		Alle Denon-Werte können zu einem bestehendem Favoriten (Id eingeben) oder zu einem neuen Favoriten hinzugefügt werden (Name eingeben) oder das Feld bleibt leer
+  Debug: 			true|false (bei true werden die empfangenen Befehle des Denons in die ccu.io.log geschrieben
 
 ## Todo/Roadmap
 
-* HTML in settings.js integrieren 
 * mehr Befehle integrieren
 
 
 ## Changelog
+### 0.2.0
+* Komplette Überarbeitung: Alle Anpassungen und Verbesserungen vom Onkyo-Adapter bis zur CCU.IO-Version 1.0.42 wurden übernommen.
+  -Das Senden über den Adapter selbst ist nun möglich und es muss nicht die Variable Denon_Command benutzt werden. Für die Steuerung über die Homematic muss in der Homematic selbst keine Logik mehr abgebildet werden.
+  -Devices und Channel ergänzt, um den Adapter in der ScriptGUI verwenden zu können. ACHTUNG: Wurde der Onkyo bisher über die Homematic gesteuert, dann muss die Variable "Denon_Command" in der Homematic angepasst werden.
+* Devices und Channels sind Räumen, Gewerken oder Favoriten zuordbar. Damit ist die Benutzung direkt in Yahui möglich.
+* Sleeptimer für Mainzone und Zone2 ergänzt
+* Nach dem Update sollte die adapter-denon.json im datastore umbenannt/gelöscht werden.
 
 ### 0.1.1
 * Status über Variable sichtbar

@@ -26,6 +26,22 @@
         <td><input id="denon_settings_firstId" type="text"/></td>
     </tr>
     <tr>
+        <td>Raum Mainzone:</td>
+        <td><input id="denon_settings_room_main" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Raum Zone2:</td>
+        <td><input id="denon_settings_room_zone2" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Gewerke:</td>
+        <td><input id="denon_settings_funcs" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Favoriten:</td>
+        <td><input id="denon_settings_favs" type="text"/></td>
+    </tr>
+    <tr>
         <td>Enable debug log:</td>
         <td>
             <select id="denon_settings_debug">
@@ -73,6 +89,34 @@
         updateAdapterSettings();
     });
 
+	$("#denon_settings_room_main").val(currentAdapterSettings.settings.room_main);
+
+    $("#denon_settings_room_main").change(function () {
+        currentAdapterSettings.settings.room_main = $("#denon_settings_room_main").val();
+        updateAdapterSettings();
+    });
+	
+	$("#denon_settings_room_zone2").val(currentAdapterSettings.settings.room_zone2);
+
+    $("#denon_settings_room_zone2").change(function () {
+        currentAdapterSettings.settings.room_zone2 = $("#denon_settings_room_zone2").val();
+        updateAdapterSettings();
+    });
+	
+	$("#denon_settings_funcs").val(currentAdapterSettings.settings.funcs);
+
+    $("#denon_settings_funcs").change(function () {
+        currentAdapterSettings.settings.funcs = $("#denon_settings_funcs").val();
+        updateAdapterSettings();
+    });
+	
+	$("#denon_settings_favs").val(currentAdapterSettings.settings.favs);
+
+    $("#denon_settings_favs").change(function () {
+        currentAdapterSettings.settings.favs = $("#denon_settings_favs").val();
+        updateAdapterSettings();
+    });
+	
     if (currentAdapterSettings.settings.debug) {
         $("#denon_settings_debug option[value='false']").removeAttr("selected");
         $("#denon_settings_debug option[value='true']").attr("selected", true);

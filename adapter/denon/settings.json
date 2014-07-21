@@ -1,9 +1,13 @@
 {
 		"enabled": false,
 		"settings": {
-		"IP": "DENON-IP",
-		"port": DENON-PORT,
+		"IP": "192.168.178.31",
+		"port": 23,
 		"firstId": 110101,
+		"room_main": [1278],
+		"room_zone2": [1287],
+		"funcs": ["AVR Receiver"],
+		"favs": [],
 		"debug": false
 		}
 }	
