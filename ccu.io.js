@@ -33,9 +33,9 @@ settings.regahss.metaScripts = [
 
 
 var fs =        require('fs'),
-    logger =    require(__dirname+'/logger.js'),
-    binrpc =    require(__dirname+"/binrpc.js"),
-    rega =      require(__dirname+"/rega.js"),
+    logger =    require(__dirname + '/logger.js'),
+    binrpc =    require(__dirname + "/binrpc.js"),
+    rega =      require(__dirname + "/rega.js"),
     express =   require('express'),
     http =      require('http'),
     https =     require('https'),
@@ -846,7 +846,7 @@ function restApiPost(req, res) {
             break;
         case "plain":
             res.set('Content-Type', 'text/plain');
-            res.send(response);
+            res.send((typeof response == "object" && response.hasOwnProperty("value")) ? response.value.toString() : response);
             break;
 
     }
@@ -862,7 +862,7 @@ function restApiDelayedAnswer() {
             break;
         case "plain":
             restApiDelayed.res.set('Content-Type', 'text/plain');
-            restApiDelayed.res.send(restApiDelayed.response);
+            restApiDelayed.res.send((typeof restApiDelayed.response == "object" && restApiDelayed.response.hasOwnProperty("value")) ? restApiDelayed.response.value.toString() : restApiDelayed.response);
             break;
     }
     restApiDelayed.res      = null;
@@ -911,9 +911,9 @@ function restApi(req, res) {
                 status = 200;
                 response = {id:dp};
                 if (datapoints[dp]) {
-                    response.value = datapoints[dp][0];
-                    response.ack = datapoints[dp][2];
-                    response.timestamp = datapoints[dp][1];
+                    response.value      = datapoints[dp][0];
+                    response.ack        = datapoints[dp][2];
+                    response.timestamp  = datapoints[dp][1];
                     response.lastchange = datapoints[dp][3];
                 }
                 if (regaObjects[dp]) {
@@ -939,6 +939,7 @@ function restApi(req, res) {
                 }
             }
             break;
+        case "setPlain":
         case "set":
             if (!tmpArr[1]) {
                 response = {error: "object/datapoint not given"};
@@ -950,7 +951,11 @@ function restApi(req, res) {
                 wait  = req.query.wait || 0;
             }
             if (!value) {
-                response = {error: "no value given"};
+                if (command == "setPlain") {
+                    response = "Error: no value given";
+                } else {
+                    response = {error: "no value given"};
+                }
                 wait = 0;
             } else {
                 if (value === "true") {
@@ -962,6 +967,9 @@ function restApi(req, res) {
                 }
                 setState(dp, value);
                 status = 200;
+                if (command == "setPlain") {
+                    responseType = "plain";
+                }
                 response = {id: dp, value: value};
             }
             break;
@@ -973,10 +981,10 @@ function restApi(req, res) {
                 var value = datapoints[dp][0];
                 if (value === true) value = 1;
                 if (value === false) value = 0;
-                value = 1 - parseInt(value, 10);
+                value    = 1 - parseInt(value, 10);
                 setState(dp, value);
-                status = 200;
-                response = {id:dp,value:value};
+                status   = 200;
+                response = {id: dp, value: value};
             break;
         case "setBulk":
             response = [];
@@ -1036,7 +1044,7 @@ function restApi(req, res) {
         restApiDelayed.response     = response;
         restApiDelayed.id           = response.id;
         restApiDelayed.res          = res;
-        restApiDelayed.timer = setTimeout(restApiDelayedAnswer, wait);
+        restApiDelayed.timer        = setTimeout(restApiDelayedAnswer, wait);
     } else {
         switch (responseType) {
             case "json":
@@ -1044,7 +1052,7 @@ function restApi(req, res) {
                 break;
             case "plain":
                 res.set('Content-Type', 'text/plain');
-                res.send(response);
+                res.send((typeof response == "object" && response.hasOwnProperty("value")) ? response.value.toString() : response);
                 break;
         }
     }
@@ -2283,7 +2291,7 @@ function startAdapters () {
         return false;
     }
     var i = 0;
-    for (adapter in settings.adapters) {
+    for (var adapter in settings.adapters) {
         if (!settings.adapters[adapter] || !settings.adapters[adapter].enabled) {
             continue;
         }

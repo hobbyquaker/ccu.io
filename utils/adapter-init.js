@@ -11,7 +11,7 @@
 // adapter.settings    => settings of adapter
 // adapter.stop()      => stop the adapter (normaly not required)
 // adapter.setObject(id, obj)     => create variable, channel or device in CCU.IO
-// adapter.getState(id, callback) => get state of the variable
+// adapter.getState(id, callback) => get state of the variable, where callback(id, val, ts, ack, lc)
 // adapter.setState(id, val)      => set state of the variable
 
 // the on event can be set later after creation:
@@ -70,6 +70,9 @@ function createAdapter(name, onEvent) {
         if (this.socket) {
             this.socket.on('connect', function () {
                 that.logger.info("adapter " + that.logName + " connected to ccu.io");
+                if (that.onConnect) {
+                    that.onConnect();
+                }
             });
             
             this.socket.on('disconnect', function () {
@@ -116,8 +119,16 @@ function createAdapter(name, onEvent) {
         };
 
         this.getState = function (id, callback) {
+            if (!callback) return;
             this.socket.emit("getDatapoint", [id], function (id, obj) {
-        		callback (id, obj);
+                // got back array with [val,ts,ack,lc]
+                if (!obj ||
+                    (typeof obj != "object") ||
+                    obj[0] === undefined) {
+                    callback(id, obj[0], obj[1], obj[2], obj[3]);
+                } else {
+                    callback(id);
+                }
 	    	});
         };
 
