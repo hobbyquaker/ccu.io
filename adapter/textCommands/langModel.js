@@ -105,6 +105,26 @@ var commands = {
             'ru': "Проговорить команду"
         }
     },
+    'openLock': {
+        description: {
+            'en': "Open/close door lock",
+            'de': "Türschloss auf/zu machen",
+            'ru': "Открыть/закрыить замок на двери"
+        },
+        unique:   true,
+        editable: false,
+        withAck:  true,
+        words: {
+            'en': "lock open/close",
+            'de': "schloß/türschloß auf/zu",
+            'ru': "замок открой/открою/открыть/закрыть/закрою/закрой"
+        },
+        ack:  {
+            'en': "If acknowledge must be spoken",
+            'de': "Ob Ergebniss gesprochen werden soll",
+            'ru': "Проговорить команду"
+        }
+    },
     'userDeviceControl' : {
         description: {
             'en': "Switch something on/off",

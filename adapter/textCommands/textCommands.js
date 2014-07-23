@@ -2,7 +2,7 @@
  *      CCU.IO Listen Adapter
  *      07'2014 Bluefox
  *
- *      Version 0.2
+ *      Version 0.3
  *
  *      This adapter receives text command in 72970 and tries to execute it.
  *      If error occurs it will be written into 72971.
@@ -39,7 +39,8 @@ var commandsCallbacks = {
 	'insideTemperature' :  sayInsideTemperature,
     'userDeviceControl' :  userDeviceControl,
     'blindsUpDown' :       controlBlinds,
-    'roleOnOff' :          controlRole
+    'roleOnOff' :          controlRole,
+    'openLock' :           openLock
 };
 
 adapter.onConnect = function () {
@@ -195,7 +196,7 @@ function sayInsideTemperature (lang, text, withLang, arg1, arg2, arg3) {
 }
 
 function userDeviceControl (lang, text, withLang, arg1, arg2, arg3, ack) {
-    adapter.debug("write to ID " + arg1 + " value: " + arg2)
+    adapter.info("write to ID " + arg1 + " value: " + arg2)
     adapter.setState(arg1, arg2);
     if (ack) {
         if (ack[0] == '[') {
@@ -679,6 +680,106 @@ function controlRole (lang, text, withLang, arg1, arg2, arg3, ack) {
 	}	
 }
 
+function openLock (lang, text, withLang, arg1, arg2, arg3, ack, rule) {
+    if (rule.value === undefined || rule.value === null || !rule.time || (new Date().getTime() - rule.time > 10000)) {
+        rule.value = null;
+        var toSay = "";
+        var defaultRoom = "";
+        var pos = text.indexOf(";");
+        if (pos != -1) {
+            defaultRoom = text.substring(pos + 1);
+            text = text.substring(0, pos);
+        }
+
+        if (lang == "ru") {
+            // test operation
+            if (text.indexOf("открыть") != -1 || text.indexOf("открой") != -1 || text.indexOf("открою") != -1) {
+                rule.value = 2;
+            }
+            else
+            if (text.indexOf("закрыть") != -1 || text.indexOf("закрой") != -1 || text.indexOf("закрою") != -1) {
+                rule.value = 0;
+            }
+        }
+        else if (lang == "de") {
+            // test operation
+            if (text.indexOf (" auf") != -1 ||
+                text.indexOf ("aufmachen") != -1
+                ) {
+                rule.value = 2;
+            }
+            else
+            if (text.indexOf ("zumachen") != -1 ||
+                text.indexOf (" zu") != -1) {
+                rule.value = 0;
+            }
+        }
+        else if (lang == "en") {
+            // test operation
+            if (text.indexOf ("open") != -1) {
+                rule.value = 2;
+            }
+            else
+            if (text.indexOf ("close") != -1) {
+                rule.value = 0;
+            }
+        }
+        else {
+            adapter.error("Language " + lang + " is not supported");
+            return;
+        }
+        if (rule.value !== null) {
+            rule.time = new Date().getTime();
+            sayIt(lang, withLang, model.sayAreYouSure(lang));
+        }
+    } else {
+        var toSay = "";
+        var isYes = false;
+        var pos = text.indexOf(";");
+        if (pos != -1) {
+            defaultRoom = text.substring(pos + 1);
+            text = text.substring(0, pos);
+        }
+
+        if (lang == "ru") {
+            // test operation
+            if (text.indexOf("да") != -1 || text.indexOf("конечно") != -1 || text.indexOf("всенепременно") != -1) {
+                isYes = true;
+            }
+            else
+            if (text.indexOf("нет") != -1 || text.indexOf("отмена") != -1) {
+                isYes = false;
+            }
+        }
+        else if (lang == "de") {
+            // test operation
+            if (text.indexOf ("ja") != -1 ||
+                text.indexOf ("natürlich") != -1
+                ) {
+                isYes = true;
+            }
+            else
+            if (text.indexOf ("nein") != -1 || text.indexOf ("nicht") != -1 || text.indexOf ("abbrechen") != -1) {
+                isYes = false;
+            }
+        }
+        else if (lang == "en") {
+            // test operation
+            if (text.indexOf ("yes") != -1 || text.indexOf ("cause") != -1) {
+                isYes = true;
+            }
+            else
+            if (text.indexOf ("no") != -1 || text.indexOf ("not") != -1 || text.indexOf ("cancel") != -1) {
+                isYes = false;
+            }
+        }
+        else {
+            adapter.error("Language " + lang + " is not supported");
+            return;
+        }
+    }
+}
+
 function processCommand (cmd) {
     if (!regaIndex || !regaObjects) {
         sayIt(adapter.settings.language, false, "Not ready");
@@ -737,7 +838,7 @@ function processCommand (cmd) {
 		}
 		if (isFound) {
             isNothingFound = false;
-			console.log ("Found: " + JSON.stringify(model.commands[command.name].description));
+			adapter.info("Found: " + JSON.stringify(model.commands[command.name].description));
 			if (commandsCallbacks [command.name])
 				commandsCallbacks [command.name] (lang, cmd, withLang, command["arg1"], command["arg2"], command["arg3"], command["ack"]);
 			else {
@@ -760,29 +861,8 @@ function processCommand (cmd) {
     }
 }
 
-createObject(objProcess, {
-    "Name": "TextCommand.Command",
-    "TypeName": "VARDP",
-    "DPInfo": "TextCommand",
-    "ValueMin": null,
-    "ValueMax": null,
-    "ValueUnit": "",
-    "ValueType": 20,
-    "ValueSubType": 11,
-    "ValueList": ""
-});
-
-createObject(objError, {
-    "Name": "TextCommand.Error",
-    "TypeName": "VARDP",
-    "DPInfo": "TextCommand",
-    "ValueMin": null,
-    "ValueMax": null,
-    "ValueUnit": "",
-    "ValueType": 20,
-    "ValueSubType": 11,
-    "ValueList": ""
-});
+adapter.createDP(objProcess, null, "TextCommand.Command");
+adapter.createDP(objError, null, "TextCommand.Error");
 
 // Add own commands
 if (!adapter.settings.rules) {
