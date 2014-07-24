@@ -634,12 +634,22 @@ function controlRole (lang, text, withLang, arg1, arg2, arg3, ack) {
 					// Check the role
 					if (regaRole.indexOf(regaIndex["CHANNEL"][devs]) != -1) {
 						if (!isSaid) {
-							sayIt (lang, withLang, toSay);
+							sayIt(lang, withLang, toSay);
 							isSaid = true;
 						}
-                        adapter.setState (dev.DPs["STATE"], valPercent);
+                        adapter.setState(dev.DPs["STATE"], valPercent);
 					}
-				}
+				} else
+                if (dev.DPs && dev.DPs["LEVEL"]) {
+                    // Check the role
+                    if (regaRole.indexOf(regaIndex["CHANNEL"][devs]) != -1) {
+                        if (!isSaid) {
+                            sayIt (lang, withLang, toSay);
+                            isSaid = true;
+                        }
+                        adapter.setState(dev.DPs["LEVEL"], valPercent);
+                    }
+                }
             }
         }
     } else
@@ -651,12 +661,23 @@ function controlRole (lang, text, withLang, arg1, arg2, arg3, ack) {
 				// Check the role
 				if (regaRole.indexOf(regaRoom[devs]) != -1) {				
 					if (!isSaid) {
-						sayIt (lang, withLang, toSay);
+						sayIt(lang, withLang, toSay);
 						isSaid = true;
 					}
-                    adapter.setState (dev.DPs["STATE"], valPercent);
+                    adapter.setState(dev.DPs["STATE"], valPercent);
 				}
-			}
+			} else {
+                if (dev && dev.DPs && dev.DPs["LEVEL"]) {
+                    // Check the role
+                    if (regaRole.indexOf(regaRoom[devs]) != -1) {
+                        if (!isSaid) {
+                            sayIt(lang, withLang, toSay);
+                            isSaid = true;
+                        }
+                        adapter.setState(dev.DPs["LEVEL"], valPercent);
+                    }
+                }
+            }
         }
     }
 	
@@ -666,7 +687,7 @@ function controlRole (lang, text, withLang, arg1, arg2, arg3, ack) {
 			toSay = 'There is no ' + model.rolesGenitive[sRole][lang] + ' ' + model.roomsDative[sRoom][lang];
 		} else
 		if (lang == 'de') {
-			toSay = 'Es gibt kein' + model.rolesGenitive[sRole][lang] + ' ' + model.roomsDative[sRoom][lang] + ' gefunden';
+			toSay = 'Es gibt kein' + model.rolesGenitive[sRole][lang] + ' ' + model.roomsDative[sRoom][lang];
 		} else
 		if (lang == 'ru') {
 			toSay =  model.roomsDative[sRoom][lang] + ' нет ' + model.rolesGenitive[sRole][lang];
