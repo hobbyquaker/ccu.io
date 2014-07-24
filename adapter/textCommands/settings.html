@@ -1,15 +1,15 @@
 <table style="font-size: 12px">
     <tr>
-        <td>Enabled:</td>
+        <td class="translate">Enabled:</td>
         <td>
             <select id="textCommands_enabled">
-                <option value="false">false</option>
-                <option value="true">true</option>
+                <option value="false" class="translate">false</option>
+                <option value="true" class="translate">true</option>
             </select>
         </td>
     </tr>
     <tr>
-        <td>Language:</td>
+        <td class="translate">Language:</td>
         <td><select id="textCommands_settings_language">
             <option value="en">English</option>
             <option value="de">Deutsch</option>
@@ -23,21 +23,46 @@
 </table><br>
 <table style="font-size: 12px; border: 1px solid black" id="textCommands_table">
     <tr>
-        <th style="border: 1px solid black">Position</th>
-        <th style="border: 1px solid black">Type</th>
-        <th style="border: 1px solid black; width: 300px">Words</th>
-        <th style="border: 1px solid black; width: 100px">Argument 1</th>
-        <th style="border: 1px solid black; width: 100px">Argument 2</th>
-        <th style="border: 1px solid black; width: 100px">Argument 3</th>
+        <th style="border: 1px solid black" class="translate">Position</th>
+        <th style="border: 1px solid black" class="translate">Type</th>
+        <th style="border: 1px solid black; width: 300px" class="translate">Words</th>
+        <th style="border: 1px solid black; width: 100px" class="translate">Argument 1</th>
+        <th style="border: 1px solid black; width: 100px" class="translate">Argument 2</th>
+        <th style="border: 1px solid black; width: 100px" class="translate">Argument 3</th>
 		<th></th>
-        <th style="border: 1px solid black; width: 100px">Acknowledge</th>
+        <th style="border: 1px solid black; width: 100px" class="translate">Acknowledge</th>
     </tr>
 </table>
-<input type="button" id="add_rule" value="add rule"/>
+<input type="button" id="add_rule" class="translateV" value="add rule"/>
 <p>
-    <h1>Hilfe</h1>
+    <h1 class="translate">Description</h1>
+    <span class="translate">Description text</span>
 </p>
 <script src="../lib/js/selectID.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var adapterWords = {
+        "false":       {"en": "false",      "de": "nein",             "ru": "нет"},
+        "true":        {"en": "true",       "de": "ja",               "ru": "да"},
+        "Enabled:":          {"en": "Enabled:",          "de": "Aktiviert:",      "ru": "Активно:"},
+        "Position":    {"en": "Position",   "de": "Position",         "ru": "Номер"},
+        "Type":        {"en": "Type",       "de": "Typ",              "ru": "Тип"},
+        "Words":       {"en": "Words",      "de": "Worte",            "ru": "Слова"},
+        "Argument 1":  {"en": "Argument 1", "de": "Parameter 1",      "ru": "Параметр 1"},
+        "Argument 2":  {"en": "Argument 2", "de": "Parameter 2",      "ru": "Параметр 2"},
+        "Argument 3":  {"en": "Argument 3", "de": "Parameter 3",      "ru": "Параметр 3"},
+        "Acknowledge": {"en": "Acknowledge","de": "Quittungstext",    "ru": "Текст подтверждения"},
+        "add rule":    {"en": "Add rule",   "de": "Regel hinzufügen", "ru": "Добавить правило"},
+        "remove rule": {"en": "Remove rule","de": "Regel löschen",    "ru": "Удалить"},
+        "up":          {"en": "Up",         "de": "Nach oben",        "ru": "Вверх"},
+        "down":        {"en": "Down",       "de": "Nach unten",       "ru": "Вниз"},
+        "Description": {"en": "Description","de": "Beschreibung",     "ru": "Описание"},
+        "Description text": {
+            "en": " ",
+            "de": " ",
+            "ru": " "
+        }
+    };
+</script>
 <script type="text/javascript">
     var socket = io.connect( $(location).attr('protocol') + '//' +  $(location).attr('host') + "?key="+socketSession);
     var model = null;
@@ -165,7 +190,7 @@
 
             sText += '<td style="border: 1px solid black"><input id="textCommands_words_'+id+'" data-textCommands-rule="'+id+'"  style="width:100%" type="text" value="'+(words || "")+'" '+(!model.commands[currentAdapterSettings.settings.rules[id].name].editable ? 'disabled' : '')+'/></td>';
             if (model.commands[currentAdapterSettings.settings.rules[id].name].arg1 !== undefined) {
-                sText += '<td style="border: 1px solid black"><input id="textCommands_arg1_' +id+'" data-textCommands-rule="'+id+'"  style="width:100%" type="text" value="'+(currentAdapterSettings.settings.rules[id].arg1 || "")+'" title="'+model.commands[currentAdapterSettings.settings.rules[id].name].arg1[lang]+'"/><input type="button" id="inspect1_'+id+'_btn" data-textCommands-rule="'+id+'" value="..."  style="width:30px"><div id="inspect1_'+id+'_desc"></div></td>';
+                sText += '<td style="border: 1px solid black"><input id="textCommands_arg1_' +id+'" data-textCommands-rule="'+id+'"  style="width:100%" type="text" value="'+(currentAdapterSettings.settings.rules[id].arg1 || "")+'" title="'+model.commands[currentAdapterSettings.settings.rules[id].name].arg1[lang]+'"/><input type="button" id="inspect1_'+id+'_btn" data-textCommands-rule="' + id + '" value="..."  style="width:30px"><div id="inspect1_'+id+'_desc"></div></td>';
             }
             else {
                 sText += '<td style="border: 1px solid black"><input type="text" disabled /></td>';
@@ -177,16 +202,16 @@
                 sText += '<td style="border: 1px solid black"><input type="text" disabled /></td>';
             }
             if (model.commands[currentAdapterSettings.settings.rules[id].name].arg3 !== undefined) {
-                sText += '<td style="border: 1px solid black"><input id="textCommands_arg3_' +id+'" data-textCommands-rule="'+id+'"  style="width:100%" type="text" value="'+(currentAdapterSettings.settings.rules[id].arg3 || "")+'" title="'+model.commands[currentAdapterSettings.settings.rules[id].name].arg3[lang]+'"/></td>';
+                sText += '<td style="border: 1px solid black"><input id="textCommands_arg3_' +id+'" data-textCommands-rule="' + id + '"  style="width:100%" type="text" value="'+(currentAdapterSettings.settings.rules[id].arg3 || "")+'" title="'+model.commands[currentAdapterSettings.settings.rules[id].name].arg3[lang]+'"/></td>';
             }
             else {
                 sText += '<td style="border: 1px solid black"><input type="text" disabled /></td>';
             }
         }
-        sText += '<td style="border: 1px solid black"><input data-textCommands-rule="'+id+'" type="button" value="remove rule" class="textCommands-remove"/>';
-        sText += '<input data-textCommands-rule="'+id+'" type="button" value="up" '+ (id == 0 ? 'disabled' : '')+'  class="textCommands-up"/>';
+        sText += '<td style="border: 1px solid black"><input data-textCommands-rule="'+id+'" type="button" value="' + translateWord('remove rule', currentAdapterSettings.settings.language, adapterWords) + '" class="textCommands-remove"/>';
+        sText += '<input data-textCommands-rule="'+id+'" type="button" value="' + translateWord('up', currentAdapterSettings.settings.language, adapterWords) + '" '+ (id == 0 ? 'disabled' : '')+'  class="textCommands-up"/>';
         if (currentAdapterSettings.settings.rules.length > 1 && id != currentAdapterSettings.settings.rules.length - 1)
-            sText += '<input data-textCommands-rule="'+id+'" type="button" value="down" class="textCommands-down"/>';
+            sText += '<input data-textCommands-rule="'+id+'" type="button" value="' + translateWord('down', currentAdapterSettings.settings.language, adapterWords) + '" class="textCommands-down"/>';
         sText += '</td>';
         if (!currentAdapterSettings.settings.rules[id].name) {
             sText += '<td style="border: 1px solid black"><input type="text" disabled style="width:100%"/></td>';
@@ -330,5 +355,6 @@
 			showRule (i);
         }
     }
-	
+    translateAll (currentAdapterSettings.settings.language, adapterWords);
+
 </script>
