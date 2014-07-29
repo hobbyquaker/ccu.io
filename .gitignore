@@ -2,3 +2,8 @@
 .DS_Store
 
 /delivery
+/grunt/node_modules
+/grunt/.build
+/grunt/.debian-pi-control
+/grunt/.debian-pi-ready
+/grunt/.windows-ready
