@@ -674,11 +674,28 @@ var scriptEngine = {
             }
         });
     },
+
     stop: function () {
         scriptEngine.logger.info("script-engine terminating");
         setTimeout(function () {
             process.exit();
         }, 250);
+    },
+
+    getState: function(id, dpType){
+        return getState(id, dpType);
+    },
+
+    setState: function(id, val, callback){
+        setState(id, val, callback) ;
+    },
+
+    setObject: function(id, obj, callback){
+        setObject(id, obj, callback);
+    },
+
+    delObject: function(id){
+        delObject(id);
     }
 }
 
