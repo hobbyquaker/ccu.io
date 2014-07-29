@@ -690,7 +690,7 @@ function getXmlResponse(callback) {
 								DATE:         list[0].$.year + '.' + list[0]['$'].month + '.' + list[0]['$'].day,
 								PRESSURE_MIN: list[0].PRESSURE[0].$.min, 
 								PRESSURE_MAX: list[0].PRESSURE[0].$.max,
-								TEMPERATURE:  (parseFloat(list[0].TEMPERATURE[0].$.max) + parseFloat(list[0].PRESSURE[0].$.min)) / 2, // берем значение в середине
+								TEMPERATURE:  (parseFloat(list[0].TEMPERATURE[0].$.max) + parseFloat(list[0].TEMPERATURE[0].$.min)) / 2, // берем значение в середине
 								HUMIDITY:     (parseFloat(list[0].RELWET[0].$.max) + parseFloat(list[0].RELWET[0].$.min)) / 2        // берем значение в середине
 							};
                             result['next'] = {};
@@ -704,7 +704,7 @@ function getXmlResponse(callback) {
 										DATE:         list[i].$.year + '.' + list[i]['$'].month + '.' + list[i]['$'].day,
 										PRESSURE_MIN: list[i].PRESSURE[0].$.min, 
 										PRESSURE_MAX: list[i].PRESSURE[0].$.max,
-										TEMPERATURE:  (parseFloat(list[i].TEMPERATURE[0].$.max) + parseFloat(list[i].PRESSURE[0].$.min)) / 2, // берем значение в середине
+										TEMPERATURE:  (parseFloat(list[i].TEMPERATURE[0].$.max) + parseFloat(list[i].TEMPERATURE[0].$.min)) / 2, // берем значение в середине
 										HUMIDITY:     (parseFloat(list[i].RELWET[0].$.max) + parseFloat(list[i].RELWET[0].$.min)) / 2        // берем значение в середине
 									};
 									break;

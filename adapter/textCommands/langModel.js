@@ -105,6 +105,26 @@ var commands = {
             'ru': "Проговорить команду"
         }
     },
+    'openLock': {
+        description: {
+            'en': "Open/close door lock",
+            'de': "Türschloss auf/zu machen",
+            'ru': "Открыть/закрыить замок на двери"
+        },
+        unique:   true,
+        editable: false,
+        withAck:  true,
+        words: {
+            'en': "lock open/close",
+            'de': "schloß/türschloß auf/zu",
+            'ru': "замок открой/открою/открыть/закрыть/закрою/закрой"
+        },
+        ack:  {
+            'en': "If acknowledge must be spoken",
+            'de': "Ob Ergebniss gesprochen werden soll",
+            'ru': "Проговорить команду"
+        }
+    },
     'userDeviceControl' : {
         description: {
             'en': "Switch something on/off",
@@ -190,7 +210,7 @@ var rooms = {
     "wc":         {"ru" : "туалет",       "de": "wc",                   "en": "wc/closet" },
     "floor":      {"ru" : "прихож/вход/коридор",  "de": "diele/eingang/flur",   "en": "floor/enter" },
     "kitchen":    {"ru" : "кухня/кухне",  "de": "küche",                "en": "kitchen" },
-    "everywhere": {"ru" : "везде",        "de": "alle/überall",         "en": "everywhere" },
+    "everywhere": {"ru" : "везде/весь/все/всё", "de": "alle/überall",         "en": "everywhere" },
     "terrace":    {"ru" : "балкон/терасс","de": "balkon/terrasse",      "en": "balcony/terrace/patio" },
     "dinningRoom":{"ru" : "столовая",     "de": "esszimmer",            "en": "dinning" },
     "garage":     {"ru" : "гараж",        "de": "garage",               "en": "garage" },
@@ -268,7 +288,148 @@ var rolesAccusative = {
     "all":        {"ru" : "всё",                "de": "alles",          "en": "all" }
 };
 
-// TODO place IDontKnow and co here
+function getRandomPhrase (arr) {
+    if (typeof arr == "object") {
+        if (arr.length > 1) {
+            var randomNumber = Math.floor(Math.random() * arr.length);
+            if (randomNumber > arr.length - 1) {
+                randomNumber = arr.length - 1;
+            }
+            return arr[randomNumber];
+        } else {
+            return arr[0];
+        }
+    } else {
+        return arr;
+    }
+}
+function sayIDontKnow (lang) {
+    var toSay;
+    if (lang == "ru") {
+        toSay = getRandomPhrase(["Извините, но ", "Прошу прощения, но ", ""]) +
+                getRandomPhrase(["Я не знаю", "Нет данных"]);
+    }
+    else if (lang == "de") {
+        toSay = getRandomPhrase(["Entschuldigen sie. ", "Es tut mir leid. ", ""]) +
+                getRandomPhrase(["Ich weiss nicht", "Keine Daten vorhanden"]);
+    }
+    else if (lang == "en") {
+        toSay = getRandomPhrase(["I am sorry, but ", "Excus me. ", ""]) +
+                getRandomPhrase(["I don't know", "No data available"]);
+    }
+    return toSay;
+}
+
+function sayNoName (lang) {
+    var toSay;
+
+    if (lang == "ru") {
+        toSay ="Обращайся ко мне как хочешь. У меня нет имени";
+    }
+    else if (lang == "de") {
+        toSay ="Nenne mich wie du willst. Ich habe keinen Namen.";
+    }
+    else if (lang == "en") {
+        toSay ="Call me as you wish. I don't have name";
+    }
+
+    return toSay;
+}
+function sayName (lang, name) {
+    var toSay;
+
+    if (lang == "ru") {
+        toSay ="Меня зовут " + name;
+    }
+    else if (lang == "de") {
+        toSay ="Ich heisse " + name;
+    }
+    else if (lang == "en") {
+        toSay ="My name is " + name;
+    }
+
+    return toSay;
+}
+function sayIDontUnderstand (lang, text) {
+    var toSay;
+    if (lang == "ru") {
+        if (!text) {
+            toSay ="Я не расслышала комманду";
+        }
+        else{
+            toSay ="Я не расслышала и поняла только " + text;
+        }
+    }
+    else if (lang == "de") {
+        if (!text) {
+            toSay ="Ich habe nichts gehoert";
+        }
+        else{
+            toSay ="Ich habe gehoert nur "+ text;
+        }
+    }
+    else if (lang == "en") {
+        if (!text) {
+            toSay ="I could not hear you";
+        }
+        else{
+            toSay ="I don't understand and could hear only " + text;
+        }
+    }
+
+    return toSay;
+}
+
+function sayNoSuchRoom (lang) {
+    var toSay;
+    if (lang == 'en') {
+        toSay = getRandomPhrase(['Room not present', 'Room not found', 'You don\'t have such a room']);
+    } else
+    if (lang == 'de') {
+        toSay = getRandomPhrase(['Raum ist nicht gefunden', 'Es gibt kein Zimmer mit dem Namen', 'Man muss sagen im welchen Raum oder überall']);
+    } else
+    if (lang == 'ru') {
+        toSay = getRandomPhrase(['Комната не найдена', 'Надо сказать в какой комнате или сказать везде']);
+    } else {
+        toSay = "";
+    }
+
+    return toSay;
+}
+
+function sayNothingToDo (lang) {
+    var toSay;
+    if (lang == 'en') {
+        toSay = getRandomPhrase(['I don\'t know, what to do', 'No action defined']);
+    } else
+    if (lang == 'de') {
+        toSay = getRandomPhrase(['Ich weiß nicht, was ich machen soll', 'Aktion ist nicht definiert']);
+    } else
+    if (lang == 'ru') {
+        toSay = getRandomPhrase(['Непонятно, что делать', 'Не задано действие']);
+    } else {
+        toSay = "";
+    }
+
+    return toSay;
+}
+
+function sayNoSuchRole (lang) {
+    var toSay;
+    if (lang == 'en') {
+        toSay = getRandomPhrase(['Role not present', 'Role not found', 'You don\'t have such a device']);
+    } else
+    if (lang == 'de') {
+        toSay = getRandomPhrase(['Die Rolle ist nicht gefunden', 'Es gibt keine Rolle mit dem Namen', 'Man muss sagen womit man was machen will']);
+    } else
+    if (lang == 'ru') {
+        toSay = getRandomPhrase(['Устройство не найдено', 'Надо сказать с чем произвести действие']);
+    } else {
+        toSay = "";
+    }
+
+    return toSay;
+}
 
 if (module) {
 	module.exports = {
@@ -277,6 +438,14 @@ if (module) {
         roles:           roles,
         rolesAccusative: rolesAccusative,
         rolesGenitive:   rolesGenitive,
-        roomsDative:     roomsDative
+        roomsDative:     roomsDative,
+        getRandomPhrase: getRandomPhrase,
+        sayIDontKnow:    sayIDontKnow,
+        sayNoName:       sayNoName,
+        sayName:         sayName,
+        sayIDontUnderstand: sayIDontUnderstand,
+        sayNoSuchRoom:   sayNoSuchRoom,
+        sayNoSuchRole:   sayNoSuchRole,
+        sayNothingToDo:  sayNothingToDo
     };
 }

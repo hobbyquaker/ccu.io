@@ -4,6 +4,7 @@
     "httpsEnabled": false,
     "ioListenPortSsl": 8443,
     "useCache":true,
+    "useIPv6": false,
 
     "authentication": {
         "enabled": false,

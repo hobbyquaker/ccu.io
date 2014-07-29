@@ -1068,6 +1068,12 @@ $(document).ready(function () {
         }
         $("#ioListenPortSsl").val(ccuIoSettings.ioListenPortSsl || $("#ioListenPortSsl").attr("data-defaultval"));
 
+        if (ccuIoSettings.useIPv6) {
+            $("#v6Enabled").attr("checked", true);
+        } else {
+            $("#v6Enabled").removeAttr("checked");
+        }
+
         if (ccuIoSettings.authentication.enabled) {
             $("#authentication_enabled").attr("checked", true);
         } else {
@@ -1162,6 +1168,13 @@ $(document).ready(function () {
         } else {
             ccuIoSettings.httpEnabled = true;
         }
+
+        if ($("#v6Enabled").is(":checked")) {
+            ccuIoSettings.useIPv6 = true;
+        } else {
+            ccuIoSettings.useIPv6 = false;
+        }
+
         ccuIoSettings.ioListenPort = $("#ioListenPort").val();
         if ($("#httpsEnabled").is(":checked")) {
             ccuIoSettings.httpsEnabled = true;

@@ -33,9 +33,9 @@ settings.regahss.metaScripts = [
 
 
 var fs =        require('fs'),
-    logger =    require(__dirname+'/logger.js'),
-    binrpc =    require(__dirname+"/binrpc.js"),
-    rega =      require(__dirname+"/rega.js"),
+    logger =    require(__dirname + '/logger.js'),
+    binrpc =    require(__dirname + "/binrpc.js"),
+    rega =      require(__dirname + "/rega.js"),
     express =   require('express'),
     http =      require('http'),
     https =     require('https'),
@@ -51,8 +51,12 @@ var fs =        require('fs'),
     appSsl,
     server,
     serverSsl,
+    serverV6,
+    serverSslV6,
     io,
     ioSsl,
+    ioV6,
+    ioSslV6,
     devlogCache = [],
     notFirstVarUpdate = false,
     children = [],
@@ -82,7 +86,10 @@ if (settings.ioListenPort) {
         app.use(express.basicAuth(settings.authentication.user, settings.authentication.password));
     }
 
-    server =    require('http').createServer(app)
+    server = require('http').createServer(app);
+    if (settings.useIPv6) {
+        serverV6 = require('http').createServer(app);
+    }
 }
 
 // Create md5 hash of user and password
@@ -97,8 +104,8 @@ if (settings.ioListenPortSsl) {
     // Zertifikate vorhanden?
     try {
         options = {
-            key: fs.readFileSync(__dirname+'/cert/privatekey.pem'),
-            cert: fs.readFileSync(__dirname+'/cert/certificate.pem')
+            key:  fs.readFileSync(__dirname + '/cert/privatekey.pem'),
+            cert: fs.readFileSync(__dirname + '/cert/certificate.pem')
         };
     } catch(err) {
         logger.error(err.message);
@@ -109,6 +116,9 @@ if (settings.ioListenPortSsl) {
             appSsl.use(express.basicAuth(settings.authentication.user, settings.authentication.password));
         }
         serverSsl = require('https').createServer(options, appSsl);
+        if (settings.useIPv6) {
+            serverSslV6 = require('http').createServer(options, appSsl);
+        }
     }
 }
 
@@ -206,12 +216,7 @@ var regahss = new rega({
             logger.error("rega          ReGaHSS down");
             ccuReachable = true;
             ccuRegaUp = false;
-            if (io) {
-                io.sockets.emit("regaDown");
-            }
-            if (ioSsl) {
-                ioSsl.sockets.emit("regaDown");
-            }
+            emitEvent("regaDown");
             initExtensions();
             updateStatus();
             tryReconnect();
@@ -221,12 +226,7 @@ var regahss = new rega({
             }
             ccuReachable = false;
             ccuRegaUp = false;
-            if (io) {
-                io.sockets.emit("ccuDown");
-            }
-            if (ioSsl) {
-                ioSsl.sockets.emit("ccuDown");
-            }
+            emitEvent("ccuDown");
             initExtensions();
             updateStatus();
             tryReconnect();
@@ -253,13 +253,7 @@ function updateStatus () {
         ccuRegaData: regaReady,
         initsDone: initsDone
     }
-    if (io) {
-        io.sockets.emit("updateStatus", status);
-    }
-    if (ioSsl) {
-        ioSsl.sockets.emit("updateStatus", status);
-    }
-
+    emitEvent("updateStatus", status);
 }
 
 
@@ -273,7 +267,20 @@ if (settings.logging.enabled) {
     }
 }
 
-
+function emitEvent(msg, arg) {
+    if (io) {
+        io.sockets.emit(msg, arg);
+    }
+    if (ioSsl) {
+        ioSsl.sockets.emit(msg, arg);
+    }
+    if (ioSslV6) {
+        ioSslV6.sockets.emit(msg, arg);
+    }
+    if (ioV6) {
+        ioV6.sockets.emit(msg, arg);
+    }
+}
 
 var stats = {
     clients: 0,
@@ -305,12 +312,7 @@ if (settings.stats) {
 
 function sendEvent(arr) {
     logger.verbose("socket.io --> broadcast event "+JSON.stringify(arr))
-    if (io) {
-        io.sockets.emit("event", arr);
-    }
-    if (ioSsl) {
-        ioSsl.sockets.emit("event", arr);
-    }
+    emitEvent("event", arr);
 }
 
 function setDatapoint(id, val, ts, ack, lc) {
@@ -606,13 +608,7 @@ function loadRegaData(index, err, rebuild, triggerReload, onlyOne) {
             if (rebuild) {
                 logger.info("rega          data succesfully reloaded");
                 logger.info("socket.io --> broadcast reload");
-                if (io) {
-                    io.sockets.emit("reload");
-                }
-                if (ioSsl) {
-                    ioSsl.sockets.emit("reload");
-                }
-
+                emitEvent("reload");
             } else {
                 logger.info("rega          data succesfully loaded");
             }
@@ -627,14 +623,8 @@ function loadRegaData(index, err, rebuild, triggerReload, onlyOne) {
                 }
                 if (triggerReload) {
                     logger.info("socket.io --> broadcast reload")
-                    if (io) {
-                        io.sockets.emit("regaUp");
-                        io.sockets.emit("reload");
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("regaUp");
-                        ioSsl.sockets.emit("reload");
-                    }
+                    emitEvent("regaUp");
+                    emitEvent("reload");
                 }
 
             }
@@ -734,13 +724,7 @@ function initRpc() {
                         } else {
                             datapoints[id] = [val, timestamp, true, timestamp];
                         }
-                        if (io) {
-                            io.sockets.emit("event", event);
-                        }
-                        if (ioSsl) {
-                            ioSsl.sockets.emit("event", event);
-                        }
-
+                        emitEvent("event", event);
                     }
 
                     return "";
@@ -862,7 +846,7 @@ function restApiPost(req, res) {
             break;
         case "plain":
             res.set('Content-Type', 'text/plain');
-            res.send(response);
+            res.send((typeof response == "object" && response.hasOwnProperty("value")) ? response.value.toString() : response);
             break;
 
     }
@@ -878,7 +862,7 @@ function restApiDelayedAnswer() {
             break;
         case "plain":
             restApiDelayed.res.set('Content-Type', 'text/plain');
-            restApiDelayed.res.send(restApiDelayed.response);
+            restApiDelayed.res.send((typeof restApiDelayed.response == "object" && restApiDelayed.response.hasOwnProperty("value")) ? restApiDelayed.response.value.toString() : restApiDelayed.response);
             break;
     }
     restApiDelayed.res      = null;
@@ -927,9 +911,9 @@ function restApi(req, res) {
                 status = 200;
                 response = {id:dp};
                 if (datapoints[dp]) {
-                    response.value = datapoints[dp][0];
-                    response.ack = datapoints[dp][2];
-                    response.timestamp = datapoints[dp][1];
+                    response.value      = datapoints[dp][0];
+                    response.ack        = datapoints[dp][2];
+                    response.timestamp  = datapoints[dp][1];
                     response.lastchange = datapoints[dp][3];
                 }
                 if (regaObjects[dp]) {
@@ -955,6 +939,7 @@ function restApi(req, res) {
                 }
             }
             break;
+        case "setPlain":
         case "set":
             if (!tmpArr[1]) {
                 response = {error: "object/datapoint not given"};
@@ -966,7 +951,11 @@ function restApi(req, res) {
                 wait  = req.query.wait || 0;
             }
             if (!value) {
-                response = {error: "no value given"};
+                if (command == "setPlain") {
+                    response = "Error: no value given";
+                } else {
+                    response = {error: "no value given"};
+                }
                 wait = 0;
             } else {
                 if (value === "true") {
@@ -978,7 +967,10 @@ function restApi(req, res) {
                 }
                 setState(dp, value);
                 status = 200;
-                response = {id:dp,value:value};
+                if (command == "setPlain") {
+                    responseType = "plain";
+                }
+                response = {id: dp, value: value};
             }
             break;
         case "toggle":
@@ -989,10 +981,10 @@ function restApi(req, res) {
                 var value = datapoints[dp][0];
                 if (value === true) value = 1;
                 if (value === false) value = 0;
-                value = 1 - parseInt(value, 10);
+                value    = 1 - parseInt(value, 10);
                 setState(dp, value);
-                status = 200;
-                response = {id:dp,value:value};
+                status   = 200;
+                response = {id: dp, value: value};
             break;
         case "setBulk":
             response = [];
@@ -1044,7 +1036,7 @@ function restApi(req, res) {
             status = 200;
             break;
         default:
-            response = {error: "command "+command+" unknown"};
+            response = {error: "command " + command + " unknown"};
     }
 
     if (wait && response && response.id) {
@@ -1052,18 +1044,18 @@ function restApi(req, res) {
         restApiDelayed.response     = response;
         restApiDelayed.id           = response.id;
         restApiDelayed.res          = res;
-        restApiDelayed.timer = setTimeout(restApiDelayedAnswer, wait);
+        restApiDelayed.timer        = setTimeout(restApiDelayedAnswer, wait);
     } else {
-    switch (responseType) {
-        case "json":
-            res.json(response);
-            break;
-        case "plain":
-            res.set('Content-Type', 'text/plain');
-            res.send(response);
-            break;
+        switch (responseType) {
+            case "json":
+                res.json(response);
+                break;
+            case "plain":
+                res.set('Content-Type', 'text/plain');
+                res.send((typeof response == "object" && response.hasOwnProperty("value")) ? response.value.toString() : response);
+                break;
+        }
     }
-}
 }
 
 function initExtensions() {
@@ -1086,7 +1078,7 @@ function initWebserver() {
         }
 
         // File Uploads
-        app.use(express.bodyParser({uploadDir:__dirname+'/tmp'}));
+        app.use(express.bodyParser({uploadDir: __dirname + '/tmp'}));
         app.post('/upload', uploadParser);
 
         app.get('/api/*', restApi);
@@ -1095,16 +1087,16 @@ function initWebserver() {
         app.get('/auth/*', function (req, res) {
             res.set('Content-Type', 'text/javascript');
             if (settings.authentication.enabled) {
-                res.send("var socketSession='"+ authHash+"';");
+                res.send("var socketSession='" + authHash + "';");
             } else {
                 res.send("var socketSession='nokey';");
             }
         });
         app.get('/lang/*', function (req, res) {
             res.set('Content-Type', 'text/javascript');
-			res.send("var ccuIoLang='"+ (settings.language || 'en') +"';");
-        });    
-	}
+            res.send("var ccuIoLang='" + (settings.language || 'en') + "';");
+        });
+    }
 
     if (appSsl) {
         if (settings.useCache) {
@@ -1118,7 +1110,7 @@ function initWebserver() {
         }
 
         // File Uploads
-        appSsl.use(express.bodyParser({uploadDir:__dirname+'/tmp'}));
+        appSsl.use(express.bodyParser({uploadDir: __dirname + '/tmp'}));
         appSsl.post('/upload', uploadParser);
 
         appSsl.get('/api/*', restApi);
@@ -1126,15 +1118,15 @@ function initWebserver() {
         appSsl.get('/auth/*', function (req, res) {
             res.set('Content-Type', 'text/javascript');
             if (settings.authentication.enabledSsl) {
-                res.send("var socketSession='"+ authHash+"';");
+                res.send("var socketSession='" + authHash + "';");
             } else {
                 res.send("var socketSession='nokey';");
             }
         });
         appSsl.get('/lang/*', function (req, res) {
             res.set('Content-Type', 'text/javascript');
-			res.send("var ccuIoLang='"+ (settings.language || 'en') +"';");
-        });    
+            res.send("var ccuIoLang='" + (settings.language || 'en') + "';");
+        });
     }
 
     if (settings.authentication && settings.authentication.enabled) {
@@ -1143,24 +1135,35 @@ function initWebserver() {
 
     if (server) {
         server.listen(settings.ioListenPort);
-        logger.info("webserver     listening on port "+settings.ioListenPort);
+        logger.info("webserver     listening on port " + settings.ioListenPort);
         io = socketio.listen(server);
-        io.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
         initSocketIO(io);
     }
-
-    if (serverSsl){
-        serverSsl.listen(settings.ioListenPortSsl);
-        logger.info("webserver ssl listening on port "+settings.ioListenPortSsl);
-        ioSsl = socketio.listen(serverSsl);
-        ioSsl.set('logger', { debug: function(obj) {logger.debug("socket.io: "+obj)}, info: function(obj) {logger.debug("socket.io: "+obj)} , error: function(obj) {logger.error("socket.io: "+obj)}, warn: function(obj) {logger.warn("socket.io: "+obj)} });
-        initSocketIO(ioSsl);
-
+    if (serverV6) {
+        serverV6.listen(settings.ioListenPort, "::");
+        logger.info("webserver     listening on port ipv6 " + settings.ioListenPort);
+        ioV6 = socketio.listen(serverV6);
+        initSocketIO(ioV6);
     }
+
+    if (serverSsl) {
+        serverSsl.listen(settings.ioListenPortSsl);
+        logger.info("webserver ssl listening on port " + settings.ioListenPortSsl);
+        ioSsl = socketio.listen(serverSsl);
+        initSocketIO(ioSsl);
+        if (settings.useIPv6) {
+            ioSslV6 = socketio.listen(serverSsl, "::");
+            initSocketIO(ioSslV6);
+        }
+    }
+    if (serverSslV6) {
+        serverSslV6.listen(settings.ioListenPortSsl, "::");
+        logger.info("webserver ssl listening on port ipv6 " + settings.ioListenPortSsl);
+        ioSslV6 = socketio.listen(serverSslV6);
+        initSocketIO(ioSslV6);
+    }
+
     webserverUp = true;
-
-
-
 }
 
 function formatTimestamp() {
@@ -1360,6 +1363,21 @@ function clearRegaData() {
 }
 
 function initSocketIO(_io) {
+    _io.set('logger', {
+        debug: function(obj) {
+            logger.debug("socket.io: "+obj);
+        },
+        info: function(obj) {
+            logger.debug("socket.io: "+obj);
+        } ,
+        error: function(obj) {
+            logger.error("socket.io: "+obj);
+        },
+        warn: function(obj) {
+            logger.warn("socket.io: "+obj);
+        }
+    });
+
 	_io.configure(function () {
 
         this.set('heartbeat timeout', 25);
@@ -1449,12 +1467,7 @@ function initSocketIO(_io) {
                 } else {
                     var msg = " failed.";
                 }
-                if (io) {
-                    io.sockets.emit("ioMessage", "Update "+name+msg);
-                }
-                if (ioSsl) {
-                    ioSsl.sockets.emit("ioMessage", "Update "+name+msg);
-                }
+                emitEvent("ioMessage", "Update " + name + " " + msg);
             });
         });
 
@@ -1463,40 +1476,20 @@ function initSocketIO(_io) {
             settings.updateSelfRunning = true;
             logger.info("ccu.io        starting "+path);
             var updateProcess = childProcess.fork(path);
-            if (io) {
-                io.sockets.emit("ioMessage", "Update started. Please be patient...");
-            }
-            if (ioSsl) {
-                ioSsl.sockets.emit("ioMessage", "Update started. Please be patient...");
-            }
+            emitEvent("ioMessage", "Update started. Please be patient...");
             updateProcess.on("close", function (code) {
                 settings.updateSelfRunning = false;
                 if (code == 0) {
                     logger.info("ccu.io        update done. restarting...");
                     if (os.platform().match(/^win/) && fs.existsSync(__dirname + "/restart_ccu_io.bat")) {
-                        if (io) {
-                            io.sockets.emit("ioMessage", "CCU.IO runs as windows service. Use Restart in the Windows menu.");
-                        }
-                        if (ioSsl) {
-                            ioSsl.sockets.emit("ioMessage", "CCU.IO runs as windows service. Use Restart in the Windows menu.");
-                        }
+                        emitEvent("ioMessage", "CCU.IO runs as windows service. Use Restart in the Windows menu.");
                     } else {
-                        if (io) {
-                            io.sockets.emit("ioMessage", "Update done. Restarting...");
-                        }
-                        if (ioSsl) {
-                            ioSsl.sockets.emit("ioMessage", "Update done. Restarting...");
-                        }
+                        emitEvent("ioMessage", "Update done. Restarting...");
                         childProcess.fork(__dirname + "/ccu.io-server.js", ["restart"]);
                     }
                 } else {
                     logger.error("ccu.io        update failed.");
-                    if (io) {
-                        io.sockets.emit("ioMessage", "Error: update failed.");
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("ioMessage", "Error: update failed.");
-                    }
+                    emitEvent("ioMessage", "Error: update failed.");
                 }
 
             });
@@ -1510,28 +1503,13 @@ function initSocketIO(_io) {
             backupProcess.on("message", function (msg) {
                 fileName = msg;
             });
-            if (io) {
-                io.sockets.emit("ioMessage", "Backup started. Please be patient...");
-            }
-            if (ioSsl) {
-                ioSsl.sockets.emit("ioMessage", "Backup started. Please be patient...");
-            }
+            emitEvent("ioMessage", "Backup started. Please be patient...");
             backupProcess.on("close", function (code) {
                 if (code == 0) {
-                    if (io) {
-                        io.sockets.emit("readyBackup", fileName);
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("readyBackup", fileName);
-                    }
+                    emitEvent("readyBackup", fileName);
                 } else {
                     logger.error("ccu.io        Backup failed.");
-                    if (io) {
-                        io.sockets.emit("ioMessage", "Error: Backup failed.");
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("ioMessage", "Error: Backup failed.");
-                    }
+                    emitEvent("ioMessage", "Error: Backup failed.");
                 }
             });
         });
@@ -1544,28 +1522,14 @@ function initSocketIO(_io) {
             backupProcess.on("message", function (msg) {
                 fileName = msg;
             });
-            if (io) {
-                io.sockets.emit("ioMessage", "Snapshot started. Please be patient...");
-            }
-            if (ioSsl) {
-                ioSsl.sockets.emit("ioMessage", "Snapshot started. Please be patient...");
-            }
+            emitEvent("ioMessage", "Snapshot started. Please be patient...");
             backupProcess.on("close", function (code) {
                 if (code == 0) {
-                    if (io) {
-                        io.sockets.emit("readySnapshot", fileName);
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("readySnapshot", fileName);
-                    }
+                    emitEvent("readySnapshot", fileName);
                 } else {
+                    emitEvent("readySnapshot", fileName);
                     logger.error("ccu.io        Snapshot failed.");
-                    if (io) {
-                        io.sockets.emit("ioMessage", "Error: Snapshot failed.");
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("ioMessage", "Error: Snapshot failed.");
-                    }
+                    emitEvent("ioMessage", "Error: Snapshot failed.");
                 }
             });
         });
@@ -1576,39 +1540,19 @@ function initSocketIO(_io) {
             var backupProcess = childProcess.fork(path, [fileName]);
             var fileName = "";
 
-            if (io) {
-                io.sockets.emit("ioMessage", "Apply backup started. Please be patient...");
-            }
-            if (ioSsl) {
-                ioSsl.sockets.emit("ioMessage", "Apply backup started. Please be patient...");
-            }
+            emitEvent("ioMessage", "Apply backup started. Please be patient...");
             backupProcess.on("close", function (code) {
                 if (code == 0) {
-                    if (io) {
-                        io.sockets.emit("applyReady", "Apply backup done. Restart CCU.IO");
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("applyReady", "Apply backup done. Restart CCU.IO");
-                    }
+                    emitEvent("applyReady", "Apply backup done. Restart CCU.IO");
                 } else {
                     logger.error("ccu.io        Apply backup failed.");
-                    if (io) {
-                        io.sockets.emit("applyError", "Error: Backup failed.");
-                    }
-                    if (ioSsl) {
-                        ioSsl.sockets.emit("applyError", "Error: Backup failed.");
-                    }
+                    emitEvent("applyError", "Error: Backup failed.");
                 }
             });
         });
 
         socket.on('refreshAddons', function () {
-            if (io) {
-                io.sockets.emit("refreshAddons");
-            }
-            if (ioSsl) {
-                ioSsl.sockets.emit("refreshAddons");
-            }
+            emitEvent("refreshAddons");
         });
 
         socket.on('reloadData', function () {
@@ -2442,7 +2386,7 @@ function stop() {
             delete io.server ;
         }
     } catch (e) {
-        logger.error("ccu.io        something went wrong while terminating webserver: "+e)
+        logger.error("ccu.io        something went wrong while terminating webserver: " + e);
     }
 
     try {
@@ -2452,7 +2396,27 @@ function stop() {
             delete ioSsl.server;
         }
     } catch (e) {
-        logger.error("ccu.io        something went wrong while terminating ssl webserver: "+e)
+        logger.error("ccu.io        something went wrong while terminating ssl webserver: " + e);
+    }
+
+    try {
+        if (ioV6 && ioV6.server) {
+            logger.info("ccu.io        closing http V6 server");
+            ioV6.server.close();
+            delete ioV6.server;
+        }
+    } catch (e) {
+        logger.error("ccu.io        something went wrong while terminating V6 webserver: " + e);
+    }
+
+    try {
+        if (ioSslV6 && ioSslV6.server) {
+            logger.info("ccu.io        closing https V6 server");
+            ioSslV6.server.close();
+            delete ioSslV6.server;
+        }
+    } catch (e) {
+        logger.error("ccu.io        something went wrong while terminating V6 ssl webserver: " + e);
     }
 
     try {
@@ -2462,17 +2426,17 @@ function stop() {
             delete childScriptEngine;
         }
     } catch (e) {
-        logger.error("ccu.io        something went wrong while terminating script-engine: "+e)
+        logger.error("ccu.io        something went wrong while terminating script-engine: " + e);
     }
 
 
     for (var adapter in childrenAdapter) {
-        logger.info("ccu.io        killing adapter "+adapter);
+        logger.info("ccu.io        killing adapter " + adapter);
         try {
             childrenAdapter[adapter].process.kill();
             delete childrenAdapter[adapter];
         } catch (e) {
-            logger.error("ccu.io        something went wrong while terminating adapters: "+e)
+            logger.error("ccu.io        something went wrong while terminating adapters: " + e);
         }
     }
 
