@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*actual Version: 1.0.44*
+*actual Version: 1.0.45*
 
 ## Documentation
 
@@ -34,6 +34,16 @@ visit http://ccu.io/ or http://dashui.ccu.io/ru/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.45 [2014.07.29]
+* (Bluefox) fix error in MegaD driver.,
+* (Bluefox) add utils to deb and windows package,
+* (thorque) Adding getState, setState, setObject, delObject as part of the Script… ,
+* (Bluefox) Fix error in gismeteo adapter,
+* (BlueEssi) Denon adapter - complete revision,
+* (thorque) First version of the surveillance station adapter. ,
+* (Bluefox) improve textCommands,
+* (Bluefox) ipv6 support
 
 ### 1.0.44 [2014.07.18]
 * (Bluefox) if no CCU IP, make ccu.io still working

@@ -1,6 +1,6 @@
 {
 	"name":      "ccu.io",
-	"version":   "1.0.44",
+	"version":   "1.0.45",
 	"platforms": "windows, linux, macOS",
 	"hardware":  "RaspberryPi, PC, Mac",
 	"description": {
@@ -9,14 +9,14 @@
 		"ru": "ccu.io"
 	},
     "whatsNew" : [
-        "(Bluefox) if no CCU IP, make ccu.io still working",
-        "(Bluefox) new adapter help module adapter-init.js",
-        "(Bluefox) owfs adapter: write support, expand owfs for not only temperature",
-        "(Bluefox) fix crash of OWM adapter",
-        "(Bluefox) add roomba IDs",
-        "(Bluefox) allow localhost in settings, but warn.",
-        "(Bluefox) support in textCommand : switch [Device] in [Room] on/off",
-        "(Sandomor) some small fixes for mysql adapter"
+        "(Bluefox) fix error in MegaD driver.",
+        "(Bluefox) add utils to deb and windows package",
+        "(thorque) Adding getState, setState, setObject, delObject as part of the Script… ",
+        "(Bluefox) Fix error in gismeteo adapter",
+        "(BlueEssi) Denon adapter - complete revision",
+        "(thorque) First version of the surveillance station adapter. ",
+        "(Bluefox) improve textCommands",
+        "(Bluefox) ipv6 support"
     ]
 
 }

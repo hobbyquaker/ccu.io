@@ -142,7 +142,7 @@ module.exports = function(grunt) {
                             'regascripts/*',
                             'www/ccu.io/**/*',
                             'www/lib/**/*',
-                            'utils/*'
+                            'utils/*',
                             'www/index.html',
                             '*.json',
                             '*.js',
