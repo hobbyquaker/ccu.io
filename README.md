@@ -36,13 +36,13 @@ visit http://ccu.io/ or http://dashui.ccu.io/ru/
 ## Changelog
 
 ### 1.0.45 [2014.07.29]
-* (Bluefox) fix error in MegaD driver.,
-* (Bluefox) add utils to deb and windows package,
-* (thorque) Adding getState, setState, setObject, delObject as part of the Script… ,
-* (Bluefox) Fix error in gismeteo adapter,
-* (BlueEssi) Denon adapter - complete revision,
-* (thorque) First version of the surveillance station adapter. ,
-* (Bluefox) improve textCommands,
+* (Bluefox) fix error in MegaD driver
+* (Bluefox) add utils to deb and windows package
+* (thorque) Adding getState, setState, setObject, delObject as part of the Script
+* (Bluefox) Fix error in gismeteo adapter
+* (BlueEssi) Denon adapter - complete revision
+* (thorque) First version of the surveillance station adapter
+* (Bluefox) improve textCommands
 * (Bluefox) ipv6 support
 
 ### 1.0.44 [2014.07.18]
