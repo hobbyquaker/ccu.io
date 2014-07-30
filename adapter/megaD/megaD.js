@@ -153,7 +153,7 @@ ccu_socket.on('event', function (obj) {
 
     var val = obj[1];
 
-    logger.info ("adapter megaD  try to control " + dev.name + ", port " + port + " with " + val);
+    logger.info ("adapter megaD  try to control " + devices[dev].name + ", port " + port + " with " + val);
 
     if (val === "false" || val === false) { val = 0; }
     if (val === "true"  || val === true)  { val = 1; }
