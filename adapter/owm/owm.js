@@ -82,25 +82,29 @@ process.on('SIGTERM', function () {
 
 
 function analyzeResult(result) {
-    var curTimestamp     = result["dt"];
-    var convertedTime    = new Date(curTimestamp * 1000);
-    var curTemp          = result["main"]["temp"];
-    var curHumidity      = result["main"]["humidity"];
-    var curPressure      = result["main"]["pressure"];
-    var curWindSpeed     = result["wind"]["speed"];
-    var curWindDirection = result["wind"]["deg"];
-    var curClouds        = result["clouds"]["all"];
-
-    logInfo("got data with timestamp: "+convertedTime.toString());
-    logInfo("received data (temp: "+curTemp+", humidity: "+curHumidity+", pressure: "+curPressure+")");
-
-    socket.emit("setState", [owmSettings.firstId + 2, curTemp]);
-    socket.emit("setState", [owmSettings.firstId + 3, curHumidity]);
-    socket.emit("setState", [owmSettings.firstId + 4, curPressure]);
-
-    socket.emit("setState", [owmSettings.firstId + 5, curWindSpeed]);
-    socket.emit("setState", [owmSettings.firstId + 6, result["wind"]["deg"]]);
-    socket.emit("setState", [owmSettings.firstId + 7, curClouds]);
+	try {
+	    var curTimestamp     = result["dt"];
+	    var convertedTime    = new Date(curTimestamp * 1000);
+	    var curTemp          = result["main"]["temp"];
+	    var curHumidity      = result["main"]["humidity"];
+	    var curPressure      = result["main"]["pressure"];
+	    var curWindSpeed     = result["wind"]["speed"];
+	    var curWindDirection = result["wind"]["deg"];
+	    var curClouds        = result["clouds"]["all"];
+	
+	    logInfo("got data with timestamp: "+convertedTime.toString());
+	    logInfo("received data (temp: " + curTemp + ", humidity: " + curHumidity + ", pressure: " + curPressure+")");
+	
+	    socket.emit("setState", [owmSettings.firstId + 2, curTemp]);
+	    socket.emit("setState", [owmSettings.firstId + 3, curHumidity]);
+	    socket.emit("setState", [owmSettings.firstId + 4, curPressure]);
+	
+	    socket.emit("setState", [owmSettings.firstId + 5, curWindSpeed]);
+	    socket.emit("setState", [owmSettings.firstId + 6, result["wind"]["deg"]]);
+	    socket.emit("setState", [owmSettings.firstId + 7, curClouds]);
+	} catch (e) {
+		logWarning(e.toString());
+	}
 }
 
 function getValues() {
