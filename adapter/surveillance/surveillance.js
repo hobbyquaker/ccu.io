@@ -9,7 +9,6 @@ var logger =    require(__dirname+'/../../logger.js'),
     Synology =  require('node-synology-surveillance');
 
 var syno = null;
-var cam_ids = [];
 var configured_cams = {}
 var datapoints = {}, objects = {};
 var surveillanceSettings = settings.adapters.surveillance.settings;
@@ -55,43 +54,39 @@ function handle_events(){
         if (obj[0] == surveillanceSettings.firstId+200){
             var action = (obj[1] == 1)? "start": "stop";
             for (var i in configured_cams.ids){
-                syno.surveillance.recording.record({cameraId: configured_cams.ids[i].id, action: action}, function(err, data){
-                    if (err){
-                        logger.err(err);
-                    }else{
-                        logger.info("adapter surveillance    camera ["+configured_cams.ids[i].id+"] "
-                            +action+"s recording ("+data.success+").");
-                    }
-                });
+                handle_recording(configured_cams.ids[i].id, action);
             }
         }
 
         if (obj[0] > surveillanceSettings.firstId && obj[0] < (surveillanceSettings.firstId + 200)) {
             for (var i in configured_cams.ids) {
                 if (obj[0] == configured_cams.ids[i].enabled_id) {
-
-                    if (obj[1] == 1){
-                        logger.info("enable");
-                        syno.surveillance.camera.enable({cameraIds: configured_cams.ids[i].id}, function(err, data){
-                            if (err){
-                                logger.err(err);
-                            }else{
-                                logger.info("adapter surveillance    camera ["+configured_cams.ids[i].id+"] "
-                                    +"was enabled ("+data.success+").");
-                            }
-                        });
-                    }else{
-                        syno.surveillance.camera.disable({cameraIds: configured_cams.ids[i].id}, function(err, data){
-                            if (err){
-                                logger.err(err);
-                            }else{
-                                logger.info("adapter surveillance    camera ["+configured_cams.ids[i].id+"] "
-                                    +"was disabled ("+data.success+").");
-                            }
-                        });
-                    }
+                    action = (obj[1] == 1) ? "enable" : "disable";
+                    handle_enabling(configured_cams.ids[i].id, action);
                 }
             }
+        }
+    });
+}
+
+function handle_recording(camera_id, action){
+    syno.surveillance.recording.record({cameraId: camera_id, action: action}, function(err, data){
+        if (err){
+            logger.err("adapter surveillance    "+err);
+        }else{
+            logger.info("adapter surveillance    camera ["+camera_id+"] "
+                +action+"s recording ("+data.success+").");
+        }
+    });
+}
+
+function handle_enabling(camera_id, action){
+    syno.surveillance.camera[action]({cameraIds: camera_id}, function(err, data){
+        if (err){
+            logger.err("adapter surveillance    "+err);
+        }else{
+            logger.info("adapter surveillance    camera ["+camera_id+"] "
+                +"was "+action+"d ("+data.success+").");
         }
     });
 }
@@ -133,11 +128,12 @@ function initialize(){
             stop();
         }else {
             var cams = data.data.cameras;
+            configured_cams.ids = [];
             for (var x in cams) {
                 var cam = cams[x];
 
-                cam_ids.push(cam.id);
-                configured_cams.ids = [{id: cam.id, enabled_id :surveillanceSettings.firstId + (x * 20 + 2)}];
+                logger.info("adapter surveillance     setting up camera ["+cam.id+"]: "+ cam.name );
+                configured_cams.ids.push({id: cam.id, enabled_id :surveillanceSettings.firstId + (x * 20 + 2)});
                 setObject(surveillanceSettings.firstId + (x * 20 + 1), {
                     Name: "surveilance.camera." + cam.id + ".name",
                     TypeName: "VARDP",
@@ -205,9 +201,12 @@ function initialize(){
                     }
                 });
 
+
+
             }
         }
     });
+
 
     setObject(surveillanceSettings.firstId + 200, {
         Name: "surveilance.camera.action",
