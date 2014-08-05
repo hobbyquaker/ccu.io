@@ -410,9 +410,9 @@ $(document).ready(function () {
 
         for (var i = 0; i < data.length; i++) {
             var addon = data[i];
-            if (addon == "lib" || addon == "ccu.io" || addon == "index.html") { continue; }
+            if (addon == "lib" || addon == "ccu.io" || addon == "index.html" || addon.indexOf(".mp3") != -1) { continue; }
 
-            socket.emit("readJsonFile", "www/"+addon+"/io-addon.json", function(meta) {
+            socket.emit("readJsonFile", "www/" + addon + "/io-addon.json", function(meta) {
 
                 if (meta) {
                     var hp = meta.urlHomepage.match(/[http|https]:\/\/(.*)/);
@@ -663,13 +663,13 @@ $(document).ready(function () {
         }
         buildIndexData(anon);
     });
-
-
-
-
-
-
-
+    
+    $('#binrpc_listenIp').keyup(function() {
+        var val = $(this).val();
+        if (val == "localhost" || val == "127.0.0.1") {
+            alert(translateWord("Localhost can be used only if runs on CCU2 or on LXCCU directly "));
+        }    
+    });
 
     /*
      $("#grid_log").jqGrid({
@@ -994,7 +994,7 @@ $(document).ready(function () {
 
 
     var addonInstall = {    
-        "dashui":           "https://github.com/ioBroker/DashUI/archive/master.zip",
+        "dashui":           "https://github.com/hobbyquaker/DashUI/archive/master.zip",
         "slimui":           "https://github.com/hobbyquaker/SlimUI/archive/master.zip",
         "yahui":            "https://github.com/hobbyquaker/yahui/archive/master.zip",
         "eventlist":        "https://github.com/GermanBluefox/CCU-IO.Eventlist/archive/master.zip",
@@ -1067,6 +1067,12 @@ $(document).ready(function () {
             $("#httpsEnabled").removeAttr("checked");
         }
         $("#ioListenPortSsl").val(ccuIoSettings.ioListenPortSsl || $("#ioListenPortSsl").attr("data-defaultval"));
+
+        if (ccuIoSettings.useIPv6) {
+            $("#v6Enabled").attr("checked", true);
+        } else {
+            $("#v6Enabled").removeAttr("checked");
+        }
 
         if (ccuIoSettings.authentication.enabled) {
             $("#authentication_enabled").attr("checked", true);
@@ -1162,6 +1168,13 @@ $(document).ready(function () {
         } else {
             ccuIoSettings.httpEnabled = true;
         }
+
+        if ($("#v6Enabled").is(":checked")) {
+            ccuIoSettings.useIPv6 = true;
+        } else {
+            ccuIoSettings.useIPv6 = false;
+        }
+
         ccuIoSettings.ioListenPort = $("#ioListenPort").val();
         if ($("#httpsEnabled").is(":checked")) {
             ccuIoSettings.httpsEnabled = true;

@@ -15,7 +15,7 @@ var ccuWords = {
     "CCU.IO available Version:" : {"en": "CCU.IO available Version:", "de": "Verfügbare CCU.IO Version:", "ru": "Доступная версия CCU.IO"},
     "update"            : {"en": "update",               "de": "update",              "ru": "обновить"},
     "check"             : {"en": "check",                "de": "prüfen",              "ru": "проверить"},
-    "CCU reachable:"    : {"en": "CCU reachable:",       "de": "CCU erreichbar:",     "ru": "CCU полключена:"},
+    "CCU reachable:"    : {"en": "CCU reachable:",       "de": "CCU erreichbar:",     "ru": "CCU подключена:"},
     "ReGa Up:"          : {"en": "ReGa Up:",             "de": "ReGa erreichbar:",    "ru": "ReGa запущена:"},
     "ReGa Data loaded:" : {"en": "ReGa Data loaded:",    "de": "ReGa-Data geladen:",  "ru": "Данные ReGa загружены:"},
     "RPC Inits:"        : {"en": "RPC Inits:",           "de": "RPC Inits:",          "ru": "RPC Inits:"},
@@ -100,7 +100,7 @@ var ccuWords = {
     "mode"              : {"en": "mode",                  "de": "Modus",              "ru": "Режим"},
     "period"            : {"en": "period",                "de": "Period",             "ru": "Период"},
     "Install Addon"     : {"en": "Install Addon",         "de": "Addon installieren", "ru": "Установить дополнение"},
-    "reload"            : {"en": "reload",                "de": "neu laden",          "ru": "обновить"},
+    "reload"            : {"en": "reload",                "de": "neu laden",          "ru": "перезапуск"},
     "configure"         : {"en": "configure",             "de": "konfigurieren",      "ru": "настроить"},
     "periodical"        : {"en": "periodical",            "de": "periodisch",         "ru": "периодичный"},
     "Timestamp"         : {"en": "Timestamp",             "de": "Zeitstempel",        "ru": "Время"},
@@ -178,5 +178,11 @@ var ccuWords = {
         "en": "CCU.IO runs as windows service. Use Restart in the Windows menu.",
         "de": "CCU.IO ist als Windows-Service gestartet. Über Restart im Windows-Menu kann man Service neu starten.",
         "ru": "CCU.IO запущен, как Windows сервис. Используйте Restart в Windows меню."
+    },
+    "Localhost can be used only if runs on CCU2 directly" : {
+        "en": "Localhost can be used only if runs on CCU2 directly",
+        "de": "Localhost kann nur benutzt werden, falls CCU.IO direkt auf CCU2 läuft",
+        "ru": "Localhost не имеет смысла. Введите адрес хоста, где запущена CCU.IO"
     }
+    
 };

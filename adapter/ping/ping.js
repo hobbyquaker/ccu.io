@@ -156,16 +156,21 @@ function pollIp(ip) {
     }
 
     if (curIP != null) {
-        logger.verbose("adapter ping  polling ip "+curIP);
-        ping.sys.probe(curIP, function(isAlive){
-            if (!isAlive) {
-                logger.verbose("adapter ping  result for "+curIP+" is UNRECHABLE");
-                setState("PING."+curIP.replace(/\./g,"_")+".STATE",  false);
-            } else {
-                logger.verbose("adapter ping  result for "+curIP+" is ALIVE");
-                setState("PING."+curIP.replace(/\./g,"_")+".STATE",  true);
-            }
-        });
+        logger.verbose("adapter ping  polling ip " + curIP);
+        try {
+	        ping.sys.probe(curIP, function(isAlive){
+	            if (!isAlive) {
+	                logger.verbose("adapter ping  result for "+curIP+" is UNRECHABLE");
+	                setState("PING."+curIP.replace(/\./g,"_")+".STATE",  false);
+	            } else {
+	                logger.verbose("adapter ping  result for "+curIP+" is ALIVE");
+	                setState("PING."+curIP.replace(/\./g,"_")+".STATE",  true);
+	            }
+	        });
+        } catch(e)
+        {
+            logger.error("adapter ping  error by probe of " + curIP + ": " + e);
+        }
         setTimeout (pollIp, 5000, curIP);
     }
 }

@@ -1,6 +1,6 @@
 {
 	"name":      "ccu.io",
-	"version":   "1.0.42",
+	"version":   "1.0.45",
 	"platforms": "windows, linux, macOS",
 	"hardware":  "RaspberryPi, PC, Mac",
 	"description": {
@@ -9,8 +9,14 @@
 		"ru": "ccu.io"
 	},
     "whatsNew" : [
-        "(Bluefox) improve textCommands adapter",
-        "(Bluefox) change load path for DashUI"
+        "(Bluefox) fix error in MegaD driver.",
+        "(Bluefox) add utils to deb and windows package",
+        "(thorque) Adding getState, setState, setObject, delObject as part of the Script… ",
+        "(Bluefox) Fix error in gismeteo adapter",
+        "(BlueEssi) Denon adapter - complete revision",
+        "(thorque) First version of the surveillance station adapter. ",
+        "(Bluefox) improve textCommands",
+        "(Bluefox) ipv6 support"
     ]
 
 }

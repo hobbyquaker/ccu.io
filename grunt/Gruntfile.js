@@ -20,7 +20,7 @@ module.exports = function(grunt) {
         lineending: {               // Task
             dist: {                   // Target
                 options: {              // Target options
-                    eol: 'cr',
+                    eol: 'lf',
                     overwrite: true
                 },
                 files: [
@@ -142,6 +142,7 @@ module.exports = function(grunt) {
                             'regascripts/*',
                             'www/ccu.io/**/*',
                             'www/lib/**/*',
+                            'utils/*',
                             'www/index.html',
                             '*.json',
                             '*.js',
@@ -249,6 +250,7 @@ module.exports = function(grunt) {
             },
             all: [ "../*.js",
                 "../scripts/*.js",
+                "../utils/*",
                 "../adapter/**/*.js",
                 "Gruntfile.js",
                 '!../speech.js',
