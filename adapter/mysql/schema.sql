@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `datapoints` (
   `val` text NOT NULL,
   `ack` tinyint(1) NOT NULL,
   `timestamp` datetime NOT NULL,
-  `lastchange` datetime NOT NULL,
+  `lastchange` datetime,
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -13,28 +13,28 @@ CREATE TABLE IF NOT EXISTS `events` (
   `val` text NOT NULL,
   `ack` tinyint(1) NOT NULL,
   `timestamp` datetime NOT NULL,
-  `lastchange` datetime NOT NULL,
+  `lastchange` datetime,
   KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `objects` (
   `id` int(11) NOT NULL,
-  `parent` int(11) NOT NULL,
+  `parent` int(11),
   `name` varchar(255) NOT NULL,
-  `type` varchar(255) NOT NULL,
-  `info` varchar(255) NOT NULL,
-  `hssType` varchar(255) NOT NULL,
-  `address` varchar(255) NOT NULL,
-  `interface` varchar(255) NOT NULL,
-  `operations` int(11) NOT NULL,
-  `chnDirection` int(11) NOT NULL,
-  `chnType` varchar(255) NOT NULL,
-  `chnLabel` varchar(255) NOT NULL,
-  `valueMin` varchar(255) NOT NULL,
-  `valueMax` varchar(255) NOT NULL,
-  `valueUnit` varchar(255) NOT NULL,
-  `valueType` int(11) NOT NULL,
-  `valueSubType` int(11) NOT NULL,
+  `type` varchar(255),
+  `info` varchar(255),
+  `hssType` varchar(255),
+  `address` varchar(255),
+  `interface` varchar(255),
+  `operations` int(11),
+  `chnDirection` int(11),
+  `chnType` varchar(255),
+  `chnLabel` varchar(255),
+  `valueMin` varchar(255),
+  `valueMax` varchar(255),
+  `valueUnit` varchar(255),
+  `valueType` int(11),
+  `valueSubType` int(11),
   `valueList` text NOT NULL,
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
