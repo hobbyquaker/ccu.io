@@ -811,7 +811,7 @@ $(document).ready(function () {
                     ise_id: obj[0],
                     type: (regaObjects[obj[0]] ? regaObjects[obj[0]].TypeName : ""),
                     name: (regaObjects[obj[0]] ? regaObjects[obj[0]].Name : ""),
-                    parent: (regaObjects[obj[0]] && regaObjects[obj[0]].Parent ? regaObjects[regaObjects[obj[0]].Parent].Name : ""),
+                    parent: ((regaObjects[obj[0]] && regaObjects[obj[0]].Parent && regaObjects[regaObjects[obj[0]].Parent]) ? regaObjects[regaObjects[obj[0]].Parent].Name : ""),
                     value: obj[1],
                     timestamp: obj[2],
                     ack: obj[3],
