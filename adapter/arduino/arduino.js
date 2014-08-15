@@ -3,7 +3,7 @@
      *      07'2014 Bluefox
      *      Lets control the MegaD-328 over ethernet (http://www.ab-log.ru/smart-house/ethernet/megad-328)
      *
-     *      Version 0.1
+     *      Version 0.2
      *
      *      The device has N ports.
      *      To read the state of all ports call
@@ -121,12 +121,12 @@ adapter.onEvent = function (id, value, ts, dir) {
         value = parseFloat(value);
     }
 
-    if (devices[dev].ports[port].digital && value !== true && value !== false) {
+    if (devices[dev].ports[port].digital && value !== true && value !== false && value !== "CLICK" && value !== "LCLICK") {
         adapter.warn("invalid control value " + value + ". Value for digital port must be 0/false or 1/true");
     }
 
     if (devices[dev].ports[port].digital) {
-        sendCommand(dev, port, value ? "ON" : "OFF");
+        sendCommand(dev, port, (value == "CLICK" || value == "LCLICK") ? value : (value ? "ON" : "OFF"));
     } else {
         value = (value - devices[dev].ports[port].offset) / devices[dev].ports[port].factor * 256;
         value = value.toFixed(2);
