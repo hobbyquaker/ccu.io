@@ -30,7 +30,7 @@ var devices    = [],
 var simulate = "AIPout=156.5&AIHout=56.8&AITout=25.4&AILux=12345&AIT1=12.5&AIT2=45.8&AIT3=89.7&DI0=0&DI1=1&DI2=0&DI3=1&DO4=0&DO5=1&DO6=0&DO7=1&AIErr=0";
 
 function sendCommand (dev, port, value) {
-    var data  = port + '=' + value;
+    var data  = port + '=' + value + '&' + port + '=STATUS';
 
     var options = {
         host: devices[dev].ip,
@@ -52,11 +52,7 @@ function sendCommand (dev, port, value) {
             adapter.info('Response "' + xmldata + '"');
 
             // Set state only if positive response from megaD
-                if (devices[dev].ports[port].digital) {
-                    adapter.setState(devices[dev].ports[port].ccu.DPs.LEVEL, value ? true : false);
-                } else {
-                    adapter.setState(devices[dev].ports[port].ccu.DPs.LEVEL, value);
-                }
+            processPortsState(dev, xmldata)
         });
     }).on('error', function(e) {
         adapter.warn("Got error by post request " + e.message);
