@@ -113,9 +113,9 @@ function createAdapter(name, onEvent) {
             this.socket.emit("setObject", id, obj, callback);
         };
         
-        this.setState = function (id, val) {
+        this.setState = function (id, val, ack) {
 			this.logger.verbose("adapter " + this.logName + " setState " + id + " " + val);
-            this.socket.emit("setState", [id, val, null, true]);
+            this.socket.emit("setState", [id, val, null, ack === undefined ? false : ack]);
         };
 
         this.getState = function (id, callback) {

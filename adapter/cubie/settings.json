@@ -4,6 +4,7 @@
     "settings": {
         "interval": 60000,
         "deviceName": "Cubie1",
+        "cpuTemperature": "/sys/devices/platform/sunxi-i2c.0/i2c-0/0-0034/temp1_input",
         "gpio": {
             "22": {
                 "direction": "in"

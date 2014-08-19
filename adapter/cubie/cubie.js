@@ -513,7 +513,7 @@ function getMemUsage() {
 
 function getValues() {
     try {
-        var temp = fs.readFileSync("/sys/devices/platform/sunxi-i2c.0/i2c-0/0-0034/temp1_input").toString();
+        var temp = fs.readFileSync(adapterSettings.cpuTemperature || "/sys/devices/platform/sunxi-i2c.0/i2c-0/0-0034/temp1_input").toString();
         var loadavg = fs.readFileSync("/proc/loadavg").toString().split(" ");
         temp = parseFloat(temp) / 1000;
         temp = temp.toFixed(1);
