@@ -35,6 +35,12 @@ visit http://ccu.io/ or http://dashui.ccu.io/ru/
 
 ## Changelog
 
+### 1.0.46 [2014.08.19]
+* (Bluefox) fix getState of adapter-init.js
+* (mrMuppet) fix ping for freeBsd
+* (Bluefox) fix events update in ccu.io web
+* (Bluefox) modify mysql schema.Some fields nullable
+
 ### 1.0.45 [2014.07.29]
 * (Bluefox) fix error in MegaD driver
 * (Bluefox) add utils to deb and windows package

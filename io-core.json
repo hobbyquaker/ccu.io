@@ -10,7 +10,7 @@
 	},
     "whatsNew" : [
         "(Bluefox) fix getState of adapter-init.js",
-        "(Bluefox) fix ping for freeBsd",
+        "(mrMuppet) fix ping for freeBsd",
         "(Bluefox) fix events update in ccu.io web",
         "(Bluefox) modify mysql schema.Some fields nullable"
     ]
