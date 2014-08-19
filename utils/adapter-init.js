@@ -125,9 +125,9 @@ function createAdapter(name, onEvent) {
                 if (!obj ||
                     (typeof obj != "object") ||
                     obj[0] === undefined) {
-                    callback(id, obj[0], obj[1], obj[2], obj[3]);
-                } else {
                     callback(id);
+                } else {
+                    callback(id, obj[0], obj[1], obj[2], obj[3]);
                 }
 	    	});
         };

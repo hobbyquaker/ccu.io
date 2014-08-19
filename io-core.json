@@ -1,6 +1,6 @@
 {
 	"name":      "ccu.io",
-	"version":   "1.0.45",
+	"version":   "1.0.46",
 	"platforms": "windows, linux, macOS",
 	"hardware":  "RaspberryPi, PC, Mac",
 	"description": {
@@ -9,14 +9,10 @@
 		"ru": "ccu.io"
 	},
     "whatsNew" : [
-        "(Bluefox) fix error in MegaD driver.",
-        "(Bluefox) add utils to deb and windows package",
-        "(thorque) Adding getState, setState, setObject, delObject as part of the Script… ",
-        "(Bluefox) Fix error in gismeteo adapter",
-        "(BlueEssi) Denon adapter - complete revision",
-        "(thorque) First version of the surveillance station adapter. ",
-        "(Bluefox) improve textCommands",
-        "(Bluefox) ipv6 support"
+        "(Bluefox) fix getState of adapter-init.js",
+        "(Bluefox) fix ping for freeBsd",
+        "(Bluefox) fix events update in ccu.io web",
+        "(Bluefox) modify mysql schema.Some fields nullable"
     ]
 
 }
