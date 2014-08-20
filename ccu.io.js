@@ -382,6 +382,7 @@ function setDatapoint(id, val, ts, ack, lc) {
 }
 
 function tryReconnect() {
+    if (settings.ccuIp != '0.0.0.0') {
     if (regahss && regahss.options && regahss.options.ccuIp) {
     	if (regahss.options.ccuIp == "0.0.0.0") {
         	logger.warn("ccu.io        invalid CCU ip address " + regahss.options.ccuIp);
@@ -414,6 +415,7 @@ function tryReconnect() {
             }
         });
     }
+  }
 
 }
 
