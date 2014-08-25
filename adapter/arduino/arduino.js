@@ -221,11 +221,11 @@ function processPortState (_dev, _port, value) {
 
             if (devices[_dev].ports[_port].digital) {
                 adapter.info("detected new state for " + devices[_dev].ip + "[" + _port + "]: " + value + ' (old value ' + oldValue + ')');
-                adapter.setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, value);
+                adapter.setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, value, true);
             } else {
                 var f = value * devices[_dev].ports[_port].factor + devices[_dev].ports[_port].offset;
                 adapter.info("detected new value for " + devices[_dev].ip + "[" + _port + "]: " + value + ", calc state " + f + ' (old value ' + oldValue + ')');
-                adapter.setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, f);
+                adapter.setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, f, true);
             }
         //}
     }
@@ -283,7 +283,7 @@ function restApi(req, res) {
             if (devices[_dev].ports[_port].digital) {
                 devices[_dev].ports[_port].ccu.value = val;
                 adapter.info("" + devices[_dev].name + " reported new state for port " + _port + " - " + devices[_dev].ports[_port].ccu.value);
-                adapter.setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, val);
+                adapter.setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, val, true);
             }
             res.set('Content-Type', 'text/plain');
             res.send('OK');
