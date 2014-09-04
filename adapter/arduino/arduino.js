@@ -237,10 +237,16 @@ function pollStatus (dev) {
 
 // Process http://ccu.io:8085/?Pname=0
 function restApi(req, res) {
+   // analyse /?DI1=1&DI2=0&DO3=0
     var parts = req.url.split("?");
+   var ports;
     if (parts.length == 2) {
-        parts = parts[1].split('=');
-    }
+      ports = parts[1].split('&');
+    } else {
+        res.set('Content-Type', 'text/plain');
+        res.send('Error: invalid format. Expected string like "?DI1=1&DI2=0&DO3=0"');
+        return;   
+   }
     var path = req.params[0];
     var _devs = path.split('/');
     var _dev = null;
@@ -251,47 +257,57 @@ function restApi(req, res) {
             break;
         }
     }
+   
     if (_dev === null) {
         res.set('Content-Type', 'text/plain');
         res.send('Error: unknown device ip "' + req.connection.remoteAddress + '"');
         return;
     }
-    if (parts.length == 2) {
-        var _port = parts[0];
-        if (devices[_dev] && devices[_dev].ports[_port]) {
-
+   
+   var errors = '';
+   for (var j = 0; j < ports.length; j++) {
+      parts = ports[j].split('=');
+      if (parts.length == 2) {
+         var _port = parts[0];
+         if (devices[_dev] && devices[_dev].ports[_port]) {
             var val = parts[1];
             if (val == "ON") {
-                val = true;
+               val = true;
             }
             if (val == "OFF") {
-                val = false;
+               val = false;
             }
             if (val === "true") {
-                val = true;
+               val = true;
             }
             if (val === "false") {
-                val = false;
+               val = false;
             }
             if (val == "1") {
-                val = true;
+               val = true;
             }
             if (val == "0") {
-                val = false;
+               val = false;
             }
             // If digital port
             if (devices[_dev].ports[_port].digital) {
-                devices[_dev].ports[_port].ccu.value = val;
-                adapter.info("" + devices[_dev].name + " reported new state for port " + _port + " - " + devices[_dev].ports[_port].ccu.value);
-                adapter.setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, val, true);
+               devices[_dev].ports[_port].ccu.value = val;
+               adapter.info("" + devices[_dev].name + " reported new state for port " + _port + " - " + devices[_dev].ports[_port].ccu.value);
+               adapter.setState(devices[_dev].ports[_port].ccu.DPs.LEVEL, val, true);
             }
-            res.set('Content-Type', 'text/plain');
-            res.send('OK');
-            return;
-        }
-    }
-    res.set('Content-Type', 'text/plain');
-    res.send('Error: invalid input "' + req.url + '". Expected /?Px=0');
+         }
+      } else {
+         errors += (errors ? ', ' : '') + 'Cannot parse "' + ports[j] + '"';
+      }
+   }
+   
+   if (errors) {
+      res.set('Content-Type', 'text/plain');
+      res.send('Error: invalid input "' + req.url + '". Expected /?DOx=0&DOy=1.<br>' + errors);
+   } else {
+      res.set('Content-Type', 'text/plain');
+      res.send('OK');
+   }   
 }
 
 function arduinoInit () {
