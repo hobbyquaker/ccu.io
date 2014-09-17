@@ -621,6 +621,10 @@ function displayDates() {
         }
         setState(idCalEventCount, todayEventcounter);
         setState(idCalEventsJson, JSON.stringify(noFormatDates));
+    } else {
+        setState(idCalEvents, "");
+        setState(idCalEventCount = 0);
+        setState(idCalEventsJson , "");
     }
 
     //Am Ende schauen ob Events vorbei sind
