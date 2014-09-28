@@ -2,10 +2,11 @@
  *      CCU.IO iCal Adapter
  *      12'2013 vader722
  *
- *      Version 1.1
+ *      Version 1.2
  *
  *      + checking predefined Events and set variable when desired
  *      + hiding Event when desired
+ *      + clearing variables when there are no Events
  */
 
 var settings = require(__dirname+'/../../settings.js');
