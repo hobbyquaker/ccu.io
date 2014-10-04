@@ -1,12 +1,13 @@
 CCU.IO
 ======
 
-*actual Version: 1.0.46*
+*actual Version: 1.0.47*
 
 ## Documentation
 
 visit http://ccu.io/ or http://dashui.ccu.io/ru/
 
+Actual the development is almost stopped, because of new project ioBroker.
 
 ## Todo/Roadmap (unsortiert)
 
@@ -34,6 +35,9 @@ visit http://ccu.io/ or http://dashui.ccu.io/ru/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.47 [2014.10.04]
+* (vader722) iCal: clear variable when events.count = 0
 
 ### 1.0.46 [2014.08.19]
 * (Bluefox) fix getState of adapter-init.js
