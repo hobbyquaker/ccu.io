@@ -1788,6 +1788,7 @@ function setObject(id, obj) {
  
     if (obj.Value) {
         datapoints[obj.Name] = obj.Value;
+        delete obj.Value;
     }
     ccu_socket.emit("setObject", id, obj);
 }
