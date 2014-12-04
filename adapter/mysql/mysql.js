@@ -68,7 +68,7 @@ socket.on('event', function (obj) {
                 name = regaObjects[obj[0]].Name;
             }
 
-            var sql = "REPLACE INTO datapoints (id, val, ack, timestamp, lastchange) VALUES('"+obj[0]+"', '"+obj[1]+"', "+(obj[3]?"true":"false")+", '"+obj[2]+"', ";
+            var sql = "REPLACE INTO datapoints (id, val, ack, timestamp, lastchange) VALUES('"+obj[0]+"', '"+escapeQuote(obj[1])+"', "+(obj[3]?"true":"false")+", '"+obj[2]+"', ";
             if(obj[4] ==   null ) {
               sql = sql + "null);";
               } else {
@@ -101,7 +101,7 @@ socket.on('event', function (obj) {
                     }
                 }
 
-                var sql = "INSERT INTO events (id, name, val, ack, timestamp, lastchange) VALUES('"+obj[0]+"', '"+name+"', '"+obj[1]+"', "+(obj[3]?"true":"false")+", '"+obj[2]+"', '"+obj[4]+"');";
+                var sql = "INSERT INTO events (id, name, val, ack, timestamp, lastchange) VALUES('"+obj[0]+"', '"+name+"', '"+escapeQuote(obj[1])+"', "+(obj[3]?"true":"false")+", '"+obj[2]+"', '"+obj[4]+"');";
                 connection.query(sql, function(err) {
                     if (err) {
                         logger.error("adapter mysql INSERT INTO events " + err)
@@ -275,7 +275,7 @@ function updateDatapoints() {
 
 function escapeQuote(txt) {
     if (typeof txt == "string") {
-        return txt.replace(/'/, "\'");
+        return txt.replace(/'/, "\\'");
     } else {
         return txt;
     }
