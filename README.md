@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*actual Version: 1.0.47*
+*actual Version: 1.0.48*
 
 ## Documentation
 
@@ -35,6 +35,9 @@ Actual the development is almost stopped, because of new project ioBroker.
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.48 [2014.12.14]
+* (vader722) iCal: support of compressed files
 
 ### 1.0.47 [2014.10.04]
 * (vader722) iCal: clear variable when events.count = 0
