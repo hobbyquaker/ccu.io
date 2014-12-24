@@ -1244,20 +1244,25 @@ $(document).ready(function () {
     }
 
     function editAdapterSettings(adapter) {
-        $("#adapter_name").html(adapter);
+        $("#adapter_name").html("");
         $("#adapter_loading").show();
         $("#adapter_overview").hide();
         $("#adapter_config").hide();
 
 
         socket.emit("readFile", "adapter-"+adapter+".json", function (data) {
-            try {
+
+            $("#adapter_name").html(adapter);
+
+            if (typeof data === "object") {
                 $("#adapter_config_json").html(JSON.stringify(data, null, "    "));
-            } catch (e) {
+                currentAdapterSettings = data;
+            } else {
                 $("#adapter_config_json").html("{}");
+                currentAdapterSettings = {};
                 showMessage("Error: reading adapter config - invalid JSON");
             }
-            currentAdapterSettings = data;
+
             socket.emit("readRawFile", "adapter/"+adapter+"/settings.html", function (content) {
                 $("#adapter_loading").hide();
                 $("#adapter_config").show();
@@ -1276,10 +1281,15 @@ $(document).ready(function () {
     }
 
     function saveAdapterSettings() {
-        var adapter = $("#adapter_name").html();
         try {
             var adapterSettings = JSON.parse($("#adapter_config_json").val());
             ccuIoSettings.adapters[adapter] = adapterSettings;
+
+            var adapter = $("#adapter_name").html();
+            if (adapter == "") {
+                showMessage("Error: adapter_name empty");
+                return false;
+            }
 
             socket.emit("writeAdapterSettings", adapter, adapterSettings, function () {
                 showMessage(adapter + " " + translateWord("settings saved."));
