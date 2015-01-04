@@ -1,0 +1,150 @@
+<table style="font-size: 12px">
+    <tr>
+        <td>
+            Enabled:
+        </td>
+        <td>
+            <select id="mqtt_enabled">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Host:</td>
+        <td><input id="mqtt_settings_host" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Port:</td>
+        <td><input id="mqtt_settings_port" type="text"/></td>
+    </tr>
+    <!--
+    <tr>
+      <td>SSL:</td>
+      <td>
+          <select id="mqtt_settings_ssl">
+              <option value="false">false</option>
+              <option value="true">true</option>
+          </select>
+      </td>
+  </tr>
+
+   <tr>
+       <td>User:</td>
+       <td><input id="mqtt_settings_user" type="text"/></td>
+   </tr>
+   <tr>
+       <td>Pass:</td>
+       <td><input id="mqtt_settings_pass" type="text"/></td>
+   </tr> -->
+    <tr>
+        <td>Prefix:</td>
+        <td><input id="mqtt_settings_prefix" type="text"/></td>
+    </tr>
+    <tr>
+        <td>Retain:</td>
+        <td>
+            <select id="mqtt_settings_retain">
+                <option value="false">false</option>
+                <option value="true">true</option>
+            </select>
+        </td>
+    </tr>
+    <!--
+    <tr>
+        <td>Payload:</td>
+        <td>
+            <select id="mqtt_settings_payload">
+                <option value="json">json</option>
+                <option value="plain">plain</option>
+            </select>
+        </td>
+    </tr>
+    -->
+
+</table>
+
+<script type="text/javascript">
+
+    if (currentAdapterSettings.enabled) {
+        $("#mqtt_enabled option[value='false']").removeAttr("selected");
+        $("#mqtt_enabled option[value='true']").attr("selected", true);
+    } else {
+        $("#mqtt_enabled option[value='true']").removeAttr("selected");
+        $("#mqtt_enabled option[value='false']").attr("selected", true);
+    }
+
+    $("#mqtt_enabled").change(function () {
+        currentAdapterSettings.enabled = ($("#mqtt_enabled option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+
+    $("#mqtt_settings_host").val(currentAdapterSettings.settings.host);
+
+    $("#mqtt_settings_host").change(function () {
+        currentAdapterSettings.settings.host = $("#mqtt_settings_host").val();
+        updateAdapterSettings();
+    });
+
+    $("#mqtt_settings_port").val(currentAdapterSettings.settings.port);
+
+    $("#mqtt_settings_port").change(function () {
+        currentAdapterSettings.settings.port = $("#mqtt_settings_port").val();
+        updateAdapterSettings();
+    });
+
+    $("#mqtt_settings_prefix").val(currentAdapterSettings.settings.prefix);
+
+    $("#mqtt_settings_prefix").change(function () {
+        currentAdapterSettings.settings.prefix = $("#mqtt_settings_prefix").val();
+        updateAdapterSettings();
+    });
+    $("#mqtt_settings_user").val(currentAdapterSettings.settings.user);
+
+    $("#mqtt_settings_user").change(function () {
+        currentAdapterSettings.settings.user = $("#mqtt_settings_user").val();
+        updateAdapterSettings();
+    });
+    $("#mqtt_settings_pass").val(currentAdapterSettings.settings.pass);
+
+    $("#mqtt_settings_pass").change(function () {
+        currentAdapterSettings.settings.pass = $("#mqtt_settings_pass").val();
+        updateAdapterSettings();
+    });
+
+    if (currentAdapterSettings.settings.ssl) {
+        $("#mqtt_settings_ssl option[value='false']").removeAttr("selected");
+        $("#mqtt_settings_ssl option[value='true']").attr("selected", true);
+    } else {
+        $("#mqtt_settings_ssl option[value='true']").removeAttr("selected");
+        $("#mqtt_settings_ssl option[value='false']").attr("selected", true);
+    }
+
+    $("#mqtt_settings_ssl").change(function () {
+        currentAdapterSettings.settings.ssl = ($("#mqtt_settings_ssl option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+
+    if (currentAdapterSettings.settings.retain) {
+        $("#mqtt_settings_retain option[value='false']").removeAttr("selected");
+        $("#mqtt_settings_retain option[value='true']").attr("selected", true);
+    } else {
+        $("#mqtt_settings_retain option[value='true']").removeAttr("selected");
+        $("#mqtt_settings_retain option[value='false']").attr("selected", true);
+    }
+
+    $("#mqtt_settings_retain").change(function () {
+        currentAdapterSettings.settings.retain = ($("#mqtt_settings_retain option:selected").val() == "false" ? false : true);
+        updateAdapterSettings();
+    });
+
+    $("#mqtt_settings_payload").change(function () {
+        currentAdapterSettings.settings.payload = $("#mqtt_settings_payloadoption:selected").val();
+        updateAdapterSettings();
+    });
+    $("#mqtt_settings_payload option").removeAttr("selected");
+    $("#mqtt_settings_payload option[value='"+currentAdapterSettings.settings.payload+"']").attr("selected", true);
+
+</script>

@@ -36,6 +36,9 @@ Actual the development is almost stopped, because of new project ioBroker.
 
 ## Changelog
 
+### 1.0.49 [2015.01.04]
+* (bluefox) mqtt: new adapter
+
 ### 1.0.48 [2014.12.14]
 * (vader722) iCal: support of compressed files
 
