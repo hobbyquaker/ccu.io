@@ -36,6 +36,10 @@ Actual the development is almost stopped, because of new project ioBroker.
 
 ## Changelog
 
+### 1.0.50 [2015.01.18]
+* (bluefox) fix homepilot adapter (rollo)
+* (bluefox) update ical npm
+
 ### 1.0.49 [2015.01.04]
 * (bluefox) mqtt: new adapter
 
