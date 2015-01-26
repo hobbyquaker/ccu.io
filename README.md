@@ -1,7 +1,7 @@
 CCU.IO
 ======
 
-*actual Version: 1.0.48*
+*actual Version: 1.0.51*
 
 ## Documentation
 
@@ -35,6 +35,10 @@ Actual the development is almost stopped, because of new project ioBroker.
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.51 [2015.01.26]
+* (bluefox) try to fix version
+* (bluefox) degrade ical npm
 
 ### 1.0.50 [2015.01.18]
 * (bluefox) fix homepilot adapter (rollo)
