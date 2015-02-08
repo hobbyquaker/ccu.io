@@ -2,7 +2,7 @@
  *   CCU.IO OWFS Adapter - owfs.js
  *
  *   Initial Version : 05. Mar 2014
- *   Current Version : 0.3.0 [17.07.2014]
+ *   Current Version : 0.3.2 [07.02.2015]
  *   
  *   Change Notes:
  *   - Initial Version 0.2.1 
@@ -59,8 +59,10 @@ function writeWire(ipID, wireID, value) {
         adapter.settings.IPs["_" + ipID].con.write(
             "/" + adapter.settings.IPs["_" + ipID].wire["_" + wireID].id + "/" + (adapter.settings.IPs["_" + ipID].wire["_" + wireID].property || "temperature"),
             value,
-            function(result) {
-                //no idea what is received here
+            function(err,result) {
+                if (err) {
+                    adapter.log("warn", "read returned error: " + err.msg);
+                }
             }
         );
     }
@@ -69,8 +71,24 @@ function writeWire(ipID, wireID, value) {
 function readWire(ipID, wireID) {
     if (adapter.settings && adapter.settings.IPs["_" + ipID].wire["_" + ipID] && adapter.settings.IPs["_" + ipID].con) {
         adapter.settings.IPs["_" + ipID].con.read("/" + adapter.settings.IPs["_" + ipID].wire["_" + wireID].id + "/" + (adapter.settings.IPs["_" + ipID].wire["_" + wireID].property || "temperature"),
-            function(result) {
-                adapter.setState(adapter.settings.IPs["_" + ipID].channelId + wireID, result);
+            function(err,result) {
+                if (err) {
+                    adapter.log("warn", "read returned error: " + err.msg);
+                } else if (result) {
+                    if (isNaN(parseFloat(result)) || (parseFloat(result) == 85)) {
+                        // TODO: do we have to check if number values are expected?
+                        // async check for possible error and return without setting DP
+                        adapter.getState(adapter.settings.IPs["_" + ipID].channelId + wireID, function (id, val) {
+                            if (!val || (Math.abs(val - parseFloat(this.newVal)) < 3)) {
+                                adapter.setState(id, this.newVal);
+                            } else {
+                                adapter.log("warn", "skip invalid value for id " + id + ": " + this.newVal);
+                            }
+                        }.bind({ newVal: result }));
+                    } else {
+                        adapter.setState(adapter.settings.IPs["_" + ipID].channelId + wireID, result);
+                    }
+                }
             }
         );
     }
@@ -102,7 +120,7 @@ function createPointsForServer(ipID) {
         adapter.createDP(
             channelId + id,
             channelId,
-            "OWFS." + adapter.settings.IPs["_" + ipID].alias + ".SENSORS." + adapter.settings.IPs["_" + ipID].wire["_" + id].alias,
+            "OWFS." + adapter.settings.IPs["_" + ipID].alias + "." + adapter.settings.IPs["_" + ipID].wire["_" + id].alias,
             true,
             {
                 "Operations": 5,
@@ -116,7 +134,7 @@ function createPointsForServer(ipID) {
     adapter.createChannel(
         channelId,
         rootId,
-        "OWFS." + adapter.settings.IPs["_" + ipID].alias + ".SENSORS",
+        "OWFS." + adapter.settings.IPs["_" + ipID].alias,
         adapter.settings.IPs["_" + ipID].sensorDPs,
         {HssType:     "1WIRE-SENSORS"}
     );
