@@ -56,40 +56,43 @@ var channelsIDs = [];
 
 function writeWire(ipID, wireID, value) {
     if (adapter.settings && adapter.settings.IPs["_" + ipID].wire["_" + ipID] && adapter.settings.IPs["_" + ipID].con) {
+        var path = "/" + adapter.settings.IPs["_" + ipID].wire["_" + wireID].id + "/" + (adapter.settings.IPs["_" + ipID].wire["_" + wireID].property || "temperature");
         adapter.settings.IPs["_" + ipID].con.write(
-            "/" + adapter.settings.IPs["_" + ipID].wire["_" + wireID].id + "/" + (adapter.settings.IPs["_" + ipID].wire["_" + wireID].property || "temperature"),
+            path,
             value,
             function(err,result) {
                 if (err) {
-                    adapter.log("warn", "read returned error: " + err.msg);
+                    // TODO: writing appears after every read and returns -90 (workaround: disable warning)
+                    //adapter.log("warn", "error writing '" + this.p + "': " + err.msg);
                 }
-            }
+            }.bind( {p: path} )
         );
     }
 }
 
 function readWire(ipID, wireID) {
     if (adapter.settings && adapter.settings.IPs["_" + ipID].wire["_" + ipID] && adapter.settings.IPs["_" + ipID].con) {
-        adapter.settings.IPs["_" + ipID].con.read("/" + adapter.settings.IPs["_" + ipID].wire["_" + wireID].id + "/" + (adapter.settings.IPs["_" + ipID].wire["_" + wireID].property || "temperature"),
+        var path = "/" + adapter.settings.IPs["_" + ipID].wire["_" + wireID].id + "/" + (adapter.settings.IPs["_" + ipID].wire["_" + wireID].property || "temperature");
+        adapter.settings.IPs["_" + ipID].con.read(path,
             function(err,result) {
                 if (err) {
-                    adapter.log("warn", "read returned error: " + err.msg);
+                    adapter.log("warn", "error reading '" + this.p + "': " + err.msg);
                 } else if (result) {
                     if (isNaN(parseFloat(result)) || (parseFloat(result) == 85)) {
                         // TODO: do we have to check if number values are expected?
                         // async check for possible error and return without setting DP
-                        adapter.getState(adapter.settings.IPs["_" + ipID].channelId + wireID, function (id, val) {
+                        adapter.getState(this.id, function (id, val) {
                             if (!val || (Math.abs(val - parseFloat(this.newVal)) < 3)) {
                                 adapter.setState(id, this.newVal);
                             } else {
                                 adapter.log("warn", "skip invalid value for id " + id + ": " + this.newVal);
                             }
-                        }.bind({ newVal: result }));
+                        }.bind( {newVal: result} ));
                     } else {
-                        adapter.setState(adapter.settings.IPs["_" + ipID].channelId + wireID, result);
+                        adapter.setState(this.id, result);
                     }
                 }
-            }
+            }.bind( {p: path, id: adapter.settings.IPs["_" + ipID].channelId + wireID} )
         );
     }
 }
