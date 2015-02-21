@@ -443,6 +443,7 @@ $(document).ready(function () {
             var url = "http://ccu.io/version.php";
             socket.emit("getUrl", url, function(res) {
                 $("#update_self_check").hide();
+                $("#update_self_check").attr("disabled", false);
                 $(".ccu-io-availversion").html(res);
                 if (compareVersion(ccuIoSettings.version, res)) {
                     $("#update_self").show().click(function () {
