@@ -814,8 +814,13 @@ function getState(id, dpType) {
 }
 
 
-function getTimestamp(id) {
-    return datapoints[id][0];
+function getTimestamp(id, dpType) {
+    var dp = datapoints[findDatapoint(id, dpType)];
+    if (dp) {
+        return dp[1];
+    } else {
+        return null;
+    }
 }
 
 function executeProgram(id, callback) {
