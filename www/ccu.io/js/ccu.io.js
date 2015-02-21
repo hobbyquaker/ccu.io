@@ -1349,15 +1349,17 @@ $(document).ready(function () {
     });
 
     function buildDevicesGrid() {
+        var newData = [];
         for (var id in regaObjects) {
             var obj = regaObjects[id];
             obj.id = id;
             obj._persistent = (obj._persistent ? "<input class='delObject' data-del-id='"+id+"' type='button' value='x'/>" : "");
             if (!obj.Parent) {
                 // FIXME Multiple usage of same IDs (datapoint-grid)
-                $("#grid_objecttree").jqGrid('addRowData', id, obj);
+                newData.push(obj);
             }
         }
+        $("#grid_objecttree").jqGrid('addRowData', 'id', newData);
         $("#grid_objecttree").trigger("reloadGrid");
     }
 
@@ -1373,11 +1375,13 @@ $(document).ready(function () {
     function buildDatapointsGrid() {
         $("#loader_message").append(translateWord("loading datapoints") + " ... <br/>");
         $datapointGrid.jqGrid("clearGridData");
+        $('#load_grid_datapoints').show();
 
         socket.emit('getDatapoints', function(obj) {
+            var newData = [];
             for (var id in obj) {
                 if (isNaN(id)) { continue; }
-                var data = {
+                newData.push({
                     id:         id,
                     name:       (regaObjects[id] ?  regaObjects[id].Name : ""),
                     address:    (regaObjects[id] ?  regaObjects[id].Address : ""),
@@ -1388,9 +1392,9 @@ $(document).ready(function () {
                     ack:        obj[id][2],
                     lastChange: (obj[id][3] == "1970-01-01 01:00:00" ? "" : obj[id][3]),
                     persistent: (regaObjects[id] && regaObjects[id]._persistent ? "<input class='delObject' data-del-id='"+id+"' type='button' value='x'/>" : "")
-                };
-                $datapointGrid.jqGrid('addRowData', id, data);
+                });
             }
+            $datapointGrid.jqGrid('addRowData', 'id', newData);
             $datapointGrid.trigger("reloadGrid");
         });
     }
