@@ -2,6 +2,7 @@
   "name": "ioBrocker.core",
   "devDependencies": {
     "grunt": "~0.4.4",
+    "grunt-cli": "~0.1.13",
     "grunt-replace": "~0.7.6",
     "grunt-contrib-compress": "~0.8.0",
     "grunt-contrib-clean": "~0.5.0",

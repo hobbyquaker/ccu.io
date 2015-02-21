@@ -1,14 +1,14 @@
 /**
  *      CCU.IO Listen Adapter
- *      01'2014 Bluefox
+ *      07'2014 Bluefox
  *
- *      Version 0.1
+ *      Version 0.3
  *
  *      This adapter receives text command in 72970 and tries to execute it.
  *      If error occurs it will be written into 72971.
  *
  *
- * Copyright (c) 2013 Bluefox dogafox@gmail.com
+ * Copyright (c) 2013-2014 Bluefox dogafox@gmail.com
  *
  * It is licensed under the Creative Commons Attribution-Non Commercial-Share Alike 3.0 license.
  * The full text of the license you can get at http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode
@@ -19,25 +19,15 @@
  * Licensees may copy, distribute, display, and perform the work and make derivative works based on it only for noncommercial purposes.
  * (Free for non-commercial use).
  */
-
-var settings = require(__dirname+'/../../settings.js');
-
-if (!settings.adapters.textCommands || !settings.adapters.textCommands.enabled) {
-    process.exit();
-}
-
-var logger   = require(__dirname + '/../../logger.js'),
-    io       = require('socket.io-client'),
-    http     = require('http'),
+var adapter  = require(__dirname + '/../../utils/adapter-init.js').Adapter("textCommands");
+var http     = require('http'),
     https    = require('https'),
-	commands = require(__dirname + '/langModel.js');
+	model    = require(__dirname + '/langModel.js');
 
-var textCommandsSettings = settings.adapters.textCommands.settings;
+adapter.settings.language = adapter.settings.language || 'de';
 
-textCommandsSettings.language = textCommandsSettings.language || 'de';
-
-var objProcess         = textCommandsSettings.firstId;
-var objError           = textCommandsSettings.firstId + 1;
+var objProcess     = adapter.firstId;
+var objError       = objProcess + 1;
 
 var regaIndex      = null;
 var regaObjects    = null;
@@ -48,324 +38,179 @@ var commandsCallbacks = {
 	'outsideTemperature' : sayOutsideTemperature,
 	'insideTemperature' :  sayInsideTemperature,
     'userDeviceControl' :  userDeviceControl,
-    'switchOnOff' :        controlLight,
-    'blindsUpDown' :       controlBlinds
-}
+    'blindsUpDown' :       controlBlinds,
+    'roleOnOff' :          controlRole,
+    'openLock' :           openLock
+};
 
-if (settings.ioListenPort) {
-	var socket = io.connect("127.0.0.1", {
-		port: settings.ioListenPort
-	});
-} else if (settings.ioListenPortSsl) {
-	var socket = io.connect("127.0.0.1", {
-		port: settings.ioListenPortSsl,
-		secure: true
-	});
-} else {
-	process.exit();
-}
-
-socket.on('connect', function () {
-    logger.info("adapter textCommands connected to ccu.io");
+adapter.onConnect = function () {
     // Fetch Data
-    socket.emit('getIndex', function(index) {
+    adapter.socket.emit('getIndex', function(index) {
         regaIndex = index;
-        socket.emit('getObjects', function(objects) {
-            logger.info("adaptr textCommands fetched regaObjects")
+        adapter.socket.emit('getObjects', function(objects) {
+            adapter.info("fetched regaObjects")
             regaObjects = objects;
         });
     });
-});
 
-socket.on('disconnect', function () {
-    logger.info("adapter textCommands disconnected from ccu.io");
-});
+};
 
-socket.on('event', function (obj) {
-    if (obj === undefined || !obj[0]) {
-        return;
-    }
-	
-	if (obj[0] == objProcess && obj[1] && !obj[3]) {
-        processCommand (obj[1]);
+adapter.onEvent = function (id, val, ts, ack) {
+ 	if (id == objProcess && val && !ack) {
+        processCommand(val);
 	}
-});
+};
 
-function stop() {
-    logger.info("adapter textCommands terminating");
-    setTimeout(function () {
-        process.exit();
-    }, 250);
+function sayIDontKnow (lang, withLang) {
+    sayIt(lang, withLang, model.sayIDontKnow(lang));
 }
 
-process.on('SIGINT', function () {
-    stop();
-});
-
-process.on('SIGTERM', function () {
-    stop();
-});
-
-function createObject(id, obj) {
-    socket.emit("setObject", id, obj);
-}
-
-function setState(id, val) {
-	logger.verbose("adapter textCommands setState "+id+" "+val);
-	socket.emit("setState", [id,val,null,true]);
-}
-
-function execProgram(id) {
-    logger.verbose("adapter textCommands execProgram "+id);
-    socket.emit("programExecute", [id]);
-}
-
-function getState(id, callback) {
-	logger.verbose("adapter textCommands getState "+id);
-	socket.emit("getDatapoint", [id], function (id, obj) {
-		callback (id, obj);
-	});
-}
-
-function getRandomPhrase (arr) {
-    if (typeof arr == "object") {
-        if (arr.length > 1) {
-            var randomNumber = Math.floor(Math.random() * arr.length);
-            if (randomNumber > arr.length - 1) {
-                randomNumber = arr.length - 1;
-            }
-            return arr[randomNumber];
-        } else {
-            return arr[0];
-        }
-    } else {
-        return arr;
-    }
-}
-
-function sayIDontKnow (lang) {
-	console.log ("I dont know");
-	if (lang == "ru") {
-		sayIt(lang,
-                getRandomPhrase(["Извините, но ", "Прошу прощения, но ", ""]) +
-                getRandomPhrase(["Я не знаю", "Нет данных"]));
-	}
-	else if (lang == "de") {
-		sayIt(lang,
-                getRandomPhrase(["Entschuldigen sie. ", "Es tut mir leid. ", ""]) +
-                getRandomPhrase(["Ich weiss nicht", "Keine Daten vorhanden"]));
-	}
-	else if (lang == "en") {
-		sayIt(lang,
-                getRandomPhrase(["I am sorry, but ", "Excus me. ", ""]) +
-                getRandomPhrase(["I don't know", "No data available"]));
-	}
-	else {
-		logger.error ("Language " + lang + " is not supported");
-	}	
-}
-
-function sayTime (lang, text, arg1, arg2, arg3) {
+function sayTime (lang, text, withLang, arg1, arg2, arg3) {
 	var d = new Date();
     var h = d.getHours();
     var m = d.getMinutes();
     if (h < 10) h = "0" + "" + h;
     if (m < 10) m = "0" + "" + m;
 
-    sayIt(lang, h + ":" + m);
+    sayIt(lang, withLang, h + ":" + m);
 }
 
-function sayName (lang, text, arg1, arg2, arg3) {
-
-    getState (72959, function (id, obj) {
-        if (!obj || obj[0] === undefined || obj[0] === null) {
-            if (lang == "ru") {
-                sayIt(lang, "Обращайся ко мне как хочешь. У меня нет имени");
-            }
-            else if (lang == "de") {
-                sayIt(lang, "Nenne mich wie du willst. Ich habe keinen Namen.");
-            }
-            else if (lang == "en") {
-                sayIt(lang, "Call me as you wish. I don't have name");
-            }
-            else {
-                logger.error ("Language " + lang + " is not supported");
-            }
-            return;
-        }
-
-        var words = (obj[0]+"").split ("/");
-        if (lang == "ru") {
-            sayIt(lang, "Меня зовут " + words[0]);
-        }
-        else if (lang == "de") {
-            sayIt(lang, "Ich heisse " + words[0]);
-        }
-        else if (lang == "en") {
-            sayIt(lang, "My name is " + words[0]);
-        }
-        else {
-            logger.error ("Language " + lang + " is not supported");
+function sayName (lang, text, withLang, arg1, arg2, arg3) {
+    adapter.getState(72959, function (id, val) {
+        if (!val) {
+            sayIt(lang, withLang, model.sayNoName(lang));
+        } else {
+            var words = val.toString().split ("/");
+            sayIt(lang, withLang, model.sayName(lang, words[0]));
         }
     });
 }
 
-function sayIt(lang, text) {
+function sayIt(lang, withLang, text) {
     if (text) {
+        adapter.info("adapter textCommands: response - '" + ((withLang ? (lang ? lang + ";" : "") : "") + text) + "'");
         // Write answer back
-        setState(objProcess, text);
+        adapter.setState(objProcess, (withLang ? (lang ? lang + ";" : "") : "") + text);
 
-        if (textCommandsSettings.sayIt) {
+        if (adapter.settings.sayIt) {
             if (lang) {
-                setState(textCommandsSettings.sayIt, lang + ";" + text);
+                adapter.setState(adapter.settings.sayIt, lang + ";" + text);
             } else {
-                setState(textCommandsSettings.sayIt, text);
+                adapter.setState(adapter.settings.sayIt, text);
             }
         }
+    } else {
+        adapter.warn("language " + lang + " not supported");
     }
 }
 
-function sayIDontUnderstand (lang, text) {
-	if (lang == "ru") {
-        if (!text) {
-            sayIt(lang, "Я не расслышала комманду");
-        }
-        else{
-            sayIt(lang, "Я не расслышала и поняла только " + text);
-        }
-	}
-	else if (lang == "de") {
-        if (!text) {
-            sayIt(lang, "Ich habe nichts gehoert");
-        }
-        else{
-            sayIt(lang, "Ich habe gehoert nur "+ text);
-        }
-	}
-	else if (lang == "en") {
-        if (!text) {
-            sayIt(lang, "I could not hear you");
-        }
-        else{
-            sayIt(lang, "I don't understand and could hear only " + text);
-        }
-	}
-	else {
-		logger.error ("Language " + lang + " is not supported");
-	}	
+function sayIDontUnderstand (lang, text, withLang) {
+    sayIt(lang, withLang, model.sayIDontUnderstand (lang, text));
 }
 
-function sayOutsideTemperature (lang, text, arg1, arg2, arg3) {
+function sayNoSuchRoom (lang, text, withLang) {
+    sayIt(lang, withLang, model.sayNoSuchRoom (lang));
+}
+
+function sayNothingToDo (lang, text, withLang) {
+    sayIt(lang, withLang, model.sayNothingToDo (lang));
+}
+
+function sayNoSuchRole (lang, text, withLang) {
+    sayIt(lang, withLang, model.sayNoSuchRole (lang));
+}
+
+function sayOutsideTemperature (lang, text, withLang, arg1, arg2, arg3) {
 	if (!arg1) {
-		sayIDontKnow (lang);
+		sayIDontKnow (lang, withLang);
 		return;
 	}
-	getState (arg1, function (id, obj) {
-		if (!obj || obj[0] === undefined || obj[0] === null) {
-			sayIDontKnow (lang);
+    adapter.getState(arg1, function (id, val) {
+		if (val === null || val === undefined) {
+			sayIDontKnow (lang, withLang);
 			return;
 		}
 
-		var t  = (obj[0]+"").replace("&deg;", "").replace(",", ".");
-		var t_ = parseFloat (t);
-		t_ = Math.round (t_);
+		var t  = val.toString().replace("&deg;", "").replace(",", ".");
+		var t_ = parseFloat(t);
+		t_ = Math.round(t_);
 		
 		if (lang == "ru") {
 			var tr = t % 10;
 			if (tr == 1)
-				sayIt(lang, " Темература на улице один градус");
+				sayIt(lang, withLang, " Темература на улице один градус");
 			else
 			if (tr >= 2 && tr <= 4)
-				sayIt(lang, " Темература на улице " + t_ + " градуса");
+				sayIt(lang, withLang, " Темература на улице " + t_ + " градуса");
 			else
-				sayIt(lang, " Темература на улице " + t_ + " градусов");
+				sayIt(lang, withLang, " Темература на улице " + t_ + " градусов");
 		}
 		else if (lang == "de") {
-			sayIt(lang, "Tempreature draussen ist " + t_ + " grad");
+			sayIt(lang, withLang, "Temperature draußen ist " + t_ + " grad");
 		}
 		else if (lang == "en") {
-			sayIt(lang, "Outside temperature is " + t_ + " gradus");
+			sayIt(lang, withLang, "Outside temperature is " + t_ + " gradus");
 		}
 		else {
-			logger.error ("Language " + lang + " is not supported");
+            adapter.error ("Language " + lang + " is not supported");
 		}	
 	});
 }
 
-function sayInsideTemperature (lang, text, arg1, arg2, arg3) {
+function sayInsideTemperature (lang, text, withLang, arg1, arg2, arg3) {
 	if (!arg1) {
-		sayIDontKnow (lang);
+		sayIDontKnow (lang, withLang);
 		return;
 	}
 
-	getState (arg1, function (id, obj) {
-		if (!obj || obj[0] === undefined || obj[0] === null) {
-			sayIDontKnow (lang);
+    adapter.getState(arg1, function (id, val) {
+		if (val === null || val === undefined) {
+			sayIDontKnow (lang, withLang);
 			return;
 		}
 	
-		var t  = (obj[0] + "").replace("&deg;", "").replace(",", ".");
-		var t_ = parseFloat (t);
-		t_ = Math.round (t_);
+		var t  = val.toString().replace("&deg;", "").replace(",", ".");
+		var t_ = parseFloat(t);
+		t_ = Math.round(t_);
 		
 		if (lang == "ru") {
 			var tr = t % 10;
 			if (tr == 1)
-				sayIt(lang, " Темература дома один градус");
+				sayIt(lang, withLang, " Темература дома один градус");
 			else
 			if (tr >= 2 && tr <= 4)
-				sayIt(lang, " Темература дома " + t_ + " градуса");
+				sayIt(lang, withLang, " Темература дома " + t_ + " градуса");
 			else
-				sayIt(lang, " Темература дома " + t_ + " градусов");
+				sayIt(lang, withLang, " Темература дома " + t_ + " градусов");
 		}
 		else if (lang == "de") {
-			sayIt(lang, "Tempreature drin ist " + t_ + " grad");
+			sayIt(lang, withLang, "Tempreature drin ist " + t_ + " grad");
 		}
 		else if (lang == "en") {
-			sayIt(lang, "Inside temperature is " + t_ + " gradus");
+			sayIt(lang, withLang, "Inside temperature is " + t_ + " gradus");
 		}
 		else {
-			logger.error ("Language " + lang + " is not supported");
+            adapter.error ("Language " + lang + " is not supported");
 		}	
 	});
 }
 
-function userDeviceControl (lang, text, arg1, arg2, arg3, ack) {
-    logger.debug ("adapter textCommands write to ID " + arg1 + " value: " + arg2)
-    setState (arg1, arg2);
+function userDeviceControl (lang, text, withLang, arg1, arg2, arg3, ack) {
+    adapter.info("write to ID " + arg1 + " value: " + arg2)
+    adapter.setState(arg1, arg2);
     if (ack) {
         if (ack[0] == '[') {
             try {
                 var obj = JSON.parse(ack);
-                sayIt(null, getRandomPhrase(obj));
+                sayIt(null, withLang, model.getRandomPhrase(obj));
             } catch(ex) {
-                logger.warn("Cannot parse acknowledge :" + ack);
-                sayIt(null, ack);
+                adapter.warn("Cannot parse acknowledge :" + ack);
+                sayIt(null, withLang, ack);
             }
         } else {
-            sayIt(null, ack);
+            sayIt(null, withLang, ack);
         }
     }
-}
-
-function userProgramExec (lang, text, arg1, arg2, arg3, ack) {
-    logger.debug ("adapter textCommands write to ID " + arg1 + " value: " + arg2)
-    execProgram (arg1);
-    if (ack) {
-        sayIt(null, ack);
-    }
-}
-
-var rooms = {
-    "livingRoom": {"ru" : "зал",          "de": "wohnzimmer",           "en": "living" },
-    "bedroom":    {"ru" : "спальн",       "de": "schlafzimmer",         "en": "bedroom" },
-    "bathroom":   {"ru" : "ванн",         "de": "bad",                  "en": "bath" },
-    "office":     {"ru" : "кабинет",      "de": "arbeitszimmer/kabinet","en": "working/office" },
-    "nursery":    {"ru" : "детск",        "de": "kinder",               "en": "kids/child/nursery" },
-    "wc":         {"ru" : "туалет",       "de": "wc",                   "en": "wc/closet" },
-    "floor":      {"ru" : "прихож",       "de": "diele/eingang/flür",   "en": "floor/enter" },
-    "kitchen":    {"ru" : "кухня/кухне",  "de": "küche",                "en": "kitchen" },
-    "everywhere": {"ru" : "везде/все/всё","de": "alle/überall",         "en": "all/everywhere" }
 }
 
 function findWord (cmdWords, word) {
@@ -377,27 +222,130 @@ function findWord (cmdWords, word) {
     return false;
 }
 
-function controlBlinds (lang, text, arg1, arg2, arg3, ack) {
-    var valPercent = null;
-    var sRoom = "";
-    var cmdWords = text.split(" ");
+function findRoom (text, lang) {
+	var sRoom = "";
+    for (var room in model.rooms) {
+        var words = model.rooms[room][lang].split("/");
+        for (var w = 0; w < words.length; w++) {
+            if (text.indexOf (words[w]) != -1) {
+                sRoom = room;
+                break;
+            }
+        }
+        if (sRoom) {
+            break;
+        }
+    }
+	return sRoom;
+}
+
+function findRole (text, lang) {
+    var sRole = "";
+    for (var role in model.roles) {
+        var words = model.roles[role][lang].split("/");
+        for (var w = 0; w < words.length; w++) {
+            if (text.indexOf (words[w]) != -1) {
+                sRole = role;
+                break;
+            }
+        }
+        if (sRole) {
+            break;
+        }
+    }
+    return sRole;
+}
+
+function findAnyNumber (text) {
+	var valPercent = null
+    // Find any number
+    var words = text.split(" ");
+    for (var w = 0; w < words.length; w++) {
+        if (words[w][0] >= '0' && words[w][0] <= '9') {
+            valPercent = parseInt(words[w]) / 100;
+            break;
+        }
+    }
+	return valPercent;
+}
+
+function getChannel (sWhat, sWhere) {
+	if (!regaIndex || !regaIndex[sWhere] || !sWhat) {
+		return null;
+	}
+    var regaList = regaIndex[sWhere];
+    var regaChannels = null;
+	if (regaList) {	
+		for (var i = 0; i < regaList.length; i++) {
+			if (regaObjects[regaList[i]] && regaObjects[regaList[i]].Name) {
+				var regaName = regaObjects[regaList[i]].Name.toLowerCase();
+				for (var lang in sWhat) {
+					var words = sWhat[lang].split("/");
+					for (var w = 0; w < words.length; w++) {
+						if (regaName.indexOf (words[w]) != -1) {
+							regaChannels = regaObjects[regaList[i]].Channels; //Array if IDs
+							break;
+						}
+					}
+					if (regaChannels) {
+						break;
+					}
+				}
+				if (regaChannels) {
+					break;
+				}
+			}
+		}
+	}
+	return regaChannels;
+}
+
+function getRoomChannel (sRoom) {
+    if (sRoom != "everywhere") {
+		return getChannel(model.rooms[sRoom], "ENUM_ROOMS");
+    }
+	return null;
+}
+
+function getRoleChannel (sRole) {
+	if (sRole != "all") {
+		return getChannel(model.roles[sRole], "ENUM_FUNCTIONS");
+    }
+	return null;
+}
+
+function controlBlinds (lang, text, withLang, arg1, arg2, arg3, ack) {
+	var valPercent = null;
+	var toSay = "";
+    var defaultRoom = "";
+    var pos = text.indexOf(";");
+    if (pos != -1) {
+        defaultRoom = text.substring(pos + 1);
+        text = text.substring(0, pos);
+    }
+
     if (lang == "ru") {
         // test operation
-        if (text.indexOf ("открыть") != -1 || text.indexOf ("подними") != -1 || text.indexOf ("открой") != -1 || text.indexOf ("поднять") != -1) {
+        if (text.indexOf ("открыть") != -1 || text.indexOf ("подними") != -1 || text.indexOf ("открой") != -1 || text.indexOf ("открою") != -1 || text.indexOf ("поднять") != -1) {
             valPercent = 1;
         }
         else
-        if (text.indexOf ("закрыть") != -1 || text.indexOf ("закрой") != -1 || text.indexOf ("опусти") != -1 || text.indexOf ("опустить") != -1) {
+        if (text.indexOf ("закрыть") != -1 || text.indexOf ("закрой") != -1 || text.indexOf ("закрою") != -1 || text.indexOf ("опусти") != -1 || text.indexOf ("опустить") != -1) {
             valPercent = 0;
         }
     }
     else if (lang == "de") {
         // test operation
-        if (text.indexOf ("aufmachen") != -1) {
+       if (text.indexOf (" auf") != -1 ||
+            text.indexOf ("hoch") != -1 ||
+            text.indexOf ("aufmachen") != -1
+            ) {
             valPercent = 1;
         }
         else
-        if (text.indexOf ("zumachen") != -1) {
+        if (text.indexOf ("zumachen") != -1 ||
+            text.indexOf (" zu") != -1 ||
+            text.indexOf ("runter") != -1) {
             valPercent = 0;
         }
     }
@@ -412,81 +360,138 @@ function controlBlinds (lang, text, arg1, arg2, arg3, ack) {
         }
     }
     else {
-        logger.error ("Language " + lang + " is not supported");
+        adapter.error("Language " + lang + " is not supported");
         return;
     }
 
-    // test room
-    for (var room in rooms) {
-        var words = rooms[room][lang].split("/");
-        for (var w = 0; w < words.length; w++) {
-            if (text.indexOf (words[w]) != -1) {
-                sRoom = room;
-                break;
-            }
-        }
-        if (sRoom) {
-            break;
-        }
+    // find room
+    var sRoom = findRoom(text, lang);
+    if (!sRoom) {
+        sRoom = defaultRoom;
     }
-
     // Find any number
-    var words = text.split(" ");
-    for (var w = 0; w < words.length; w++) {
-        if (words[w][0] >= '0' && words[w][0] <= '9') {
-            valPercent = parseInt(words[w]) / 100;
-            break;
-        }
+	var num = findAnyNumber(text);
+	if (num !== null) {
+		valPercent = num;		
+	}
+	
+	// Don't know what to do
+    if (valPercent === null) {
+        sayNothingToDo(lang, text, withLang);
+        return;
     }
+	
+    var regaRoom = null;
+    if (sRoom != "everywhere") {
+        regaRoom = getRoomChannel(sRoom, lang);
+		// Unknown room
+		if (!regaRoom) {
+			sayNoSuchRoom(lang, text, withLang);
+			return;
+		}
+    }
+	
+	var isSaid = false;
+	if (!toSay) {
+		if (lang == 'en') {
+			toSay = ((valPercent > 0.5) ? 'Open' : 'Close') +
+			' the shutter ' + 
+			model.roomsDative[sRoom][lang] + 
+			((valPercent != 0 && valPercent != 1) ? ' on ' + (valPercent * 100) + ' percent': '');
+		} else
+		if (lang == 'de') {
+			toSay = 'Mache' +
+			' die Rolladen ' + 
+			model.roomsDative[sRoom][lang] + 
+			((valPercent != 0 && valPercent != 1) ? ' auf ' + (valPercent * 100) + ' Prozent': '') +
+			((valPercent > 0.5) ? ' auf' : ' zu');
+		} else
+		if (lang == 'ru') {
+			toSay = ((valPercent > 0.5) ? 'Открываю' : 'Закрываю') +
+			' окна ' + model.roomsDative[sRoom][lang];
 
-    var regaRooms = regaIndex["ENUM_ROOMS"];
-    var regaChannels = null;
-    for (var i = 0; i < regaRooms.length; i++) {
-        if (regaObjects[regaRooms[i]] && regaObjects[regaRooms[i]].Name) {
-            var regaName = regaObjects[regaRooms[i]].Name.toLowerCase();
-            for (var lang in rooms[sRoom]) {
-                var words = rooms[sRoom][lang].split("/");
-                for (var w = 0; w < words.length; w++) {
-                    if (regaName.indexOf (words[w]) != -1) {
-                        regaChannels = regaObjects[regaRooms[i]].Channels;
-                        break;
+			if (valPercent != 0 && valPercent != 1) {
+                var nn = valPercent * 100;
+                toSay += ' на ' + valPercent * 100 + ' ';
+                if (nn > 4 && nn < 21) {
+                    toSay += 'процентов';
+                } else {
+                    nn = nn % 10;
+                    if (nn == 1) {
+                        toSay += 'процент';
+                    } else if (nn == 2 || nn == 3 || nn == 4) {
+                        toSay += 'процентa';
+                    } else {
+                        toSay += 'процентов';
                     }
                 }
-                if (regaChannels) {
-                    break;
-                }
             }
-            if (regaChannels) {
-                break;
-            }
-        }
-    }
-    if (valPercent === null) {
-        sayIDontUnderstand (lang, text);
-        return;
-    }
+		}
+	}
 
-    if (regaChannels) {
+    if (sRoom == "everywhere" && regaIndex["CHANNEL"]) {
+        for (var devs in regaIndex["CHANNEL"]) {
+            if (regaObjects[regaIndex["CHANNEL"][devs]] && regaObjects[regaIndex["CHANNEL"][devs]].HssType == "BLIND") {
+                var dev = regaObjects[regaIndex["CHANNEL"][devs]];
+                if (dev.DPs && dev.DPs["LEVEL"]) {
+					if (!isSaid) {
+						sayIt (lang, withLang, toSay);
+						isSaid = true;
+					}
+
+                    adapter.setState(dev.DPs["LEVEL"], valPercent);
+				}
+            }
+        }
+    } else
+    if (regaRoom) {
         // Try to find blinds in this room
-        for (var devs in regaChannels) {
-            if (regaObjects[regaChannels[devs]].HssType == "BLIND") {
-                var dev = regaObjects[regaChannels[devs]];
-                if (dev.DPs && dev.DPs["LEVEL"])
-                    setState (dev.DPs["LEVEL"], valPercent);
+        for (var devs in regaRoom) {
+            if (regaObjects[regaRoom[devs]].HssType == "BLIND") {
+                var dev = regaObjects[regaRoom[devs]];
+                if (dev.DPs && dev.DPs["LEVEL"]) {
+					if (!isSaid) {
+						sayIt (lang, withLang, toSay);
+						isSaid = true;
+					}
+                    adapter.setState(dev.DPs["LEVEL"], valPercent);
+				}
             }
         }
     }
-    else {
-        sayIDontUnderstand (lang, text);
-        return;
-    }
+	
+	// You dont have it in this room
+	if (!isSaid) {
+		if (lang == 'en') {
+			toSay = 'There is no blinds ' + model.roomsDative[sRoom][lang];
+		} else
+		if (lang == 'de') {
+			toSay = 'Es sind keine Rolladen ' +  model.roomsDative[sRoom][lang] + ' gefunden';
+		} else
+		if (lang == 'ru') {
+			toSay =  model.roomsDative[sRoom][lang] + ' нет жалюзей';
+		} else {
+			toSay = "";
+		}
+		
+		if (toSay) {
+			sayIt (lang, withLang, toSay);	
+		}
+	}
 }
 
-function controlLight (lang, text, arg1, arg2, arg3, ack) {
-    var valPercent = null;
-    var sRoom = "";
-    var cmdWords = text.split(" ");
+function controlRole (lang, text, withLang, arg1, arg2, arg3, ack) {
+	var valPercent = null;
+	var toSay = "";
+    var defaultRoom = "";
+    var pos = text.indexOf(";");
+    if (pos != -1) {
+        defaultRoom = text.substring(pos + 1);
+        text = text.substring(0, pos);
+    }
 
+    var cmdWords = text.split(" ");
+	
     if (lang == "ru") {
         // test operation
         if (findWord (cmdWords, "включить") || findWord (cmdWords, "включи") || findWord (cmdWords, "ключи")) {
@@ -518,96 +523,313 @@ function controlLight (lang, text, arg1, arg2, arg3, ack) {
         }
     }
     else {
-        logger.error ("Language " + lang + " is not supported");
+        adapter.error("Language " + lang + " is not supported");
         return;
     }
 
-    // test room
-    for (var room in rooms) {
-        var words = rooms[room][lang].split("/");
-        for (var w = 0; w < words.length; w++) {
-            if (text.indexOf (words[w]) != -1) {
-                sRoom = room;
-                break;
-            }
-        }
-        if (sRoom) {
-            break;
-        }
+	// find room
+    var sRoom = findRoom(text, lang);
+    if (!sRoom) {
+        sRoom = defaultRoom;
     }
 
+	// find role
+	var sRole = findRole(text, lang);
+	
     // Find any number
-    var words = text.split(" ");
-    for (var w = 0; w < words.length; w++) {
-        if (words[w][0] >= '0' && words[w][0] <= '9') {
-            valPercent = parseInt(words[w]) / 100;
-            break;
-        }
+	var num = findAnyNumber(text);
+	if (num !== null) {
+		valPercent = num;
+	}
+	
+	// Don't know what to do
+    if (valPercent === null) {
+        sayNothingToDo(lang, text, withLang);
+        return;
+    }
+	
+    var regaRoom = null;
+    if (sRoom != "everywhere") {
+        regaRoom = getRoomChannel(sRoom, lang);
+		// Unknown room
+		if (!regaRoom) {
+			sayNoSuchRoom(lang, text, withLang);
+			return;
+		}
     }
 
-    var regaRooms = regaIndex["ENUM_ROOMS"];
-    var regaChannels = null;
-    for (var i = 0; i < regaRooms.length; i++) {
-        if (regaObjects[regaRooms[i]] && regaObjects[regaRooms[i]].Name) {
-            var regaName = regaObjects[regaRooms[i]].Name.toLowerCase();
-            for (var lang in rooms[sRoom]) {
-                var words = rooms[sRoom][lang].split("/");
-                for (var w = 0; w < words.length; w++) {
-                    if (regaName.indexOf (words[w]) != -1) {
-                        regaChannels = regaObjects[regaRooms[i]].Channels;
-                        break;
+    var regaRole = null;
+    if (sRole != "all") {
+	    regaRole = getRoleChannel(sRole, lang);
+		// Unknown function/role
+		if (!regaRole) {
+			sayNoSuchRole(lang, text, withLang);
+			return;
+		}
+    }	
+	var isSaid = false;
+	if (lang == 'en') {
+		if (valPercent == 1 || valPercent === "true") {
+			toSay = "Switch on ";
+		} else
+		if (valPercent == 0 || valPercent === "false") {
+			toSay = "Switch off ";
+		} else {
+			toSay = "Set ";
+		}
+		toSay += model.rolesAccusative[sRole][lang] + ' ';
+		toSay += model.roomsDative[sRoom][lang];
+		if (valPercent != 0 && valPercent != 1 && valPercent !== "true" && valPercent !== "false") {
+			toSay += ' to ' + valPercent * 100 + ' percent';
+		}
+	} else
+	if (lang == 'de') {
+		toSay = (valPercent == 0 || valPercent == 1 || valPercent == "true" || valPercent == "false") ? "Schalte " : "Setzte ";
+		toSay += model.rolesAccusative[sRole][lang] + ' ';
+		toSay += model.roomsDative[sRoom][lang];
+		if (valPercent != 0 && valPercent != 1 && valPercent !== "true" && valPercent !== "false") {
+			toSay += ' auf ' + valPercent * 100 + ' Prozent';
+		}
+		if (valPercent == 0 || valPercent == "false") {
+			toSay = " aus";
+		} else 		
+		if (valPercent == 1 || valPercent == "true") {
+			toSay = " an";
+		}		
+	} else
+	if (lang == 'ru') {
+		if (valPercent == 1 || valPercent === "true") {
+			toSay = "Включаю ";
+		} else
+		if (valPercent == 0 || valPercent === "false") {
+			toSay = "Выключаю ";
+		} else {
+			toSay = "Устанавливаю ";
+		}
+		toSay += model.rolesAccusative[sRole][lang] + ' ';
+		toSay += model.roomsDative[sRoom][lang];
+		if (valPercent != 0 && valPercent != 1 && valPercent !== "true" && valPercent != "false") {
+            var nn = valPercent * 100;
+			toSay += ' на ' + valPercent * 100 + ' ';
+            if (nn > 4 && nn < 21) {
+                toSay += 'процентов';
+            } else {
+                nn = nn % 10;
+                if (nn == 1) {
+                    toSay += 'процент';
+                } else if (nn == 2 || nn == 3 || nn == 4) {
+                    toSay += 'процентa';
+                } else {
+                    toSay += 'процентов';
+                }
+            }
+		}
+	}
+
+    if (sRoom == "everywhere" && regaIndex["CHANNEL"]) {
+        for (var devs in regaIndex["CHANNEL"]) {
+            if (regaObjects[regaIndex["CHANNEL"][devs]]) {
+                var dev = regaObjects[regaIndex["CHANNEL"][devs]];
+				if (dev.DPs && dev.DPs["STATE"]) {
+					// Check the role
+					if (regaRole.indexOf(regaIndex["CHANNEL"][devs]) != -1) {
+						if (!isSaid) {
+							sayIt(lang, withLang, toSay);
+							isSaid = true;
+						}
+                        adapter.setState(dev.DPs["STATE"], valPercent);
+					}
+				} else
+                if (dev.DPs && dev.DPs["LEVEL"]) {
+                    // Check the role
+                    if (regaRole.indexOf(regaIndex["CHANNEL"][devs]) != -1) {
+                        if (!isSaid) {
+                            sayIt (lang, withLang, toSay);
+                            isSaid = true;
+                        }
+                        adapter.setState(dev.DPs["LEVEL"], valPercent);
                     }
                 }
-                if (regaChannels) {
-                    break;
+            }
+        }
+    } else
+    if (regaRoom) {
+        // Try to find blinds in this room
+        for (var devs in regaRoom) {
+			var dev = regaObjects[regaRoom[devs]];
+			if (dev && dev.DPs && dev.DPs["STATE"]) {
+				// Check the role
+				if (regaRole.indexOf(regaRoom[devs]) != -1) {				
+					if (!isSaid) {
+						sayIt(lang, withLang, toSay);
+						isSaid = true;
+					}
+                    adapter.setState(dev.DPs["STATE"], valPercent);
+				}
+			} else {
+                if (dev && dev.DPs && dev.DPs["LEVEL"]) {
+                    // Check the role
+                    if (regaRole.indexOf(regaRoom[devs]) != -1) {
+                        if (!isSaid) {
+                            sayIt(lang, withLang, toSay);
+                            isSaid = true;
+                        }
+                        adapter.setState(dev.DPs["LEVEL"], valPercent);
+                    }
                 }
             }
-            if (regaChannels) {
-                break;
-            }
         }
     }
-    if (valPercent === null) {
-        sayIDontUnderstand (lang, text);
-        return;
-    }
+	
+	// You dont have it in this room
+	if (!isSaid) {
+		if (lang == 'en') {
+			toSay = 'There is no ' + model.rolesGenitive[sRole][lang] + ' ' + model.roomsDative[sRoom][lang];
+		} else
+		if (lang == 'de') {
+			toSay = 'Es gibt kein' + model.rolesGenitive[sRole][lang] + ' ' + model.roomsDative[sRoom][lang];
+		} else
+		if (lang == 'ru') {
+			toSay =  model.roomsDative[sRoom][lang] + ' нет ' + model.rolesGenitive[sRole][lang];
+		} else {
+			toSay = "";
+		}
+		
+		if (toSay) {
+			sayIt (lang, withLang, toSay);	
+		}
+	}	
+}
 
-    if (regaChannels) {
-        // Try to find blinds in this room
-        for (var devs in regaChannels) {
-            if (regaObjects[regaChannels[devs]].HssType == "SWITCH") {
-                var dev = regaObjects[regaChannels[devs]];
-                if (dev.DPs && dev.DPs["STATE"])
-                    setState (dev.DPs["STATE"], valPercent);
+function openLock (lang, text, withLang, arg1, arg2, arg3, ack, rule) {
+    if (rule.value === undefined || rule.value === null || !rule.time || (new Date().getTime() - rule.time > 10000)) {
+        rule.value = null;
+        var toSay = "";
+        var defaultRoom = "";
+        var pos = text.indexOf(";");
+        if (pos != -1) {
+            defaultRoom = text.substring(pos + 1);
+            text = text.substring(0, pos);
+        }
+
+        if (lang == "ru") {
+            // test operation
+            if (text.indexOf("открыть") != -1 || text.indexOf("открой") != -1 || text.indexOf("открою") != -1) {
+                rule.value = 2;
+            }
+            else
+            if (text.indexOf("закрыть") != -1 || text.indexOf("закрой") != -1 || text.indexOf("закрою") != -1) {
+                rule.value = 0;
             }
         }
-    }
-    else {
-        sayIDontUnderstand (lang, text);
-        return;
+        else if (lang == "de") {
+            // test operation
+            if (text.indexOf (" auf") != -1 ||
+                text.indexOf ("aufmachen") != -1
+                ) {
+                rule.value = 2;
+            }
+            else
+            if (text.indexOf ("zumachen") != -1 ||
+                text.indexOf (" zu") != -1) {
+                rule.value = 0;
+            }
+        }
+        else if (lang == "en") {
+            // test operation
+            if (text.indexOf ("open") != -1) {
+                rule.value = 2;
+            }
+            else
+            if (text.indexOf ("close") != -1) {
+                rule.value = 0;
+            }
+        }
+        else {
+            adapter.error("Language " + lang + " is not supported");
+            return;
+        }
+        if (rule.value !== null) {
+            rule.time = new Date().getTime();
+            sayIt(lang, withLang, model.sayAreYouSure(lang));
+        }
+    } else {
+        var toSay = "";
+        var isYes = false;
+        var pos = text.indexOf(";");
+        if (pos != -1) {
+            defaultRoom = text.substring(pos + 1);
+            text = text.substring(0, pos);
+        }
+
+        if (lang == "ru") {
+            // test operation
+            if (text.indexOf("да") != -1 || text.indexOf("конечно") != -1 || text.indexOf("всенепременно") != -1) {
+                isYes = true;
+            }
+            else
+            if (text.indexOf("нет") != -1 || text.indexOf("отмена") != -1) {
+                isYes = false;
+            }
+        }
+        else if (lang == "de") {
+            // test operation
+            if (text.indexOf ("ja") != -1 ||
+                text.indexOf ("natürlich") != -1
+                ) {
+                isYes = true;
+            }
+            else
+            if (text.indexOf ("nein") != -1 || text.indexOf ("nicht") != -1 || text.indexOf ("abbrechen") != -1) {
+                isYes = false;
+            }
+        }
+        else if (lang == "en") {
+            // test operation
+            if (text.indexOf ("yes") != -1 || text.indexOf ("cause") != -1) {
+                isYes = true;
+            }
+            else
+            if (text.indexOf ("no") != -1 || text.indexOf ("not") != -1 || text.indexOf ("cancel") != -1) {
+                isYes = false;
+            }
+        }
+        else {
+            adapter.error("Language " + lang + " is not supported");
+            return;
+        }
     }
 }
 
 function processCommand (cmd) {
+    if (!regaIndex || !regaObjects) {
+        sayIt(adapter.settings.language, false, "Not ready");
+        return;
+    }
+    adapter.info("request  - '" + cmd + "'");
 
     var isNothingFound = true;
+    var withLang = false;
     var ix = cmd.indexOf (";");
-    var lang = textCommandsSettings.language;
+    var lang = adapter.settings.language;
     cmd = cmd.toLowerCase();
 
     if (ix != -1) {
+        withLang = true;
         lang = cmd.substring (0, ix);
         cmd = cmd.substring(ix + 1);
     }
     var cmdWords = cmd.split(" ");
-	
-	for (var i = 0; i < textCommandsSettings.rules.length; i++) {
-		var command = textCommandsSettings.rules[i];
+
+	for (var i = 0; i < adapter.settings.rules.length; i++) {
+		var command = adapter.settings.rules[i];
+        if (!model.commands[command.name]) continue;
+
 		//console.log ("Check: " + command.name);
-		var words = (commands[command.name].words) ? commands[command.name].words[lang] : null;
+		var words = (model.commands[command.name].words) ? model.commands[command.name].words[lang] : null;
 
         if (!words) {
-            words = textCommandsSettings.rules[i].words;
+            words = adapter.settings.rules[i].words;
         }
 		if (typeof (words) != "array") {
 			words = words.split(" ");
@@ -637,68 +859,47 @@ function processCommand (cmd) {
 		}
 		if (isFound) {
             isNothingFound = false;
-			console.log ("Found: " + commands[command.name].description);
+			adapter.info("Found: " + JSON.stringify(model.commands[command.name].description));
 			if (commandsCallbacks [command.name])
-				commandsCallbacks [command.name] (lang, cmd, command["arg1"], command["arg2"], command["arg3"], command["ack"]);
+				commandsCallbacks [command.name] (lang, cmd, withLang, command["arg1"], command["arg2"], command["arg3"], command["ack"]);
 			else {
                 if (command.ack) {
                     if (typeof command.ack == "object") {
-                        sayIt(lang, getRandomPhrase(command.ack[lang] || command.ack['en']));
+                        sayIt(lang, withLang, model.getRandomPhrase(command.ack[lang] || command.ack['en']));
                     } else {
-                        sayIt(lang, getRandomPhrase(command.ack));
+                        sayIt(lang, withLang, model.getRandomPhrase(command.ack));
                     }
                 } else {
-                    console.log ("No callback for " + commands[command.name].description);
+                    console.log ("No callback for " + JSON.stringify(model.commands[command.name].description));
                 }
 			}
 			break;
 		}
 	}
 
-    if (isNothingFound && textCommandsSettings.keywords) {
-        sayIDontUnderstand (lang, cmd);
+    if (isNothingFound && adapter.settings.keywords) {
+        sayIDontUnderstand (lang, cmd, withLang);
     }
 }
 
-createObject(objProcess, {
-    "Name": "TextCommand.Command",
-    "TypeName": "VARDP",
-    "DPInfo": "TextCommand",
-    "ValueMin": null,
-    "ValueMax": null,
-    "ValueUnit": "",
-    "ValueType": 20,
-    "ValueSubType": 11,
-    "ValueList": ""
-});
-
-createObject(objError, {
-    "Name": "TextCommand.Error",
-    "TypeName": "VARDP",
-    "DPInfo": "TextCommand",
-    "ValueMin": null,
-    "ValueMax": null,
-    "ValueUnit": "",
-    "ValueType": 20,
-    "ValueSubType": 11,
-    "ValueList": ""
-});
+adapter.createDP(objProcess, null, "TextCommand.Command");
+adapter.createDP(objError, null, "TextCommand.Error");
 
 // Add own commands
-if (!textCommandsSettings.rules) {
-    textCommandsSettings.rules = [];
+if (!adapter.settings.rules) {
+    adapter.settings.rules = [];
 }
 
-for (var cmd in commands) {
-    if (commands[cmd].invisible) {
+for (var cmd in model.commands) {
+    if (model.commands[cmd].invisible) {
         var obj = {
             name: cmd,
-            words: commands[cmd].words
+            words: model.commands[cmd].words
         };
-        if (commands[cmd].ack) {
-            obj.ack = commands[cmd].ack;
+        if (model.commands[cmd].ack) {
+            obj.ack = model.commands[cmd].ack;
         }
 
-        textCommandsSettings.rules.push(obj);
+        adapter.settings.rules.push(obj);
     }
 }

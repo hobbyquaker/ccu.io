@@ -1,12 +1,13 @@
 CCU.IO
 ======
 
-*actual Version: 1.0.42*
+*actual Version: 1.0.51*
 
 ## Documentation
 
 visit http://ccu.io/ or http://dashui.ccu.io/ru/
 
+Actual the development is almost stopped, because of new project ioBroker.
 
 ## Todo/Roadmap (unsortiert)
 
@@ -34,6 +35,58 @@ visit http://ccu.io/ or http://dashui.ccu.io/ru/
 * rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
 
 ## Changelog
+
+### 1.0.51 [2015.01.26]
+* (bluefox) try to fix version
+* (bluefox) degrade ical npm
+
+### 1.0.50 [2015.01.18]
+* (bluefox) fix homepilot adapter (rollo)
+* (bluefox) update ical npm
+
+### 1.0.49 [2015.01.04]
+* (bluefox) mqtt: new adapter
+
+### 1.0.48 [2014.12.14]
+* (vader722) iCal: support of compressed files
+
+### 1.0.47 [2014.10.04]
+* (vader722) iCal: clear variable when events.count = 0
+
+### 1.0.46 [2014.08.19]
+* (Bluefox) fix getState of adapter-init.js
+* (mrMuppet) fix ping for freeBsd
+* (Bluefox) fix events update in ccu.io web
+* (Bluefox) modify mysql schema.Some fields nullable
+
+### 1.0.45 [2014.07.29]
+* (Bluefox) fix error in MegaD driver
+* (Bluefox) add utils to deb and windows package
+* (thorque) Adding getState, setState, setObject, delObject as part of the Script
+* (Bluefox) Fix error in gismeteo adapter
+* (BlueEssi) Denon adapter - complete revision
+* (thorque) First version of the surveillance station adapter
+* (Bluefox) improve textCommands
+* (Bluefox) ipv6 support
+
+### 1.0.44 [2014.07.18]
+* (Bluefox) if no CCU IP, make ccu.io still working
+* (Bluefox) new adapter help module adapter-init.js
+* (Bluefox) owfs adapter: write support, expand owfs for not only temperature
+* (Bluefox) fix crash of OWM adapter
+* (Bluefox) add roomba IDs
+* (Bluefox) allow localhost in settings, but warn.
+* (Bluefox) support in textCommand : switch [Device] in [Room] on/off
+* (Sandomor) some small fixes for mysql adapter
+* (Pix) roomba adapter
+
+### 1.0.43 [2014.07.13]
+* (Eisbaeeer) Check ccu ip address "0.0.0.0"
+* (Bluefox) improve textCommands for Home Commander
+* (Bluefox) check localhost address.
+* (Bluefox) fix ping adapter.
+* (Bluefox) Fix demo-adapter  gismeteo.js
+* (Bluefox) Fix some null pointer errors in getUrl, match, readdir
 
 ### 1.0.42 [2014.07.06]
 * (Bluefox) change download link for DashUI

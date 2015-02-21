@@ -82,43 +82,51 @@ process.on('SIGTERM', function () {
 
 
 function analyzeResult(result) {
-    var curTimestamp     = result["dt"];
-    var convertedTime    = new Date(curTimestamp * 1000);
-    var curTemp          = result["main"]["temp"];
-    var curHumidity      = result["main"]["humidity"];
-    var curPressure      = result["main"]["pressure"];
-    var curWindSpeed     = result["wind"]["speed"];
-    var curWindDirection = result["wind"]["deg"];
-    var curClouds        = result["clouds"]["all"];
-
-    logInfo("got data with timestamp: "+convertedTime.toString());
-    logInfo("received data (temp: "+curTemp+", humidity: "+curHumidity+", pressure: "+curPressure+")");
-
-    socket.emit("setState", [owmSettings.firstId + 2, curTemp]);
-    socket.emit("setState", [owmSettings.firstId + 3, curHumidity]);
-    socket.emit("setState", [owmSettings.firstId + 4, curPressure]);
-
-    socket.emit("setState", [owmSettings.firstId + 5, curWindSpeed]);
-    socket.emit("setState", [owmSettings.firstId + 6, result["wind"]["deg"]]);
-    socket.emit("setState", [owmSettings.firstId + 7, curClouds]);
-
+	try {
+	    var curTimestamp     = result["dt"];
+	    var convertedTime    = new Date(curTimestamp * 1000);
+	    var curTemp          = result["main"]["temp"];
+	    var curHumidity      = result["main"]["humidity"];
+	    var curPressure      = result["main"]["pressure"];
+	    var curWindSpeed     = result["wind"]["speed"];
+	    var curWindDirection = result["wind"]["deg"];
+	    var curClouds        = result["clouds"]["all"];
+	
+	    logInfo("got data with timestamp: "+convertedTime.toString());
+	    logInfo("received data (temp: " + curTemp + ", humidity: " + curHumidity + ", pressure: " + curPressure+")");
+	
+	    socket.emit("setState", [owmSettings.firstId + 2, curTemp]);
+	    socket.emit("setState", [owmSettings.firstId + 3, curHumidity]);
+	    socket.emit("setState", [owmSettings.firstId + 4, curPressure]);
+	
+	    socket.emit("setState", [owmSettings.firstId + 5, curWindSpeed]);
+	    socket.emit("setState", [owmSettings.firstId + 6, result["wind"]["deg"]]);
+	    socket.emit("setState", [owmSettings.firstId + 7, curClouds]);
+	} catch (e) {
+		logWarning(e.toString());
+	}
 }
 
 function getValues() {
     logDebug("Checking values ...");
     var req = http.get(reqOptions, function(res) {
-    var pageData = "";
-    res.on('data', function (chunk) {
-        pageData += chunk;
-    });
-    res.on('end', function () {
-        var result = JSON.parse(pageData);
-        analyzeResult(result);
-    });
+	    var pageData = "";
+	    res.on('data', function (chunk) {
+	        pageData += chunk;
+	    });
+	    res.on('end', function () {
+	    	try {
+		        var result = JSON.parse(pageData);
+		        analyzeResult(result);
+	    	} catch (e)
+	    	{
+	    		logger.error("adapter owm    Cannot parse answer: " + pageData + " (" + e + ")");
+	    	}
+	    });
     });
 
     req.on('error', function(e) {
-    logWarning("received error: "+e.message);
+    	logWarning("received error: "+e.message);
     });
 
     req.end();

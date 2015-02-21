@@ -1788,6 +1788,7 @@ function setObject(id, obj) {
  
     if (obj.Value) {
         datapoints[obj.Name] = obj.Value;
+        delete obj.Value;
     }
     ccu_socket.emit("setObject", id, obj);
 }
@@ -1973,13 +1974,13 @@ function pollStatus() {
                 for (var u = 0; u < devs.length; u++) {
                     var n = devs[u].did - 10000;
                     if (devices[n].isState) {
-                        logger.verbose("adapter homepilot: set initial state - position " + devices[num].position);
+                        logger.verbose("adapter homepilot: set initial state - position " + devices[n].position);
                         setState(devices[n].DPs.LEVEL, (devices[n].position == 100));
-                    } else if (devices[num].isRollo) {
-                        logger.verbose("adapter homepilot: set initial state - position " + devices[num].position + ", calc state " + ((100 - devices[num].position) / 100));
+                    } else if (devices[n].isRollo) {
+                        logger.verbose("adapter homepilot: set initial state - position " + devices[n].position + ", calc state " + ((100 - devices[n].position) / 100));
                         setState(devices[n].DPs.LEVEL, (100 - devices[n].position) / 100);
                     } else {
-                        logger.verbose("adapter homepilot: set initial position " + devices[num].position + ", calc state " + (devices[num].position / 100));
+                        logger.verbose("adapter homepilot: set initial position " + devices[n].position + ", calc state " + (devices[n].position / 100));
                         setState(devices[n].DPs.LEVEL, devices[n].position / 100);
                     }
                 }

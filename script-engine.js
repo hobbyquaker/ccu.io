@@ -674,11 +674,28 @@ var scriptEngine = {
             }
         });
     },
+
     stop: function () {
         scriptEngine.logger.info("script-engine terminating");
         setTimeout(function () {
             process.exit();
         }, 250);
+    },
+
+    getState: function(id, dpType){
+        return getState(id, dpType);
+    },
+
+    setState: function(id, val, callback){
+        setState(id, val, callback) ;
+    },
+
+    setObject: function(id, obj, callback){
+        setObject(id, obj, callback);
+    },
+
+    delObject: function(id){
+        delObject(id);
     }
 }
 
@@ -939,9 +956,12 @@ process.on('SIGTERM', function () {
 });
 
 try {
-    var script = scriptEngine.fs.readFileSync(__dirname+"/scripts/global.js");
-    scriptEngine.logger.info("script-engine executing global.js");
-    eval(script.toString());
+    // Check if file exists
+    if (scriptEngine.fs.existsSync(__dirname+"/scripts/global.js")) {
+        var script = scriptEngine.fs.readFileSync(__dirname + "/scripts/global.js");
+        scriptEngine.logger.info("script-engine executing global.js");
+        eval(script.toString());
+    }
 } catch (e) {
     scriptEngine.logger.warn("script-engine global.js: "+e);
 }

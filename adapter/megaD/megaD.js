@@ -77,9 +77,9 @@ function sendCommand (dev, port, value) {
             logger.info('adapter megaD: Response "' + xmldata + '"');
 
             // Set state only if positive response from megaD
-            if (devices[dev].digital) {
+            if (devices[dev].ports[port].digital) {
                 setState(devices[dev].ports[port].ccu.DPs.LEVEL, value ? true : false);
-            } else if (devices[dev].isRollo){
+            } else if (devices[dev].ports[port].isRollo){
                 setState(devices[dev].ports[port].ccu.DPs.LEVEL, ((255 - value) / 255).toFixed(2));
             } else {
                 setState(devices[dev].ports[port].ccu.DPs.LEVEL, (value / 255).toFixed(4));
@@ -153,7 +153,7 @@ ccu_socket.on('event', function (obj) {
 
     var val = obj[1];
 
-    logger.info ("adapter megaD  try to control " + dev.name + ", port " + port + " with " + val);
+    logger.info ("adapter megaD  try to control " + devices[dev].name + ", port " + port + " with " + val);
 
     if (val === "false" || val === false) { val = 0; }
     if (val === "true"  || val === true)  { val = 1; }
