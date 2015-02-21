@@ -7,82 +7,22 @@
         "IPs": {
             "_1": {
                 "ip": "127.0.0.1",
-                "port": "3001",
+                "port": "4304",
                 "alias": "OWFS-Server1",
                 "interval": 30000,
                 "wire": {
                     "_1": {
                         "alias": "Sensor1",
                         "id": "10.C8F148010800",
-                        "family": "10",
-                        "type": "DS18S20",
                         "property": "temperature"
                     },
                     "_2": {
                         "alias": "Sensor2",
-                        "id": "10.040349010800",
-                        "family": "10",
-                        "type": "DS18S20"
+                        "id": "10.040349010800"
                     },
                     "_3": {
                         "alias": "Sensor3",
-                        "id": "10.26EC48010800",
-                        "family": "10",
-                        "type": "DS18S20"
-                    },
-                    "_4": {
-                        "alias": "Sensor4",
-                        "id": "10.DD7648010800",
-                        "family": "10",
-                        "type": "DS18S20"
-                    },
-                    "_5": {
-                        "alias": "Sensor5",
-                        "id": "10.26EC48010800",
-                        "family": "10",
-                        "type": "DS18S20"
-                    },
-                    "_6": {
-                        "alias": "Sensor6",
-                        "id": "10.26EC48010800",
-                        "family": "10",
-                        "type": "DS18S20"
-                    },
-                    "_7": {
-                        "alias": "Sensor7",
-                        "id": "10.26EC48010800",
-                        "family": "10",
-                        "type": "DS18S20"
-                    },
-                    "_8": {
-                        "alias": "Sensor8",
-                        "id": "10.26EC48010800",
-                        "family": "10",
-                        "type": "DS18S20"
-                    },
-                    "_9": {
-                        "alias": "Sensor9",
-                        "id": "10.26EC48010800",
-                        "family": "10",
-                        "type": "DS18S20"
-                    },
-                    "_10": {
-                        "alias": "Sensor10",
-                        "id": "10.26EC48010800",
-                        "family": "10",
-                        "type": "DS18S20"
-                    },
-                    "_11": {
-                        "alias": "Sensor11",
-                        "id": "10.26EC48010800",
-                        "family": "10",
-                        "type": "DS18S20"
-                    },
-                    "_12": {
-                        "alias": "Sensor12",
-                        "id": "10.26EC48010800",
-                        "family": "10",
-                        "type": "DS18S20"
+                        "id": "10.26EC48010800"
                     }
                 }
             }

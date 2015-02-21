@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "debug.js",
+  "sourceRoot": "../../src/base/",
+  "sources": [
+    "debug.coffee"
+  ],
+  "names": [],
+  "mappings": "AAAA;AAAA,MAAA,KAAA;;AAAA,EAAA,KAAA,GAAQ,OAAA,CAAQ,OAAR,CAAR,CAAA;;AAAA,EAEA,MAAM,CAAC,OAAP,GAAiB,KAAA,CAAM,MAAN,CAFjB,CAAA;AAAA"
+}
