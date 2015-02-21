@@ -2502,7 +2502,6 @@ function writeLog() {
 
 function moveLog(file) {
     logMoving[file] = true;
-    setTimeout(moveLog, 86400000);
     var ts = (new Date()).getTime() - 3600000;
     ts = new Date(ts);
 
