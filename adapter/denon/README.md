@@ -34,6 +34,8 @@ Denon adapter
 
 
 ## Changelog
+### 0.3.0
+* Implementierung einiger weiterer Befehle. Zum Beispiel ist es nun möglich über Soundmode zwischen Cinema, Music und Game zu wechseln.
 ### 0.2.0
 * Komplette Überarbeitung: Alle Anpassungen und Verbesserungen vom Onkyo-Adapter bis zur CCU.IO-Version 1.0.42 wurden übernommen.
   -Das Senden über den Adapter selbst ist nun möglich und es muss nicht die Variable Denon_Command benutzt werden. Für die Steuerung über die Homematic muss in der Homematic selbst keine Logik mehr abgebildet werden.
