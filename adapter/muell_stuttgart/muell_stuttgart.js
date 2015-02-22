@@ -4,13 +4,16 @@ var request = require('request');
 var settings = require(__dirname+'/../../settings.js');
 
 if (!settings.adapters.muell_stuttgart || !settings.adapters.muell_stuttgart.enabled) {
-    process.exit();
+    //process.exit();
 }
 
 var adapterSettings = settings.adapters.muell_stuttgart.settings;
 
-var logger =    require(__dirname+'/../../logger.js'),
-    io =        require('socket.io-client');
+var logger =    require(__dirname+'/../../logger.js');
+
+
+
+var  io =        require('socket.io-client');
 
 
 if (settings.ioListenPort) {
@@ -87,6 +90,7 @@ if (adapterSettings.bio) {
 url += wasteTypes.join("&");
 
 
+logger.info('requesting ' + url);
 request(url, function (error, response, body) {
     if (!error && response.statusCode == 200) {
 
@@ -101,7 +105,7 @@ function iCalParse(data) {
     var tmp = data.split("\n");
 
     for (var i = 0; i < tmp.length; i++) {
-        var line = tmp[i].replace(/\r/, "");
+        var line = tmp[i].replace(/\r/, "").replace(';TZID=Europe/Berlin', '');
         if (line.match(/^[A-Z-]+:/)) {
             arr[++c] = line;
         } else {
@@ -116,7 +120,6 @@ function iCalParse(data) {
     var counter = {};
 
     for (var i = 0; i < arr.length; i++) {
-
         var line, prop, content;
         var tmp = arr[i].match(/^([A-Z-]+):(.*)$/);
         line = tmp[0]; prop = tmp[1]; content = tmp[2];
