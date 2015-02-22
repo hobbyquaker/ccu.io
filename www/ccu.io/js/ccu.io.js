@@ -1,4 +1,10 @@
 var ccuIoSettings = null;
+var currentAdapterSettings;
+var adapterHtmlEdit = false;
+
+function updateAdapterSettings() {
+    $("#adapter_config_json").html(JSON.stringify(currentAdapterSettings, null, "    "));
+}
 
 function translateWord(text, lang, dictionary) {
     if (!ccuIoSettings) return text;
@@ -1250,6 +1256,7 @@ $(document).ready(function () {
         });
     }
 
+
     function editAdapterSettings(adapter) {
         $("#adapter_name").html("");
         $("#adapter_loading").show();
@@ -1261,8 +1268,10 @@ $(document).ready(function () {
 
             if (typeof data === "object") {
                 $("#adapter_config_json").html(JSON.stringify(data, null, "    "));
+                currentAdapterSettings = data;
             } else {
                 $("#adapter_config_json").html("{}");
+                currentAdapterSettings = {};
                 showMessage("Error: reading adapter config - invalid JSON");
             }
 
@@ -1273,10 +1282,12 @@ $(document).ready(function () {
                     $("#adapter_config_container").html(content);
                     $("#adapter_config_json").hide();
                     $("#adapter_config_container").show();
+                    adapterHtmlEdit = true;
                 } else {
                     $("#adapter_config_container").hide();
                     $("#adapter_config_json").show();
                     resizeGrids();
+                    adapterHtmlEdit = false;
                 }
             });
         });
@@ -1296,6 +1307,8 @@ $(document).ready(function () {
             showMessage("Error: invalid JSON");
             return false;
         }
+
+        console.log('writeAdapterSettings', adapter, ccuIoSettings.adapters[adapter]);
 
         socket.emit("writeAdapterSettings", adapter, ccuIoSettings.adapters[adapter], function () {
             showMessage(adapter + " " + translateWord("settings saved."));

@@ -1738,15 +1738,12 @@ function initSocketIO(_io) {
         });
 
         socket.on('writeAdapterSettings', function (adapter, obj, callback) {
+            if (!adapter || !obj) return;
+            var content = JSON.stringify(obj);
             var name = 'adapter-' + adapter + '.json';
             settings.adapters[adapter] = obj;
 
-            // Todo Fehler abfangen
-            var content = JSON.stringify(obj);
-            if (JSON.stringify(obj) != content) {
-                logger.warn("ccu.io        writeFile strange JSON mismatch "+name);
-            }
-            logger.verbose("socket.io <-- writeFile "+name+" "+content);
+            logger.info("socket.io <-- writeFile "+name+" "+content.substring(0,60));
             fs.exists(settings.datastorePath+name, function (exists) {
                 if (exists) {
                     fs.rename(settings.datastorePath+name, settings.datastorePath+name+".bak", function() {
