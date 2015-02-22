@@ -1,6 +1,6 @@
 {
 	"name":      "ccu.io",
-	"version":   "1.0.51",
+	"version":   "1.0.52",
 	"platforms": "windows, linux, macOS",
 	"hardware":  "RaspberryPi, PC, Mac",
 	"description": {
@@ -9,10 +9,12 @@
 		"ru": "ccu.io"
 	},
     "whatsNew" : [
-        "(Bluefox) fix getState of adapter-init.js",
-        "(mrMuppet) fix ping for freeBsd",
-        "(Bluefox) fix events update in ccu.io web",
-        "(Bluefox) modify mysql schema.Some fields nullable"
+      '(Giermann) Fix: Firefox did not re-enable Check Update button',
+      '(Giermann) Fix: script-engine/getTimestamp() returned value',
+      '(Giermann) Update OWFS adapter',
+      '(Giermann) Fix: Remove obsolete setTimeout inside moveLog',
+      '(Giermann) Fix: adapter roomba - missing settings.json',
+      '(BlueEssi) Adapter Denon: Implemented some more features, e.g. now you can switch between soundmodes cinema, music or game'
     ]
 
 }

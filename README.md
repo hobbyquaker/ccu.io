@@ -1,40 +1,29 @@
 CCU.IO
 ======
 
-*actual Version: 1.0.51*
+**Core developers are engaged in [ioBroker](http://https://github.com/ioBroker) ([Forums](http://forum.iobroker.org)), the CCU.IO-successor**
+
+
+*Latest version: 1.0.52*
+
+
 
 ## Documentation
 
-visit http://ccu.io/ or http://dashui.ccu.io/ru/
-
-Actual the development is almost stopped, because of new project ioBroker.
-
-## Todo/Roadmap (unsortiert)
-
-* Prozesse überwachen (und evtl abgestürzte Adapter/Script-Engine neu starten?)
-* Log über Weboberfläche ansehen (tail)
-* Logrotate für ccu.io.log
-* settings.html für diverse Adapter
-* Adapter: Pushover - Callbacks (Nachrichten bestätigen, callback Methode aufrufen)
-* Weboberfläche Datenpunkte anlegen, löschen
-* Weboberfläche Devices in Baumstruktur anzeigen
-* Weboberfläche Objekte neu laden wenn CCU.IO neue Objekte von Adaptern/Scripts erhalten hat
-* Adapter: ArtNet (DMX)
-* Adapter: Limitless LED
-* Adapter: iTunes
-* Adapter: Samsung SmartTV
-* Adapter: Anymote (control Google TV)
-* Adapter: Hue - Gruppensteuerung
-* Nutzungsstatistiken (welche Addons sind in welcher Version installiert, welche Adapter sind aktiviert, wie viele DashUI-Views sind definiert, wie viele Scripte werden verwendet)
-* Script-Engine Addins (von Addons "mitgebrachte" Methoden)?
-* Doku, Doku, Doku
-* CMS für Homepage?
-* CCU2-Paket für einfache Installation
-* .pkg für einfache Installation unter Mac OS X
-* BIN-RPC Implementierung vervollständigen
-* rega.js weiter ausbauen (... Variablen/Räume/Gewerke anlegen/bearbeiten/löschen/umbenennen, Geräte/Kanäle umbenennen, Favortien anlegen/bearbeiten/löschen/umbenennen, Kanäle/Variablen/Programme zu Favoriten zuordnen, ......? -> wäre notwendig für Portierung von "HQ WebUI" auf CCU.IO
+* [CCU.IO Homepage](http://ccu.io)
+* [CCU.IO Forum](http://homematic-forum.de/forum/viewforum.php?f=48)
+* [DashUI Demos](http://dashui.ccu.io)
 
 ## Changelog
+
+### 1.0.52 [2015.02.21]
+
+* (Giermann) Fix: Firefox did not re-enable Check Update button
+* (Giermann) Fix: script-engine/getTimestamp() returned value
+* (Giermann) Update OWFS adapter
+* (Giermann) Fix: Remove obsolete setTimeout inside moveLog
+* (Giermann) Fix: adapter roomba - missing settings.json
+* (BlueEssi) Adapter Denon: Implemented some more features, e.g. now you can switch between soundmodes cinema, music or game
 
 ### 1.0.51 [2015.01.26]
 * (bluefox) try to fix version
