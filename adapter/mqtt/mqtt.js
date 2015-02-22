@@ -38,11 +38,11 @@ var rx;
 //}
 
 client.on('message', function(topic, message) {
-    logger.info(topic + ' ' + message)
+    //logger.info(topic + ' ' + message)
     var tmp;
     if (tmp = topic.match(rx)) {
         var id = tmp[1];
-        logger.info(topic + ' ' + id)
+        //logger.info(topic + ' ' + id)
 
         switch (adapterSettings.payload) {
             case 'plain':
@@ -52,8 +52,11 @@ client.on('message', function(topic, message) {
                 try {
                     var msg = JSON.parse(message);
                 } catch (e) {}
+
                 if (typeof msg === 'object' && typeof msg.val !== 'undefined' && msg.from !== from) {
                     socket.emit("setState", [id, msg.val]);
+                } else if (typeof msg !== 'object') {
+                    socket.emit("setState", [id, msg]);
                 }
 
         }
@@ -97,7 +100,7 @@ socket.on('event', function (obj) {
             payload = JSON.stringify({val: val, ts: Math.floor((new Date(ts)).getTime() / 1000), ack: ack, lc: lc ? Math.floor((new Date(lc)).getTime() / 1000) : null, from: from});
     }
 
-    logger.info('> ' + topic + ' ' + payload);
+    //logger.info('> ' + topic + ' ' + payload);
 
     client.publish(topic, payload, {retain: adapterSettings.retain});
 });
