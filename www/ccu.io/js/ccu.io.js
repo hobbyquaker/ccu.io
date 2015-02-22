@@ -1,11 +1,4 @@
-var currentAdapterSettings;
 var ccuIoSettings = null;
-
-
-
-function updateAdapterSettings() {
-    $("#adapter_config_json").html(JSON.stringify(currentAdapterSettings, null, "    "));
-}
 
 function translateWord(text, lang, dictionary) {
     if (!ccuIoSettings) return text;
@@ -1263,17 +1256,13 @@ $(document).ready(function () {
         $("#adapter_overview").hide();
         $("#adapter_config").hide();
 
-
         socket.emit("readFile", "adapter-"+adapter+".json", function (data) {
-
             $("#adapter_name").html(adapter);
 
             if (typeof data === "object") {
                 $("#adapter_config_json").html(JSON.stringify(data, null, "    "));
-                currentAdapterSettings = data;
             } else {
                 $("#adapter_config_json").html("{}");
-                currentAdapterSettings = {};
                 showMessage("Error: reading adapter config - invalid JSON");
             }
 
@@ -1295,25 +1284,24 @@ $(document).ready(function () {
     }
 
     function saveAdapterSettings() {
+        var adapter = $("#adapter_name").html();
+        if (!adapter) {
+            showMessage("Error: adapter_name empty");
+            return false;
+        }
+
         try {
-            var adapterSettings = JSON.parse($("#adapter_config_json").val());
-            ccuIoSettings.adapters[adapter] = adapterSettings;
-
-            var adapter = $("#adapter_name").html();
-            if (adapter == "") {
-                showMessage("Error: adapter_name empty");
-                return false;
-            }
-
-            socket.emit("writeAdapterSettings", adapter, adapterSettings, function () {
-                showMessage(adapter + " " + translateWord("settings saved."));
-                loadAdapterSettings(adapter);
-            });
-            return true;
+            ccuIoSettings.adapters[adapter] = JSON.parse($("#adapter_config_json").val());
         } catch (e) {
             showMessage("Error: invalid JSON");
             return false;
         }
+
+        socket.emit("writeAdapterSettings", adapter, ccuIoSettings.adapters[adapter], function () {
+            showMessage(adapter + " " + translateWord("settings saved."));
+            loadAdapterSettings(adapter);
+            return true;
+        });
     }
 
     function showMessage(text, caption) {
