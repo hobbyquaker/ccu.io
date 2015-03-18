@@ -20,7 +20,8 @@ var icalSettings = settings.adapters.ical.settings;
 var logger = require(__dirname+'/../../logger.js'),
     io     = require('socket.io-client'),
     RRule  = require('rrule').RRule,
-    ical   = require('ical');
+    ical   = require('ical'),
+    ce     = require('cloneextend');
 
 var objects       = {},
 	datapoints    = {},
@@ -221,23 +222,28 @@ function checkiCal (loc, count, calName, cb) {
                             //Termine innerhalb des Zeitfensters
                             if (dates.length > 0) {
                                 for (var i = 0; i < dates.length; i++) {
+                                    // ein deep-copy clone anlegen da ansonsten das setDate&co
+                                    // die daten eines anderes Eintrages überschreiben
+                                    var ev2 = ce.clone(ev);
+
                                     //Datum ersetzen für jeden einzelnen Termin in RRule
                                     //TODO: funktioniert nur mit Terminen innerhalb eines Tages, da auch das EndDate ersetzt wird
-                                    ev.start.setDate(dates[i].getDate());
-                                    ev.start.setMonth(dates[i].getMonth());
-                                    ev.start.setFullYear(dates[i].getFullYear());
+                                    ev2.start.setDate(dates[i].getDate());
+                                    ev2.start.setMonth(dates[i].getMonth());
+                                    ev2.start.setFullYear(dates[i].getFullYear());
                                     
-                                    ev.end.setDate(dates[i].getDate());
-                                    ev.end.setMonth(dates[i].getMonth());
-                                    ev.end.setFullYear(dates[i].getFullYear());
+                                    ev2.end.setDate(dates[i].getDate());
+                                    ev2.end.setMonth(dates[i].getMonth());
+                                    ev2.end.setFullYear(dates[i].getFullYear());
+
                                     //Termin auswerten
-                                    if (ev.exdate) {
+                                    if (ev2.exdate) {
                                         //Wenn es exdate
-                                        if (ev.exdate != today) {
-                                            checkDates(ev, endpreview, today, realnow," rrule ", _calName);
+                                        if (ev2.exdate != today) {
+                                            checkDates(ev2, endpreview, today, realnow," rrule ", _calName);
                                         }
                                     } else {
-                                        checkDates(ev, endpreview, today, realnow," rrule ", _calName);
+                                        checkDates(ev2, endpreview, today, realnow," rrule ", _calName);
                                     }
                                 }
                             } else {
