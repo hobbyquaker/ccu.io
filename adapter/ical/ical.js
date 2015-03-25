@@ -43,6 +43,7 @@ var colorize         = icalSettings.colorize;
 var replaceDates     = icalSettings.replaceDates;
 var todayString      = icalSettings.todayString;
 var tomorrowString   = icalSettings.tomorrowString;
+var dayafterString   = icalSettings.dayafterString;
 var debug            = icalSettings.debug;
 var everyCalOneColor = icalSettings.everyCalOneColor;
 
@@ -51,6 +52,8 @@ var warn     = fontboldred + "<span class='icalWarn'>";
 var warn2    = "</span></span>" + fontnormalred + "<span class='icalWarn2'>";
 var prewarn  = fontboldorange + "<span class='icalPreWarn'>";
 var prewarn2 = "</span></span>" + fontnormalorange + "<span class='icalPreWarn2'>";
+var preprewarn  = prewarn;
+var preprewarn2 = prewarn2;
 var normal   = fontbold + "<span class='icalNormal'>";
 var normal2  = "</span></span>" + fontnormal + "<span class='icalNormal2'>";
 
@@ -350,7 +353,7 @@ function checkDates (ev, endpreview, today, realnow, rule, calName) {
         }
     }
 }
-function colorizeDates(date, today, tomorrow, col) {
+function colorizeDates(date, today, tomorrow, dayafter, col) {
      var result = {
          prefix: normal,
          suffix: normal2
@@ -368,6 +371,10 @@ function colorizeDates(date, today, tomorrow, col) {
         if (date.compare(tomorrow) == 0) {
             result.prefix = prewarn;
             result.suffix = prewarn2;
+        } else
+        if (date.compare(dayafter) == 0) {
+            result.prefix = preprewarn;
+            result.suffix = preprewarn2;
         } else
         //Starttermin in der Vergangenheit
         if (date.compare(today) == -1) {
@@ -590,6 +597,12 @@ function formatDate (_date, withTime) {
         year  == d.getFullYear()) {
         _class = 'ical_tomorrow';
     }
+    d.setDate(d.getDate() + 1);
+    if (day   == d.getDate() &&
+        month == (d.getMonth() + 1) &&
+        year  == d.getFullYear()) {
+        _class = 'ical_dayafter';
+    }
 
     if (replaceDates) { 
         if (_class == 'ical_today') {
@@ -597,6 +610,9 @@ function formatDate (_date, withTime) {
         }
         if (_class == 'ical_tomorrow') {
             return {text: tomorrowString + _time, _class: _class};
+        }
+        if (_class == 'ical_dayafter') {
+            return {text: dayafterString + _time, _class: _class};
         }
     }
 
@@ -672,13 +688,16 @@ function brSeparatedList(arr) {
 
     var today    = new Date();
     var tomorrow = new Date();
+    var dayafter = new Date();
     today.setHours(0,0,0,0);
     tomorrow.setDate(today.getDate() + 1);
     tomorrow.setHours(0,0,0,0);
+    dayafter.setDate(tomorrow.getDate() + 1);
+    dayafter.setHours(0,0,0,0);
 
     for (var i = 0; i < noFormatDates.length; i++) {
         var date = formatDate(noFormatDates[i]._date, true);
-        var xfix = colorizeDates(noFormatDates[i]._date, today, tomorrow, icalSettings["Calendar"][noFormatDates[i]._calName]["calColor"]);
+        var xfix = colorizeDates(noFormatDates[i]._date, today, tomorrow, dayafter, icalSettings["Calendar"][noFormatDates[i]._calName]["calColor"]);
 
         if (!first) {
             text += "<br/>";
