@@ -1,11 +1,13 @@
 CCU.IO
 ======
 
-**Core developers are engaged in [ioBroker](http://https://github.com/ioBroker) ([Forums](http://forum.iobroker.org)), the CCU.IO-successor**
+*Latest version: 1.0.52 (2015.04.03)*
 
+**Core developers are now engaged in [ioBroker](http://https://github.com/ioBroker) ([Forums](http://forum.iobroker.org)), the CCU.IO-successor**
 
-*Latest version: 1.0.52*
+**New Users**: please don't start using CCU.IO, use ioBroker instead!
 
+**CCU.IO Users**: Please consider migration to ioBroker now!
 
 
 ## Documentation
@@ -16,13 +18,17 @@ CCU.IO
 
 ## Changelog
 
-### 1.0.52 [2015.02.21]
+### 1.0.52 [2015.04.03]
 
+* (thorque) Adapter Hue: Adding support for Hue groups
+* (jens-maus) Adapter iCal: fixed a bug in the ical adapter for two events with the same name!
+* (Giermann) Fix: add missing err argument to callback function
 * (Giermann) Fix: Firefox did not re-enable Check Update button
 * (Giermann) Fix: script-engine/getTimestamp() returned value
-* (Giermann) Update OWFS adapter
+* (Giermann) Adapter OWFS: Updated node_module to version 0.2.3 and change OWFS adapter to match this new module.
+* (Giermann) Adapter OWFS: identify 85.000 as error and remove ".SENSORS" in channel name to be compatible with highcharts.
 * (Giermann) Fix: Remove obsolete setTimeout inside moveLog
-* (Giermann) Fix: adapter roomba - missing settings.json
+* (Giermann) Adapter Roomba: Fix missing settings.json
 * (BlueEssi) Adapter Denon: Implemented some more features, e.g. now you can switch between soundmodes cinema, music or game
 
 ### 1.0.51 [2015.01.26]
