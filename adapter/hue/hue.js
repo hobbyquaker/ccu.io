@@ -302,7 +302,7 @@ hueGetFullState(function (config) {
             Name: "HUE."+i+".UNREACH",
             ValueType: 2,
             TypeName: "HSSDP",
-            Value: (config.lights[i].state["reachable"] ? false : true),
+            Value: !config.lights[i].state["reachable"],
             Parent: dp
         });
         if (hasColortemperature) {
@@ -443,8 +443,10 @@ hueGetFullState(function (config) {
             if (datapoints["HUE."+lamp+".CT"] && (datapoints["HUE."+lamp+".CT"][0] != result.state["ct"])) {
                 setState("HUE."+lamp+".CT",         result.state.ct);
             }
-            if (datapoints["HUE."+lamp+".UNREACH"] && datapoints["HUE."+lamp+".UNREACH"][0] == result.state["reachable"]) {
+            //logger.info(lamp + ' reachable ' + result.state.reachable);
+            if (datapoints["HUE."+lamp+".UNREACH"] && (datapoints["HUE."+lamp+".UNREACH"][0] == result.state["reachable"])) {
                 setState("HUE."+lamp+".UNREACH",    !result.state.reachable);
+                //logger.info('set ' + lamp + ' unreach=' + !result.state.reachable);
             }
 
 
