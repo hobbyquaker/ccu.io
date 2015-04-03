@@ -63,6 +63,24 @@ function hueSetLightsState(lamp, obj, callback) {
     });
 }
 
+function hueSetGroupState(group, obj, callback) {
+    request({
+        method: "PUT",
+        uri: hueUrl+"groups/"+group+"/action",
+        body: JSON.stringify(obj)
+    }, function (err, res) {
+        if (err) {
+            logger.error("adapter hue   hueSetGroupState error "+JSON.stringify(err));
+        } else if (res.statusCode != 200) {
+            logger.error("adapter hue   hueSetGroupState http "+res.statusCode);
+        } else {
+            if (callback) {
+                callback(JSON.parse(res.body));
+            }
+        }
+    });
+}
+
 var objects = {},
     nameIndex = {},
     datapoints = {},
@@ -106,8 +124,6 @@ socket.on('event', function (obj) {
 
     if (objects[id] && objects[id].hueType) {
         var tmpArr = objects[id].Name.split(".");
-        var lamp = tmpArr[1];
-        //console.log("received event lamp="+lamp+" dp="+objects[id].hueType+" val="+val);
 
         if (objects[id].hueType == "on") {
             if (val === 0) {
@@ -117,24 +133,33 @@ socket.on('event', function (obj) {
             }
         }
 
-        apiObj[lamp][objects[id].hueType] = val;
-        datapoints[objects[id].Name] = [val, ts, ack];
+        if (objects[id].Name.indexOf(".GROUPS.")>1){
+            var group = tmpArr[2];
+            var data = {}
+            datapoints[objects[id].Name] = [val, ts, ack];
 
-        if (objects[id].hueType == "colormode") {
-            if (val == "ct") {
-                apiObj[lamp].ct = datapoints["HUE."+lamp+".CT"][0];
-            } else if (val == "hs") {
-                apiObj[lamp].hue = datapoints["HUE."+lamp+".HUE"][0];
-                apiObj[lamp].sat = datapoints["HUE."+lamp+".SAT"][0];
+            data[objects[id].hueType] = val;
+            hueSetGroupState(group, data);
+        }else {
+            var lamp = tmpArr[1];
+            apiObj[lamp][objects[id].hueType] = val;
+            datapoints[objects[id].Name] = [val, ts, ack];
 
+            if (objects[id].hueType == "colormode") {
+                if (val == "ct") {
+                    apiObj[lamp].ct = datapoints["HUE." + lamp + ".CT"][0];
+                } else if (val == "hs") {
+                    apiObj[lamp].hue = datapoints["HUE." + lamp + ".HUE"][0];
+                    apiObj[lamp].sat = datapoints["HUE." + lamp + ".SAT"][0];
+
+                }
             }
-        }
 
-        //console.log("apiObj["+lamp+"]="+JSON.stringify(apiObj[lamp]));
-        // TODO IF NOT WAIT
-        if (tmpArr[2] !== "RAMP_TIME" && !ack) {
-            hueSetLightsState(lamp, apiObj[lamp]);
-            apiObj[lamp] = {};
+            // TODO IF NOT WAIT
+            if (tmpArr[2] !== "RAMP_TIME" && !ack) {
+                hueSetLightsState(lamp, apiObj[lamp]);
+                apiObj[lamp] = {};
+            }
         }
     }
 });
@@ -299,7 +324,64 @@ hueGetFullState(function (config) {
         } else {
             dp += 9;
         }
+    }
 
+    for (var i in config.groups) {
+        var chObject = {
+            Name: config.groups[i].name,
+            TypeName: "CHANNEL",
+            Address: "HUE.GROUPS."+i,
+            HssType: "HUE_" + config.groups[i].type,
+            DPs: {
+                STATE:          dp+1,
+                LEVEL:          dp+2,
+                CT:             dp+3,
+                HUE:            dp+4,
+                SAT:            dp+5
+
+            },
+            Parent: hueSettings.firstId
+        };
+
+        setObject(dp, chObject);
+
+        setObject(dp+1, {
+            Name: "HUE.GROUPS."+i+".STATE",
+            hueType: "on",
+            ValueType: 2,
+            TypeName: "HSSDP",
+            Value: config.groups[i].action.on,
+            Parent: dp
+        });
+        setObject(dp+2, {
+            Name: "HUE.GROUPS."+i+".LEVEL",
+            hueType: "bri",
+            TypeName: "HSSDP",
+            Value: config.groups[i].action.bri,
+            Parent: dp
+        });
+        setObject(dp+3, {
+            Name: "HUE.GROUPS."+i+".CT",
+            hueType: "ct",
+            TypeName: "HSSDP",
+            Value: config.groups[i].action.ct,
+            Parent: dp
+        });
+        setObject(dp+4, {
+            Name: "HUE.GROUPS."+i+".HUE",
+            hueType: "hue",
+            TypeName: "HSSDP",
+            Value: config.groups[i].action.hue,
+            Parent: dp
+        });
+        setObject(dp+5, {
+            Name: "HUE.GROUPS."+i+".SAT",
+            hueType: "sat",
+            TypeName: "HSSDP",
+            Value: config.groups[i].action.sat,
+            Parent: dp
+        });
+        dp += 6;
     }
 
     setObject(hueSettings.firstId, {
@@ -324,12 +406,9 @@ hueGetFullState(function (config) {
 
     function setState(id, val) {
         datapoints[id] = [val];
-        //logger.info("adapter hue   setState "+id+" "+val);
-        //console.log("setState "+id+" "+val);
 
         if (nameIndex[id]) {
             id = nameIndex[id];
-            //console.log("emitting setState "+id+" "+val);
             socket.emit("setState", [id,val,null,true]);
         }
 
