@@ -176,8 +176,8 @@ hueGetFullState(function (config) {
 
         config.lights[i].type = config.lights[i].type.replace(/ /g, "_").toUpperCase();
 
-        var extended = config.lights[i].type == "EXTENDED_COLOR_LIGHT";
-        var plug = config.lights[i].type == "DIMMABLE_PLUG-IN_UNIT" || config.lights[i].type == "DIMMABLE_LIGHT";
+        var hasColortemperature = config.lights[i].type == "EXTENDED_COLOR_LIGHT" || config.lights[i].type == "COLOR_TEMPERATURE_LIGHT";
+        var hasColor = !(config.lights[i].type == "DIMMABLE_PLUG-IN_UNIT" || config.lights[i].type == "DIMMABLE_LIGHT" || config.lights[i].type == "COLOR_TEMPERATURE_LIGHT");
 
         var chObject = {
             Name: config.lights[i].name,
@@ -196,12 +196,12 @@ hueGetFullState(function (config) {
             Parent: hueSettings.firstId
         };
 
-        if (!plug) {
+        if (hasColor) {
             chObject.DPs.HUE = dp+3;
             chObject.DPs.SAT = dp+4;
         }
 
-        if (extended) {
+        if (hasColortemperature) {
             chObject.DPs.CT = dp + 9;
             chObject.DPs.COLORMODE = dp + 10;
         }
@@ -235,7 +235,7 @@ hueGetFullState(function (config) {
             Value: config.lights[i].state.bri,
             Parent: dp
         });
-        if (!plug) {
+        if (!hasColor) {
             setObject(dp+3, {
                 Name: "HUE."+i+".HUE",
                 hueType: "hue",
@@ -280,7 +280,7 @@ hueGetFullState(function (config) {
             Value: (config.lights[i].state["reachable"] ? false : true),
             Parent: dp
         });
-        if (extended) {
+        if (hasColortemperature) {
             setObject(dp+9, {
                 Name: "HUE."+i+".CT",
                 hueType: "ct",
