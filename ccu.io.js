@@ -445,47 +445,49 @@ function reconnect() {
 }
 
 function pollRega() {
+    if (pollTimer) clearTimeout(pollTimer);
+    logger.debug('ccu.io        pollRega');
     regahss.runScriptFile("polling", function (data) {
-        if (!data) {
+        try {
+            data = JSON.parse(data);
+        } catch (e) {
+            logger.error("ccu.io        pollRega invalid JSON "+e);
             ccuRegaUp = false;
             tryReconnect();
             return false;
         }
-        try {
-            data = JSON.parse(data);
-        } catch (e) {
-            logger.error("ccu.io        pollRega "+e);
-        }
-        try {
-            for (id in data) {
-                var val;
 
-                if (settings.logging.enabled) {
-                    var ts = Math.round((new Date()).getTime() / 1000);
-                    if (typeof data[id][0] == "string") {
-                        val = unescape(data[id][0]);
-                    } else {
-                        val = data[id][0];
-                    }
+        if (!data) return;
 
-                    if (datapoints[id] && settings.logging.varChangeOnly && notFirstVarUpdate) {
-                        if (datapoints[id][0] != val || !datapoints[id][2]) {
-                            devLog(ts, id, val);
-                        }
-                    } else {
+        for (id in data) {
+            var val;
+
+            if (!data[id] || typeof data[id][0] === 'undefined') continue;
+
+            if (settings.logging.enabled) {
+                var ts = Math.round((new Date()).getTime() / 1000);
+                if (typeof data[id][0] == "string") {
+                    val = unescape(data[id][0]);
+                } else {
+                    val = data[id][0];
+                }
+
+                if (datapoints[id] && settings.logging.varChangeOnly && notFirstVarUpdate) {
+                    if (datapoints[id][0] !== val || !datapoints[id][2]) {
                         devLog(ts, id, val);
                     }
-
-                    // Hat sich die Anzahl der Servicemeldungen geändert?
-                    if (id == 41 && datapoints[id][0] != val) {
-                        pollServiceMsgs();
-                    }
+                } else {
+                    devLog(ts, id, val);
                 }
-                setDatapoint(id, data[id][0], formatTimestamp(), true, data[id][1]);
+
+                // Hat sich die Anzahl der Servicemeldungen geändert?
+                if (id == 41 && datapoints[id][0] != val) {
+                    pollServiceMsgs();
+                }
             }
-        } catch (e) {
-            logger.error("ccu.io        pollRega "+e);
+            setDatapoint(id, data[id][0], formatTimestamp(), true, data[id][1]);
         }
+
         notFirstVarUpdate = true;
         pollTimer = setTimeout(pollRega, settings.regahss.pollDataInterval);
     });
