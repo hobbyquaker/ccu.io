@@ -1,0 +1,50 @@
+{
+    "appenders": [
+        {
+            "category": "ccu.io",
+            "type": "file",
+            "filename": "log/log4j.ccu.io.log",
+            "maxLogSize": 20480,
+            "backups": 10
+        },
+        {
+            "category": "scriptengine.daily",
+            "type": "dateFile",
+            "filename": "log/scriptEngine.log",
+            "pattern": ".yyyy-MM-dd",
+            "alwaysIncludePattern": false,
+            "layout": {
+                "type": "pattern",
+                "pattern": "%d{ABSOLUTE} %[%-5p%] %c %m"
+            }
+        },
+        {
+            "category": "ccu.io.daily",
+            "type": "dateFile",
+            "filename": "log/ccu.io.log",
+            "pattern": ".yyyy-MM-dd",
+            "alwaysIncludePattern": false,
+            "layout": {
+                "type": "pattern",
+                "pattern": "%d{ABSOLUTE} %[%-5p%] %c %m"
+            }
+        },
+        {
+            "category": "devices-variables",
+            "type": "dateFile",
+            "filename": "log/devices-variables.log",
+            "pattern": ".yyyy-MM-dd",
+            "alwaysIncludePattern": false,
+            "layout": {
+                "type": "pattern",
+                "pattern": "%m"
+            }
+        }
+    ],
+    "levels": {
+        "[all]": "INFO",
+        "ccu.io.daily": "INFO",
+        "scriptengine.daily": "INFO",
+        "devices-variables": "DEBUG"
+    }
+}

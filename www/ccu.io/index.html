@@ -42,6 +42,7 @@
         <li><a href="#mainTab2"><span class='translate'>Addons</span></a></li>
         <li><a href="#mainTab3"><span class='translate'>Adapter</span></a></li>
         <li><a href="#mainTab5"><span class='translate'>Data</span></a></li>
+        <li><a href="#mainTab6"><span class='translate'>Logs</span></a></li>
     </ul>
     <div id="mainTab1">
         <div class="jqui-tabs" id="subTabs1">
@@ -206,8 +207,15 @@
                             <td class="settings-td1 translate">Logging</td>
                             <td class="settings-td2 translate">Enabled</td>
                             <td class="settings-td3"><input id="logging_enabled" type="checkbox"/></td>
-                            <td class="settings-td4 translate">Write Interval (s)</td>
-                            <td class="settings-td5"><input id="logging_writeInterval" type="text"/></td>
+                            <td class="settings-td4 translate">Level</td>
+                            <td class="settings-td5"><select id="logging_level"/>
+                                <option value='TRACE'>TRACE</option>
+                                <option value='DEBUG'>DEBUG</option>
+                                <option value='INFO'>INFO</option>
+                                <option value='WARN'>WARN</option>
+                                <option value='ERROR'>ERROR</option>
+                                </select>
+                            </td>
                             <td class="settings-td6">&nbsp;</td>
                             <td class="settings-td7">&nbsp;</td>
                         </tr>
@@ -448,7 +456,29 @@
             </div>
         </div>
     </div>
-
+    <div id="mainTab6">
+        <div class="jqui-tabs" id="subTabs6">
+            <ul>
+                <li><a href="#subTab61" class='translate'>complete File</a></li>
+                <li><a href="#subTab62" class='translate'>tail -f</a></li>
+            </ul>
+            <div id="subTab61">
+                <select id="select_log">
+                    <option value="" class="translate"> - none</option>
+                </select>
+                <input id="log_refresh" type="button" class='translateV' value="refresh"/><br>
+                <textarea class="data-area ui-widget ui-state-default ui-corner-all" id="ccuiolog"></textarea>
+            </div>
+            <div id="subTab62">
+                <select id="select_log2">
+                    <option value="" class="translate"> - none</option>
+                </select>
+                <input id="tail_start" type="button" class='translateV' value="start"/>
+                <input id="tail_stop" type="button" class='translateV' value="stop"/>
+                <input id="tail_clear" type="button" class='translateV' value="clear"/>
+                <div class="data-area ui-widget ui-state-default ui-corner-all" id="ccuiolog_tail"/>
+            </div>
+        </div>
 </div>
 <div id="install_addon_dialog">
     <br/>

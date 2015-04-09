@@ -42,14 +42,9 @@ var adapterSettings = settings.adapters.rpi.settings,
 
 
 if (settings.ioListenPort) {
-    var socket = io.connect(connIP, {
-        port: settings.ioListenPort
-    });
+    socket = io("http://" + connIP + ":" + settings.ioListenPort);
 } else if (settings.ioListenPortSsl) {
-    var socket = io.connect(connIP, {
-        port: settings.ioListenPortSsl,
-        secure: true
-    });
+    socket = io("https://" + connIP + ":" + settings.ioListenPortSsl);
 } else {
     process.exit();
 }

@@ -503,6 +503,105 @@ $(document).ready(function () {
         }
     });
 
+    $("#loader_message").append(translateWord("loading logs") + " ... <br/>");
+
+    socket.emit("readdir", ["log"], function (data) {
+        for (var i = 0; i < data.length; i++) {
+            //if (data[i] == ".gitignore") { continue; }
+            $("select#select_log").append('<option value="'+data[i]+'">'+data[i]+'</option>');
+        }
+        $("#select_log").multiselect({
+            multiple: false,
+            header: false,
+            selectedList: 1
+        }).change(function () {
+            var file = ($("#select_log option:selected").val());
+            if (file == "") {
+                $("textarea#ccuiolog").val("");
+                $("#log_refresh").button("disable");
+            } else {
+                $("textarea#ccuiolog").val("");
+                $("#log_refresh").button("disable");
+
+                socket.emit("readLogFile", [file], function (data) {
+                    if (data) {
+                        $("textarea#ccuiolog").val(data);
+                        $("#log_refresh").button("enable");
+                        $('#ccuiolog').scrollTop($('#ccuiolog')[0].scrollHeight);
+                    }
+                });
+            }
+        });
+    });
+    $("#log_refresh").button().button("disable").click(function () {
+        try {
+            var file = ($("#select_log option:selected").val());
+            // var data = JSON.parse($("textarea#datastore").val());
+            socket.emit("readLogFile", [file], function (data) {
+                if (data) {
+                    $("textarea#ccuiolog").val(data);
+                    $("#log_refresh").button("enable");
+                    $('#ccuiolog').scrollTop($('#ccuiolog')[0].scrollHeight);
+                }
+            });
+        } catch (e) {
+            showMessage ("Error: "+e);
+        }
+    });
+    socket.emit("readdir", ["log"], function (data) {
+        for (var i = 0; i < data.length; i++) {
+            //if (data[i] == ".gitignore") { continue; }
+            $("select#select_log2").append('<option value="'+data[i]+'">'+data[i]+'</option>');
+        }
+        $("#select_log2").multiselect({
+            multiple: false,
+            header: false,
+            selectedList: 1
+        }).change(function () {
+            socket.emit("unTailLogFile", function (data) {});
+            var file = ($("#select_log2 option:selected").val());
+            if (file == "") {
+                $("textarea#ccuiolog_tail").val("");
+            } else {
+                $("textarea#ccuiolog_tail").val("");
+                socket.emit("tailLogFile", [file], function (data) {});
+                $("#tail_start").button("disable");
+                $("#tail_stop").button("enable");
+                $("#tail_clear").button("enable");
+            }
+        });
+    });
+
+    socket.on('appendToLog', function(data, callback) {
+        $("#ccuiolog_tail").append('<div class="logline">' + data + '</div>');
+        $('html, body').animate({scrollTop: $(document).height()}, 'slow');
+    });
+
+    $("#tail_start").button().button("disable").click(function () {
+        try {
+            var file = ($("#select_log option:selected").val());
+            socket.emit("tailLogFile", [file], function (data) {});
+            $("#tail_start").button("disable");
+            $("#tail_stop").button("enable");
+            $("#tail_clear").button("enable");
+        } catch (e) {
+            showMessage ("Error: "+e);
+        }
+    });
+    $("#tail_stop").button().button("disable").click(function () {
+        try {
+            socket.emit("unTailLogFile", function (data) {});
+            $("#tail_start").button("enable");
+            $("#tail_stop").button("disable");
+            $("#tail_clear").button("enable");
+        } catch (e) {
+            showMessage ("Error: "+e);
+        }
+    });
+    $("#tail_clear").button().button("disable").click(function () {
+        $("#ccuiolog_tail").empty();
+    });
+
     socket.on('reload', function() {
         window.location.reload();
     });
@@ -1045,7 +1144,11 @@ $(document).ready(function () {
         } else {
             $("#logging_enabled").removeAttr("checked");
         }
-        $("#logging_writeInterval").val(ccuIoSettings.logging.writeInterval);
+        $("#logging_level [value='" + (ccuIoSettings.logging.level || 'INFO') + "']").attr("selected", "selected");
+        $("#logging_level").change(function () {
+            ccuIoSettings.logging.level = ($(this).val());
+        });
+
 
         if (ccuIoSettings.scriptEngineEnabled) {
             $("#scriptEngineEnabled").attr("checked", true);
@@ -1151,7 +1254,8 @@ $(document).ready(function () {
         } else {
             ccuIoSettings.logging.enabled = false;
         }
-        ccuIoSettings.logging.writeInterval = $("#logging_writeInterval").val();
+        ccuIoSettings.logging.level = $("#logging_level").val();
+
 
         if ($("#scriptEngineEnabled").is(":checked")) {
             ccuIoSettings.scriptEngineEnabled = true;
@@ -1243,7 +1347,7 @@ $(document).ready(function () {
         var settingsWithoutAdapters = JSON.parse(JSON.stringify(ccuIoSettings));
         delete settingsWithoutAdapters.adapters;
         socket.emit("writeFile", "io-settings.json", settingsWithoutAdapters, function () {
-            showMessage("CCU.IO settings saved. Please restart CCU.IO");
+            showMessage("CCU.IO settings saved. Please restart CCU.IO (Log-level is changed immediately)");
         });
     }
 

@@ -198,17 +198,12 @@ var commands = {
 	"audio_factory_sound_check" : ["253", -1],
 	"audio_subtitle_language" :   ["57",  -1],
 	"audio_audio_description" :   ["145", "407"]
-}; 
+};
 
 if (settings.ioListenPort) {
-	var ccu_socket = io_client.connect("127.0.0.1", {
-		port: settings.ioListenPort
-	});
+    socket = io("http://127.0.0.1:" + settings.ioListenPort);
 } else if (settings.ioListenPortSsl) {
-	var ccu_socket = io_client.connect("127.0.0.1", {
-		port: settings.ioListenPortSsl,
-		secure: true
-	});
+    socket = io("https://127.0.0.1:" + settings.ioListenPortSsl);
 } else {
 	process.exit();
 }

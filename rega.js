@@ -226,9 +226,13 @@ rega.prototype = {
             });
         });
     },
-    script: function (script, callback) {
+    script: function (script, callback, tries) {
         var that = this;
         logger.verbose('rega      --> ' + script);
+
+        if (!tries) {
+            tries = 1;
+        }
 
         var post_options = {
             host: this.options.ccuIp,
@@ -252,6 +256,7 @@ rega.prototype = {
                 var pos = data.lastIndexOf("<xml>");
                 var stdout = (data.substring(0, pos));
                 var xml = (data.substring(pos));
+                logger.verbose('rega          script ended successfully: ' + script.substr(0, 158));
                 parser.parseString(xml, function (err, result) {
                     logger.verbose('rega      <-- ' + stdout);
                     if (callback) {
@@ -269,16 +274,22 @@ rega.prototype = {
         });
 
         post_req.on('error', function(e) {
-            logger.error('rega          post request error: ' + e.message);
-            if (callback) {
-                callback(null, 'rega          post request error: ' + e.message);
+            logger.error('rega          post connection error: ' + e.message + ' (try: ' + tries + ') on script: ' + script.substr(0, 158));
+            if (tries < 10) {
+                // let's try it the Aloha way...
+                // random number between 100..2000
+                var randomWait = Math.floor(Math.random() * (2000 - 100 + 1) + 100) * tries;
+                logger.verbose("rega         -> retrying in " + randomWait + "ms - try: " + tries);
+                setTimeout(function() {that.script(script, callback, tries + 1);}, randomWait);
+            } else {
+                if (callback) {
+                    callback(null, 'rega          post request error: ' + e.message);
+                }
             }
         });
 
         post_req.write(script);
         post_req.end();
-
-
     }
 };
 

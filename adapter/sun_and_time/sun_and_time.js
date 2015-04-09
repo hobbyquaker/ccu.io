@@ -21,14 +21,9 @@ var scheduler = require('node-schedule');
 var firstID = settings.adapters.sun_and_time.firstId;
 
 if (settings.ioListenPort) {
-    var socket = io.connect("127.0.0.1", {
-        port: settings.ioListenPort
-    });
+    socket = io("http://127.0.0.1:" + settings.ioListenPort);
 } else if (settings.ioListenPortSsl) {
-    var socket = io.connect("127.0.0.1", {
-        port: settings.ioListenPortSsl,
-        secure: true
-    });
+    socket = io("https://127.0.0.1:" + settings.ioListenPortSsl);
 } else {
     process.exit();
 }

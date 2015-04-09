@@ -1,23 +1,31 @@
 var fs =        require('fs'),
-    logger =    require(__dirname+'/logger.js');
+    log4js =      require('log4js'),
+    logger;
 
 var settings = {};
+
+// setup logger
+log4js.configure(__dirname + '/log4js.json', {reloadSecs: 600});
+logger = log4js.getLogger('ccu.io.daily');
+logger.info("settings      Logger starting up on default-level: DEBUG");
 
 try {
     var settingsJson = fs.readFileSync(__dirname+"/datastore/io-settings.json");
     settings = JSON.parse(settingsJson.toString());
-    logger.verbose("ccu.io        settings found");
+    logger.setLevel(settings.logging.level);
+    logger.info("settings      setting Loglevel to: " + settings.logging.level);
+    logger.debug("settings      settings found");
     if (!settings.uid) {
-        logger.verbose("ccu.io        creating uid");
+        logger.debug("settings      creating uid");
         settings.uid = Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16);
         fs.writeFileSync(__dirname+"/datastore/io-settings.json", JSON.stringify(settings));
     }
 } catch (e) {
-    logger.info("ccu.io        creating datastore/io-settings.json");
+    logger.info("settings      creating datastore/io-settings.json");
     var settingsJson = fs.readFileSync(__dirname+"/settings-dist.json");
     settings = JSON.parse(settingsJson.toString());
     settings.unconfigured = true;
-    logger.verbose("ccu.io        creating uid");
+    logger.debug("settings      creating uid");
     settings.uid = Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16)+Math.floor((Math.random()*4294967296)).toString(16);
     fs.writeFileSync(__dirname+"/datastore/io-settings.json", JSON.stringify(settings));
 }
@@ -77,12 +85,12 @@ for (var i = 0; i < adapters.length; i++) {
                 settingsJson = fs.readFileSync(__dirname+"/adapter/"+adapters[i]+"/settings.json");
                 var adapterSettings = JSON.parse(settingsJson.toString());
                 fs.writeFileSync(__dirname+"/datastore/adapter-"+adapters[i]+".json", JSON.stringify(adapterSettings));
-                logger.info("ccu.io        creating datastore/adapter-"+adapters[i]+".json");
+                logger.info("settings      creating datastore/adapter-"+adapters[i]+".json");
             } catch (ee) {
-                logger.error("ccu.io        no settings.json found for "+adapters[i]);
+                logger.error("settings      no settings.json found for "+adapters[i]);
             }
         } else {
-            logger.verbose("ccu.io        settings.json found for "+adapters[i]);
+            logger.debug("settings      settings.json found for "+adapters[i]);
         }
 
     } catch (e) {
@@ -90,9 +98,9 @@ for (var i = 0; i < adapters.length; i++) {
             settingsJson = fs.readFileSync(__dirname+"/adapter/"+adapters[i]+"/settings.json");
             var adapterSettings = JSON.parse(settingsJson.toString());
             fs.writeFileSync(__dirname+"/datastore/adapter-"+adapters[i]+".json", JSON.stringify(adapterSettings));
-            logger.info("ccu.io        creating datastore/adapter-"+adapters[i]+".json");
+            logger.info("settings      creating datastore/adapter-"+adapters[i]+".json");
         } catch (ee) {
-            logger.error("ccu.io        no settings.json found for "+adapters[i]);
+            logger.error("settings      no settings.json found for "+adapters[i]);
         }
     }
     settings.adapters[adapters[i]] = adapterSettings;

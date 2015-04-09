@@ -69,14 +69,9 @@ var objects = {},
     apiObj = {};
 
 if (settings.ioListenPort) {
-    var socket = io.connect("127.0.0.1", {
-        port: settings.ioListenPort
-    });
+    var socket = io("http://127.0.0.1:" + settings.ioListenPort);
 } else if (settings.ioListenPortSsl) {
-    var socket = io.connect("127.0.0.1", {
-        port: settings.ioListenPortSsl,
-        secure: true
-    });
+    var socket = io("https://127.0.0.1:" + settings.ioListenPortSsl);
 } else {
     process.exit();
 }

@@ -2,94 +2,61 @@ var scheduler = require('node-schedule'),
     fs = require("fs");
 
 var logger = {
-    logfile: __dirname + "/log/ccu.io.log",
-    level: 3,
-    timestamp: true,
-    colors: {
-        "5": '\u001b[31m',
-        "4": '\u001b[33m',
-        "3": '\u001b[32m',
-        "2": '\u001b[34m',
-        reset: '\u001b[0m'
-    },
-    text: {
-        "0": "silly  ",
-        "1": "debug  ",
-        "2": "verbose",
-        "3": "info   ",
-        "4": "warn   ",
-        "5": "error  "
-    },
-    maxLength: 200,
+    log4js:         require('log4js'),
+    log4jsLogger:   null,
+    settings:       require(__dirname+'/settings.js'),
 
-    silly: function(obj) {
-        logger.log(0, obj);
+    init: function () {
+        this.log4js.configure(__dirname + '/log4js.json', {reloadSecs: 600});
+        this.log4jsLogger = this.log4js.getLogger('ccu.io.daily');
+        this.log4jsLogger.setLevel(this.settings.logging.level);
+        this.log4jsLogger.info("logger        Logger set to level: " + this.settings.logging.level);
     },
-    debug: function(obj) {
-        logger.log(1, obj);
+    setLevel: function(level) {
+        this.log4jsLogger.setLevel(level);
     },
-    verbose: function(obj) {
-        logger.log(2, obj);
-    },
-    info: function(obj) {
-        logger.log(3, obj);
-    },
-    warn: function(obj) {
-        logger.log(4, obj);
-    },
-    error: function(obj) {
-        logger.log(5, obj);
-    },
-    log: function(level, obj) {
-        if (level >= this.level) {
-            var str;
-            if (typeof obj !== "string") {
-                str = JSON.stringify(obj);
-            } else {
-                str = obj.replace(/(\r\n|\n|\r)/gm,"");
-            }
-
-            if (this.colors[level]) {
-                str = this.colors[level] + this.text[level] + this.colors["reset"] + ": " + str;
-            } else {
-                str = this.text[level] + ": " + str;
-            }
-
-            if (this.timestamp) {
-                var ts = new Date();
-
-
-                str =   ts.getFullYear() + '-' +
-                    ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
-                    ("0" + (ts.getDate()).toString(10)).slice(-2) + ' ' +
-                    ("0" + (ts.getHours()).toString(10)).slice(-2) + ':' +
-                    ("0" + (ts.getMinutes()).toString(10)).slice(-2) + ':' +
-                    ("0" + (ts.getSeconds()).toString(10)).slice(-2) + "." +
-                    ("00" + (ts.getMilliseconds()).toString(10)).slice(-3) + " " +
-                    str;
-            }
-
-            if (str.length > this.maxLength) {
-                str = str.slice(0, this.maxLength - 4) + " ...";
-            }
-
-            //console.log(str);
-            log.write(str+"\n");
+    silly: function (obj) {
+        if (!this.log4jsLogger) {
+            logger.init();
         }
+        this.log4jsLogger.trace(obj);
+    },
+    debug: function (obj) {
+        if (!this.log4jsLogger) {
+            logger.init();
+        }
+        this.log4jsLogger.debug(obj);
+    },
+    verbose: function (obj) {
+        if (!this.log4jsLogger) {
+            logger.init();
+        }
+        this.log4jsLogger.debug(obj);
+    },
+    info: function (obj) {
+        if (!this.log4jsLogger) {
+            logger.init();
+        }
+        this.log4jsLogger.info(obj);
+    },
+    warn: function (obj) {
+        if (!this.log4jsLogger) {
+            logger.init();
+        }
+        this.log4jsLogger.warn(obj);
+    },
+    error: function (obj) {
+        if (!this.log4jsLogger) {
+            logger.init();
+        }
+        this.log4jsLogger.error(obj);
+    },
+    fatal: function (obj) {
+        if (!this.log4jsLogger) {
+            logger.init();
+        }
+        this.log4jsLogger.fatal(obj);
     }
-}
-
-var log = fs.createWriteStream(logger.logfile, {
-    flags: "a", encoding: "utf8", mode: 0644
-});
-
-process.on("uncaughtException", function(err) {
-    try {
-        log.write(err.stack);
-    } catch (e) {
-        // ...?
-
-    }
-});
+};
 
 module.exports = logger;

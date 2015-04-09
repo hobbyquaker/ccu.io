@@ -39,10 +39,7 @@
     "stringTableLanguage": "de",
     "logging": {
         "enabled": true,
-        "file": "devices-variables.log",
-        "move": true,
-        "varChangeOnly": true,
-        "writeInterval": 60
+        "level": "INFO"
     },
     "regahss": {
         "pollData": true,

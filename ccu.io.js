@@ -13,9 +13,10 @@
 
 var settings = require(__dirname+'/settings.js');
 
-settings.version = "1.0.45";
+settings.version = "1.0.44";
 settings.basedir = __dirname;
 settings.datastorePath = __dirname+"/datastore/";
+settings.logPath = __dirname + "/log/";
 settings.stringTableLanguage = settings.stringTableLanguage || "de";
 
 settings.regahss.metaScripts = [
@@ -33,10 +34,14 @@ settings.regahss.metaScripts = [
 
 
 var fs =        require('fs'),
-    logger =    require(__dirname + '/logger.js'),
+    //logger =    require(__dirname + '/logger.js'),
+    logger,
+    logger_dv,
+    log4js =    require('log4js'),
     binrpc =    require(__dirname + "/binrpc.js"),
     rega =      require(__dirname + "/rega.js"),
     express =   require('express'),
+    expressBasicAuth = require('basic-auth-connect'),
     http =      require('http'),
     https =     require('https'),
     crypto =    require('crypto'),
@@ -47,6 +52,9 @@ var fs =        require('fs'),
     scheduler = require('node-schedule'),
     mime =      require('mime'),
     os =        require('os'),
+    bodyparser = require('body-parser'),
+    tail =      require('tail').Tail,
+    tailedFile,
     app,
     appSsl,
     server,
@@ -57,7 +65,6 @@ var fs =        require('fs'),
     ioSsl,
     ioV6,
     ioSslV6,
-    devlogCache = [],
     notFirstVarUpdate = false,
     children = [],
     childrenAdapter = {},
@@ -78,12 +85,18 @@ var fs =        require('fs'),
         waitId:       0
     };
 
+// first things first: initialize the logging:
+log4js.configure(__dirname + '/log4js.json');
+logger = log4js.getLogger('ccu.io.daily');
+logger.setLevel(settings.logging.level);
+// and the device-variables logging
+logger_dv = log4js.getLogger('devices-variables');
 
 if (settings.ioListenPort) {
     app =  express();
 
     if (settings.authentication && settings.authentication.enabled) {
-        app.use(express.basicAuth(settings.authentication.user, settings.authentication.password));
+        app.use(expressBasicAuth(settings.authentication.user, settings.authentication.password));
     }
 
     server = require('http').createServer(app);
@@ -113,7 +126,7 @@ if (settings.ioListenPortSsl) {
     if (options) {
         appSsl = express();
         if (settings.authentication && settings.authentication.enabledSsl) {
-            appSsl.use(express.basicAuth(settings.authentication.user, settings.authentication.password));
+            appSsl.use(expressBasicAuth(settings.authentication.user, settings.authentication.password));
         }
         serverSsl = require('https').createServer(options, appSsl);
         if (settings.useIPv6) {
@@ -150,7 +163,7 @@ if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
                     }
 
                 } else if (lastEvents[init.id] < check) {
-                    logger.verbose("binrpc        checking init "+init.id);
+                    logger.debug("binrpc        checking init "+init.id);
                     if (settings.binrpc.checkEvents.testTrigger[init.id]) {
                         if (regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]]) {
                             var id = regaIndex.Name[settings.binrpc.checkEvents.testTrigger[init.id]][0];
@@ -162,7 +175,7 @@ if (settings.binrpc.checkEvents && settings.binrpc.checkEvents.enabled) {
                         logger.warn("binrpc        checkEvent.trigger undefined for "+init.id);
                     }
                 } else {
-                    logger.verbose("binrpc        init "+init.id+" ok - last event "+(now-lastEvents[init.id])+"s ago");
+                    logger.debug("binrpc        init "+init.id+" ok - last event "+(now-lastEvents[init.id])+"s ago");
                 }
             }
         }
@@ -197,7 +210,7 @@ var socketlist = [],
 var ignoreNextUpdate = [];
 
 logger.info("ccu.io        starting version "+settings.version + " copyright (c) 2013, 2014 hobbyquaker http://hobbyquaker.github.io");
-logger.verbose("ccu.io        commandline "+JSON.stringify(process.argv));
+logger.debug("ccu.io        commandline "+JSON.stringify(process.argv));
 
 loadPersistentObjects();
 loadDatapoints();
@@ -256,17 +269,6 @@ function updateStatus () {
     emitEvent("updateStatus", status);
 }
 
-
-
-if (settings.logging.enabled) {
-    setInterval(writeLog, settings.logging.writeInterval * 1000);
-    if (settings.logging.move) {
-        scheduler.scheduleJob('0 0 * * *', function(){
-            moveLog(settings.logging.file);
-        });
-    }
-}
-
 function emitEvent(msg, arg) {
     if (io) {
         io.sockets.emit(msg, arg);
@@ -299,7 +301,7 @@ var stats = {
     log: function() {
         logger.info("ccu.io stats  cuxd: "+(stats.cuxd/settings.statsIntervalMinutes).toFixed(0)+"msg/min, wired: "+(stats.wired/settings.statsIntervalMinutes).toFixed(0)+"msg/min, rf: "+(stats.rf/settings.statsIntervalMinutes).toFixed(0)+"msg/min");
         logger.info("ccu.io stats  "+socketlist.length+" Socket.IO Clients connected");
-        logger.verbose("ccu.io uptime "+stats.uptime());
+        logger.debug("ccu.io        uptime "+stats.uptime());
         stats.cuxd = 0;
         stats.wired = 0;
         stats.rf = 0;
@@ -311,7 +313,7 @@ if (settings.stats) {
 }
 
 function sendEvent(arr) {
-    logger.verbose("socket.io --> broadcast event "+JSON.stringify(arr))
+    logger.debug("socket.io --> broadcast event "+JSON.stringify(arr))
     emitEvent("event", arr);
 }
 
@@ -326,7 +328,7 @@ function setDatapoint(id, val, ts, ack, lc) {
     var oldval = datapoints[id];
     var obj; // Event argument
 
-    logger.verbose("setDatapoint "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
+    logger.debug("setDatapoint "+JSON.stringify(oldval)+" -> "+JSON.stringify([val,ts,ack,lc]));
 
 
     if (!oldval) {
@@ -693,7 +695,7 @@ function initRpc() {
                     var regaObj = regaIndex.Name[bidcos];
 
                     if (regaObj && regaObj[0] && ignoreNextUpdate.indexOf(regaObj[0]) != -1) {
-                        logger.verbose("ccu.io        ignoring event dp "+regaObj[0]);
+                        logger.debug("ccu.io        ignoring event dp "+regaObj[0]);
                         ignoreNextUpdate.splice(ignoreNextUpdate.indexOf(regaObj[0]), 1);
                         return;
                     }
@@ -709,7 +711,7 @@ function initRpc() {
                     if (regaObj && regaObj[0]) {
                         var id = regaObj[0];
                         var val = obj[3];
-                        logger.verbose("socket.io --> broadcast event "+JSON.stringify([id, val, timestamp, true]))
+                        logger.debug("socket.io --> broadcast event "+JSON.stringify([id, val, timestamp, true]))
                         var event = [id, val, timestamp, true, timestamp];
 
                         if (datapoints[id]) {
@@ -1035,6 +1037,20 @@ function restApi(req, res) {
             response = datapoints;
             status = 200;
             break;
+        case "restartScriptEngine":
+            response = "no script Engine enabled";
+            if (settings.scriptEngineEnabled) {
+                if (childScriptEngine) {
+                    childScriptEngine.kill();
+                    delete childScriptEngine;
+                }
+                setTimeout(function () {
+                    startScriptEngine();
+                }, 1500);
+                response = "restarting Script Engine";
+            }
+            status = 200;
+            break;
         default:
             response = {error: "command " + command + " unknown"};
     }
@@ -1078,7 +1094,7 @@ function initWebserver() {
         }
 
         // File Uploads
-        app.use(express.bodyParser({uploadDir: __dirname + '/tmp'}));
+        app.use(bodyparser.urlencoded({uploadDir: __dirname + '/tmp', extended: true}));
         app.post('/upload', uploadParser);
 
         app.get('/api/*', restApi);
@@ -1110,7 +1126,7 @@ function initWebserver() {
         }
 
         // File Uploads
-        appSsl.use(express.bodyParser({uploadDir: __dirname + '/tmp'}));
+        appSsl.use(bodyparser.urlencoded({uploadDir: __dirname + '/tmp', extended: true}));
         appSsl.post('/upload', uploadParser);
 
         appSsl.get('/api/*', restApi);
@@ -1178,14 +1194,14 @@ function formatTimestamp() {
 }
 
 function programExecute(id, callback) {
-    logger.verbose("socket.io <-- programExecute");
+    logger.debug("socket.io <-- programExecute");
     regahss.script("Write(dom.GetObject("+id+").ProgramExecute());", function (data) {
         if (callback) { callback(data); }
     });
 }
 
 function setState(id,val,ts,ack, callback) {
-    logger.verbose("socket.io <-- setState id="+id+" val="+val+" ts="+ts+" ack="+ack);
+    logger.debug("socket.io <-- setState id="+id+" val="+val+" ts="+ts+" ack="+ack);
     if (!ts) {
         ts = formatTimestamp();
     }
@@ -1224,7 +1240,7 @@ function setState(id,val,ts,ack, callback) {
             var script = "Write(dom.GetObject("+id+").State("+xval+"));";
 
             regahss.script(script, function (data) {
-                //logger.verbose("rega      <-- "+data);
+                //logger.debug("rega      <-- "+data);
                 if (callback) {
                     callback(data);
                 }
@@ -1245,7 +1261,7 @@ function setState(id,val,ts,ack, callback) {
                 if (ignoreNextUpdate.indexOf(ctrlMode) == -1) {
                     ignoreNextUpdate.push(ctrlMode);
                 }
-                logger.verbose("ccu.io        ignoring next update for "+JSON.stringify(ignoreNextUpdate));
+                logger.debug("ccu.io        ignoring next update for "+JSON.stringify(ignoreNextUpdate));
             }
         }
 
@@ -1363,6 +1379,7 @@ function clearRegaData() {
 }
 
 function initSocketIO(_io) {
+    /*
     _io.set('logger', {
         debug: function(obj) {
             logger.debug("socket.io: "+obj);
@@ -1377,37 +1394,38 @@ function initSocketIO(_io) {
             logger.warn("socket.io: "+obj);
         }
     });
+    */
 
-	_io.configure(function () {
+	_io.use(function (socket, next) {
+        //this.set('heartbeat timeout', 25);
+        //this.set('heartbeat interval', 10);
 
-        this.set('heartbeat timeout', 25);
-        this.set('heartbeat interval', 10);
-
-        this.set('authorization', function (handshakeData, callback) {
-            var isHttps = (serverSsl !== undefined && this.server == serverSsl);
-            if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
-                // do not check if localhost
-                if(handshakeData.address.address.toString() == "127.0.0.1") {
-                    logger.verbose("ccu.io        local authentication " + handshakeData.address.address);
-                    callback(null, true);
-                } else
-                if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
-                    logger.warn("ccu.io        authentication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
-                    callback ("Invalid session key", false);
-                } else{
-                    logger.verbose("ccu.io        authentication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
-                    callback(null, true);
-                }
-            } else {
-               callback(null, true);
+        var handshakeData = socket.request;
+        var isHttps = (serverSsl !== undefined && this.server == serverSsl);
+        if ((!isHttps && settings.authentication.enabled) || (isHttps && settings.authentication.enabledSsl)) {
+            // do not check if localhost
+            if(handshakeData.address.address.toString() == "127.0.0.1") {
+                logger.debug("ccu.io        local authentication " + handshakeData.address.address);
+                next();
+            } else
+            if (handshakeData.query["key"] === undefined || handshakeData.query["key"] != authHash) {
+                logger.warn("ccu.io        authentication error on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                next(new Error("Invalid session key"));
+            } else{
+                logger.debug("ccu.io        authentication successful on "+(isHttps ? "https from " : "http from ") + handshakeData.address.address);
+                next();
             }
-        });
+        } else {
+           next();
+        }
     });
 
     _io.sockets.on('connection', function (socket) {
         socketlist.push(socket);
         var address = socket.handshake.address;
-        logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
+        if (address) {
+            logger.debug("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " connected");
+        }
 
         socket.on('log', function (sev, msg) {
            switch (sev) {
@@ -1633,7 +1651,7 @@ function initSocketIO(_io) {
 
         socket.on('readdir', function (path, callback) {
             path = __dirname + "/" + path;
-            logger.verbose("socket.io <-- readdir "+path);
+            logger.debug("socket.io <-- readdir "+path);
             fs.readdir(path, function (err, data) {
                 if (err) {
                     callback(undefined);
@@ -1645,7 +1663,7 @@ function initSocketIO(_io) {
 
         socket.on('readdirStat', function(path, callback) {
             path = __dirname + "/" + path;
-            logger.verbose("socket.io <-- readdirStat " + path);
+            logger.debug("socket.io <-- readdirStat " + path);
 
             fs.readdir(path, function(err, files) {
                 var data = [];
@@ -1673,7 +1691,7 @@ function initSocketIO(_io) {
         socket.on('rename', function(path_old,path, callback) {
             var p_old = __dirname + "/" + path_old;
             var p = __dirname + "/" + path;
-            logger.verbose("socket.io <-- rename " + path);
+            logger.debug("socket.io <-- rename " + path);
 
             fs.rename(p_old, p, function(err) {
                 if (err) {
@@ -1688,7 +1706,7 @@ function initSocketIO(_io) {
         socket.on('mkDir', function(path, callback) {
             var p = __dirname + "/" + path;
 
-            logger.verbose("socket.io <-- mkDir " + path);
+            logger.debug("socket.io <-- mkDir " + path);
 
             fs.mkdir(p,"0777", function(err) {
                 if (err) {
@@ -1703,7 +1721,7 @@ function initSocketIO(_io) {
         socket.on('removeRecursive', function(path, callback) {
             var p = __dirname + "/" + path;
 
-            logger.verbose("socket.io <-- mkDir " + path);
+            logger.debug("socket.io <-- mkDir " + path);
             fs.removeRecursive(p,function(err,status){
                 if (err) {
                     logger.error("socket.io <-- mkDir "+path);
@@ -1720,11 +1738,11 @@ function initSocketIO(_io) {
             if (JSON.stringify(obj) != content) {
                 logger.warn("ccu.io        writeFile strange JSON mismatch "+name);
             }
-            logger.verbose("socket.io <-- writeFile "+name+" "+content);
+            logger.debug("socket.io <-- writeFile "+name+" "+content);
             fs.exists(settings.datastorePath+name, function (exists) {
                 if (exists) {
                     fs.rename(settings.datastorePath+name, settings.datastorePath+name+".bak", function() {
-                        logger.verbose("socket.io <-- writeFile created "+settings.datastorePath+name+".bak");
+                        logger.debug("socket.io <-- writeFile created "+settings.datastorePath+name+".bak");
                         fs.writeFile(settings.datastorePath+name, content);
                         if (callback) { callback(); }
                     });
@@ -1733,6 +1751,12 @@ function initSocketIO(_io) {
                     if (callback) { callback(); }
                 }
             });
+            // if the setting are updated, set the log-level (10s delayed)
+            if (name === "io-settings.json") {
+                logger.setLevel(obj.logging.level);
+                logger.info("changed log-level to: " + obj.logging.level);
+                settings.logging.level = obj.logging.level;
+            }
         });
 
         socket.on('writeAdapterSettings', function (adapter, obj, callback) {
@@ -1744,11 +1768,11 @@ function initSocketIO(_io) {
             if (JSON.stringify(obj) != content) {
                 logger.warn("ccu.io        writeFile strange JSON mismatch "+name);
             }
-            logger.verbose("socket.io <-- writeFile "+name+" "+content);
+            logger.debug("socket.io <-- writeFile "+name+" "+content);
             fs.exists(settings.datastorePath+name, function (exists) {
                 if (exists) {
                     fs.rename(settings.datastorePath+name, settings.datastorePath+name+".bak", function() {
-                        logger.verbose("socket.io <-- writeFile created "+settings.datastorePath+name+".bak");
+                        logger.debug("socket.io <-- writeFile created "+settings.datastorePath+name+".bak");
                         fs.writeFile(settings.datastorePath+name, content);
                         if (callback) { callback(); }
                     });
@@ -1762,11 +1786,11 @@ function initSocketIO(_io) {
         socket.on('writeRawFile', function (path, content, callback) {
             // Todo Fehler abfangen
 
-            logger.verbose("socket.io <-- writeRawFile "+path);
+            logger.debug("socket.io <-- writeRawFile "+path);
             fs.exists(__dirname+"/"+path, function (exists) {
                 if (exists) {
                     fs.rename(__dirname+"/"+path, __dirname+"/"+path+".bak", function() {
-                        logger.verbose("socket.io <-- writeRawFile created "+__dirname+"/"+path+".bak");
+                        logger.debug("socket.io <-- writeRawFile created "+__dirname+"/"+path+".bak");
                         fs.writeFile(__dirname+"/"+path, content);
                         if (callback) { callback(); }
                     });
@@ -1780,7 +1804,7 @@ function initSocketIO(_io) {
         socket.on('writeBase64', function (path, content, callback) {
             logger.info("socket.io <-- writeBase64 "+path);
 
-            fs.writeFile(__dirname+"/"+path, content, "base64", function(err){
+            fs.writeFile(__dirname+"/"+path, content, "base64", function(err) {
                 if (err) {
                     logger.error("socket.io <-- writeBase64 "+path);
                     callback(err)
@@ -1791,7 +1815,7 @@ function initSocketIO(_io) {
         });
 
         socket.on('readFile', function (name, callback) {
-            logger.verbose("socket.io <-- readFile "+name);
+            logger.debug("socket.io <-- readFile "+name);
 
             fs.readFile(settings.datastorePath+name, function (err, data) {
                 if (err) {
@@ -1810,8 +1834,57 @@ function initSocketIO(_io) {
             });
         });
 
+        socket.on('readLogFile', function (name, callback) {
+            logger.debug("socket.io <-- readLogFile " + name);
+
+            fs.readFile(settings.logPath + name, "utf-8", function (err, data) {
+                if (err) {
+                    logger.error("ccu.io        failed loading file "+settings.logPath+name);
+                    callback(undefined);
+                } else {
+                    try {
+                        var obj = data;
+                        callback(obj);
+                    } catch (e) {
+                        logger.warn("ccu.io        failed parsing file "+settings.logPath+name);
+                        callback(null, e);
+                    }
+
+                }
+            });
+        });
+
+        socket.on('tailLogFile', function(name, callback) {
+            logger.debug("socket.io <-- tailing on file: " + name);
+
+            // reset tailed file first
+            if (tailedFile) {
+                tailedFile.unwatch();
+                tailedFile = null;
+            }
+            tailedFile = new tail(settings.logPath + name);
+
+            tailedFile.on('line', function(data) {
+                // DO NOT LOG HERE -> it will be recursive...
+                //logger.debug("socket.io -> sending log-line from " + name);
+                socket.emit('appendToLog', [data], function(data){});
+            });
+            tailedFile.on('error', function(data) {
+                logger.debug("socket.io:   error on tail of " + name);
+                tailedFile.unwatch();
+            });
+        });
+
+        socket.on('unTailLogFile', function(callback) {
+            logger.debug("socket.io <-- Un-tailing watched file");
+            if (tailedFile) {
+                tailedFile.unwatch();
+            }
+            tailedFile = null;
+        });
+
         socket.on('readRawFile', function (name, callback) {
-            logger.verbose("socket.io <-- readFile "+name);
+            logger.debug("socket.io <-- readFile "+name);
 
             fs.readFile(__dirname+"/"+name, function (err, data) {
                 if (err) {
@@ -1824,7 +1897,7 @@ function initSocketIO(_io) {
         });
 
         socket.on('readBase64', function (name, callback) {
-            logger.verbose("socket.io <-- readFile "+name);
+            logger.debug("socket.io <-- readFile "+name);
 
             fs.readFile(__dirname+"/"+name,"base64", function (err, data) {
                 if (err) {
@@ -1840,7 +1913,7 @@ function initSocketIO(_io) {
         });
 
         socket.on('touchFile', function (name, callback) {
-            logger.verbose("socket.io <-- touchFile "+name);
+            logger.debug("socket.io <-- touchFile "+name);
             if (!fs.existsSync(__dirname+"/"+name)) {
                 logger.info("ccu.io        creating empty file "+name);
                 var stream = fs.createWriteStream(__dirname+"/"+name);
@@ -1862,7 +1935,7 @@ function initSocketIO(_io) {
         });
 
         socket.on('readJsonFile', function (name, callback) {
-            logger.verbose("socket.io <-- readFile "+name);
+            logger.debug("socket.io <-- readFile "+name);
 
             fs.readFile(__dirname + "/" + name, function (err, data) {
                 if (err) {
@@ -1933,34 +2006,34 @@ function initSocketIO(_io) {
         });
 
         socket.on('getDatapoints', function(callback) {
-            logger.verbose("socket.io <-- getData");
+            logger.debug("socket.io <-- getData");
 
             callback(datapoints);
         });
 
         socket.on('getDatapoint', function(id, callback) {
-            logger.verbose("socket.io <-- getDatapoint " + id);
+            logger.debug("socket.io <-- getDatapoint " + id);
 
             callback(id, datapoints[id]);
         });
 		
         socket.on('getObjects', function(callback) {
-            logger.verbose("socket.io <-- getObjects");
+            logger.debug("socket.io <-- getObjects");
             callback(regaObjects);
         });
 
         socket.on('getIndex', function(callback) {
-            logger.verbose("socket.io <-- getIndex");
+            logger.debug("socket.io <-- getIndex");
             callback(regaIndex);
         });
 
         socket.on('getStringtable', function(callback) {
-            logger.verbose("socket.io <-- getStringtable");
+            logger.debug("socket.io <-- getStringtable");
             callback(stringtable);
         });
 
         socket.on('addStringVariable', function(name, desc, str, callback) {
-            logger.verbose("socket.io <-- addStringVariable");
+            logger.debug("socket.io <-- addStringVariable");
             regahss.addStringVariable(name, desc, str, function (id) {
                 if (id) {
                     var ts = formatTimestamp();
@@ -2017,8 +2090,6 @@ function initSocketIO(_io) {
                 savePersistentObjects();
             }
         }
-
-
 
         function setObject(id, obj, callback) {
             if (!obj) {
@@ -2148,7 +2219,7 @@ function initSocketIO(_io) {
                     obj.ValueUnit = "";
                 }
                 if (!datapoints[id] || obj.Value) {
-                    logger.verbose("adding dp "+id);
+                    logger.debug("adding dp "+id);
                     datapoints[id] = [obj.Value, formatTimestamp()];
                 }
             }
@@ -2166,7 +2237,7 @@ function initSocketIO(_io) {
 
         // Eine Homematic Servicemeldung bestätigen
         socket.on('alarmReceipt', function (id) {
-            logger.verbose("rega          alarmReceipt "+id+" "+regaObjects[id].Name);
+            logger.debug("rega          alarmReceipt "+id+" "+regaObjects[id].Name);
             regahss.script("dom.GetObject("+id+").AlReceipt();");
         });
 
@@ -2197,7 +2268,7 @@ function initSocketIO(_io) {
         socket.on('programExecute', programExecute);
 
         socket.on('runScript', function(script, callback) {
-            logger.verbose("socket.io <-- script");
+            logger.debug("socket.io <-- script");
             regahss.script(script, function (data) {
                 if (callback) { callback(data); }
             });
@@ -2205,13 +2276,15 @@ function initSocketIO(_io) {
 
         socket.on('disconnect', function () {
             var address = socket.handshake.address;
-            logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " disconnected");
+            if (address) {
+                logger.debug("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " disconnected");
+            }
             socketlist.splice(socketlist.indexOf(socket), 1);
         });
 
         socket.on('close', function () {
             var address = socket.handshake.address;
-            logger.verbose("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " closed");
+            logger.debug("socket.io <-- " + address.address + ":" + address.port + " " + socket.transport + " closed");
             socketlist.splice(socketlist.indexOf(socket), 1);
         });
     });
@@ -2220,8 +2293,8 @@ function initSocketIO(_io) {
 
 function startScriptEngine() {
     var path = __dirname + "/script-engine.js";
-    logger.info("ccu.io        starting script-engine");
     childScriptEngine = childProcess.fork(path);
+    logger.info("ccu.io        starting script-engine");
 }
 
 function restartAdapter(adapter) {
@@ -2446,11 +2519,11 @@ function stop() {
 var quitCounter = 0;
 
 function quit() {
-    logger.verbose("ccu.io        quit");
+    logger.debug("ccu.io        quit");
     if (regahss.pendingRequests > 0) {
         quitCounter += 1;
         if (quitCounter > 20) {
-            logger.verbose("rega          waited too long ...");
+            logger.debug("rega          waited too long ...");
             logger.info("ccu.io uptime "+stats.uptime());
             logger.info("ccu.io        terminating");
             setTimeout(function () {
@@ -2469,54 +2542,6 @@ function quit() {
     }
 }
 
-function cacheLog(str) {
-    devlogCache.push(str);
-}
-
-var logMoving = [];
-
-function writeLog() {
-
-    if (logMoving[settings.logging.file]) {
-        setTimeout(writeLog, 250);
-        return false;
-    }
-
-    var tmp = devlogCache;
-    devlogCache = [];
-
-    var l = tmp.length;
-    logger.verbose("ccu.io        writing "+l+" lines to "+settings.logging.file);
-
-    var file = __dirname+"/log/"+settings.logging.file;
-
-    fs.appendFile(file, tmp.join(""), function (err) {
-        if (err) {
-            logger.error("ccu.io        writing to "+settings.logging.file + " error: "+JSON.stringify(err));
-        }
-    });
-
-}
-
-function moveLog(file) {
-    logMoving[file] = true;
-    setTimeout(moveLog, 86400000);
-    var ts = (new Date()).getTime() - 3600000;
-    ts = new Date(ts);
-
-
-    var timestamp = ts.getFullYear() + '-' +
-        ("0" + (ts.getMonth() + 1).toString(10)).slice(-2) + '-' +
-        ("0" + (ts.getDate()).toString(10)).slice(-2);
-
-    logger.info("ccu.io        moving Logfile "+file+" "+timestamp);
-
-    fs.rename(__dirname+"/log/"+file, __dirname+"/log/"+file+"."+timestamp, function() {
-        logMoving[file] = false;
-    });
-
-}
-
 function devLog(ts, id, val) {
 
     if (typeof val === "string") {
@@ -2526,7 +2551,7 @@ function devLog(ts, id, val) {
             val = parseFloat(val);
         }
     }
-    cacheLog(ts+" "+id+" "+JSON.stringify(val)+"\n");
+    logger_dv.debug(ts + " " + id + " " + JSON.stringify(val));
 }
 
 function savePersistentObjects() {
@@ -2562,7 +2587,7 @@ function loadPersistentObjects() {
             if (obj.Address) {
                 regaIndex.Address[obj.Address] = [idInt, obj.TypeName, obj.Parent];
             }
-            logger.verbose("persistent added "+JSON.stringify(obj));
+            logger.debug("persistent added "+JSON.stringify(obj));
 
         }
         regaObjects = x;

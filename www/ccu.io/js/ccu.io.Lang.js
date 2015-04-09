@@ -41,7 +41,7 @@ var ccuWords = {
     "Enabled"           : {"en": "Enabled",              "de": "Ein",                 "ru": "Включено"},
     "Interval (minutes)": {"en": "Interval (minutes)",   "de": "Intervall (Minuten)", "ru": "Интервал (минуты)"},
     "Logging"           : {"en": "Logging",              "de": "Protokollierung",     "ru": "Протокол"},
-    "Write Interval (s)": {"en": "Write Interval (s)",   "de": "Schreibintervall (s)","ru": "Интервал записи (сек)"},
+    "Level"             : {"en": "Level",                "de": "Level",               "ru": "Level"},
     "Script-Engine"     : {"en": "Script-Engine",        "de": "Script-Engine",       "ru": "Script-Engine"},
     "Longitude"         : {"en": "Longitude",            "de": "Längengrad",          "ru": "Градус долготы"},
     "Latitude"          : {"en": "Latitude",             "de": "Breitengrad",         "ru": "Градус широты"},

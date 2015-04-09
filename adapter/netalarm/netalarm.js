@@ -87,16 +87,11 @@ var simulateStat = "21:0:0:92:96:1:1:1:1:0:0:";
         logger.warn("adapter netalarm: Got error by post request " + e.message);
     });
 }*/
- 
+
 if (settings.ioListenPort) {
-    ccu_socket = io_client.connect("127.0.0.1", {
-        port: settings.ioListenPort
-    });
+    socket = io("http://127.0.0.1:" + settings.ioListenPort);
 } else if (settings.ioListenPortSsl) {
-    ccu_socket = io_client.connect("127.0.0.1", {
-        port: settings.ioListenPortSsl,
-        secure: true
-    });
+    socket = io("https://127.0.0.1:" + settings.ioListenPortSsl);
 } else {
     process.exit();
 }

@@ -70,16 +70,11 @@ var objects     = {},
     pollTimer   = null,
     ccu_socket  = null,
     control_id ;
-  
+
 if (settings.ioListenPort) {
-    ccu_socket = io_client.connect("127.0.0.1", {
-        port: settings.ioListenPort
-    });
+    socket = io("http://127.0.0.1:" + settings.ioListenPort);
 } else if (settings.ioListenPortSsl) {
-    ccu_socket = io_client.connect("127.0.0.1", {
-        port: settings.ioListenPortSsl,
-        secure: true
-    });
+    socket = io("https://127.0.0.1:" + settings.ioListenPortSsl);
 } else {
     process.exit();
 }
