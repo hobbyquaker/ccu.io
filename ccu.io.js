@@ -770,7 +770,7 @@ function uploadParser(req, res, next) {
     fs.rename(tmpPath, targetPath, function(err) {
         if (err) throw err;
         // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-        fs.unlink(tmpPath, function() {
+        fs.unlink(tmpPath, function(err) {
             if (err) throw err;
             res.send('File uploaded to: ' + targetPath + ' - ' + req.files.file.size + ' bytes');
         });
