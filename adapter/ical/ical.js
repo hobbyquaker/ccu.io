@@ -20,7 +20,8 @@ var icalSettings = settings.adapters.ical.settings;
 var logger = require(__dirname+'/../../logger.js'),
     io     = require('socket.io-client'),
     RRule  = require('rrule').RRule,
-    ical   = require('ical');
+    ical   = require('ical'),
+    ce     = require('cloneextend');
 
 var objects       = {},
 	datapoints    = {},
@@ -42,6 +43,7 @@ var colorize         = icalSettings.colorize;
 var replaceDates     = icalSettings.replaceDates;
 var todayString      = icalSettings.todayString;
 var tomorrowString   = icalSettings.tomorrowString;
+var dayafterString   = icalSettings.dayafterString;
 var debug            = icalSettings.debug;
 var everyCalOneColor = icalSettings.everyCalOneColor;
 
@@ -50,6 +52,8 @@ var warn     = fontboldred + "<span class='icalWarn'>";
 var warn2    = "</span></span>" + fontnormalred + "<span class='icalWarn2'>";
 var prewarn  = fontboldorange + "<span class='icalPreWarn'>";
 var prewarn2 = "</span></span>" + fontnormalorange + "<span class='icalPreWarn2'>";
+var preprewarn  = prewarn;
+var preprewarn2 = prewarn2;
 var normal   = fontbold + "<span class='icalNormal'>";
 var normal2  = "</span></span>" + fontnormal + "<span class='icalNormal2'>";
 
@@ -221,23 +225,28 @@ function checkiCal (loc, count, calName, cb) {
                             //Termine innerhalb des Zeitfensters
                             if (dates.length > 0) {
                                 for (var i = 0; i < dates.length; i++) {
+                                    // ein deep-copy clone anlegen da ansonsten das setDate&co
+                                    // die daten eines anderes Eintrages überschreiben
+                                    var ev2 = ce.clone(ev);
+
                                     //Datum ersetzen für jeden einzelnen Termin in RRule
                                     //TODO: funktioniert nur mit Terminen innerhalb eines Tages, da auch das EndDate ersetzt wird
-                                    ev.start.setDate(dates[i].getDate());
-                                    ev.start.setMonth(dates[i].getMonth());
-                                    ev.start.setFullYear(dates[i].getFullYear());
+                                    ev2.start.setDate(dates[i].getDate());
+                                    ev2.start.setMonth(dates[i].getMonth());
+                                    ev2.start.setFullYear(dates[i].getFullYear());
                                     
-                                    ev.end.setDate(dates[i].getDate());
-                                    ev.end.setMonth(dates[i].getMonth());
-                                    ev.end.setFullYear(dates[i].getFullYear());
+                                    ev2.end.setDate(dates[i].getDate());
+                                    ev2.end.setMonth(dates[i].getMonth());
+                                    ev2.end.setFullYear(dates[i].getFullYear());
+
                                     //Termin auswerten
-                                    if (ev.exdate) {
+                                    if (ev2.exdate) {
                                         //Wenn es exdate
-                                        if (ev.exdate != today) {
-                                            checkDates(ev, endpreview, today, realnow," rrule ", _calName);
+                                        if (ev2.exdate != today) {
+                                            checkDates(ev2, endpreview, today, realnow," rrule ", _calName);
                                         }
                                     } else {
-                                        checkDates(ev, endpreview, today, realnow," rrule ", _calName);
+                                        checkDates(ev2, endpreview, today, realnow," rrule ", _calName);
                                     }
                                 }
                             } else {
@@ -344,7 +353,7 @@ function checkDates (ev, endpreview, today, realnow, rule, calName) {
         }
     }
 }
-function colorizeDates(date, today, tomorrow, col) {
+function colorizeDates(date, today, tomorrow, dayafter, col) {
      var result = {
          prefix: normal,
          suffix: normal2
@@ -362,6 +371,10 @@ function colorizeDates(date, today, tomorrow, col) {
         if (date.compare(tomorrow) == 0) {
             result.prefix = prewarn;
             result.suffix = prewarn2;
+        } else
+        if (date.compare(dayafter) == 0) {
+            result.prefix = preprewarn;
+            result.suffix = preprewarn2;
         } else
         //Starttermin in der Vergangenheit
         if (date.compare(today) == -1) {
@@ -584,6 +597,12 @@ function formatDate (_date, withTime) {
         year  == d.getFullYear()) {
         _class = 'ical_tomorrow';
     }
+    d.setDate(d.getDate() + 1);
+    if (day   == d.getDate() &&
+        month == (d.getMonth() + 1) &&
+        year  == d.getFullYear()) {
+        _class = 'ical_dayafter';
+    }
 
     if (replaceDates) { 
         if (_class == 'ical_today') {
@@ -591,6 +610,9 @@ function formatDate (_date, withTime) {
         }
         if (_class == 'ical_tomorrow') {
             return {text: tomorrowString + _time, _class: _class};
+        }
+        if (_class == 'ical_dayafter') {
+            return {text: dayafterString + _time, _class: _class};
         }
     }
 
@@ -666,13 +688,16 @@ function brSeparatedList(arr) {
 
     var today    = new Date();
     var tomorrow = new Date();
+    var dayafter = new Date();
     today.setHours(0,0,0,0);
     tomorrow.setDate(today.getDate() + 1);
     tomorrow.setHours(0,0,0,0);
+    dayafter.setDate(tomorrow.getDate() + 1);
+    dayafter.setHours(0,0,0,0);
 
     for (var i = 0; i < noFormatDates.length; i++) {
         var date = formatDate(noFormatDates[i]._date, true);
-        var xfix = colorizeDates(noFormatDates[i]._date, today, tomorrow, icalSettings["Calendar"][noFormatDates[i]._calName]["calColor"]);
+        var xfix = colorizeDates(noFormatDates[i]._date, today, tomorrow, dayafter, icalSettings["Calendar"][noFormatDates[i]._calName]["calColor"]);
 
         if (!first) {
             text += "<br/>";
