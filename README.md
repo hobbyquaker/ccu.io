@@ -1,13 +1,13 @@
 CCU.IO
 ======
 
-*Latest version: 1.0.52 (2015.04.03)*
+*Latest version: 1.0.52 (2015.04.09)*
 
-**Core developers are now engaged in [ioBroker](http://https://github.com/ioBroker) ([Forums](http://forum.iobroker.org)), the CCU.IO-successor**
+**Original developers are now engaged in [ioBroker](http://https://github.com/ioBroker) ([Forums](http://forum.iobroker.org)), the CCU.IO-successor**
 
 **New Users**: please don't start using CCU.IO, use ioBroker instead!
 
-**CCU.IO Users**: Please consider migration to ioBroker now!
+**CCU.IO Users**: Please consider migration to ioBroker!
 
 
 ## Documentation
@@ -18,7 +18,7 @@ CCU.IO
 
 ## Changelog
 
-### 1.0.52 [2015.04.03]
+### 1.0.52 [2015.04.09]
 
 * (thorque) Adapter Hue: Adding support for Hue groups
 * (jens-maus) Adapter iCal: fixed a bug in the ical adapter for two events with the same name!
@@ -30,6 +30,9 @@ CCU.IO
 * (Giermann) Fix: Remove obsolete setTimeout inside moveLog
 * (Giermann) Adapter Roomba: Fix missing settings.json
 * (BlueEssi) Adapter Denon: Implemented some more features, e.g. now you can switch between soundmodes cinema, music or game
+* (Hobbyquaker) Fix: saveAdapterSettings and increased verbosity - needs further testing
+* (Hobbyquaker) Fix: pollRega timeout. Hoffe durch CCU.IO lahmgelegte Regas gehören damit der Vergangenheit an
+* (Hobbyquaker) Fix: minor UI issues
 
 ### 1.0.51 [2015.01.26]
 * (bluefox) try to fix version
@@ -693,7 +696,7 @@ CCU.IO
 
 ## Lizenz
 
-Copyright (c) 2013-2014 hobbyquaker [http://hobbyquaker.github.io](http://hobbyquaker.github.io)
+Copyright (c) 2013-2015 hobbyquaker [http://hobbyquaker.github.io](http://hobbyquaker.github.io)
 
 Lizenz: [CC BY-NC 3.0](http://creativecommons.org/licenses/by-nc/3.0/de/)
 
