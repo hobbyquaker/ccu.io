@@ -1294,11 +1294,11 @@ $(document).ready(function () {
 
     }
 
-    function saveAdapterSettings() {
+    function saveAdapterSettings(cb) {
         var adapter = $("#adapter_name").html();
         if (!adapter) {
             showMessage("Error: adapter_name empty");
-            return false;
+            if (typeof cb === 'function') cb();
         }
 
         try {
@@ -1313,7 +1313,7 @@ $(document).ready(function () {
         socket.emit("writeAdapterSettings", adapter, ccuIoSettings.adapters[adapter], function () {
             showMessage(adapter + " " + translateWord("settings saved."));
             loadAdapterSettings(adapter);
-            return true;
+            if (typeof cb === 'function') cb();
         });
     }
 
@@ -1338,10 +1338,10 @@ $(document).ready(function () {
     $("#adapter_save").button().click(saveAdapterSettings);
 
     $("#adapter_close").button().click(function () {
-        if (saveAdapterSettings()) {
+        saveAdapterSettings(function () {
             $("#adapter_config").hide();
             $("#adapter_overview").show();
-        }
+        });
     });
 
     $("#adapter_cancel").button().click(function () {
