@@ -143,7 +143,7 @@ function sayItGetSpeechGoogle (i_, text, language, volume, callback) {
     var options = {
         host: 'translate.google.com',
         //port: 80,
-        path: '/translate_tts?q=' + querystring.escape(text) + '&tl=' + language
+        path: '/translate_tts?q=' + querystring.escape(text) + '&tl=' + language + '&client=t'
     };
 
     if (language == "ru") {
