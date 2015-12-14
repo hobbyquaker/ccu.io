@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>CCU.IO Сайт</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/bootstrap.slate.min.css" rel="stylesheet">
+    <link href="css/ccu.io.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+
+
+    </style>
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-46469898-1', 'ccu.io');
+        ga('send', 'pageview');
+
+    </script>
+
+</head>
+<body data-spy="scroll" data-target="#sidebar">
+<div class="navbar navbar-default navbar-fixed-top container" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a title="Стартовая страница" class="navbar-brand" href="index.html">CCU.IO</a>
+        <div id="lang_select" style="height:78%">
+            <table style="height:100%; background:rgba(0,0,0,0)"><tr>
+                <td><a href="../manual.html"><img src="img/de_de.gif"></a></td>
+                <td><img style="padding-left:5px" src="img/ru_ru.gif"></td>
+            </tr></table>
+        </div>
+    </div>
+    <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li><a href="addons.html">Дополнения</a></li>
+            <li><a href="adapter.html">Драйвера</a></li>
+            <li class="active"><a href="#">Документация</a></li>
+            <li><a href="contribute.html">Разработка</a></li>
+            <li><a href="download.html">Загрузки</a></li>
+            <li><a href="http://forum.iobroker.com/viewforum.php?f=4" target="_blank">Форум</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a title="О сайте" href="impress.html">О сайте</a></li>
+        </ul>
+    </div><!--/.nav-collapse -->
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+            <div id="sidebar" class="" style="margin-top:65px;">
+                <ul class="nav">
+                    <li><a title="Документация - Что такое CCU.IO?" href="#whatis">Что такое CCU.IO?</a></li>
+                    <li><a title="Документация - Инсталляция" href="#install">Инсталляция</a></li>
+                    <li><a title="Документация - Настройка" href="#config">Настройка</a></li>
+                    <li><a title="Документация - Обновления" href="#updates">Обновления</a></li>
+                    <li><a title="Документация - Резервная копия" href="#backup">Резервная копия</a></li>
+                    <li><a title="Документация - SimpleAPI" href="#simpleapi">SimpleAPI</a></li>
+                    <li><a title="Документация - Script-Engine" href="#scripting" >Script-Engine</a>
+                        <ul style="padding-left: 20px" class="nav nav-stacked" id="subscripting">
+                            <li><a title="Документация - Script-Engine - Функции" href="#scriptfunctions">Функции</a></li>
+                            <li><a title="Документация - Script-Engine - Subscribe" href="#scriptsubscribe">subscribe</a></li>
+                            <li><a title="Документация - Script-Engine - Schedule" href="#scriptschedule">schedule</a></li>
+
+                        </ul>
+
+                    </li>
+                    <li><a title="Dokumentation - Socket.IO" href="#socket">Socket.IO</a></li>
+
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <a name="whatis"></a><h1 id="whatis" style="padding-top:65px;">Что такое CCU.IO?</h1>
+            <hr>
+            <p>CCU.IO это программа, написанная на Node.js и служащая для автоматизации различного домашнего (и не очень) оборудования.
+                При помощи встроенного веб-сервера CCU.IO выступает платформой для визуализации и позволяет отображать события с использованием Socket.IO библиотеки.
+                Нет постоянных запросов к серверу (no-polling), а сервер сам говорит, когда нужно обновить графический элемент.
+                Ресурсоёмкий процесс постоянных запросов отпадает и таким образом уменьшается время реакции на события.
+                Дополнительно CCU.IO выступает, как прокси между визуализацией и приборами. Не важно, сколько запущено копий визуализации, нагрузка на приборы всегда низкая.</p>
+            <p>Можно подключать новое оборудование через, так называемые, драйверы. На данный момент существуют драйвера для Philips Hue, Sonos, IRTrans, подключение к базе данных MySQL, а также различных веб-сервисов (Погода, валюта, почта, pushover). Некоторые новые драйвера находятся в разработке или запланированы на ближайшее будущее.</p>
+            <p>Интегрированный в CCU.IO механизм скриптов позволяет автоматизировать системы при помощи языка JavaScript. Все возможности среды Node.JS можно использовать и в скриптах (например доступ к дисковой системе, сетевые функции и т.д.) Также можно использовать огромное количество готовых библиотек через npm.</p>
+            <p>CCU.IO это открытое программное обеспечение.</p>
+            <a name="install"></a><h1 id="install">Инсталляция.</h1>
+            <hr>
+            <p>Требования: для платформы нужен работающий бинарный файл Node.js с версией больше 0.10. Скачать можно либо с официального сайта <a href="http://nodejs.org/download/">http://nodejs.org/download/</a> или <a href="http://ccu.io/download.html">здесь</a>.</p>
+            <h3 id="-windows-">Инсталляция под Windows:</h3>
+            <ul>
+                <li>Скачать <a href="http://dashui.ccu.io/download/ccu.ioInstaller.latest.exe">http://dashui.ccu.io/download/ccu.ioInstaller.latest.exe</a> и запустить (Node.js дополнительно не нужен)</li>
+            </ul>
+            <h3 id="-debian-raspberypi-">Инсталляция Debian-пакета (RaspberyPI):</h3>
+            <p>Войти в консоль raspberry под именем &quot;pi&quot; и для инсталляции Node.js и CCU.IO выполнить:</p>
+<pre><code>wget http://ccu.io.mainskater.de/nodejs_0.10.22-1_armhf.deb
+    wget http://ccu.io.mainskater.de/ccu.io_1.0.29.deb
+    sudo dpkg -i nodejs_0.10.22-1_armhf.deb
+    sudo dpkg -i ccu.io_1.0.29.deb
+</code></pre><ul>
+                <li>вызвать веб интерфейс для настроек: <a href="http://hostname:8080/ccu.io">http://hostname:8080/ccu.io</a></li>
+                <li>настроить язык (русский в основном присутствует), настроить адаптеры и перезапустить ccu.io в CCU.IO -&gt; Контроль -&gt; Перезапуск CCU.IO</li>
+            </ul>
+            <h3 >Инсталляция в ручном режиме:</h3>
+            <ul>
+				<li>Установить Node.js <a href="download.html">отсюда</a><br>(Под Ubuntu или Debian: Скачать Linux Binaries (.tar.gz) файл отсюда - <a href="http://nodejs.org/download/" target="_blank">http://nodejs.org/download/</a> и распаковать полученный .tar.gz файл в папку /usr</li>
+                <li>скачать и распаковать файл с CCU.IO <a href="https://github.com/hobbyquaker/ccu.io/archive/master.zip">https://github.com/hobbyquaker/ccu.io/archive/master.zip</a> </li>
+                <li>перейти в распакованную папку</li>
+                <li>запустить CCU.IO сервер: <em>node ccu.io-server.js start</em> или под windows: <em>node.exe ccu.io-server.js start</em></li>
+                <li>вызвать веб интерфейс для настроек: <a href="http://hostname:8080/ccu.io">http://hostname:8080/ccu.io</a></li>
+                <li>настроить язык (русский в основном присутствует), настроить адаптеры и перезапустить ccu.io в CCU.IO -&gt; Контроль -&gt; Перезапуск CCU.IO
+                    [IMAGE]<br>Остается необходимость автоматического запуска сервера при старте компьютера/системы, но это решаемо.</li>
+            </ul>
+            <h3 >Протестированные платформы:</h3>
+            <ul>
+                <li>Raspbian (RaspberryPi)</li>
+                <li>Cubian (Cubieboard/Cubietruck)</li>
+                <li>RCU (CCU2 Firmware auf RaspberryPi)</li>
+                <li>Homematic CCU2</li>
+                <li>Mac OS X</li>
+                <li>Windows</li>
+                <li>x86 und amd64 Linux</li>
+                <li>QNAP TS-469 Pro (скорей всего будет работать и на других x86 QNAP NAS)</li>
+                <li>QNAP TS-419II (скорей всего будет работать и на других ARM QNAP NAS)</li>
+                <li>Synology DS212, DS214play, DS412+, DS413j (скорей всего будет работать и на других ARM- и Atom- Synolgy)</li>
+                <li>Western Digital My Cloud</li>
+                <li>Odroid with Debian.</li>
+                <li>BananaPi with Raspbian </li>
+            </ul>
+            <p>Из конфигурационной страницы CCU.IO можно установить и обновить все другие дополнения:<br>[IMAGE]</p>
+            <p>Не советуется новичкам начинать с установки на редкие системы (как QNAP, Synology или My Cloud). Потренируйтесь сначала под Windows или RaspberryPi, а потом можно систему перенести на другую платформу.</p>
+
+
+
+            <a name="config"></a><h1 id="config">Настройка</h1>
+            <hr>
+            <p>Настройка CCU.IO происходит через веб-интерфейс по адресу <a href="http://ip_address:8080/ccu.io/">http://ip_address:8080/ccu.io/</a> или <a href="http://localhost:8080/ccu.io/">http://localhost:8080/ccu.io/</a> , если CCU.IO установлена на локальной системе.<br>На закладке &quot;CCU.IO -&gt; Настройки&quot; можно настроить базовые параметры системы. На закладке &quot;Драйвера&quot; можно настроить каждый драйвер в отдельности.<br>После изменения настроек (как CCU.IO, так и драйверов) необходимо перезапустить систему.</p>
+            <h3 >Базовые настройки системы</h3>
+            <p>CCU.IO IP адрес (не путать с просто адресом CCU)<br>Адрес хоста на котором запущена сама CCU.IO (не путать с просто адресом CCU)<br>Для некоторых драйверов необходимо знать собственный IP адрес.</p>
+            <h3 >Статистика</h3>
+            <p>Если активировано, то каждые пол-часа в логах будет появляться статистическая информация о пакетах и сообщениях</p>
+            <h3 >Протокол</h3>
+            <p>Если эта опция активирована, то все события и изменения переменных будут записываться в протокол и их впоследствии можно просмотреть с EventList или построить графики с Highcharts.<br>Интервал говорит о том, как часто протокол из оперативной памяти будет сбрасываться на диск.</p>
+            <h3 id="script-engine">Script-Engine</h3>
+            <p>Активирует механизм пользовательских скриптов. Все скрипты в папке ccu.io/scripts будут выполняться при старте системы.</p>
+            <h3 >Широта и долгота</h3>
+            <p>Используются для вычисления восхода и захода солнца для скриптов.</p>
+            <h3 id="web-">Web Сервер</h3>
+            <p>Здесь можно настроить параметры для веб-сервера. Включить или выключить веб сервер по защищенному протоколу, установить пароли или порт. Не советуется отключать оба сервера, т.к. потом нет возможности активировать их через веб интерфейс.</p>
+            <h3 id="homematic-rpc-homematic-regahss">HomeMatic RPC и HomeMatic ReGaHSS</h3>
+            <p>используются для настройки HomeMatic - система автоматизации дома. Необходимо соответствующее оборудование.</p>
+
+
+            <a name="updates"></a><h1 id="updates">Обновления</h1>
+            <p>Перед каждым обновлением рекомендуется сделать резервную копию системы, хотя все настройки и папки log, scripts, www останутся неизменными. </p>
+            <p>CCU.IO можно обновить с главной страницы настроек. Просто нажать кнопку проверить и если есть новая версия программы, повторно нажать кнопку. Эта процедура может занять на слабом оборудовании или медленном интернет соединении длительное время. </p>
+            <p>Changelog можно посмотреть на Github. <a href="https://github.com/hobbyquaker/ccu.io">https://github.com/hobbyquaker/ccu.io</a></p>
+
+
+
+
+
+            <a name="backup"></a><h1 id="backup">Резервная копия</h1>
+            <hr>
+            <p> todo.</p>
+
+
+
+
+
+            <a name="simpleapi"></a><h1 id="simpleapi">SimpleAPI</h1>
+            <hr>
+            <p>Дополнительно к Socket.IO интерфейсу существует возможность использовать основанный на HTTP-GET-Requests интерфейс.   Данные возвращаются в виде текста или в виде JSON объекта.<br>Можно использовать следующие команды:</p>
+            <h4 id="get">get</h4>
+            <p>Опросить состояние объекта. Возвращает данные в JSON формате.
+                Пример
+                Опросить объект по ID</p>
+<pre><code>http://ccu-io-host:ccu.io-port/api/get/950
+</code></pre><p>Опросить объект по имени</p>
+<pre><code>http://ccu-io-host:ccu.io-port/api/get/ЕстьКтоДома
+</code></pre><p>Опросить объект по имени канала и атрибуту</p>
+<pre><code>http://ccu-io-host:ccu.io-port/api/get/Свет-Кухня/LEVEL
+</code></pre><p>Опросить объект по адресу</p>
+<pre><code>http://ccu-io-host:ccu.io-port/api/get/FEQ1234567:1/LEVEL
+</code></pre><p>Опросить объект по адресу</p>
+<pre><code>http://ccu-io-host:ccu.io-port/api/get/BidCos-RF.FEQ1234567:1.LEVEL
+</code></pre><h4 id="getplainvalue">getPlainValue</h4>
+            <p>Опросить состояние объекта. Возвращает данные как обычный текст.
+                Можно использовать виды опроса, как с get методом. Эту функцию можно применять только к данным и переменным. Опросить все атрибуты канала с этой функцией не получиться:</p>
+<pre><code>http://ccu-io-host:ccu.io-port/api/getPlainValue/950
+</code></pre><h4 id="set">set</h4>
+            <p>Установить значение данных или переменной. Можно использовать все возможности адресации, как get, но можно применять только к данным и переменным.</p>
+<pre><code>http://ccu-io-host:ccu.io-port/api/set/BidCos-RF.FEQ1234567:1.LEVEL/?value=0.7
+    http://ccu-io-host:ccu.io-port/api/set/Свет-Кухня/LEVEL/?value=0.7
+    http://ccu-io-host:ccu.io-port/api/set/ЕстьКтоДома/?value=0
+    http://ccu-io-host:ccu.io-port/api/set/950/?value=1
+</code></pre><h4 id="setbulk">setBulk</h4>
+            <p>Установить значения сразу нескольких переменных или данных.<br>Можно использовать POST запросы. В зависимости от Content-Type Header данные будут интепретированы, как JSON или как просто текст.</p>
+<pre><code>http://ccu-io-host:ccu.io-port/api/setBulk/?BidCos-RF.FEQ1234567:1.LEVEL=0.7&amp;Свет-Кухня/LEVEL=0.7&amp;ЕстьКтоДома=0&amp;950=1
+</code></pre><h4 id="getobjects">getObjects</h4>
+            <p>Возвращает, как JSON все объекты из CCU.IO</p>
+<pre><code>http://ccu-io-host:ccu.io-port/api/getObjects
+</code></pre><h4 id="getindex">getIndex</h4>
+<pre><code>http://ccu-io-host:ccu.io-port/api/getIndex
+</code></pre><h4 id="getdatapoints">getDatapoints</h4>
+            <p>Возвращает, как JSON все значения объектов из CCU.IO</p>
+<pre><code>http://ccu-io-host:ccu.io-port/api/getDatapoints
+</code></pre>
+
+
+            <a name="scripting"></a><h1 id="scripting">ScriptEngine</h1>
+            <hr>
+            <p>Собственные скрипты можно просто разместить в папке scripts и они автоматически запустятся при старте Script-Engine. При добавлении новых скриптов или при изменении старых необходимо перезапустить CCU.IO или Script-Engine.<br>Это можно сделать через Web Интерфейс CCU.IO -&gt; Контроль</p>
+            <p>Следующие модули Node.js уже загружены в Script-Engine и их не нужно дополнительно подгружать:</p>
+            <ul>
+                <li>fs - доступ к файловой системе</li>
+                <li>request - HTTP запросы - <a href="https://github.com/mikeal/request">https://github.com/mikeal/request</a></li>
+                <li>wol - WakeOnLan - <a href="https://github.com/agnat/node_wake_on_lan">https://github.com/agnat/node_wake_on_lan</a></li>
+            </ul>
+
+
+            <a name="scriptfunctions"></a><h3 id="scriptfunctions">Функции</h3>
+            <p>Следующие функции можно использовать в собственных скриптах:</p>
+            <h4 id="log-msg-">log(msg)</h4>
+            <p>Записать что-нибудь в ccu.io/log/ccu.io.log</p>
+            <h4 id="getstate-id-dptype-">getState(id [,dpType])</h4>
+            <p>Возвращает значение переменной или данных.</p>
+<pre><code>var val = getState(950);
+    var val = getState(&quot;ЕстьКтоДома&quot;);
+    var val = getState(&quot;Свет-Кухня&quot;, &quot;LEVEL&quot;)
+    var val = getState(&quot;BidCos-RF.FEQ12345678.LEVEL&quot;);
+</code></pre><h4 id="setstate-id-val-">setState(id, val)</h4>
+            <p>Устанавливает значение переменной или данных устройства. Можно использовать ID, имя или адрес.</p>
+            <h4 id="setobject-id-object-">setObject(id, object)</h4>
+            <p>Создать переменную в CCU.IO</p>
+<pre><code>setObject(100015, {
+    Name: &quot;ЕстьКтоДома&quot;,
+    TypeName: &quot;VARDP&quot;
+    }, function () {
+    setState(100015, 0); // Установить значение, после создания переменной
+    });
+</code></pre><h4 id="wol-wake-mac-">wol.wake(mac)</h4>
+            <p>Послать WakeOnLan пакет к устройству с заданным MAC адресом.</p>
+<pre><code>wol.wake(&quot;20:DE:20:DE:20:DE&quot;);
+    wol.wake(&quot;20-DE-20-DE-20-DE&quot;);
+    wol.wake(&quot;20DE20DE20DE&quot;);
+</code></pre><h4 id="request-url-">request(url)</h4>
+            <p>Выполняет HTTP-GET запрос и возвращает содержание ответа.</p>
+<pre><code>request(&quot;http://user:pass@webservice.example.com/api/set/1&quot;);
+</code></pre><p>_</p>
+<pre><code>var url = &quot;http://user:pass@webservice.example.com/api/get&quot;;
+
+    request(url, function (error, response, body) {
+    log(&quot;webservice-запрос &quot; + url + &quot; возвращает: &quot; + body);
+    });
+</code></pre><p>Основан на пакете <a href="https://npmjs.org/package/request">request</a> для Node.js. Можно посмотреть и <a href="https://github.com/mikeal/request">здесь</a></p>
+            <h4 id="email-obj-">email(obj)</h4>
+            <p>Отсылает электронное письмо.</p>
+<pre><code>email({
+    to: &quot;ernie@sesamestreet.com&quot;,
+    subject: &quot;ccu.io&quot;,
+    text: &quot;Вода в подвале!!!&quot;
+    });
+</code></pre><p>Эта функция нуждается в сконфигурированном email драйвере.</p>
+            <h4 id="pushover-obj-">pushover(obj)</h4>
+            <p>Отсылает сообщение через pushover сервис.
+                pushover({
+                message:&quot;Окно в ванной надо закрыть.&quot;
+                });
+                Эта функция нуждается в сконфигурированном pushover драйвере.</p>
+
+
+
+            <a name="scriptsubscribe"></a><h4 id="subscribe">subscribe (pattern, callback)</h4>
+            <p>Подписаться на событие.
+                Объект pattern поддерживает следующее:</p>
+<pre><code>logic       string          логические операторы &quot;and&quot; и &quot;or&quot; можно использовать для нескольких правил (default: &quot;and&quot;)
+
+    id          integer         ID объекта равно
+
+    name        string          Имя объекта равно
+    RegExp          Имя объекта удовлетворяет регулярному выражению
+
+    change      string          &quot;eq&quot;, &quot;ne&quot;, &quot;gt&quot;, &quot;ge&quot;, &quot;lt&quot;, &quot;le&quot;
+    &quot;eq&quot;    Значение объекта не изменилось (val == oldval)
+    &quot;ne&quot;    Значение объекта изменилось (val != oldval)
+    &quot;gt&quot;    Значение объекта увеличилось (val &gt; oldval)
+    &quot;ge&quot;    Значение объекта увеличилось или не изменилось (val &gt;= oldval)
+    &quot;lt&quot;    Значение объекта уменьшилось (val &lt; oldval)
+    &quot;le&quot;    Значение объекта уменьшилось или не изменилось (val &lt;= oldval)
+
+    val         mixed           Значение объекта равно заданному значению.
+    valNe       mixed           Значение объекта не равно заданному значению.
+    valGt       mixed           Значение объекта больше заданного значения.
+    valGe       mixed           Значение объекта больше или равно заданного значения.
+    valLt       mixed           Значение объекта меньше заданного значения.
+    valLe       mixed           Значение объекта меньше или равно заданного значения.
+
+    ack         bool            Значение объекта от драйвера, а не от пользователя
+
+    oldVal      mixed           Старое значение объекта равно заданному значению.
+    oldValNe    mixed           Старое значение объекта не равно заданному значению.
+    oldValGt    mixed           Старое значение объекта больше заданного значения.
+    oldValGe    mixed           Старое значение объекта больше или равно заданного значения.
+    oldValLt    mixed           Старое значение объекта меньше заданного значения.
+    oldValLe    mixed           Старое значение объекта меньше или равно заданного значения.
+
+    oldAck      bool            Старое значение объекта от драйвера, а не от пользователя
+
+    ts          string          Время события не изменилось
+    tsGt        string          Время события увеличилось
+    tsGe        string          Время события увеличилось или равно
+    tsLt        string          Время события уменьшилось
+    tsLe        string          Время события уменьшилось или равно
+
+    oldTs       string          Старое время события не изменилось
+    oldTsGt     string          Старое время события увеличилось
+    oldTsGe     string          Старое время события увеличилось или равно
+    oldTsLt     string          Старое время события уменьшилось
+    oldTsLe     string          Старое время события уменьшилось или равно
+
+    lc          string          Время последнего изменения не изменилось
+    lcGt        string          Время последнего изменения увеличилось
+    lcGe        string          Время последнего изменения увеличилось или равно
+    lcLt        string          Время последнего изменения уменьшилось
+    lcLe        string          Время последнего изменения уменьшилось или равно
+
+    oldLc       string          Предыдущее время последнего изменения не изменилось
+    oldLcGt     string          Предыдущее время последнего изменения увеличилось
+    oldLcGe     string          Предыдущее время последнего изменения увеличилось или равн
+    oldLcLt     string          Предыдущее время последнего изменения уменьшилось
+    oldLcLe     string          Предыдущее время последнего изменения уменьшилось или равно
+
+    room        integer         ID комнаты равен заданному значению
+    string          Имя комнаты равно заданному значению
+    RegExp          Имя комнаты удовлетворяет заданному регулярному выражению
+
+    func        integer         ID роли равен заданному значению
+    string          Имя роли равно заданному значению
+    RegExp          Имя роли удовлетворяет заданному регулярному выражению
+
+    channel     integer         ID канала равен заданному значению
+    string          Имя канала равно заданному значению
+    RegExp          Имя канала удовлетворяет заданному регулярному выражению
+
+    device      integer         ID устройства равен заданному значению
+    string          Имя устройства равно заданному значению
+    RegExp          Имя устройства удовлетворяет заданному регулярному выражению
+
+    channelType string          Тип канала (HssType) равен заданному значению
+    RegExp          Тип канала (HssType) удовлетворяет заданному регулярному выражению
+
+    deviceType  string          Тип устройства (HssType) равен заданному значению
+    RegExp          Тип устройства (HssType) удовлетворяет заданному регулярному выражению
+</code></pre><p>Callback функция возвращает JavaScript объект со следующим содержанием: </p>
+<pre><code>{
+    id,
+    name,
+    newState: {
+    value,
+    timestamp,
+    ack,
+    lastchange
+    },
+    oldState: {
+    value,
+    timestamp,
+    ack,
+    lastchange
+    },
+    channel: {
+    id,
+    name,
+    type,
+    funcIds,
+    roomIds,
+    funcNames,
+    roomNames
+    },
+    device: {
+    id,
+    name,
+    type
+    }
+    }
+</code></pre><p><strong>funcIds, roomIds, funcNames</strong> и <strong>roomNames</strong> являются массивами Arrays (func = Роли)</p>
+            <h3 >Пример: Почтовый ящик</h3>
+            <p>Этот скрипт считает сколько раз бросили почту в почтовый ящик. &quot;id: 11928&quot; и change:&quot;ne&quot; подписываются на изменения значения объекта. Использованный в примере ID 11928 это ID состояния датчика на дверце почтового ящика. При помощи таймера отсеиваются срабатывания чаще, чем 30 секунд. Количество срабатываний записывается в переменную 100015, созданную здесь же при помощи setObject. Сразу после создания переменная будет обнулена. </p>
+<pre><code>var postboxTimer;
+    subscribe({id:11928, change:&quot;ne&quot;}, function (obj) { // можно использовать короткую форму on(11928, function(obj {...});
+    if (!postboxTimer) {
+
+    postboxTimer= true;
+    setTimeout(function () {
+    postboxTimer = undefined;
+    }, 30000);
+
+    setState(100015, 1 + getState(100015));
+    }
+    });
+
+    setObject(100015, {
+    Name: &quot;Postbox&quot;,
+    TypeName: &quot;VARDP&quot;
+    }, function () {
+    setState(100015, 0);
+    });
+</code></pre>
+
+
+
+            <a name="scriptschedule"></a>
+
+
+            <h4 id="scriptschedule">shedule(pattern, callback)</h4>
+            <p>Временные события с астро-функцией.
+                Паттерн может быть текстом с Cron-синтаксисом <a href="http://ru.wikipedia.org/wiki/Cron">http://ru.wikipedia.org/wiki/Cron</a></p>
+<pre><code>schedule(&quot;*/2 * * * *&quot;, function () {
+    log(&quot;Выполняется каждые две минуты!&quot;);
+    });
+</code></pre><p>Паттерн может быть также объектом (можно задавать с секундной точностью)</p>
+<pre><code>schedule({second: [20, 25]}, function () {
+    log(&quot;Исполняется каждые xx:xx:20 и xx:xx:25 !&quot;);
+    });
+
+    schedule({hour: 12, minute: 30}, function () {
+    log(&quot;Выполнено в 12:30!&quot;);
+    });
+</code></pre><p>Паттерн может быть JavaScript-Date объектом. В этом случае вызов будет только один раз.</p>
+            <h5 >Астро-функция</h5>
+            <p>С атрибутом astro можно использовать астро-функцию:</p>
+<pre><code>schedule({astro:&quot;sunrise&quot;}, function () {
+    log(&quot;Восход!&quot;);
+    });
+
+    schedule({astro:&quot;sunset&quot;, shift:10}, function () {
+    log(&quot;10 минут после заката солнца!&quot;);
+    });
+</code></pre><p>Атрибут shift - это сдвиг в минутах. Может быть так же отрицательным, что бы описать события перед закатом или восходом.</p>
+            <p>Следующие значения можно использовать для атрибута astro:</p>
+            <ul>
+                <li><strong>sunrise</strong>: sunrise (top edge of the sun appears on the horizon)</li>
+                <li><strong>sunriseEnd</strong>: sunrise ends (bottom edge of the sun touches the horizon)</li>
+                <li><strong>goldenHourEnd</strong>: morning golden hour (soft light, best time for photography) ends</li>
+                <li><strong>solarNoon</strong>: solar noon (sun is in the highest position)</li>
+                <li><strong>goldenHour</strong>: evening golden hour starts</li>
+                <li><strong>sunsetStart</strong>: sunset starts (bottom edge of the sun touches the horizon)</li>
+                <li><strong>sunset</strong>: sunset (sun disappears below the horizon, evening civil twilight starts)</li>
+                <li><strong>dusk</strong>: dusk (evening nautical twilight starts)</li>
+                <li><strong>nauticalDusk</strong>: nautical dusk (evening astronomical twilight starts)</li>
+                <li><strong>night</strong>: night starts (dark enough for astronomical observations)</li>
+                <li><strong>nightEnd</strong>: night ends (morning astronomical twilight starts)</li>
+                <li><strong>nauticalDawn</strong>: nautical dawn (morning nautical twilight starts)</li>
+                <li><strong>dawn</strong>: dawn (morning nautical twilight ends, morning civil twilight starts)</li>
+                <li><strong>nadir</strong>: nadir (darkest moment of the night, sun is in the lowest position)</li>
+            </ul>
+
+
+
+            <a name="socket"></a><h1 id="socket">Socket.IO Интерфейс</h1>
+            <hr>
+            <p>Socket.IO можно использовать не только для коммуникации через Web- Браузер. <a href="https://github.com/learnboost/socket.io/wiki#in-other-languages">Есть библиотеки для многих языков.</a><br>Sockrt.IO интерфейс используется драйверами для общения с CCU.IO.</p>
+            <p>Следующие методы использовать:</p>
+            <h3 id="ccu-io-client">CCU.IO =&gt; Client</h3>
+            <h4 id="event">event</h4>
+            <p>При каждом изменении переменной или состояния устройства CCU.IO генерирует событие event. Как параметр передается массив со следующим содержанием: <em><code>[id, val, timestamp, ack, lastchange]</code></em></p>
+            <h3 id="client-ccu-io">Client =&gt; CCU.IO</h3>
+            <h4 id="getdatapoints-callback-">getDatapoints(callback)</h4>
+            <p>Взять значение всех объектов и переменных из CCU.IO</p>
+            <h4 id="getobjects-callback-">getObjects(callback)</h4>
+            <p>Взять описание всех объектов из CCU.IO</p>
+            <h4 id="getindex-callback-">getIndex(callback)</h4>
+            <p>Взять взаимосвязи всех объектов из CCU.IO</p>
+            <h4 id="setstate-arr-callback-">setState(arr, callback)</h4>
+            <p>Установить значение объекта. Как параметр используется массив со следующим содержанием:<em><code>[id, value, timestamp, ack, lastchange]</code></em>. Можно использовать и просто <em><code>[id, value]</code></em></p>
+            <h4 id="reloadscriptengine-">reloadScriptEngine()</h4>
+            <p>Перезапустить Script-Engine. Необходимо для вступления в силу изменений сделанных в пользовательских скриптах.</p>
+            <h4 id="execcmd-cmd-callback-">execCmd(cmd, callback)</h4>
+            <p>Выполнить системную команду. Callback возвращает 3 параметра: error, stdout, stderr</p>
+            <h4 id="readdir-path-callback-">readdir(path, callback)</h4>
+            <p>Вернуть список файлов и папок в конкретной папке. Результат возвращается в виде массива.</p>
+            <h4 id="writefile-name-object-callback-">writeFile(name, object, callback)</h4>
+            <p>Конвертирует object в json и сохраняет значение в файле, находящимся в папке datastore</p>
+            <h4 id="readfile-name-callback-">readFile(name, callback)</h4>
+            <p>Считывает содержимое файла в папке datastore, конвертирует из JSON в javascript объект и возвращает значение, как параметр в callback функции</p>
+            <h4 id="readrawfile-name-callback-">readRawFile(name, callback)</h4>
+            <p>Считывает содержимое любого файла (имя файла может содержать путь к файлу) и возвращает как текст в callback функции. Путь можно задавать относительно ccu.io - папки</p>
+            <h4 id="readjsonfile-name-callback-">readJsonFile(name, callback)</h4>
+            <p>Считывает JSON содержимое любого файла (имя файла может содержать путь к файлу) и возвращает как javascript объект в callback функции. Путь можно задавать относительно ccu.io - папки</p>
+            <h4 id="geturl-url-callback-">getUrl(url, callback)</h4>
+            <p>Возвращает ответ на HTTP-GET запрос. В параметре callback функции содержится Body документа. </p>
+            <h4 id="getsettings-callback-">getSettings(callback)</h4>
+            <p>Возвращает объект с настройками CCU.IO</p>
+            <h4 id="setobject-id-obj-callback-">setObject(id, obj, callback)</h4>
+            <p>Создаёт объект в CCU.IO</p>
+<pre><code>socket.emit(&quot;setObject&quot;, 100015, {
+    Name: &quot;Postbox&quot;,
+    TypeName: &quot;VARDP&quot;
+    }, function() {log(&quot;Переменная создана&quot;);});
+</code></pre>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>MQTT HomeMatic Usertreffen 2015</title>
+
+    <meta name="description" content="">
+    <meta name="author" content="Sebastian Raff">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+
+
+    <script src="d3/d3.min.js"></script>
+    <script src="d3-cloud-1.0.5/d3.layout.cloud.js"></script>
+    <style>
+
+        html.img-center div.slide-background.present {
+            background-position: right;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="reveal">
+
+    <!-- Any section element inside of this container is displayed as a slide -->
+    <div class="slides">
+        <section>
+            <h1>MQTT</h1>
+            <h3></h3>
+            <p>
+                <small>Homematic Usertreffen 2015</small><br>
+                <small>Sebastian Raff <a href="https://github.com/hobbyquaker">https://github.com/hobbyquaker</a></small>
+            </p>
+
+            <aside class="notes">
+                Hallo, freut mich, ...
+
+            </aside>
+
+        </section>
+
+        <section>
+            <section>
+                <h2>Buzzwords<br><small>Schlagwörter, Anglizismen, Abkürzungen</small></h2>
+            </section>
+
+            <section id="d3slide">
+                <div id="d3container" style=" width: 960px; height: 500px;"></div>
+                <aside class="notes">
+
+                </aside>
+            </section>
+
+        </section>
+
+
+
+        <!-- Example of nested vertical slides -->
+        <section>
+            <section>
+                <h2>Was ist MQTT?</h2>
+                <aside class="notes">
+                    Oh hey, these are some notes. They'll be hidden in your presentation, but you can see them if you open the speaker notes window (hit 's' on your keyboard).
+                </aside>
+            </section>
+            <section>
+
+                <p align="left">
+                    <img style="border: 0; margin-right: 24px" align="left" src="Wikipedia-logo-v2-de.png">
+                    <q cite="">
+                        &ldquo;<b>MQTT</b> (formerly Message Queue Telemetry Transport) is a <a href="http://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern" title="Publish–subscribe pattern">publish-subscribe</a> based "light weight" messaging protocol for use on top of the TCP/IP protocol. It is designed for connections with remote locations where a "small code footprint" is required and/or network bandwidth is limited. The Publish-Subscribe messaging pattern requires a <a href="http://en.wikipedia.org/wiki/Message_broker" title="Message broker">message broker</a>. The broker is responsible for distributing messages to interested clients based on the topic of a message. <a href="http://en.wikipedia.org/wiki/Andy_Stanford-Clark" title="Andy Stanford-Clark">Andy Stanford-Clark</a> and Arlen Nipper authored the first version of the protocol in 1999.&rdquo;
+                    </q>
+                </p>
+                <aside class="notes">
+                    Oh hey, these are some notes. They'll be hidden in your presentation, but you can see them if you open the speaker notes window (hit 's' on your keyboard).
+                </aside>
+
+            </section>
+
+            <section>
+
+                <p align="left">
+                    <img style="border: 0; margin-right: 24px" align="left" src="Wikipedia-logo-v2-de.png">
+                    <q cite="">
+                        &ldquo;The specification does not specify the meaning of "small code foot print" or the meaning of "limited network bandwidth". Thus, the protocol's availability for use depends on the context. In 2013 IBM submitted MQTT v3.1 to the <a href="http://en.wikipedia.org/wiki/OASIS_(organization)" title="OASIS (organization)">OASIS</a> specification body with a charter that ensured only minor changes to the specification could be accepted. MQTT-SN is a variation of the main protocol aimed at embedded devices on non-TCP/IP networks, such as <a href="http://en.wikipedia.org/wiki/ZigBee" title="ZigBee">ZigBee</a>.&rdquo;
+                    </q>
+                </p>
+                <aside class="notes">
+                    Oh hey, these are some notes. They'll be hidden in your presentation, but you can see them if you open the speaker notes window (hit 's' on your keyboard).
+                </aside>
+
+            </section>
+
+
+
+
+            <section>
+                <h3>Zusammengefasst</h3>
+
+                <ul >
+
+                    <li class="fragment roll-in">
+                        <b>Messaging nach dem Publish/Subscribe Entwurfsmuster</b><br>
+                        <small>Clients "subscriben" bestimmte Topics und erhalten alle Nachrichten die andere Clients auf diesen Topics "publishen".</small>
+                    </li>
+
+                    <li class="fragment roll-in">
+                        <b>Benötigt Message Broker</b><br>
+                        <small>Clients verbinden sich mit dem Broker, dieser empfängt und sendet Nachrichten von und zu den Clients.</small>
+                    </li>
+
+                    <li class="fragment roll-in">
+                        <b>Light-Weight</b><br>
+                        <small>Einfach gehaltenes Protokoll, geringer Overhead, kompakte Implementierungen.  MQTT-SN für embedded Anwendungen ohne TCP/IP.</small>
+                    </li>
+                    <li class="fragment roll-in">
+                        <b>Offener Standard</b><br>
+                        <small>Client Implementierungen seit 2011 Open Source, seit 2014 OASIS Standard</small>
+                    </li>
+
+
+                </ul>
+
+                <aside class="notes">
+                    Oh hey, these are some notes. They'll be hidden in your presentation, but you can see them if you open the speaker notes window (hit 's' on your keyboard).
+                </aside>
+
+            </section>
+
+            <section>
+                <h3>Google Trends</h3>
+                <img style="width: 900px" src="trends.png">
+
+            </section>
+
+
+
+        </section>
+        <section>
+            <section><h2>Wer "macht" MQTT?</h2></section>
+
+
+
+            <section>
+                <h3>Eclipse Open Source Projekte</h3>
+                <ul>
+
+
+                    <li>
+                        <b><a href="">PAHO</a></b><br>
+                        <small>Client Implementierungen in C, C++, Java (J2SE, Android), Javascript, Python, Go, C# (.Net, WinRT)</small>
+                    </li>
+
+                    <li>
+                        <b><a href="http://mosquitto.org">Mosquitto</a></b><br>
+                        <small>in C implementierter Broker, wenig Abhängigkeiten, Binaries für Windows, diverse Linux Distributionen (x86 und ARM), Mac OSX und FreeBSD</small>
+                    </li>
+
+
+
+                </ul>
+
+
+
+
+                <aside class="notes">
+
+                </aside>
+            </section>
+
+
+
+            <section>
+                <h3>Unternehmen</h3>
+                <ul>
+
+                    <li>
+                        <b><a href="www.ibm.com">IBM</a></b>
+                        <ul style="font-size: 0.8em">
+                            <li>
+                                <b>MessageSight</b><br><div style="font-size:20px; vertical-align: top;">Broker Hardware Appliance</div>
+                            </li>
+
+                            <li><b>WebSphere MQ</b><br><div style="font-size:20px; vertical-align: top;">Broker Software, kommerziell (Binaries für Windows und Linux. C/C++ und Java Client-Libs)</div></li>
+                            <li><b>rsmb</b><br>
+
+                                <div style="font-size:20px; vertical-align: top;">"Really small message broker" - MQTT-SN Broker Software, für embedded Devices (Open Source im Eclipse Mosquitto Projekt)</div>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                    <li>
+                        <b><a href="http://www.dc-square.de/">dc-square GmbH</a></b><br>
+                        <ul style="font-size: 0.8em">
+                            <li>
+                                <b>HiveMQ</b><br><div style="font-size:20px; vertical-align: top;">Broker Software (Java). Kostenlose Variante für nicht-kommerziellen Einsatz mit Limitierung auf 25 Clients.</div>
+                            </li>
+                            <li><b>MQTT Web Client</b><br><div style="font-size:20px; vertical-align: top;">Freie Software, Apache 2.0 Lizenz</div></li>
+                        </ul>
+                    </li>
+
+                </ul>
+                <aside class="notes">
+                    IBM bietet hochverfügbare und hochskalierbare Lösungen - und hochpreisige ;) - Lösungen für das "Enterprise Umfeld" an, als Appliance für den 19" Schrank und als Softwarelösung.
+                </aside>
+            </section>
+
+
+        </section>
+        <section >
+            <section><h2>Wer nutzt MQTT?</h2></section>
+            <section>
+                <ul>
+                    <li>Soziale Netzwerke (Facebook)<br>
+                        <small>Messenger und Chat. <q cite="">&rdquo;By maintaining an MQTT connection and routing messages through our chat pipeline, we were able to often achieve phone-to-phone delivery in the hundreds of milliseconds, rather than multiple seconds.&rdquo;</q>
+                            <sup><small><a href="https://www.facebook.com/notes/facebook-engineering/building-facebook-messenger/10150259350998920">[7]</a></small></sup>
+
+                        </small></li>
+                    <li class="fragment roll-in">Ölversorger (IBM)<br>
+                        <small>Satellitengestütztes Sensornetz für Ölpipelines, 30.000 Sensoren, 17.000km Pipeline, Anbindung an SCADA, Billing, ...
+                            <sup><small><a href="https://www-950.ibm.com/events/wwe/impact/impact2014cms.nsf/download/kfecf04323e143e14145ac81a255/$FILE/Impact2014_2640.pdf">[5]</a> <a href="http://de.slideshare.net/dobermai/dominik-obermaier-iotlive">[6]</a></small></sup>
+
+
+                        </small>
+                    </li>
+
+                    <li class="fragment roll-in">Medizintechnik (St. Jude Medical)<br>
+                        <small>
+                            Überwachung und Fernwartung von mehr als 100.000 Herzschrittmachern.
+                            <sup><small><a href="http://www-05.ibm.com/de/events/solutionsconnect/pdfs/SolCon2013RenateFrankenIBMAllesmiteinanderverbinden14062013.pdf">[8]</a></small></sup>
+
+                        </small>
+                    </li>
+                </ul>
+
+            </section>
+
+
+
+
+        </section>
+
+        <section>
+            <section><h2>Was kann MQTT?</h2></section>
+            <section>
+                <h3>Topics</h3>
+                <ul>
+                    <li>
+                        Topics können hierarchisch strukturiert werden, als Trennzeichen dient der Schrägstrich. Beispiel: <pre><code>Sensoren/Garten/Temperatur</code></pre>
+                    </li>
+                    <li>
+                        Beim abbonieren ("subscriben") von Topics können die Wildcards # (Multilevel, nur am Ende zugelassen) und + (ein Level) verwendet werden. Beispiele:
+<pre><code  class="nohighlight" style="font-color: #aaa !important">Sensoren&#47;#
+Sensoren&#47;&#43;&#47;Temperatur
+&#43;&#47;Garten/&#43;</code></pre>
+                </li>
+
+                </ul>
+
+            </section>
+            <section>
+                <h3>Persistente Nachrichten - Retain</h3>
+                <p>Clients können den Broker veranlassen die letzte Nachricht eines Topic "aufzubewahren", sobald ein Client dieses Topic abboniert erhält
+                    er diese Nachricht.</p>
+            </section>
+            <section>
+                <h3>QOS - Quality of Service</h3>
+                <p>MQTT kennt 3 QOS Levels:</p>
+                <ul>
+                    <li>QOS 0: At most once - Fire and Forget. Subscriber erhalten Nachricht höchstens 1x</li>
+                    <li>QOS 1: At least once - Acknowledged delivery. Subscriber erhalten Nachricht mindestens 1x</li>
+                    <li>QOS 2: Exactly once - Assured delivery. Subscriber erhalten Nachricht genau 1x</li>
+                </ul>
+            </section>
+            <section>
+                <h3>Last Will - Testament</h3>
+                <p>Ein Client kann beim Verbinden mit dem Broker einen "letzten Willen" abgeben, diese Nachricht wird auf einem bestimmten Topic veröffentlicht sobald die Verbindung zwischen Client und Broker unterbrochen wird.</p>
+            </section>
+
+            <section>
+                <h3>Sicherheit</h3>
+                <ul>
+                    <li>Username/Passwort Authentifierzung, Broker können Authentifizierungs Plugins nutzen.</li>
+                    <li>MQTT über TCP/IP und MQTT über Websockets kann mit TLS (SSL) gesichert werden.</li>
+                    <li>ACLs für Publish und Subscribe auf Topic Ebene. <small>(Broker-spezifisch, kein Teil des MQTT-Standards)</small></li>
+                </ul>
+            </section>
+
+        </section>
+
+        <!--
+        <section>
+            <section><h3>Was macht MQTT nicht?</h3></section>
+            <section>
+                <ul>
+                    <li>MQTT ist es egal wie die Nachrichten (Payload) aufgebaut sind</li>
+                    <li>MQTT hilft nicht dabei Topics mit Metadaten auszustatten (Datentypen, Gerätebeschreibungen, ...)</li>
+
+                </ul>
+            </section>
+        </section>
+        -->
+        <section>
+
+
+
+            <section>
+                <h3>Zusammengefasst</h3>
+
+                <ul>
+
+                    <li >
+                        <b>Messaging nach dem Publish/Subscribe Entwurfsmuster</b><br>
+                        <small>Clients "subscriben" bestimmte Topics und erhalten alle Nachrichten die andere Clients auf diesen Topics "publishen".</small>
+                    </li>
+
+                    <li>
+                        <b>Benötigt Message Broker</b><br>
+                        <small>Clients verbinden sich mit dem Broker, dieser empfängt und sendet Nachrichten von und zu den Clients.</small>
+                    </li>
+
+                    <li>
+                        <b>Light-Weight</b><br>
+                        <small>Einfach gehaltenes Protokoll, geringer Overhead, kompakte Implementierungen.  MQTT-SN für embedded Anwendungen ohne TCP/IP.</small>
+                    </li>
+                    <li>
+                        <b>Offener Standard</b><br>
+                        <small>Client Implementierungen seit 2011 Open Source, seit 2014 OASIS Standard</small>
+                    </li>
+                    <li class="fragment roll-in">
+                        <b>Etabliert, bewährt, weit verbreitet</b><br>
+                        <small>Enterprisetauglich, sehr ausgereifte Software, weit verbreitet, starke Open Source Community.</small>
+                    </li>
+
+                </ul>
+
+                <aside class="notes">
+
+                </aside>
+
+            </section>
+        </section>
+
+        <section data-transition="zoom" data-background-color="#3d6e55" data-background-transition="zoom">
+            <section >
+                <h2>Was kann ich mit MQTT machen?</h2>
+            </section>
+
+            <section>
+                <h2>Dinge verbinden!</h2>
+            </section>
+
+            <section>
+                <h3>Smarthome Software</h3>
+                <span>ioBroker, OpenHAB, CCU.IO, FHEM, ...</span>
+            </section>
+
+            <section>
+                <h3>Node-RED</h3>
+                <span><i>"A visual tool for wiring the Internet of Things"<br><br>
+                Open Source (EPL)</i></span><br>
+                <img style="width: 500px" src="node-red-screenshot-sm.png">
+            </section>
+
+            <section>
+                <h3>OwnTracks</h3>
+                <span><i>"allows you to keep track of your own location."</i></span>
+                <br><br>
+                <ul>
+                    <li>Open Source, Android, iOS</li>
+                    <li>kostenlos im App Store und Play Store erhältlich</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>mqtt-smarthome</h2>
+            </section>
+
+
+            <aside class="notes">
+
+            </aside>
+
+        </section>
+
+
+        <section>
+            <h3>Quellen, Links</h3>
+            <small><ol>
+                <li>
+                    <a href="http://mqtt.org">MQTT.org</a>
+                </li>
+                <li>
+                    <a href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.pdf">MQTT Version 3.1.1 OASIS Standard</a>
+                </li>
+                <li>
+                    <a href="http://mosquitto.org">mosquitto.org</a>
+                </li>
+                <li>
+                    <a href="https://eclipse.org/paho/">paho - Open Source messaging</a>
+                </li>
+                <li>
+                    <a href="https://www-950.ibm.com/events/wwe/impact/impact2014cms.nsf/download/kfecf04323e143e14145ac81a255/$FILE/Impact2014_2640.pdf">Impact 2014 - Introduction to the IoT protocol, MQTT - Peter Niblett, IBM Senior Technical Staff Member</a>
+
+                </li>
+                <li>
+                    <a href="http://de.slideshare.net/dobermai/dominik-obermaier-iotlive">IoTLive 2014 - Push! - MQTT for the Internet of Things - Dominik Obermaier</a>
+                </li>
+                <li><a href="https://www.facebook.com/notes/facebook-engineering/building-facebook-messenger/10150259350998920">Building Facebook Messenger,
+                    Lucy Zhang, 2011</a></li>
+                <li><a href="http://www-05.ibm.com/de/events/solutionsconnect/pdfs/SolCon2013RenateFrankenIBMAllesmiteinanderverbinden14062013.pdf">
+                    IBM Solutions Connect 2014 - Alles miteinander verbinden,
+                    Voraussetzung für das Internet der
+                    Dinge, M2M und Industrie 4.0 - Renate Franken, IBM Deutschland GmbH
+
+                </a></li>
+                <li>
+                    <a href="http://owntracks.org">owntracks.org</a>
+                </li>
+                <li>
+                    <a href="http://www.nodered.org">www.nodered.org</a>
+                </li>
+                <li>
+                    <a href="https://github.com/mqtt-smarthome">mqtt-smarthome</a>
+                </li>
+            </ol></small>
+
+
+        </section>
+
+
+
+    </div>
+
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+
+    // Full list of configuration options available at:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+            { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+            { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+            { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+            { src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+            { src: 'plugin/zoom-js/zoom.js', async: true },
+            { src: 'plugin/notes/notes.js', async: true }
+        ]
+    });
+
+
+
+
+</script>
+
+<script type="text/javascript">
+    var d3ready;
+    Reveal.addEventListener( 'slidechanged', function(event) {
+
+
+        if ( event.currentSlide.id == "d3slide" && !d3ready) {
+            d3ready = true;
+
+            var wordlist = [
+                {text: "MQTT", size: 150},
+                {text: "Smarthome", size: 65},
+                {text: "Building Automation", size: 20},
+                {text: "Industry 4.0", size: 65},
+                {text: "M2M", size: 60},
+                {text: "Machine to Machine", size: 40},
+                {text: "Sensor Networks", size: 20},
+                {text: "Internet Of Things", size: 60},
+                {text: "Javascript", size: 15},
+                {text: "Node.js", size: 15},
+                {text: "ioBroker", size: 35},
+                {text: "Building Block", size: 35},
+                {text: "OpenHAB", size: 20},
+                {text: "Access Control List", size: 20},
+                {text: "Node-RED", size: 20},
+                {text: "CCU.IO", size: 20},
+                {text: "Topic", size: 20},
+                {text: "Payload", size: 20},
+                {text: "QOS", size: 20},
+                {text: "Appliance", size: 20},
+                {text: "MIT", size: 20},
+                {text: "EPL", size: 20},
+                {text: "GPL", size: 20},
+                {text: "Cloud", size: 20},
+                {text: "On Premise", size: 20},
+                {text: "mqtt-smarthome", size: 30},
+                {text: "publish/subscribe", size: 30},
+                {text: "High Availability", size: 40},
+                {text: "Scalability", size: 40},
+                {text: "HA", size: 30},
+                {text: "hm2mqtt", size: 30},
+                {text: "logic4mqtt", size: 20},
+                {text: "lightweight", size: 20},
+                {text: "small footprint", size: 20},
+                {text: "Enterprise Messaging", size: 20},
+                {text: "Message Broker", size: 20},
+                {text: "IBM", size: 20},
+                {text: "Facebook", size: 20},
+                {text: "Community", size: 20},
+                {text: "Open Source", size: 20},
+                {text: "HomeMatic", size: 20},
+                {text: "CCU", size: 15},
+                {text: "LXCCU", size: 15},
+                {text: "OCCU", size: 15},
+                {text: "KNX", size: 20},
+                {text: "EnOcean", size: 20},
+                {text: "ZigBee", size: 20},
+                {text: "OASIS", size: 20},
+                {text: "Message Sight", size: 20},
+                {text: "WebSphere", size: 20},
+                {text: "HiveMQ", size: 20},
+                {text: "retain", size: 20},
+                {text: "last will", size: 20},
+                {text: "ACL", size: 20},
+                {text: "TLS", size: 20},
+                {text: "SSL", size: 20},
+                {text: "BidCoS", size: 20},
+                {text: "Adapter", size: 20},
+                {text: "Binding", size: 20},
+                {text: "ioBroker.vis", size: 30},
+                {text: "IoT", size: 40},
+                {text: "Z-Wave", size: 20},
+                {text: "the thing system", size: 20},
+                {text: "fhem", size: 30},
+                {text: "Housemon", size: 20},
+                {text: "nome.pi", size: 20},
+                {text: "Eclipse", size: 35},
+                {text: "PAHO", size: 30},
+                {text: "Ambient assisted Living", size: 20},
+                {text: "IP", size: 20},
+                {text: "Java", size: 15},
+                {text: "Mosca", size: 15},
+                {text: "Mosquitto", size: 45}
+            ];
+
+
+            var selector = '#d3container';
+
+
+
+
+            //Simple animated example of d3-cloud - https://github.com/jasondavies/d3-cloud
+//Based on https://github.com/jasondavies/d3-cloud/blob/master/examples/simple.html
+
+// Encapsulate the word cloud functionality
+            function wordCloud(selector) {
+
+                var fill = d3.scale.category20();
+
+                //Construct the word cloud's SVG element
+                var svg = d3.select(selector).append("svg")
+                        .attr("width", 900)
+                        .attr("height", 500)
+                        .append("g")
+                        .attr("transform", "translate(450,250)");
+
+
+                //Draw the word cloud
+                function draw(words) {
+                    var cloud = svg.selectAll("g text")
+                            .data(words, function(d) { return d.text; })
+
+                    //Entering words
+                    cloud.enter()
+                            .append("text")
+                            .style("font-family", "Impact")
+                            .style("fill", function(d, i) { return fill(i); })
+                            .attr("text-anchor", "middle")
+                            .attr('font-size', 1)
+                            .text(function(d) { return d.text; });
+
+                    //Entering and existing words
+                    cloud
+                            .transition()
+                            .duration(600)
+                            .style("font-size", function(d) { return d.size + "px"; })
+                            .attr("transform", function(d) {
+                                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                            })
+                            .style("fill-opacity", 1);
+
+                    //Exiting words
+                    cloud.exit()
+                            .transition()
+                            .duration(200)
+                            .style('fill-opacity', 1e-6)
+                            .attr('font-size', 1)
+                            .remove();
+                }
+
+
+                //Use the module pattern to encapsulate the visualisation code. We'll
+                // expose only the parts that need to be public.
+                return {
+
+                    //Recompute the word cloud for a new set of words. This method will
+                    // asycnhronously call draw when the layout has been computed.
+                    //The outside world will need to call this function, so make it part
+                    // of the wordCloud return value.
+                    update: function(words) {
+                        d3.layout.cloud().size([900, 500])
+                                .words(words)
+                                .padding(1)
+                                .rotate(function(d) { return ~~(Math.random() * 5) * 30 - 60; })
+                                .font("Impact")
+                                .fontSize(function(d) { return d.size; })
+                                .on("end", draw)
+                                .start();
+                    }
+                }
+
+            }
+
+
+
+//Prepare one of the sample sentences by removing punctuation,
+// creating an array of words and computing a random size attribute.
+            function getWords(i) {
+                return wordlist;
+            }
+
+//This method tells the word cloud to redraw with a new set of words.
+//In reality the new words would probably come from a server request,
+// user input or some other source.
+            function showNewWords(vis, i) {
+                if (Reveal.getCurrentSlide().id == 'd3slide') vis.update(getWords())
+                setTimeout(function() { showNewWords(vis, i + 1)}, 2000)
+            }
+
+//Create a new instance of the word cloud visualisation.
+            var myWordCloud = wordCloud('#d3container');
+
+//Start cycling through the demo data
+            showNewWords(myWordCloud);
+
+
+
+
+
+            //var svg = d3.select("#d3container").append("svg")
+            // do more d3 stuff
+            /*
+             var fill = d3.scale.category20();
+
+             d3.layout.cloud().size([960, 500])
+             .words(wordlist)
+             .rotate(function(d) { return ~~(Math.random() * 5) * 30 - 60; })
+             .padding(1)
+             .font("Impact")
+             .fontSize(function(d) { return d.size; })
+             .on("end", draw)
+             //.timeInterval(10)
+
+             .start();
+
+
+             function draw(words) {
+             d3.select("#d3container").append("svg")
+             .attr("width", 960)
+             .attr("height", 500)
+             .append("g")
+             .attr("transform", "translate(480,200)")
+             .selectAll("text")
+             .data(words)
+             .enter().append("text")
+             .style("font-size", function(d) { return d.size + "px"; })
+             .style("font-family", "Impact")
+             .style("fill", function(d, i) { return fill(i); })
+             .attr("text-anchor", "middle")
+             .attr("transform", function(d) {
+             return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+             })
+             .text(function(d) { return d.text; });
+             }
+             */
+        }
+
+    } );
+</script>
+
+</body>
+</html>

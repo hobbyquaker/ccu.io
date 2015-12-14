@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>CCU.IO Webseite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/bootstrap.slate.min.css" rel="stylesheet">
+    <link href="css/ccu.io.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+
+    </style>
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-46469898-1', 'ccu.io');
+        ga('send', 'pageview');
+
+    </script>
+
+</head>
+<body data-spy="scroll" data-target="#sidebar">
+<div class="navbar navbar-default navbar-fixed-top container" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a title="Startseite" class="navbar-brand" href="index.html">CCU.IO</a>
+		<div id="lang_select" style="height:78%">
+			 <table style="height:100%; background:rgba(0,0,0,0)"><tr>
+				 <td><img src="img/de_de.gif"></td>
+				 <td><a href="./ru/addons.html"><img style="padding-left:5px" src="img/ru_ru.gif"></a></td>
+			 </tr></table>
+		</div>
+    </div>
+    <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li class="active"><a title="Addons" href="#">Addons</a></li>
+            <li><a title="Adapter" href="adapter.html">Adapter</a></li>
+            <li><a title="Dokumentation" href="manual.html">Dokumentation</a></li>
+            <li><a title="Unterstützung" href="contribute.html">Unterstützung</a></li>
+            <li><a title="Download" href="download.html">Download</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a title="Impressum" href="impress.html">Impressum</a></li>
+        </ul>
+    </div><!--/.nav-collapse -->
+</div>
+
+<div class="container">
+<div class="row">
+    <div class="col-md-2">
+        <div id="sidebar" style="margin-top:65px;">
+            <ul class="nav">
+                <li><a title="Addon DashUI" href="#dashui">DashUI</a></li>
+                <li><a title="Addon Eventlist" href="#eventlist">Eventlist</a></li>
+                <li><a title="Addon Highcharts" href="#highcharts">Highcharts</a></li>
+                <li><a title="Addon ScriptEditor" href="#scripteditor">ScriptEditor</a></li>
+                <li><a title="Addon ScriptGUI" href="#scriptgui">ScriptGUI</a></li>
+                <li><a title="Addon SlimUI" href="#slimui">SlimUI</a></li>
+                <li><a title="Addon yahui" href="#yahui">yahui</a></li>
+
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-10" style="padding-bottom: 480px">
+
+
+        <a name="dashui"></a><h1 id="dashui" style="padding-top:65px;">DashUI</h1>
+        <p>DashUI ist eine webbasierte Visualisierung für die HomeMatic CCU mit uneingeschränkter Gestaltungsfreiheit.
+            Anzeige- und Bedienelemente (sogenannte "Widgets") können frei auf beliebigen Ansichten ("Views") platziert
+            werden</p>
+        <p><a href="http://dashui.ccu.io" target="_blank">Live-Demo von DashUI mit diversen Beispiel-Views die uns von Usern eingesendet wurden</a></p>
+        <p>
+            Das DashUI Projekt verfügt über eine <a href="http://hobbyquaker.github.io/DashUI" target="_blank">eigene Webseite</a> und ist dort dokumentiert.<br/><br/>
+            In diesem <a href="http://homematic-forum.de/forum/viewtopic.php?f=48&t=14408" target="_blank">Foren-Thread</a> haben einige DashUI-Benutzer Screenshots hochgeladen.<br/>
+            Bluefox (der Entwickler der "hqWidgets") hat <a href="http://www.youtube.com/watch?v=A_DWbiloYi4" target="_blank">ein Video einer mit DashUI erstellten Oberfläche</a> veröffentlicht.
+        </p>
+        <p>Die Roadmap und das Changelog werden auf der <a href="https://github.com/hobbyquaker/DashUI" target="_blank">Github Projektseite</a> gepflegt.</p>
+        <a name="eventlist"></a><h1 id="eventlist" style="padding-top:65px;">Eventlist</h1>
+        <p>
+            Tabellarische Darstellung der CCU.IO Logs<br/>
+            Kann komfortabel in DashUI und yahui eingebunden werden.<br/>
+        </p>
+        <a href="img/eventlist.png"><img  style="margin: 12px"src="img/eventlist.png" width="440"/></a>
+        <p>Die Roadmap und das Changelog werden auf der <a href="https://github.com/GermanBluefox/CCU-IO.Eventlist" target="_blank">Github Projektseite</a> gepflegt.</p>
+
+
+        <a name="highcharts"></a><h1 id="highcharts" style="padding-top:65px;">Highcharts</h1>
+        <p>
+            Interaktive grafische Darstellung der CCU.IO Logs, basiert auf <a href="http://www.highcharts.com/products/highstock"
+                                                                              target="_blank">Highstock</a>.<br/>
+            Kann komfortabel in DashUI und yahui eingebunden werden.<br/>
+
+
+        </p>
+        <a href="img/highcharts.png"><img  style="margin: 12px"src="img/highcharts.png" width="440"/></a>
+
+        <p>Die Roadmap und das Changelog werden auf der <a href="https://github.com/hobbyquaker/CCU-IO-Highcharts" target="_blank">Github Projektseite</a> gepflegt.</p>
+
+
+
+
+        <a name="scripteditor"></a><h1 id="scripteditor" style="padding-top:65px;">ScriptEditor</h1>
+        <p>Ein <a href="http://codemirror.net/" target="_blank">Codemirror</a> basierter Editor für CCU.IO Scripte</p>
+        <p>
+            <a href="https://github.com/smiling-Jack/CCU-IO.ScriptEditor" target="_blank">Github Projektseite</a>
+        </p>
+
+
+        <a name="scriptgui"></a><h1 id="scriptgui" style="padding-top:65px;">ScriptGUI</h1>
+        <p>ScriptGUI (Script Graphic User Interface) ist eine grafische Programmierumgebung, die die Erzeugung von CCU.IO-Scripten ohne Programmierkenntnisse ermöglicht.<p>
+
+        <a href="img/scriptgui.png"><img src="img/scriptgui.png" width="480"/></a>
+
+        <h3>Dokumentation</h3>
+
+        <p><div style="display:inline; ">
+<script src="http://www.gmodules.com/ig/ifr?url=http://www.google.com/ig/modules/youtube.xml&amp;up_channel=CCUIO&amp;synd=open&amp;w=281&amp;h=357&amp;title=&amp;output=js"></script>
+</div>
+<div style="display:inline">
+Diverse Video-Tutorials sind über das Hilfemenu oder direkt im <a href="https://www.youtube.com/watch?v=xeBXTDaidbU&list=PLsNM5ZcvEidhmzZt_mp8cDlAVPXPychU7" target="_blank">CCU.IO-Youtube-Kanal</a>
+            erreichbar.
+<p/>
+
+
+
+
+        <h4>Bausteine</h4>
+
+        <p>Es gibt zwei Typen von Bausteinen: FBS (Funktionsbausteine) und MBS (Masterbausteine). MBS sind Bausteine wie Trigger, Programmboxen und Kommentare. Sie lassen sich direkt per Drag&Drop einfügen. FBS sind alle Bausteine, die zum Programmieren benutzt werden. Sie lassen sich nur in Programmboxen einfügen. Jede Programmbox ist ein eigenständigen Programm, ein direkter Datenaustausch ist nicht vorgesehen.
+            Trigger führen eine oder Mehrere Programmbox aus. Wobei sie Daten an das Programm übergeben die über die Triggerdatenbausteine genutzt werden können.
+        </p>
+
+
+
+
+
+        <h4>Verzeichnisse und Dateien</h4>
+
+        <p>Program Dateien werden unter
+            <code>ccu.io/www/ScriptGUI/prg_Store/</code>
+            abgespeichert. Sie besitzen die Endung .prg und sind im json Format gespeichert</p>
+
+        <p>Die erzeugten Scripte werden unter
+            <code>ccu.io/scripts/</code>
+            abgespeichert. Sie besitzen die Endung .js</p>
+
+
+        <h4>Einstellungen</h4>
+        <p>&nbsp;</p>
+
+
+        <h4>Technik</h4>
+
+        <p>ScriptGUI ist eine auf HTML5, CSS3 und Javascript basierende Webanwendung.</p>
+
+
+        Die Roadmap und das Changelog werden auf der <a href="https://github.com/smiling-Jack/CCU-IO.ScriptGUI" target="_blank">Github Projektseite</a> gepflegt.
+
+
+
+
+        <a id="slimui" name="slimui"></a><h1 id="slimui" style="padding-top:65px;">SlimUI</h1>
+        <p>
+            ein sehr leichtgewichtiges Framework zur Erstellung von CCU.IO WebUIs. Gemacht für alte Browser und langsame Clients. "Vanilla" JavaScript, es werden keine Bibliotheken wie jQuery o.Ä. eingesetzt.
+        </p>
+        <p>
+            Weitere Informationen und Dokumentation sind auf der <a href="https://github.com/hobbyquaker/SlimUI" target="_blank">Github Projektseite</a> zu finden.
+        </p>
+
+
+        <a id="yahui" name="yahui"></a><h1 id="yahui" style="padding-top:65px;">yahui</h1>
+        <p>
+            yahui ist eine <a href="http://jquerymobile.com/" target="_blank">jQuery Mobile</a> basierte Weboberfläche für CCU.IO und ist für die Bedienung auf Tablets und Smartphones optimiert.
+            yahui erfordert keine aufwendige Einrichtung, einfach Installieren und benutzen.
+        </p>
+        <a href="img/yahui5.png"><img style="margin: 12px" src="img/yahui5.png" width="320"/></a>
+        <a href="img/yahui4.png"><img style="margin: 12px" src="img/yahui4.png" width="320"/></a>
+        <a href="img/yahui3.png"><img style="margin: 12px" src="img/yahui3.png" width="320"/></a>
+        <a href="img/yahui2.png"><img  style="margin: 12px" src="img/yahui2.png" width="320"/></a>
+        <a href="img/yahui1.png"><img  style="margin: 12px"src="img/yahui1.png" width="240"/></a>
+
+
+
+
+        <h3>Dokumentation</h3>
+        <p>Die Roadmap und das Changelog werden auf der <a href="https://github.com/hobbyquaker/yahui" target="_blank">Github Projektseite</a> gepflegt.</p>
+
+        <h4>Voraussetzungen</h4>
+
+        <p style="padding-left: 16px">yahui benötigt einen modernen Browser (Chrome/Chromium/Iron, Firefox oder Safari).</p>
+
+        <h4>Favoriten</h4>
+
+        <p style="padding-left: 16px">Es werden nur Favoriten angezeigt die dem Benutzer "admin" zugeordnet sind.</p>
+
+        <h4>Systemvariablen nur Anzeigen</h4>
+
+        <p style="padding-left: 16px">Systemvariablen können in yahui bearbeitet werden. Wie bei WebMatic können Systemvariablen über ein (r) in
+            der Variablenbeschreibung auf nur-lesen gesetzt werden.</p>
+
+        <h4>Einbinden eigener Bilder/Icons</h4>
+
+        <p style="padding-left: 16px">Bilder/Icons können einfach via Drag&Drop hochgeladen werden. Dazu muss sich yahui im "Edit-Modus" befinden
+            (im Info-Dialog - erreichbar über den i-Button oben rechts - kann der Edit-Modus aktiviert und deaktiviert
+            werden). Es sind alle Arten von Bilddateien erlaubt, empfohlen wird jedoch ein quadratisches PNG mit 230x230
+            Pixel Größe und leichter Transparenz. Wenn bereits Bilder von WebMatic vorhanden sind können diese einfach
+            in das Verzeichnis yahui/images/user/ kopiert werden.</p>
+
+
+        <h4>Sortierung der Elemente</h4>
+
+        <p style="padding-left: 16px">Sortieren ist im Edit-Modus ebenfalls via Drag&Drop möglich.</p>
+
+        <h4>Umbenennen von Elementen</h4>
+
+        <p style="padding-left: 16px">Im Edit-Modus einfach auf das Zahnrad rechts klicken</p>
+
+        <h4>Ändern der Farben und des Layouts</h4>
+
+        <p style="padding-left: 16px">in der Datei settings.js ist es möglich für die Kopfzeile, den Inhalt und das Menü unten getrennt aus 5
+            vorgeingestellten Farb-Schemata zu wählen. Wer den Look darüber hinaus customizen will kann sich mit dem
+            <a href="http://jquerymobile.com/themeroller/index.php" target="_blank">jQuery Mobile Theme Roller</a> ein
+            Theme "zusammenklicken". In Zeile 25 der Datei index.html
+            muss dann die URL der jqueryMobile CSS-Datei entsprechend auf die mit dem Theme-Roller erstellte Datei
+            angepasst werden.</p>
+
+        <p style="padding-left: 16px">Eigene Style-Angaben zum Anpassen des Layouts können in der Datei yahui/css/user.css vorgenommen werden.
+            In der Datei user-dist.css ist ein passendes Grundgerüst angelegt, diese einfach umbenennen und die
+            Kommentarzeichen in index.html Zeile 32 entfernen.</p>
+
+        <h4>Hinzufügen von Erweiterungen</h4>
+
+        <p style="padding-left: 16px">Wenn man sich im Edit-Modus befindet kann über den Button "hinzufügen" oben links eine neue Erweiterung
+            angelegt werden. Zum bearbeiten oder löschen von Erweiterungen einfach im Edit-Modus die Erweiterung
+            anklicken.</p>
+
+        <h4>Ausblenden bestimmter Datenpunkte</h4>
+
+        <p style="padding-left: 16px">In der Datei settings.js können Datenpunkte angegeben werden die nicht angezeigt werden sollen.</p>
+
+        <h4>Voranstellen eines "Prefix" vor den Seitentitel</h4>
+
+        <p style="padding-left: 16px">In der settings.js besteht die Möglichkeit einen Prefix anzugeben der vor jeden Seitentitel gesetzt wird.</p>
+
+
+
+    </div>
+</div>
+</div>
+
+</body>
+</html>

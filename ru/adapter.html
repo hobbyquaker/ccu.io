@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>CCU.IO Сайт</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/bootstrap.slate.min.css" rel="stylesheet">
+    <link href="css/ccu.io.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+
+    </style>
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-46469898-1', 'ccu.io');
+        ga('send', 'pageview');
+
+    </script>
+
+</head>
+<body data-spy="scroll" data-target="#sidebar">
+<div class="navbar navbar-default navbar-fixed-top container" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a title="Стартовая страница" class="navbar-brand" href="index.html">CCU.IO</a>
+        <div id="lang_select" style="height:78%">
+            <table style="height:100%; background:rgba(0,0,0,0)"><tr>
+                <td><a href="../adapter.html"><img src="img/de_de.gif"></a></td>
+                <td><img style="padding-left:5px" src="img/ru_ru.gif"></td>
+            </tr></table>
+        </div>
+    </div>
+    <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li><a href="addons.html">Дополнения</a></li>
+            <li class="active"><a href="#">Драйвера</a></li>
+            <li><a href="manual.html">Документация</a></li>
+            <li><a href="contribute.html">Разработка</a></li>
+            <li><a href="download.html">Загрузки</a></li>
+            <li><a href="http://forum.iobroker.com/viewforum.php?f=4" target="_blank">Форум</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a title="О сайте" href="impress.html">О сайте</a></li>
+        </ul>
+    </div><!--/.nav-collapse -->
+</div>
+
+<div class="container">
+<div class="row">
+    <div class="col-md-2">
+        <div id="sidebar" style="margin-top:65px;">
+            <ul class="nav nav-stacked">
+                <li><a title="Драйвер Dreambox" href="#dreambox">Dreambox</a></li>
+                <li><a title="Драйвер DWD" href="#dwd">DWD</a></li>
+                <li><a title="Драйвер Email" href="#email">Email</a></li>
+                <li><a title="Драйвер Fritzbox" href="#fritzbox">Fritzbox</a></li>
+                <li><a title="Драйвер Geofency" href="#geofency">Geofency</a></li>
+                <li><a title="Драйвер Graphite" href="#graphite">Graphite</a></li>
+                <li><a title="Драйвер Philips Hue" href="#hue">Philips Hue</a></li>
+                <li><a title="Драйвер iCal" href="#ical">iCal</a></li>
+                <li><a title="Драйвер IRTrans" href="#irtrans">IRTrans</a></li>
+                <li><a title="Драйвер LG TV" href="#lgtv">LG TV</a></li>
+                <li><a title="Драйвер Lirc" href="#lirc">LIRC</a></li>
+                <li><a title="Драйвер listen" href="#listen">Listen</a></li>
+                <li><a title="Драйвер Müll Stuttgart" href="#muell_stuttgart">Müll Stuttgart</a></li>
+                <li><a title="Драйвер mysql" href="#mysql">MySQL</a></li>
+                <li><a title="Драйвер onkyo" href="#onkyo">Onkyo</a></li>
+                <li><a title="Драйвер Ping" href="#ping">Ping</a></li>
+                <li><a title="Драйвер Pushover" href="#pushover">Pushover</a></li>
+                <li><a title="Драйвер RaspberryPi" href="#rpi">RaspberryPi</a></li>
+                <li><a title="Драйвер Rego" href="#rego">Rego</a></li>
+                <li><a title="Драйвер Sonos" href="#sonos">Sonos</a></li>
+                <li><a title="Драйвер telnet" href="#telnet">telnet</a></li>
+                <li><a title="Драйвер textCommands" href="#textcommands">textCommands</a></li>
+                <li><a title="Драйвер yr.no" href="#yr">yr.no</a></li>
+
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-10" style="padding-bottom: 600px">
+	<p><br><br><br><br></p>
+	Драйвер это JavaScript файл, запускающийся в отдельном NodeJS процессе и обслуживающий одно устройство или службу. На данный момент созданы следующие драйвера:
+<br><br>
+<table>
+<tr><td>- email</td><td>для отправки сообщений по электронной почте</td></tr>
+<tr><td>- pushover</td><td>для отправки сообщений на мобильные клиенты <a href="http://pushover.net">(http://pushover.net)</a></td></tr>
+<tr><td>- mysql</td><td>пересылка событий в базу данных</td></tr>
+<tr><td>- graphite</td><td>пересылка событий в graphite <a href="http://graphite.wikidot.com/screen-shots">(http://graphite.wikidot.com/screen-shots)</a>. Группировка данных в мыслимых и немыслимых формах и их отображение в виде графиков.</td></tr>
+<tr><td>- ical</td><td>Google и Apple iCloud календари</td></tr>
+<tr><td>- geofency</td><td>поддержка Apple системы геолокации geofency</td></tr>
+<tr><td>- growl</td><td>сообщения на Apple Growl App</td></tr>
+<tr><td>- currency</td><td>курсы валют с европейского центрального банка. (Есть EUR-RUB и USD-RUB)</td></tr>
+<tr><td></td><td></td></tr>
+<tr><td>- telnet</td><td>управление приборами по telnet протоколу</td></tr>
+<tr><td>- ping</td><td>пингует IP устройства в сети</td></tr>
+<tr><td></td><td></td></tr>
+<tr><td>- lirc</td><td>для управления приборами и принятия команд по инфракрасному порту (требуется дополнительное железо)</td></tr>
+<tr><td>- irtrans</td><td>поддержка IRTrans инфракрасной системы <a href="http://www.irtrans.de/en/">(http://www.irtrans.de/en/)</a></td></tr>
+<tr><td></td><td></td></tr>
+<tr><td>- hue</td><td>управление PhilipsHUE лампами</td></tr>
+<tr><td>- lgtv</td><td>управление LG телевизорами по сети</td></tr>
+<tr><td>- denon</td><td>управление DENON ресиверами</td></tr>
+<tr><td>- onkyo</td><td>управление ONKYO ресиверами</td></tr>
+<tr><td>- yamaha</td><td>управление YAMAHA ресиверами</td></tr>
+<tr><td>- sonos</td><td>управление SONOS системой звука</td></tr>
+<tr><td>- dream</td><td>управление DreamBOX спутниковыми ресиверами <a href="http://ru.wikipedia.org/wiki/Dreambox">(http://ru.wikipedia.org/wiki/Dreambox)</a> </td></tr>
+<tr><td>- owfs</td><td>One Wire File System <a href="http://owfs.org/">(http://owfs.org/)</a> - сбор данных с датчиков Dallas/Maxim по 1-Wire</td></tr>
+<tr><td>- B-control Energy Manager</td><td>мониториг расхода электроэнергии <a href="http://www.b-control.com/energiemanagement.html">http://www.b-control.com/energiemanagement.html</a> (нет описания на английском)</td></tr>
+<tr><td>- all3418v2</td><td>ALLNET ALL3418v2 / IP Thermometer LAN / WLAN - беспроводной термометр - <a href="http://www.allnet.de/en/allnet-brand/produkte/home-automation/home-automation-steuer-computer0/p/allnet-all3418v2-ip-thermometer-lanwlan/">http://www.allnet.de</a></td></tr>
+<tr><td>- homepilot</td><td>управление системой автоматизации Rademacher.</td></tr>
+<tr><td>- homematic</td><td>управление системой автоматизации HomeMatic (встроено в CCU.IO).</td></tr>
+<tr><td>- rego</td><td>мониторинг котлов Junkers TM75, IVT Rego 634</td></tr>
+<tr><td></td><td></td></tr>
+<tr><td>- rpi</td><td>мониторинг основных параметров (CPU, Mem, Temperature) RaspberryPI. Поддержка 1-Wire интерфейса и PiFace.</td></tr>
+<tr><td>- cubie</td><td>мониторинг основных параметров (CPU, Mem, Temperature, Battery) Cubietruck.</td></tr>
+<tr><td></td><td></td></tr>
+<tr><td>- sayit</td><td>голосовые сообщения (text2speech или wav) на системе(Linux, Windows, OsX) или android планшете (через Home24 Mediaplayer - <a href="https://play.google.com/store/apps/details?id=com.home24.mediaplayer&hl=ru">https://play.google.com/store/apps/deta ... ayer&hl=ru).</a></td></tr>
+<tr><td></td><td></td></tr>
+<tr><td>- owm</td><td>OpenWeatherMap <a href="http://openweathermap.org/">(http://openweathermap.org/)</a> - погода по всему миру</td></tr>
+<tr><td>- yr</td><td>погода с норвежского сервера <a href="http://www.yr.no/">http://www.yr.no/</a></td></tr>
+<tr><td>- dwd</td><td>официальные предупреждения о штормах в Германии</td></tr>
+<tr><td>
+<tr><td>- fritzBox</td><td>отображение списка звонивших для fritzBox</td></tr>
+<tr><td>- speedport</td><td>отображение списка звонивших для speedport</td></tr>
+<tr><td></td><td></td></tr>
+<tr><td>- sun_and_time</td><td>время захода и восхода солнца, а также праздничные дни для Германии</td></tr>
+<tr><td>- muell_stuttgart</td><td>время вывоза мусора в Штутгарте</td></tr>
+</table>
+<br>
+Создать собственный адаптер со знаниями системы, для которой создается адаптер, не составляет труда. Конечно, знания JavaScript на много облегчат задачу.
+	
+	
+	
+	
+	
+        <a name="dreambox"></a><h1 id="dreambox" style="padding-top:65px;">Dreambox</h1>
+        <p>&nbsp;</p>
+
+        <a name="email"></a><h1 id="email" style="padding-top:65px;">email</h1>
+        <p>
+            Служит для того, что бы рассылать email. Что бы отправить письмо, нужно использовать функцию в <a href="manual.html#scripting">script-engine</a>.
+        </p>
+
+        <a name="fritzbox"></a><h1 id="fritzbox" style="padding-top:65px;">Fritzbox</h1>
+        <p>&nbsp;</p>
+
+        <a name="geofency"></a><h1 id="geofency" style="padding-top:65px;">geofency</h1>
+        <p>&nbsp;</p>
+
+        <a name="graphite"></a><h1 id="graphite" style="padding-top:65px;">Graphite</h1>
+        <p>Отсылает события и данные в <a href="http://graphite.wikidot.com/" target="_blank">Graphite</a>.</p>
+
+        <a name="hue"></a><h1 id="hue" style="padding-top:65px;">Philips Hue</h1>
+        <p>
+            Подключает и управляет <a href="http://www.meethue.com/" target="_blank">Philips Hue</a> / LivingColors / LivingWhites лампами.
+            В настройках драйвера нужно установить IP для Hue Bridge, а также имя пользователя.
+            Что бы создать пользоватетя на Hue Bridge смотри здесь
+            <a href="http://developers.meethue.com/gettingstarted.html"
+              target="_blank">http://developers.meethue.com/gettingstarted.html</a>.
+        </p>
+
+        <a name="ical"></a><h1 id="ical" style="padding-top:65px;">iCal</h1>
+        <p>
+			Драйвер iCal для CCU.IO считывает файлы по определенному URL адресу с данными календаря в формате .ics и 
+			записывает запланированные там события за определенный период в переменную. 
+			События разделены <br> тэгом и их можно отобразить, например, в DashUI элементе "basic hm_val - String (unescaped)".
+
+            <p>Будут созданы 3 переменные
+                <ul>
+                    <li>iCalReadTrigger</li>
+                    <li>iCalEvents</li>
+                    <li>iCalEventsJson</li>
+                </ul>
+            </p>
+			<p>Переменную в JSON формате можно использовать с Dash UI элементом table. </p>
+            <p>Переменная iCalReadTrigger служит для того, чтобы форсировать обновление календаря немедленно. В файле ical-settings.json нужно прописать ссылки на ics файлы. 
+            </p>
+
+ <p>Атрибут "preview" задает количество дней, которые будут учитываться при составлении списка. Если задать 2, то покажутся события только на  сегодня и на завтра. А если 1, то только на сегодня.
+            Результат будет записан в переменные iCalEvents и iCalEventsJson.</p>
+
+            <h3>Календарь</h3>
+
+            <h4>Apple iCloud</h4>
+
+            <p>Календари Apple iCloud  могут быть показаны только если перед этим на них выставили соответствующие разрешения. Лучше всего создать специально для CCU.IO отдельный календарь, т.к. он будет виден каждому.</p>
+
+            <p>Для этого правой кнопкой мыши нажать на календаре в приложении "Календарь" и выставить разрешения. После этого поставить галочку напротив "Открытый календарь" и скопировать показанный URL. Важно: URL начинается с webcal.<br/><br/>
+
+            "webcal" в адресе надо заменить на "http" и использовать его в настройках.</p>
+
+
+            <h4>Google Календарь</h4>
+
+            <p><a href="https://support.google.com/calendar/answer/37104?hl=ru">Здесь</a> можно найти описание, как получить ссылку на свой google календарь:</p>
+			<p>После модификаций файл должен выглядеть примерно так. Можно задавать неограниченное количество ics файлов:</p>
+			<pre>
+{
+	"enabled": false,  // Надо поменять на true, что бы драйвер запустился
+	"settings": {
+		"firstId": 80100,      // Начальный ID с которого будут создаваться переменные для календаря. Не советуется менять.
+		"preview": 7,          // Количество дней, которые будут учитываться при составлении списка. (1 - только сегодня, 2 сегодня и завтра)
+		"runEveryMinutes": 30, // Период обновления календарей
+		"colorize": true,      // Нужно ли задавать цвет для сегодня красным, а на завтра оранжевым. Имеет больший приоритет, чем цвет календаря.Color.
+		"debug": false,        // Вывод в log отладочной информации
+		"defColor": "white",   // Цвет текста по умолчанию
+		"fulltime": " ",       // Задает текст, которым будет заменено 00:00 для событий на весь день
+		"dataPaddingWithZeros": true, // Формат даты: 06.07.2014 (true) или 6.7.2014 (false)
+		"replaceDates": true,  // Заменять ли сегодняшнюю дату на слово из todayString и завтрашнюю на tomorrowString
+		"todayString": "Сегодня",   // Слово, которым будет заменена сегодняшняя дата (если replaceDates: true)
+		"tomorrowString": "Завтра", // Слово, которым будет заменена завтрашняя дата (если replaceDates: true)
+		"everyCalOneColor": false,  // Нужно ли задавать отдельный цвет для каждого календаря. Будет использоваться calColor.
+		"Calendar": {
+			"Calendar1": {
+				"calURL": "https://www.google.com/calendar/ical/xxxxxxxx/basic.ics",
+				"calColor": "white" // Цвет для календаря, если everyCalOneColor: false
+			},
+			"Calendar2": {
+				"calURL": "https://www.google.com/calendar/ical/yyyyy/basic.ics",
+				"calColor": "grey" Цвет для календаря, если everyCalOneColor: false
+			}
+			//, ....
+		},
+		"Events": {
+		   "Отпуск": {
+			  "enabled": true, // Активно ли правило
+			  "display": false // нужно ли событие показывать в календаре
+			}
+		}
+	}
+}	
+			</pre>
+			<p>Если задать "Events" (в данном примере "Отпуск"), то все события в календаре будут просматриваться, если там в описании слово "Отпуск". Если в календаре найдется событие для сегодня или для актуального времени со словом "Отпуск", то автоматически переменная "Отпуск" получит значение true. Если событие прошло, то значение переменной снова вернётся к false. </p>
+			<p>Создавать переменную не надо. Она создастся автоматически с ID 80110. </p>
+			<p>Обратите внимание, что в обоих случаях "Отпуск" и "Отпуск родителей" это одно и то же событие для драйвера. Для решения этой проблемы можно задать события как "Наш отпуск" и "Отпуск родителей" </p
+			<p>Если изменить файл dashui-user.css, то можно задать собственные цвета для сегодняшних и завтрашних событий. 
+
+Одна строчка выглядит следующим образом:</p>
+<pre>
+&lt;span class='icalWarn'&gt;Сегодня&lt;/span&gt;&lt;span class='icalWarn2'&gt;Выбросить мусор&lt;/span&gt;&lt;br&gt;
+&lt;span class='icalPreWarn'&gt;Завтра&lt;/span&gt;&lt;span class='icalWarn2'&gt;Концерт в Большом&lt;/span&gt;&lt;br&gt;
+&lt;span class='icalNormal'&gt;08.09.2025&lt;/span&gt;&lt;span class='icalWarn2'&gt;Событие в будущем&lt;/span&gt;&lt;br&gt;
+</pre>
+
+            <h3>Известные проблемы</h3> <p>Иногда события, которые длятся целый день, не показываются.</p>
+
+
+        <a name="irtrans"></a><h1 id="irtrans" style="padding-top:65px;">IRTrans</h1>
+        <p>&nbsp;</p>
+
+
+        <a name="lgtv"></a><h1 id="lgtv" style="padding-top:65px;">LG TV</h1>
+        <p>&nbsp;</p>
+
+
+        <a name="lirc"></a><h1 id="lirc" style="padding-top:65px;">LIRC</h1>
+        <p><a href="http://www.lirc.org/" target="_blank">LIRC</a></p>
+
+        <a name="mysql"></a><h1 id="mysql" style="padding-top:65px;">MySQL</h1>
+        <p>
+            Позволяет записывать события и данные из CCU.IO в базу данных MySQL.
+            Необходимая <a href="https://github.com/hobbyquaker/ccu.io/blob/master/adapter/mysql/schema.sql" target="_blank">схема</a> базы данных, а также <a href="https://github.com/hobbyquaker/ccu.io/blob/master/adapter/mysql/example-queries.sql" target="_blank">примеры</a> использования можно найти в папке драйвера.
+        </p>
+
+
+        <a name="onkyo"></a><h1 id="onkyo" style="padding-top:65px;">Onkyo</h1>
+        <p>&nbsp;</p>
+
+
+
+        <a name="ping"></a><h1 id="ping" style="padding-top:65px;">Ping</h1>
+        <p>
+            Следит за приборами по IP, доступны ли они в сети.
+        </p>
+        <a name="pushover"></a><h1 id="pushover" style="padding-top:65px;">pushover</h1>
+        <p>
+            Позволяет отсылать  <a href="https://pushover.net" target="_blank">pushover</a> сообщения. Что бы отправить сообщение, нужно использовать функцию в <a href="manual.html#scripting">script-engine</a>.
+        </p>
+
+
+        <a name="rpi"></a><h1 id="rpi" style="padding-top:65px;">rpi</h1>
+        <p>
+            Создает переменные в CCU.IO с информацией о доступной и свободной памяти, температуре, загрузке процессора и состоянии GPIO входов и выходов на RaspberyPI.
+            GPIO можно сконфигурировать как вход или выход.
+            Außerdem ist die Einbindung von 1-Wire Temperatursensoren möglich.
+            Возможно подключение температурных сенсоров по 1-Wire.
+        </p>
+        <p>
+            Этот Драйвер может быть запущен также "Standalone". То есть на другом RaspberryPi, а не на том, где запущена CCU.IO.
+        </p>
+
+        <a name="rego"></a><h1 id="rego" style="padding-top:65px;">Rego</h1>
+        <p>&nbsp;</p>
+
+        <a name="sonos"></a><h1 id="sonos" style="padding-top:65px;">Sonos</h1>
+        <p>Смотри Readme-файл для <a href="https://github.com/hobbyquaker/ccu.io/blob/master/adapter/sonos/README.md" target="_blank">Sonos</a>
+        </p>
+
+        <a name="sonsos"></a><h1 id="sonos" style="padding-top:65px;">Sonos</h1>
+        <p>&nbsp;</p>
+
+        <a name="telnet"></a><h1 id="telnet" style="padding-top:65px;">Telnet</h1>
+        <p>&nbsp;</p>
+
+        <a name="textcommands"></a><h1 id="textcommands" style="padding-top:65px;">textCommands</h1>
+        <p>&nbsp;</p>
+
+        <a name="yr"></a><h1 id="yr" style="padding-top:65px;">yr.no</h1>
+        <p>
+            Загружает данные о погоде с yr.no, создает переменные в CCU.IO с прогнозом погоды: минимальная/максимальная температура на сегодня и на следующие 24 часа,
+            а также переменные с вероятностью дождя.
+        </p>
+
+    </div>
+</div>
+</div>
+
+</body>
+</html>

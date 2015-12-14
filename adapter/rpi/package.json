@@ -1,9 +1,0 @@
-{
-    "name": "rpi",
-    "version": "0.5.0",
-    "private": true,
-    "dependencies": {
-        "socket.io-client": "~1.0.3",
-        "gpio": "~0.2.5"
-    }
-}

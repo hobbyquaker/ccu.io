@@ -1,9 +1,0 @@
-{
-		"enabled": false,
-		"settings": {
-		"IP": "localhost",
-		"port": 13666,
-        "firstId": 74300,
-        "debug": false
-    }
-}	

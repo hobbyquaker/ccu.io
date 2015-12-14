@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>CCU.IO Webseite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/bootstrap.slate.min.css" rel="stylesheet">
+    <link href="css/ccu.io.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+
+
+    </style>
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-46469898-1', 'ccu.io');
+        ga('send', 'pageview');
+
+    </script>
+
+</head>
+<body data-spy="scroll" data-target="#sidebar">
+<div class="navbar navbar-default navbar-fixed-top container" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a title="Startseite" class="navbar-brand" href="index.html">CCU.IO</a>
+		<div id="lang_select" style="height:78%">
+			 <table style="height:100%; background:rgba(0,0,0,0)"><tr>
+				 <td><img src="img/de_de.gif"></td>
+				 <td><a href="./ru/manual.html"><img style="padding-left:5px" src="img/ru_ru.gif"></a></td>
+			 </tr></table>
+		</div>
+    </div>
+    <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li><a title="Addons" href="addons.html">Addons</a></li>
+            <li><a title="Adapter" href="adapter.html">Adapter</a></li>
+            <li class="active"><a title="Dokumentation" href="#">Dokumentation</a></li>
+            <li><a title="Unterstützung" href="contribute.html">Unterstützung</a></li>
+            <li><a title="Download" href="download.html">Download</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a title="Impressum" href="impress.html">Impressum</a></li>
+        </ul>
+    </div><!--/.nav-collapse -->
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+            <div id="sidebar" class="" style="margin-top:65px;">
+                <ul class="nav">
+                    <li><a title="Dokumentation - was ist CCU.IO?" href="#whatis">Was ist CCU.IO?</a></li>
+                    <li><a title="Dokumentation - Installation" href="#install">Installation</a></li>
+                    <li><a title="Dokumentation - Konfiguration" href="#config">Konfiguration</a></li>
+                    <li><a title="Dokumentation - Updates" href="#updates">Updates</a></li>
+                    <li><a title="Dokumentation - Backup" href="#backup">Backup</a></li>
+                    <li><a title="Dokumentation - SimpleAPI" href="#simpleapi">SimpleAPI</a></li>
+                    <li><a title="Dokumentation - Script-Engine" href="#scripting" >Script-Engine</a>
+                        <ul style="padding-left: 20px" class="nav nav-stacked" id="subscripting">
+                            <li><a title="Dokumentation - Script-Engine - Funktionen" href="#scriptfunctions">Funktionen</a></li>
+                            <li><a title="Dokumentation - Script-Engine - Subscribe" href="#scriptsubscribe">subscribe</a></li>
+                            <li><a title="Dokumentation - Script-Engine - Schedule" href="#scriptschedule">schedule</a></li>
+
+                        </ul>
+
+                    </li>
+                    <li><a title="Dokumentation - Socket.IO" href="#socket">Socket.IO</a></li>
+
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <a name="whatis"></a><h1 id="whatis" style="padding-top:65px;">Was ist CCU.IO?</h1>
+
+<p>CCU.IO ist eine auf <a target="_blank" href="http://nodejs.org">Node.js</a> basierende Applikation die die
+    Möglichkeiten einer HomeMatic CCU erweitert. CCU.IO kommuniziert über das "BIN-RPC"-Protokoll mit rfd (HomeMatic
+    Funk-Komponenten), hs485d (HomeMatic Wired-Komponenten) und <a href="" target="_blank">CUxD</a> (FS20, EnOcean, ...),
+    außerdem wird auch die Logikschicht ("ReGaHSS") der HomeMatic CCU eingebunden.</p>
+            <p>
+                CCU.IO kann mit seinem integrierten Webserver als Basis für Web-basierte Visualisierungen dienen und ermöglicht
+                durch die Nutzung der <a target="_blank" href="http://socket.io">Socket.IO Bibliothek</a> Web-Oberflächen Events von der
+                CCU nach dem Push-Prinzip zu empfangen. Ein Ressourcenintensives Polling entfällt somit und die Visualisierung
+                stellt geänderte Status mit geringerer Latenz dar. Darüberhinaus fungiert CCU.IO hier als Proxy - egal wieviele
+                Visualisierungs-Instanzen geöffnet sind - die Belastung für die HomeMatic CCU bleibt gleich gering.
+            </p>
+
+            <p>CCU.IO ist in der Lage Fremd-Systeme über sogenannte <a href="adapter.html">Adapter</a> anzubinden. Bisher existieren
+                Adapter für Philips Hue, Sonos, IRTrans, die Anbindung an eine MySQL-Datenbank und diverse WebServices (Wettervorhersage, Pushover, ...).
+                Weitere Adapter sind in Planung und Entwicklung.
+            </p>
+
+            <p>
+                Die in CCU.IO integrierte <a href="#scripting">Script-Engine</a> ermöglicht es Automatisierungs-Aufgaben via JavaScript zu implementieren,
+                es stehen hier alle Möglichkeiten von Node.js zur Verfügung, z.B. Zugriffe auf das Dateisystem,
+                Netzwerkkommunikation u.v.m. Darüberhinaus können beliebige Node.js Module eingebunden werden.
+            </p>
+
+            <p>CCU.IO ist freie Software, nicht-kommerzielle Nutzung ist für jedermann kostenlos möglich. <a href="impress.html">
+                Weitere Informationen zu den Lizenz-Bedingungen</a>
+            </p>
+
+
+
+            <a name="install"></a><h1 id="install" style="padding-top:65px;">Installation</h1>
+
+            <h3>Voraussetzungen</h3>
+
+            <p>CCU.IO benötigt <a href="http://nodejs.org" target="_blank">Node.js</a> (Version >= 0.8). Links zu Node.js Downloads sind im <a href="download.html">Download-Bereich</a> zu finden.
+            </p>
+
+            <h3>Manuelle Installation</h3>
+            <ul>
+                <li><a href="https://github.com/hobbyquaker/ccu.io/archive/master.zip">Dieses Zip-File</a> herunterladen und entpacken</li>
+                <li>In das enptackte Verzeichnis wechseln</li>
+                <li>Den Server starten: <code>node ccu.io-server.js start</code> <i>(unter Windows: <code>node.exe ccu.io-server.js start</code>)</i></li>
+                <li>Die CCU.IO Weboberfläche aufrufen: http://hostname:8080/ccu.io</li>
+                <li>Im Reiter "CCU.IO"->"Settings" die IP der CCU und des Hosts auf dem CCU.IO selbst läuft eintragen (<a href="#config">siehe auch</a>)</li>
+                <li>Im Reiter "CCU.IO"->"Control" CCU.IO neu starten</li>
+            </ul>
+
+            <h3>Installation als Debian-Paket (RaspberryPi)</h3>
+            <p>Auf dem Raspberry Pi einloggen und folgende Befehle ausführen um Node.js und CCU.IO zu installieren:
+            <pre><code>wget http://ccu.io.mainskater.de/nodejs_0.10.22-1_armhf.deb
+wget http://ccu.io.mainskater.de/ccu.io_1.0.29.deb
+sudo dpkg -i nodejs_0.10.22-1_armhf.deb
+sudo dpkg -i ccu.io_1.0.29.deb</code></pre>
+            <ul>
+                <li>Die CCU.IO Weboberfläche aufrufen: http://hostname:8080/ccu.io</li>
+                <li>Im Reiter "CCU.IO"->"Settings" die IP der CCU und des Hosts auf dem CCU.IO selbst läuft eintragen (<a href="#config">siehe auch</a>)</li>
+                <li>Im Reiter "CCU.IO"->"Control" CCU.IO neu starten</li>
+            </ul>
+            </p>
+
+            <h3>Installation auf Mac OS X</h3>
+            <p>SGiersch hat in seinem Wiki <a href="http://wiki.sgiersch.de/Mac_%2B_Node_%2B_Deamon-Script" target="_blank">die Erstellung eines Start-Scripts</a> dokumentiert.</p>
+            <p>Die automatische Installation über .pkg ist in Vorbereitung/Entwicklung.</p>
+
+            <h3>Installation auf Windows</h3>
+            <p>Die automatische Installation über .msi ist in Vorbereitung/Entwicklung.</p>
+
+            <h3>Installation als CCU2-Addon</h3>
+            <p><i>Hinweis: die Installation auf einer CCU2 ist machbar - wird aber wegen mangelhafter Performance nicht empfohlen.</i></p>
+            <p>Die automatische Installation über ein .tar.gz ist in Vorbereitung/Entwicklung</p>
+
+            <h3>Hinweise</h3>
+            <p>Wird eine bestehende CCU.IO Installation Version 0.9.x aktualisiert müssen alle Settings neu vorgenommen werden, es findet keine Übernahme der alten Settings statt.</p>
+            <p>Wenn Port 8080 bereits belegt ist kann CCU.IO nicht starten. Dann bitte vorübergehend den Dienst der Port 8080 belegt beenden, CCU.IO starten, Port in Settings ändern.</p>
+
+
+            <h3>getestete Plattformen</h3>
+            <p>CCU.IO wurde bisher erfolgreich auf folgenden Plattformen installiert:
+            <ul>
+                <li>Raspbian (RaspberryPi)</li>
+                <li>Cubian (Cubieboard/Cubietruck)</li>
+                <li>RCU (CCU2 Firmware auf RaspberryPi)</li>
+                <li>Homematic CCU2</li>
+                <li>Mac OS X</li>
+                <li>Windows</li>
+                <li>x86 und amd64 Linux</li>
+                <li>QNAP TS-469 Pro (vermutlich auch auf allen anderen x86-basierten QNAP NAS)</li>
+                <li>QNAP TS-419II (vermutlich auch auf anderen ARM-basierten QNAP NAS)</li>
+                <li>Synology DS212, DS214play, DS412+, DS413j (vermutlich auf den meisten ARM- und Atom-basierten Synolgy)</li>
+                <li>Western Digital My Cloud</li>
+            </ul></p>
+
+
+
+            <a name="config"></a><h1 id="config" style="padding-top:65px;">Konfiguration</h1>
+            <p>
+                Die Konfiguration von CCU.IO wird über die Weboberfläche (Reiter "CCU.IO"->"Settings") vorgenommen. Die Konfiguration
+                der Adapter ist im Reiter "Adapter" zu finden. (Button Configure in der Adapter-Tabelle). Eine Änderung der Konfiguration
+                (sowohl von CCU.IO selbst als auch die der Adapter) erfordert immer einen Neustart.
+            </p>
+
+            <h3>Grundkonfiguration</h3>
+            <h4>CCU IP Adresse</h4>
+            <p>Die IP-Adresse der HomeMatic CCU. Bitte beachten dass Zugriffe nicht von der CCU-Firewall geblockt werden
+            (sowohl für "HomeMatic XML-RPC API" als auch für "Remote HomeMatic-Script API").</p>
+            <h4>CCU.IO IP Adresse</h4>
+            <p>Die IP-Adresse des Hosts auf dem CCU.IO selbst läuft. Wird der CCU mitgeteilt damit diese Kenntnis davon hat unter
+                welcher Adresse sie CCU.IO erreichen kann</p>
+            <h4>Stats</h4>
+            <p>Wenn aktiviert werden im angegebenen Intervall Informationen zur Anzahl der von der CCU empfangen Events sowie die
+            Anzahl verbundener Clients ins Logfile geschrieben.</p>
+            <h4>Logging</h4>
+            <p>Wenn aktiviert werden alle Events und Variablenänderungen geloggt. Notwendig für die Nutzung der Addons Highcharts und Eventlist.
+            Write Interval gibt an wie oft die Daten vom RAM auf den Datenträger geschrieben werden sollen.</p>
+            <h4>Script-Engine</h4>
+            <p>Aktiviert die Script-Engine. Longitude und Lattitude (Längen- und Breitengrad) sind notwendig für die Astro-Funktion (Berechnung
+            Sonnenaufgang/untergang) der Script-Engine.</p>
+
+
+            <h3>Webserver</h3>
+            <p>Hier können die Webserver für http und https getrennt aktiviert werden und die zu verwendenden Ports konfiguriert werden. Außerdem
+            ist es möglich ein Username und ein Passwort für "HTTP Basic Auth" anzugeben und die Authentifizierung getrennt für HTTP und HTTPS zu aktivieren.</p>
+
+
+            <h3>HomeMatic RPC</h3>
+            <p>Hier müssen je nach vorhandener Hardware die Inits für Funk-Komponenten (rfd), Wired-Komponenten (hs485d) und CUxD Geräte aktiviert werden</p>
+            <p>Wird "Check RPC Events" aktiviert prüft CCU.IO alle 3 Minuten ob ein Event von rfd und ggf. hs485d empfangen wurde, falls nicht wird versucht über den
+            Druck auf einen Virtuellen Taster ein Event zu "provozieren". Sollte nach weiteren 2 Minuten immer noch kein Event eingetroffen sein wird der
+            RPC Init erneut durchgeführt. Dient dazu eventuell nicht mehr funktionierende RPC Inits zu erkennen und zu verhindern.</p>
+
+            <h3>HomeMatic ReGaHSS</h3>
+            <p>Ist Polling aktiviert fragt CCU.IO im angegebenen Intervall den Status von Systemvariablen von der CCU ab.</p>
+            <p>Bei aktivierten Polling-Trigger wird immer wenn ein PRESS_SHORT Event auf dem angegeben virtuellen Taster empfangen wird der
+            Zustand der Systemvariablen von der CCU abgefragt. Somit kann quasi ein "pseudo-Push" Mechanismus für Systemvariablen geschaffen werden.
+            Hierzu ist es dann notwendig auf der CCU ein Programm anzulegen das bei Änderung von relevanten Systemvariablen den kurzen Tastendruck
+            auf dem angegebenen virtuellen Taster durchführt.</p>
+
+            <a name="updates"></a><h1 id="updates" style="padding-top:65px;">Updates</h1>
+
+            <p>Einstellungen und Dateien in den Verzeichnissen datastore, log, scripts und www sollten Updates unbeschadet überstehen,
+            es empfiehlt sich natürlich dennoch vor jedem Update ein Backup der gesamten CCU.IO Installation durchzuführen.</p>
+
+            <p>CCU.IO kann (ab v1.0.4) "sich selbst" updaten. Einfach in der CCU.IO Oberfläche im Reiter CCU.IO-Info bei
+                "available Version" nachsehen ob ein Update verfügbar ist (check-Button) und ggf. den Update-Button betätigen</p>
+            <p>Dieser Vorgang kann abhängig von der Internetanbindung und der Rechenleistung die CCU.IO zur Verfügung steht relativ
+            lange dauern. Am besten ist es das CCU.IO-Logfile (log/ccu.io.log) während dieses Vorgangs im Auge zu behalten.</p>
+
+            <p>Das Changelog und die Roadmap werden im <a href="https://github.com/hobbyquaker/ccu.io/blob/master/README.md">Readme auf GitHub</a> gepflegt.</p>
+
+            <a name="backup"></a><h1 id="backup" style="padding-top:65px;">Backup</h1>
+
+
+            <a name="simpleapi"></a><h1 id="simpleapi" style="padding-top:65px;">SimpleAPI</h1>
+            <p>CCU.IO bietet neben der Möglichkeit via Socket.IO zu kommunizieren auch die "Simple API", eine auf HTTP-GET-Requests
+                basierende Schnittstelle die Daten im JSON- oder Plain-Text-Format zurückliefert. Folgende Kommandos stehen zur Verfügung:</p>
+
+            <h3>get</h3>
+
+
+
+            <p>Ein Objekt abfragen. Liefert Daten im JSON-Format. Lässt sich auf alle Objekte im CCU.IO-regaObjects-Objekt anwenden.</p>
+            <h4>Beispiele</h4>
+           <p>Ein Objekt über die ID abfragen
+<pre><code>http://ccu-io-host:ccu.io-port/api/get/950
+</code></pre></p>
+
+            <p>Ein Objekt über den Namen abfragen
+
+<pre><code>http://ccu-io-host:ccu.io-port/api/get/Anwesenheit
+</code></pre></p>
+
+            <p>Ein Datenpunkt über den Kanal-Namen und den Datenpunktbezeichner abfragen
+
+<pre><code>http://ccu-io-host:ccu.io-port/api/get/Licht-Küche/LEVEL
+</code></pre></p>
+
+            <p>Ein Datenpunkt über die Kanal-Adresse und den Datenpunktbezeichner abfragen</p>
+
+<pre><code>http://ccu-io-host:ccu.io-port/api/get/FEQ1234567:1/LEVEL
+</code></pre>
+
+            <p>Ein Datenpunkt über die BidCos-Adresse abfragen</p>
+
+<pre><code>http://ccu-io-host:ccu.io-port/api/get/BidCos-RF.FEQ1234567:1.LEVEL
+</code></pre>
+
+            <h3>getPlainValue</h3>
+
+            <p>Diese Methode liefert direkt den Wert eines Datenpunkts mit Content-Type text/plain. Bietet die gleichen Möglichkeiten einen Datenpunkt zu adressieren wie die Methode <code>get</code>. Diese Methode lässt sich im Gegensatz zur Methode <code>get</code> nur auf Variablen und Datenpunkte anwenden.</p>
+
+<pre><code>http://ccu-io-host:ccu.io-port/api/getPlainValue/950
+</code></pre>
+
+            <h3>set</h3>
+
+            <p>Eine Variable oder einen Datenpunkt setzen. Bietet die gleichen Möglichkeiten einen Datenpunkt zu adressieren wie die Methode <code>get</code>, lässt sich aber nur auf Datenpunkte und Variablen anwenden.</p>
+
+            <h4>Beispiele</h4>
+
+<pre><code>http://ccu-io-host:ccu.io-port/api/set/BidCos-RF.FEQ1234567:1.LEVEL/?value=0.7
+http://ccu-io-host:ccu.io-port/api/set/Licht-Küche/LEVEL/?value=0.7
+http://ccu-io-host:ccu.io-port/api/set/Anwesenheit/?value=0
+http://ccu-io-host:ccu.io-port/api/set/950/?value=1
+</code></pre>
+
+            <h3>setBulk</h3>
+
+            <p>Mehrere Datenpunkte auf einmal setzen</p>
+
+            <p>Diese Methode kann auch per POST aufgerufen werden, je nach Content-Type Header können die Daten als JSON oder form-encoded geliefert werden</p>
+
+            <h4>Beispiele</h4>
+
+            <p>Dieses Beispiel vereint alle 4 Beispiele aus der Methode <code>set</code> in einem Aufruf:</p>
+
+<pre><code>http://ccu-io-host:ccu.io-port/api/setBulk/?BidCos-RF.FEQ1234567:1.LEVEL=0.7&amp;Licht-Küche/LEVEL=0.7&amp;Anwesenheit=0&amp;950=1
+</code></pre>
+
+            <h3>programExecute</h3>
+
+            <p>Ein Programm ausführen. Kann über ID oder Name angesprochen werden</p>
+
+            <h4>Beispiele</h4>
+
+<pre><code>http://ccu-io-host:ccu.io-port/api/programExecute/1205
+http://ccu-io-host:ccu.io-port/api/programExecute/Alle-Lichter-an
+</code></pre>
+
+            <h3>getObjects</h3>
+
+<pre><code>http://ccu-io-host:ccu.io-port/api/getObjects
+</code></pre>
+
+            <h3>getIndex</h3>
+
+<pre><code>http://ccu-io-host:ccu.io-port/api/getIndex
+</code></pre>
+
+            <h3>getDatapoints</h3>
+
+<pre><code>http://ccu-io-host:ccu.io-port/api/getDatapoints
+</code></pre>
+
+
+
+
+            <a name="scripting"></a><h1 id="scripting" style="padding-top:65px;">Script-Engine</h1>
+
+            <p>Eigene Scripte können einfach im Verzeichnis scripts abgelegt werden. Bitte beachten - wenn Änderungen an den Scripten
+                erfolgen muss die Script-Engine neu gestartet werden (über Button in CCU.IO Oberfläche unter CCU.IO-&gt;Control machbar)</p>
+
+            <h3>Standardmäßig bereits vorhandene Node-Module</h3>
+            <p>Folgende Node-Module werden von der Script-Engine bereits eingebunden und können in eigenen Script verwendet werden:</p>
+            <ul>
+                <li>fs - Das Filesystem Modul "fs"</li>
+                <li>request - <a href="https://github.com/mikeal/request">https://github.com/mikeal/request</a>
+                </li>
+                <li>wol - <a href="https://github.com/agnat/node_wake_on_lan">https://github.com/agnat/node_wake_on_lan</a>
+                </li>
+            </ul>
+
+            <a name="scriptfunctions"></a><h3 style="padding-top:65px;" id="scriptfunctions">Funktionen</h3>
+            <p>Zur verwendung in eigenen Scripten stehen folgende Funktionen zur Verfügung:</p>
+
+            <h4>log(msg)</h4>
+
+            <p>Etwas in ccu.io/log/ccu.io.log schreiben</p>
+
+            <h4>getState(id [,dpType])</h4>
+
+            <p>git den Wert eines Datenpunktes zurück</p>
+            <p>Beispiele:</p>
+            <pre><code>var val = getState(950);
+var val = getState("Anwesenheit");
+var val = getState("Licht Küche", "LEVEL")
+var val = getState("BidCos-RF.FEQ12345678.LEVEL");</code></pre>
+
+
+            <h4>setState(id, val)</h4>
+
+            <p>Den Wert eines Datenpunktes ändern. ID kann eine ID, ein Name oder eine Adresse sein.</p>
+
+            <h4>executeProgram(id)</h4>
+
+            <p>Ein Homematic Programm ausführen</p>
+
+            <h4>setObject(id, object)</h4>
+
+            <p>Ein Objekt in die regaObjects einfügen</p>
+
+            <h4>wol.wake(mac);</h4>
+
+            <p>Weckt einen Rechner per Wake on Lan auf</p>
+
+            <p>Beispiele:</p>
+
+<pre><code>wol.wake("20:DE:20:DE:20:DE");
+wol.wake("20-DE-20-DE-20-DE");
+wol.wake("20DE20DE20DE");
+</code></pre>
+
+            <h4>request(url)</h4>
+
+            <p>Führt einen HTTP GET Request durch.</p>
+
+            <p>Beispiele:</p>
+
+<pre><code>request("http://user:pass@webservice.example.com/api/set/1");
+</code></pre>
+<pre><code>var url = "http://user:pass@webservice.example.com/api/get";
+
+request(url, function (error, response, body) {
+  log("webservice-abfrage "+url+" liefert zurück: "+body);
+});
+</code></pre>
+
+            <p>basiert auf dem Node-Package <a href="https://npmjs.org/package/request" target="_blank">request</a>, <a href="https://github.com/mikeal/request">siehe auch.</a></p>
+
+            <h4>email(obj)</h4>
+
+            <p>Versendet eine Email</p>
+
+            <p>Beispiel:</p>
+
+            <pre><code>email({
+    to: "ernie@sesamestreet.com",
+    subject: "ccu.io",
+    text: "alarm!!!"
+});</code></pre>
+            <p>Diese Funktion erfordert dass der <a href="adapter.html#email">Email-Adapter</a> konfiguriert und aktiviert wurde.</p>
+
+            <h4>pushover(obj)</h4>
+
+            <p>Versendet eine Pushover Benachrichtigung</p>
+
+            <p>Beispiel:</p>
+
+            <pre><code>pushover({
+    message:"Das Fenster im Bad sollte geschlossen werden."
+});</code></pre>
+            <p>Diese Funktion erfordert dass der <a href="adapter.html#pushover">Pushover-Adapter</a> konfiguriert und aktiviert wurde.</p>
+
+            <a name="scriptsubscribe"></a><h4 style="padding-top:65px;" id="scriptsubscribe">subscribe(pattern, callback)</h4>
+
+            <p>Einen Event abbonieren. Das pattern-Objekt bietet folgende Attribute:</p>
+
+<pre><code>
+    logic       string          "and" oder "or" Logik zum Verknüpfen der Bedingungen nutzen (default: "and")
+
+    id          integer         ID ist gleich
+
+    name        string          name ist gleich
+                RegExp          name matched Regulären Ausdruck
+
+    change      string          "eq", "ne", "gt", "ge", "lt", "le"
+            "eq"    Wert muss gleich geblieben sein (val == oldval)
+            "ne"    Wert muss sich geändert haben (val != oldval)
+            "gt"    Wert muss großer geworden sein (val &gt; oldval)
+            "ge"    Wert muss größer geworden oder gleich geblieben sein (val &gt;= oldval)
+            "lt"    Wert muss kleiner geworden sein (val &lt; oldval)
+            "le"    Wert muss kleiner geworden oder gleich geblieben sein (val &lt;= oldval)
+
+    val         mixed           Wert ist gleich
+    valNe       mixed           Wert ist ungleich
+    valGt       mixed           Wert ist größer
+    valGe       mixed           Wert ist größer oder gleich
+    valLt       mixed           Wert ist kleiner
+    valLe       mixed           Wert ist kleiner oder gleich
+
+    ack         bool            Wert ist bestätigt
+
+    oldVal      mixed           vorheriger Wert ist gleich
+    oldValNe    mixed           vorheriger Wert ist ungleich
+    oldValGt    mixed           vorheriger Wert ist größer
+    oldValGe    mixed           vorheriger Wert ist größer oder gleich
+    oldValLt    mixed           vorheriger Wert ist kleiner
+    oldValLe    mixed           vorheriger Wert ist kleiner oder gleich
+
+    oldAck      bool            vorheriger Wert ist bestätigt
+
+    ts          string          Timestamp ist gleich
+    tsGt        string          Timestamp ist größer
+    tsGe        string          Timestamp ist größer oder gleich
+    tsLt        string          Timestamp ist kleiner
+    tsLe        string          Timestamp ist kleiner oder gleich
+
+    oldTs       string          vorheriger Timestamp ist gleich
+    oldTsGt     string          vorheriger Timestamp ist größer
+    oldTsGe     string          vorheriger Timestamp ist größer oder gleich
+    oldTsLt     string          vorheriger Timestamp ist kleiner
+    oldTsLe     string          vorheriger Timestamp ist kleiner oder gleich
+
+    lc          string          Lastchange ist gleich
+    lcGt        string          Lastchange ist größer
+    lcGe        string          Lastchange ist größer oder gleich
+    lcLt        string          Lastchange ist kleiner
+    lcLe        string          Lastchange ist kleiner oder gleich
+
+    oldLc       string          vorheriger Lastchange ist gleich
+    oldLcGt     string          vorheriger Lastchange ist größer
+    oldLcGe     string          vorheriger Lastchange ist größer oder gleich
+    oldLcLt     string          vorheriger Lastchange ist kleiner
+    oldLcLe     string          vorheriger Lastchange ist kleiner oder gleich
+
+    room        integer         Raum ID ist gleich
+                string          Raum ist gleich
+                RegExp          Raum matched Regulären Ausdruck
+
+    func        integer         Gewerk ID ist gleich
+                string          Gewerk ist gleich
+                RegExp          Gewerk matched Regulären Ausdruck
+
+    channel     integer         Kanal ID ist gleich
+                string          Kanal-Name ist gleich
+                RegExp          Kanal-Name matched Regulären Ausdruck
+
+    device      integer         Geräte ID ist gleich
+                string          Geräte-Name ist gleich
+                RegExp          Geräte-Name matched Regulären Ausdruck
+
+    channelType string          Kanal HssType ist gleich
+                RegExp          Kanal HssType matched Regulären Ausdruck
+
+    deviceType  string          Geräte HssType ist gleich
+                RegExp          Geräte HssType matched Regulären Ausdruck
+
+</code></pre>
+
+            <p>Der Callback-Funktion wird ein Objekt mit folgendem Inhalt als Parameter übergeben:</p>
+
+<pre><code>
+{
+    id,
+    name,
+    newState: {
+        value,
+        timestamp,
+        ack,
+        lastchange
+    },
+    oldState: {
+        value,
+        timestamp,
+        ack,
+        lastchange
+    },
+    channel: {
+        id,
+        name,
+        type,
+        funcIds,
+        roomIds,
+        funcNames,
+        roomNames
+    },
+    device: {
+        id,
+        name,
+        type
+    }
+}
+
+</code></pre>
+
+            <p>funcIds, roomIds, funcNames und roomNames sind Arrays (func = Gewerke)</p>
+
+            <p><b>Beispiel Briefkastenscript</b></p>
+            <p>Dieses Script zählt die Einwürfe in einen Briefkasten. <code>id:11928</code> und <code>change:"ne"</code> gibt an dass sich der Wert des
+                Datenpunktes mit der ID 11928 geändert haben muss. Der Beispielhafte Datenpunkt 11928 ist hier der STATE Datenpunkt eines Eingangs
+            eines "HomeMatic-Funk-3fach-Schließerkontakt" Sensors an dem ein an der Briefkastenklappe angbrachter Microschalter
+                angeschlossen ist. Über eine setTimeout-Anweisung werden Einwürfe maximal alle 30 Sekunden gezählt. Die Anzahl der Einwürfe
+            wird hier Beispielhaft in die Variable mit der Id 100015 geschrieben. Die SetObject Anweisung legt die Variable mit der Id 100015 an und initialisiert sie mit dem Wert 0.</p>
+
+            <pre><code>var einwurfTimer;
+subscribe({id:11928, change:"ne"}, function (obj) {
+    if (!einwurfTimer) {
+
+        einwurfTimer = true;
+        setTimeout(function () {
+            einwurfTimer = undefined;
+        }, 30000);
+
+        setState(100015, 1 + getState(100015));
+    }
+});
+
+setObject(100015, {
+    Name: "Briefkasten",
+    TypeName: "VARDP"
+}, function () {
+    setState(100015, 0);
+});</code></pre>
+
+
+
+            <a name="scriptschedule"></a><h4 id="scriptschedule" style="padding-top:65px;">schedule(pattern, callback)</h4>
+
+            <p>Zeitmodul mit Astrofunktion.</p>
+
+            <p>Pattern kann ein String in Cron-Syntax sein, z.B.:</p>
+
+<pre><code>schedule("*/2 * * * *", function () {
+    log("wird alle 2 Minuten ausgeführt!");
+});
+</code></pre>
+
+            <p>Pattern kann aber auch ein Objekt sein, insbesondere dann notwendig wenn man Sekundengenaue Ausführung benötigt:</p>
+
+<pre><code>schedule({second: [20, 25]}, function () {
+    log("Wird um xx:xx:20 und xx:xx:25 ausgeführt!");
+});
+
+schedule({hour: 12, minute: 30}, function () {
+    log("Wird um 12:30Uhr ausgeführt!");
+});
+</code></pre>
+
+            <p>Pattern kann auch ein Javascript-Date-Objekt (also ein bestimmter Zeitpunkt sein) - dann findet nur eine einmalige Ausführung statt.</p>
+
+            <h5>Astrofunktion</h5>
+
+            <p>Über das Attribut "astro" kann die Astrofunktion genutzt werden:</p>
+
+<pre><code>schedule({astro:"sunrise"}, function () {
+    log("Sonnenaufgang!");
+});
+
+schedule({astro:"sunset", shift:10}, function () {
+    log("10 Minuten nach Sonnenuntergang!");
+});
+</code></pre>
+
+            <p>Das Attribut shift ist eine Verschiebung in Minuten, kann auch negativ sein um die Events vorzuziehen.</p>
+
+            <p>Folgende Werte sind für das Attribut astro verwendbar:</p>
+
+            <ul>
+                <li>sunrise: sunrise (top edge of the sun appears on the horizon)</li>
+                <li>sunriseEnd: sunrise ends (bottom edge of the sun touches the horizon)</li>
+                <li>goldenHourEnd: morning golden hour (soft light, best time for photography) ends</li>
+                <li>solarNoon: solar noon (sun is in the highest position)</li>
+                <li>goldenHour: evening golden hour starts</li>
+                <li>sunsetStart: sunset starts (bottom edge of the sun touches the horizon)</li>
+                <li>sunset: sunset (sun disappears below the horizon, evening civil twilight starts)</li>
+                <li>dusk: dusk (evening nautical twilight starts)</li>
+                <li>nauticalDusk: nautical dusk (evening astronomical twilight starts)</li>
+                <li>night: night starts (dark enough for astronomical observations)</li>
+                <li>nightEnd: night ends (morning astronomical twilight starts)</li>
+                <li>nauticalDawn: nautical dawn (morning nautical twilight starts)</li>
+                <li>dawn: dawn (morning nautical twilight ends, morning civil twilight starts)</li>
+                <li>nadir: nadir (darkest moment of the night, sun is in the lowest position)</li>
+            </ul>
+
+
+        <a name="socket"></a><h1 style="padding-top:65px;" id="socket">Socket.IO Schnittstelle</h3>
+                <p><a href="http://socket.io">Socket.IO</a> ist nicht nur für die Kommunikation mit Web-Browsern der beste Weg mit CCU.IO zu kommunizieren. Es gibt Socket.IO Implementierungen für viele Sprachen, siehe <a href="https://github.com/learnboost/socket.io/wiki#in-other-languages">https://github.com/learnboost/socket.io/wiki#in-other-languages</a></p>
+
+                <h3>Methoden die von CCU.IO auf allen Clients aufgerufen werden</h3>
+
+                <h4>event</h4>
+
+                <p>CCU.IO ruft bei jedem Event (Änderung oder Aktualisierung eines Datenpunkts oder einer Variable) die Methode "event" auf allen verbundenen Clients auf. Als Parameter wird ein Array mit folgender Struktur übergeben <code>[id, val, timestamp, ack, lastchange]</code></p>
+
+                <h3>Methoden die von Clients auf CCU.IO aufgerufen werden können</h3>
+
+                <h4>getDatapoints(callback)</h4>
+
+                <p>Das Datenpunkt-Objekt von CCU.IO abfragen</p>
+
+                <h4>getObjects(callback)</h4>
+
+                <p>Die Meta-Daten (regaObjects) von CCU.IO abfragen</p>
+
+                <h4>getIndex(callback)</h4>
+
+                <p>Den Objekt-Index von CCU.IO abfragen</p>
+
+                <h4>setState(arr, callback)</h4>
+
+                <p>Einen Datenpunkt setzen.
+                    Als Parameter wird ein Array mit folgender Struktur erwartet <code>[id, val, timestamp, ack, lastchange]</code></p>
+
+                <h4>programExecute(id, callback)</h4>
+
+                <p>Ein Homematic-Programm ausführen</p>
+
+                <h4>runScript(script, callback)</h4>
+
+                <p>Ein Homematic-Script ausführen</p>
+
+                <h4>reloadScriptEngine()</h4>
+
+                <p>Lädt die Script-Engine neu. Notwendig wenn Änderungen an einem Script vorgenommen wurden.</p>
+
+                <h4>execCmd(cmd, callback)</h4>
+
+                <p>Führt ein Shell-Commando aus. Callback wird mit 3 Parametern aufgerufen: error, stdout, stderr</p>
+
+                <h4>readdir(path, callback)</h4>
+
+                <p>Gibt den Inhalt eines bestimmten Verzeichnisses zurück.
+                    Die Methode callback wird mit einem Array des Verzeichnisinhalts zurückgerufen</p>
+
+                <h4>writeFile(name, object, callback)</h4>
+
+                <p>Wandelt object in JSON um und schreibt es in die Datei name im datastore-Verzeichnis</p>
+
+                <h4>readFile(name, callback)</h4>
+
+                <p>List eine JSON Datei im datastore-Verzeichnis und gibt das geparste Objekt als Parameter an die callback Funktion zurück</p>
+
+                <h4>readRawFile(name, callback)</h4>
+
+                <p>Liest eine beliebige Datei (name kann auch einen Pfad beinhalten) und gibt das Ergebnis als String an die callback Funktion zurück. Der Pfad ist relativ zum ccu.io-Verzeichnis</p>
+
+                <h4>readJsonFile(name, callback)</h4>
+
+                <p>List eine JSON Datei und gibt das geparste Objekt als Parameter an die callback Funktion zurück. Der Pfad ist relativ zum ccu.io-Verzeichnis</p>
+
+                <h4>getUrl(url, callback)</h4>
+
+                <p>Eine URL via HTTP-GET aufrufen. Callback erhält den Body den Antwort. Geschickter Weg um die Same-Origin-Policy in Webanwendungen zu umgehen.</p>
+
+                <h4>getSettings(callback)</h4>
+
+                <p>Liefert das CCU.IO Settings Objekt zurück</p>
+
+                <h4>getStringtable(callback)</h4>
+
+                <p>Liefert eine Objekt mit dem Inhalt der stringtable_de.txt von der CCU</p>
+
+                <h4>addStringVariable(name, desc, str, callback)</h4>
+
+                <p>Fügt eine Stringvariable auf der CCU hinzu. Liefert die neue ID an den Callback.</p>
+
+                <h4>setObject(id, obj, callback)</h4>
+
+                <p>Ein Objekt zu regaObjects und regaIndex hinzufügen</p>
+
+
+                <p>&nbsp;</p>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

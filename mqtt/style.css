@@ -1,0 +1,18 @@
+.sh small {
+    font-size: 0.4em
+}
+
+.sh-device {
+    display: inline-block;
+    width:160px;
+    height: 90px;
+    background-color: darkblue;
+    border: 1px solid gray;
+    border-radius: 4px;
+    margin: 4px;
+    padding: 4px;
+}
+
+table.sh td {
+    border: 1px solid black
+}

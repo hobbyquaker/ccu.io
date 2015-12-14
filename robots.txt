@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /impress.html
+Disallow: /contribute.html
+Sitemap: http://ccu.io/sitemap.xml
+

@@ -1,9 +1,0 @@
-{
-    "enabled": false,
-    "firstId": 500200,
-    "settings": {
-        "host": "172.16.23.138",
-        "pause": 6500,
-        "pass": ""
-    }
-}

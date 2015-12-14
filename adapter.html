@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>CCU.IO Webseite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/bootstrap.slate.min.css" rel="stylesheet">
+    <link href="css/ccu.io.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+
+    </style>
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-46469898-1', 'ccu.io');
+        ga('send', 'pageview');
+
+    </script>
+
+</head>
+<body data-spy="scroll" data-target="#sidebar">
+<div class="navbar navbar-default navbar-fixed-top container" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a title="Startseite" class="navbar-brand" href="index.html">CCU.IO</a>
+		<div id="lang_select" style="height:78%">
+			 <table style="height:100%; background:rgba(0,0,0,0)"><tr>
+				 <td><img src="img/de_de.gif"></td>
+				 <td><a href="./ru/adapter.html"><img style="padding-left:5px" src="img/ru_ru.gif"></a></td>
+			 </tr></table>
+		</div>
+    </div>
+    <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li><a title="Addons" href="addons.html">Addons</a></li>
+            <li class="active"><a title="Adapter" href="#">Adapter</a></li>
+            <li><a title="Dokumentation" href="manual.html">Dokumentation</a></li>
+            <li><a title="Unterstützung" href="contribute.html">Unterstützung</a></li>
+            <li><a title="Download" href="download.html">Download</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a title="Impressum" href="impress.html">Impressum</a></li>
+        </ul>
+    </div><!--/.nav-collapse -->
+</div>
+
+<div class="container">
+<div class="row">
+    <div class="col-md-2">
+        <div id="sidebar" style="margin-top:65px;">
+            <ul class="nav nav-stacked">
+                <li><a title="Adapter Dreambox" href="#dreambox">Dreambox</a></li>
+                <li><a title="Adapter DWD" href="#dwd">DWD</a></li>
+                <li><a title="Adapter Email" href="#email">Email</a></li>
+                <li><a title="Adapter Fritzbox" href="#fritzbox">Fritzbox</a></li>
+                <li><a title="Adapter Geofency" href="#geofency">Geofency</a></li>
+                <li><a title="Adapter Graphite" href="#graphite">Graphite</a></li>
+                <li><a title="Adapter Philips Hue" href="#hue">Philips Hue</a></li>
+                <li><a title="Adapter iCal" href="#ical">iCal</a></li>
+                <li><a title="Adapter IRTrans" href="#irtrans">IRTrans</a></li>
+                <li><a title="Adapter LG TV" href="#lgtv">LG TV</a></li>
+                <li><a title="Adapter Lirc" href="#lirc">LIRC</a></li>
+                <li><a title="Adapter listen" href="#listen">Listen</a></li>
+		<li><a title="Adapter MQTT" href="#mqtt">MQTT</a></li>
+                <li><a title="Adapter Müll Stuttgart" href="#muell_stuttgart">Müll Stuttgart</a></li>
+                <li><a title="Adapter mysql" href="#mysql">MySQL</a></li>
+                <li><a title="Adapter onkyo" href="#onkyo">Onkyo</a></li>
+                <li><a title="Adapter Ping" href="#ping">Ping</a></li>
+                <li><a title="Adapter Pushover" href="#pushover">Pushover</a></li>
+                <li><a title="Adapter RaspberryPi" href="#rpi">RaspberryPi</a></li>
+                <li><a title="Adapter Rego" href="#rego">Rego</a></li>
+                <li><a title="Adapter Sonos" href="#sonos">Sonos</a></li>
+                <li><a title="Adapter telnet" href="#telnet">telnet</a></li>
+                <li><a title="Adapter textCommands" href="#textcommands">textCommands</a></li>
+                <li><a title="Adapter yr.no" href="#yr">yr.no</a></li>
+
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-10" style="padding-bottom: 600px">
+        <a name="dreambox"></a><h1 id="dreambox" style="padding-top:65px;">Dreambox</h1>
+        <p>&nbsp;</p>
+
+        <a name="dwd"></a><h1 id="dwd" style="padding-top:65px;">dwd</h1>
+        <p>
+            Frägt Wetterwarnungen vom <a href="http://www.dwd.de/" target="_blank">DWD</a> ab. Es ist notwendig
+            <a href="http://www.dwd.de/bvbw/appmanager/bvbw/dwdwwwDesktop?_nfpb=true&_pageLabel=dwdwww_wetter_warnungen&_state=maximized&_windowLabel=T174800148261285830600274&T174800148261285830600274gsbDocumentPath=Navigation%252FOeffentlichkeit%252FHomepage%252FWetter__Ihre__Website%252Fftp-Zugriff__node.html%253F__nnn%253Dtrue"
+                                                                  target="_blank">einen kostenlosen Account für den
+                ftp-Zugriff auf die DWD-Daten</a> zu beantragen und dessen Zugangsdaten in der Adapter-Konfiguration einzutragen.
+        </p>
+        <p>In der Adapter-Konfiguration muss außerdem das Bundesland und der Kreis eingetragen werden. Der Kreis entspricht dem
+            KFZ-Kennzeichen, mit X aufgefüllt auf 4 Stellen. Für die Stadt München (Kennzeichen "M") also z.B. "MXXX".
+
+        </p>
+            
+
+        <a name="email"></a><h1 id="email" style="padding-top:65px;">email</h1>
+        <p>
+            Dient dazu Nachrichten per Email zu versenden. Steht direkt als Funktion in Script-Engine zur Verfügung.
+        </p>
+
+        <a name="fritzbox"></a><h1 id="fritzbox" style="padding-top:65px;">Fritzbox</h1>
+        <p>&nbsp;</p>
+
+        <a name="geofency"></a><h1 id="geofency" style="padding-top:65px;">geofency</h1>
+        <p>
+            Stellt einen Webserver bereit um <a href="http://www.geofency.com/" target="_blank">Geofency</a> "Webhooks" zu empfangen.
+        </p>
+        <p>Es wird ein eigener Webserver auf einem konfigurierbaren Port gestartet der ausschließlich dem Empfang von Webhooks dient und
+            HTTP Basic Authentifizierung unterstützt.</p>
+        <p>Die URL für die Verwendung in Geofency endet auf eine Zahl, also z.B. <code>http://geo:geo123@zuhause.selfip.net:7999/0</code>
+            für das erste konfigurierte Device und <code>http://geo:geo123@zuhause.selfip.net:7999/1</code> für das zweite Device. Es können
+        für kommen und gehen die gleichen URLs verwendet werden, als Datenformat des Webhook muss in Geofency "JSON" eingestellt sein.</p>
+
+        <a name="graphite"></a><h1 id="graphite" style="padding-top:65px;">Graphite</h1>
+        <p>Sendet Daten an <a href="http://graphite.wikidot.com/" target="_blank">Graphite</a>.</p>
+        <p>Siehe auch <a href="http://homematic-forum.de/forum/viewtopic.php?f=48&t=16093" target="_blank">dieser Foren-Thread</a>.</p>
+
+
+        <a name="hue"></a><h1 id="hue" style="padding-top:65px;">Philips Hue</h1>
+        <p>
+            Bindet <a href="http://www.meethue.com/" target="_blank">Philips Hue</a> / LivingColors / LivingWhites Lampen
+            ein. In den Adapter-Settings muss die IP der Hue Bridge sowie ein Username konfiguriert werden.
+            Zum Anlegen eines Users auf der Bridge siehe: <a href="http://developers.meethue.com/gettingstarted.html"
+                                                             target="_blank">http://developers.meethue.com/gettingstarted.html</a>
+        </p>
+
+        <a name="ical"></a><h1 id="ical" style="padding-top:65px;">iCal</h1>
+        <p>
+            Der Adapter iCal für CCU.IO liest Kalender Files im .ics Format von einer URL ein und schreibt Termine, welche in einem definierbaren Zeitraum liegen in eine CCU.IO Variable.
+            Die Termine werden zeilenweise durch ein &lt;br&gt; Tag voneinander getrennt und können z.B. mit dem DashUI Widget "basic hm_val - String (unescaped)" in DashUI Angezeigt werden.</p>
+
+            <p>Es werden 2 Variablen angelegt
+
+            <ul>
+        <li>iCalReadTrigger</li>
+        <li>iCalEvents</li>
+            </ul></p>
+
+<p>Die Variable iCalReadTrigger dient zum Triggern des Einlesevorgangs. In den Settings kann eine defaultURL hintelegt werden, von welcher der Kalender eingelesen wird.
+    Alternativ kann dem Lesebefehl auch eine URL mitgegeben werden, um z.B. zeitweilig einen anderen Kalender einzulesen.
+</p>
+
+            <ul><li>zum Einlesen von der defaultURL muss der String "read" in die Variable iCalReadTrigger geschrieben werden.</li>
+            <li>zum Einlesen von einer beliebigen URL muss der String "readURL &lt;URL&gt;" in die Variable iCalReadTrigger geschrieben werden.</li></ul>
+
+            Das Ergebnis liefert der iCal Adapter in die Variable iCalEvents.</p>
+
+            <p>In den Settings wird durch die Angabe der "preview" Option festgelegt wie viele Tage im voraus Termine mit einbezogen werden, also z.B. durch die Angabe der Zahl "2" werden Termine von heute und morgen angezeigt. Durch Angabe der "1" werden nur Termine vom heutigen Tag angezeigt.</p>
+
+                <h3>Kalender</h3>
+
+            <h4>Apple iCloud</h4>
+
+            <p>Apple iCloud Kalender können angezeigt werden, wenn sie vorher freigegeben werden. Am besten einen eigenen Kalender für die Homematic anlegen, da der Kalender fuer alle freigegeben wird.</p>
+
+            <p>Dazu mit der rechten Maustaste auf dem Kalender in der Kalender App klicken und Freigabeeinstellungen auswählen.<br/>
+            Jetzt einen Haken bei "Öffentlicher Kalender" setzen und die angezeigte URL kopieren.<br>
+            WICHTIG: die Url beginnt mit webcal://p0X-cale.....<br/><br/>
+
+            "webcal" muss durch "http" ersetzt werden. Diese URL dann entweder in den Settings bei defaultURL eintragen, oder sie bei "read URL" angeben, also z.B. "readURL http://p-03-calendarws.icloud.com/xxxxxxxxx"</p>
+
+
+            <h4>Google Kalender</h4>
+
+            <p>Zum Einbinden eines Google Kalenders muss die Kalendereinstellung des Google Kalenders aufgerufen werden (mit der Maus auf "runter Pfeil" neben dem Kalender klicken). Die URL des Kalenders bekommt man durch klicken auf das "ICAL" Symbol neben dem Feld "Privatadresse".
+            Diese URL dann entweder in den Settings bei defaultURL eintragen, oder sie bei "read URL" angeben, also z.B. "readURL https://www.google.com/calendar/ical/xxxxxxxx/basic.ics".</p>
+
+
+            <h3>Known BUGS</h3> <p>zur Zeit werden ganztägige Termine macnhmal nicht angezeigt, nur Termine mit einer Uhrzeit.</p>
+
+
+        <a name="irtrans"></a><h1 id="irtrans" style="padding-top:65px;">IRTrans</h1>
+        <p>Der Adapter IRTrans verbindet einen <a href="http://www.irtrans.de/" target="_blank">IRTrans</a> LAN IrDB Receiver mit CCU.IO.
+            In den settings muss die IP Adresse und der Port des IRTrans LAN IrDB Receivers, sowie die Startadresse der folgenden 4 Variablen
+            angegeben werden.
+
+            <ul><li>IRTransSendCommand</li>
+            <li>IRTransMode</li>
+            <li>IRTransReceive</li>
+            <li>IRTransResult</li></ul></p>
+
+            <p>Im Normalfall wird der IRTrans LAN IrDB Receiver über die mitgelieferte Software parametriert und die Datenbank mit Remotes und Codes gefüllt.</p>
+
+            <h4>Senden</h4>
+            <p>Zum Senden eines IR Befehls wird in die Variable IRTransSendCommand ein String mit folgendem Inhalt geschrieben:
+                „remote,command“ z.B. „sat,chup“. Dazu muss in der DB des IRTrans LAN Receivers die Fernbedienung und der Befehl hinterlegt sein.</p>
+
+            <p>Alle Ergebnisse (Quittungen oder Fehler) des IRTrans LAN werden in der Variable IRTransResult abgelegt.</p>
+
+            <h4>Empfangen</h4>
+
+            <p>Sobald der IRTrans LAN IrDB Receiver einen bekannten IRCode (in seiner DB) empfangen hat, wird in der Variablen
+                IRTransReceive der empfangende Befehl abgelegt (remote,command).</p>
+
+            <h4>Anlernen</h4>
+            <p>Der IRTrans Adapter bietet auch die Möglichkeit des Anlernens von Codes.
+            Dazu muss zuerst die Variable IRTransMode mit dem String „learnIR“ gesetzt werden.
+            Daraufhin wartet der IRTrans LAN Receiver 20 Sekunden lang auf das Empfangen eines IR Codes. Bei Erfolg wird
+                der HEX Code in der Variablen IRTransReceive abgelegt.</p>
+
+            <h4>Senden des HEX Codes</h4>
+            <p>Zum senden eines gelernten HEX Codes wird die Variable IRTransSendRemote mit dem String „sendIR“ beschrieben.
+                Sobald der HEX Code in die Variable IRTransSendCommand geschrieben wird, beginnt der Sendevorgang.</p>
+
+
+
+        </p>
+
+
+        <a name="lgtv"></a><h1 id="lgtv" style="padding-top:65px;">LG TV</h1>
+        <p>&nbsp;</p>
+
+
+        <a name="lirc"></a><h1 id="lirc" style="padding-top:65px;">LIRC</h1>
+        <p><a href="http://www.lirc.org/" target="_blank">LIRC</a></p>
+
+        <a name="listen"></a><h1 id="listen" style="padding-top:65px;">Listen</h1>
+        <p>&nbsp;</p>
+
+        <a name="muell_stuttgart"></a><h1 id="muell_stuttgart" style="padding-top:65px;">Müll Stuttgart</h1>
+        <p>Dieser, speziell für die Abfallwirtschaft der Stadt Stuttgart ausgelegte Adapter, fragt die nächsten Abholtermine für Restmüll, Biomüll, Grüne Tonne und gelben Sack ab.</p>
+
+
+
+        <a name="mysql"></a><h1 id="mysql" style="padding-top:65px;">MySQL</h1>
+        <p>
+            Bindet CCU.IO an eine MySQL Datenbank an. Des notwendige Schema und Beispiel-Queries liegen im Adapter-Verzeichnis bereit
+
+        </p>
+
+
+        <a name="onkyo"></a><h1 id="onkyo" style="padding-top:65px;">Onkyo</h1>
+        <p>&nbsp;</p>
+
+
+
+        <a name="ping"></a><h1 id="ping" style="padding-top:65px;">Ping</h1>
+        <p>
+            Überwacht ob Geräte im Netzwerk erreichbar sind.
+        </p>
+        <a name="pushover"></a><h1 id="pushover" style="padding-top:65px;">pushover</h1>
+        <p>
+            Dient dazu Nachrichten per Pushover zu versenden. Steht direkt in Script-Engine zur Verfügung.
+        </p>
+
+
+        <a name="rpi"></a><h1 id="rpi" style="padding-top:65px;">rpi</h1>
+        <p>
+            Stellt Datenpunkte bereit für Festplatten-, RAM- und Swap-Nutzung, Temperatur, Loadavg und GPIOs.
+            Die GPIOs sind konfigurierbar als ein- oder Ausgang.
+            Außerdem ist die Einbindung von 1-Wire Temperatursensoren möglich.
+        </p>
+        <p>
+            Dieser Adapter kann auch "Standalone" - sprich auf einem anderen RaspberryPi als CCU.IO selbst laufen.
+        </p>
+
+        <a name="rego"></a><h1 id="rego" style="padding-top:65px;">Rego</h1>
+        <p>&nbsp;</p>
+
+        <a name="sonos"></a><h1 id="sonos" style="padding-top:65px;">sonos</h1>
+        <p>Siehe Readme-Datei im Adapterverzeichnis <code>ccu.io/adapter/sonos/README.md</code>
+        </p>
+
+        <a name="sonsos"></a><h1 id="sonos" style="padding-top:65px;">Sonos</h1>
+        <p>&nbsp;</p>
+
+        <a name="telnet"></a><h1 id="telnet" style="padding-top:65px;">Telnet</h1>
+        <p>&nbsp;</p>
+
+        <a name="textcommands"></a><h1 id="textcommands" style="padding-top:65px;">textCommands</h1>
+        <p>&nbsp;</p>
+
+        <a name="yr"></a><h1 id="yr" style="padding-top:65px;">yr.no</h1>
+        <p>
+            Lädt Wetterdaten von yr.no, stellt Datenpunkte mit der vorhergesagten minimal-/maximal-Temperatur für die nächsten und die darauffolgenden 24h
+            sowie Datenpunkte für erwarteten Regen bereit.
+        </p>
+
+    </div>
+</div>
+</div>
+
+</body>
+</html>
