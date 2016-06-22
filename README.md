@@ -3,6 +3,8 @@ CCU.IO
 
 *Latest version: 1.0.52 (2015.04.09)*
 
+# DEPRECATED!
+
 **Original developers are now engaged in [ioBroker](https://github.com/ioBroker) ([Forums](http://forum.iobroker.org)), the CCU.IO-successor**
 
 **New Users**: please don't start using CCU.IO, use ioBroker instead!
