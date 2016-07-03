@@ -284,12 +284,15 @@ function checkDates (ev, endpreview, today, realnow, rule, calName) {
         return;
     }
 
-    if(ev.start.getHours()   == "0" &&
-       ev.start.getMinutes() == "0" &&
-       ev.start.getSeconds() == "0" &&
-       ev.end.getHours()     == "0" &&
-       ev.end.getMinutes()   == "0" &&
-       ev.end.getSeconds()   == "0" ) {
+    //Bestimmen, ob das Event ganztägig ist
+    if(
+       ev.end == undefined ||
+       (ev.start.getHours()   == "0" &&
+        ev.start.getMinutes() == "0" &&
+        ev.start.getSeconds() == "0" &&
+        ev.end.getHours()     == "0" &&
+        ev.end.getMinutes()   == "0" &&
+        ev.end.getSeconds()   == "0" )) {
         ft = true;
     }
     //Wenn ganztätig
